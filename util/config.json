@@ -1,0 +1,13 @@
+{
+    "profiles": {
+        "NeovimWindows": {
+            "cmake_generator": "Ninja",
+            "build_type": "Debug",
+            "compile_commands": "true",
+            "working_dir": "run",
+            "executable_files": [
+                "bin\\NebulaExamples.exe"
+            ]
+        }
+    }
+}

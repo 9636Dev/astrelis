@@ -1,0 +1,13 @@
+# Build Files
+/build/
+!/build/*.py
+!/build/*.sh
+!/build/*.json
+
+# For Mac users
+.DS_Store
+
+# Cache and runtime files
+/.cache/
+# Copied libs for runtime linking
+/run/lib/

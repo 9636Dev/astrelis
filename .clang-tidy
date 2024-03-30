@@ -1,0 +1,6 @@
+Checks: '*,
+-modernize-use-trailing-return-type,
+-llvmlibc-*,
+-fuchsia-*
+-bugprone-easily-swappable-parameters
+'

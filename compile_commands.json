@@ -1,0 +1,200 @@
+[
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNebulaCore_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\CMakeFiles\\NebulaCore.dir\\src\\NebulaCore\\Log.cpp.obj.modmap /FoNebulaCore\\CMakeFiles\\NebulaCore.dir\\src\\NebulaCore\\Log.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\src\\NebulaCore\\Log.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\src\\NebulaCore\\Log.cpp",
+  "output": "NebulaCore\\CMakeFiles\\NebulaCore.dir\\src\\NebulaCore\\Log.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\spdlog.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\spdlog.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\spdlog.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\spdlog.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\spdlog.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\stdout_sinks.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\stdout_sinks.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\stdout_sinks.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\stdout_sinks.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\stdout_sinks.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\color_sinks.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\color_sinks.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\color_sinks.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\color_sinks.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\color_sinks.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\file_sinks.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\file_sinks.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\file_sinks.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\file_sinks.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\file_sinks.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\async.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\async.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\async.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\async.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\async.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\cfg.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\cfg.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\cfg.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\cfg.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\cfg.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /MP /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\bundled_fmtlib_format.cpp.obj.modmap /FoNebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\bundled_fmtlib_format.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\bundled_fmtlib_format.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\src\\bundled_fmtlib_format.cpp",
+  "output": "NebulaCore\\vendor\\spdlog\\CMakeFiles\\spdlog.dir\\src\\bundled_fmtlib_format.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNebulaGraphicsCore_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaGraphics\\Core\\CMakeFiles\\NebulaGraphicsCore.dir\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp.obj.modmap /FoNebulaGraphics\\Core\\CMakeFiles\\NebulaGraphicsCore.dir\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp",
+  "output": "NebulaGraphics\\Core\\CMakeFiles\\NebulaGraphicsCore.dir\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_RENDERER_SHARED -DNebulaGraphicsRenderer_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaGraphics\\Renderer\\CMakeFiles\\NebulaGraphicsRenderer.dir\\src\\NebulaGraphicsRenderer\\Window.cpp.obj.modmap /FoNebulaGraphics\\Renderer\\CMakeFiles\\NebulaGraphicsRenderer.dir\\src\\NebulaGraphicsRenderer\\Window.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src\\NebulaGraphicsRenderer\\Window.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src\\NebulaGraphicsRenderer\\Window.cpp",
+  "output": "NebulaGraphics\\Renderer\\CMakeFiles\\NebulaGraphicsRenderer.dir\\src\\NebulaGraphicsRenderer\\Window.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_OPENGL_SHARED -DNebulaGraphicsOpenGL_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj.modmap /FoNebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Window.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Window.cpp",
+  "output": "NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\context.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\context.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\context.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\context.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\init.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\init.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\init.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\init.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\input.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\input.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\input.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\input.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\monitor.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\monitor.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\monitor.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\monitor.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\platform.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\platform.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\platform.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\platform.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\vulkan.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\vulkan.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\vulkan.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\vulkan.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\window.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\window.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\window.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\window.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\egl_context.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\egl_context.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\egl_context.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\egl_context.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\osmesa_context.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\osmesa_context.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\osmesa_context.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\osmesa_context.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_init.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_init.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_init.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_init.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_monitor.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_monitor.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_monitor.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_monitor.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_window.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_window.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_window.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_window.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_joystick.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_joystick.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\null_joystick.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\null_joystick.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_module.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_module.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_module.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_module.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_time.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_time.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_time.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_time.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_thread.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_thread.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_thread.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_thread.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_init.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_init.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_init.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_init.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_joystick.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_joystick.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_joystick.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_joystick.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_monitor.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_monitor.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_monitor.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_monitor.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_window.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_window.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\win32_window.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\win32_window.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\wgl_context.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\wgl_context.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\wgl_context.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\wgl_context.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_RENDERER_SHARED -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @examples\\CMakeFiles\\NebulaExamples.dir\\src\\Application.cpp.obj.modmap /Foexamples\\CMakeFiles\\NebulaExamples.dir\\src\\Application.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\examples\\src\\Application.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\examples\\src\\Application.cpp",
+  "output": "examples\\CMakeFiles\\NebulaExamples.dir\\src\\Application.cpp.obj"
+}
+]

@@ -1,0 +1,9 @@
+[submodule "NebulaCore/vendor/spdlog"]
+	path = NebulaCore/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "NebulaGraphics/Core/vendor/Eigen"]
+	path = NebulaGraphics/Core/vendor/Eigen
+	url = https://gitlab.com/libeigen/eigen
+[submodule "NebulaGraphics/OpenGL/vendor/glfw"]
+	path = NebulaGraphics/OpenGL/vendor/glfw
+	url = https://github.com/glfw/glfw

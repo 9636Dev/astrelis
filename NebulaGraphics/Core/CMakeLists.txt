@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 3.27)
+project(NebulaGraphicsCore)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(NEBULA_GRAPHICS_CORE_SOURCES
+    src/NebulaGraphicsCore/Core.hpp
+
+    # Geometry
+    src/NebulaGraphicsCore/Geometry/Transform.hpp
+    src/NebulaGraphicsCore/Geometry/Transform.cpp
+
+    # Window System
+    src/NebulaGraphicsCore/Window.hpp
+    src/NebulaGraphicsCore/Event/KeyCodes.hpp
+    src/NebulaGraphicsCore/Event/MouseCodes.hpp
+    src/NebulaGraphicsCore/Event/Event.hpp
+    src/NebulaGraphicsCore/Event/KeyEvent.hpp
+    src/NebulaGraphicsCore/Event/MouseEvent.hpp
+    src/NebulaGraphicsCore/Event/WindowEvent.hpp
+)
+
+add_subdirectory(vendor/Eigen)
+
+add_library(NebulaGraphicsCore SHARED ${NEBULA_GRAPHICS_CORE_SOURCES})
+add_dependencies(NebulaGraphicsCore NebulaCore)
+nebula_add_definitions(NebulaGraphicsCore "NEBULA_GRAPHICS_CORE" SHARED)
+
+target_include_directories(NebulaGraphicsCore PUBLIC src)
+
+add_dependencies(NebulaGraphicsCore NebulaCore)
+target_link_libraries(NebulaGraphicsCore NebulaCore)
+add_dependencies(NebulaGraphicsCore Eigen3::Eigen)
+target_link_libraries(NebulaGraphicsCore Eigen3::Eigen)
