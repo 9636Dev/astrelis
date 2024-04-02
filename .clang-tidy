@@ -1,6 +1,11 @@
 Checks: '*,
 -modernize-use-trailing-return-type,
 -llvmlibc-*,
--fuchsia-*
--bugprone-easily-swappable-parameters
+-fuchsia-*,
+-bugprone-easily-swappable-parameters,
+-bugprone-lambda-function-name,
+-misc-non-private-member-variables-in-classes,
+-misc-use-anonymous-namespace,
+-altera-struct-pack-align,
+-altera-unroll-loops
 '

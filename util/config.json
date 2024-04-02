@@ -6,8 +6,16 @@
             "compile_commands": "true",
             "working_dir": "run",
             "executable_files": [
-                "bin\\NebulaExamples.exe"
+                "bin\\NebulaExamples.exe",
+                "bin\\NebulaCoreTests.exe"
             ]
+        },
+        "VisualStudio2022": {
+            "cmake_generator": "Visual Studio 17 2022",
+            "build_type": "Debug",
+            "compile_commands": "false",
+            "working_dir": "run",
+            "executable_files": []
         }
     }
 }

@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(NEBULA_GRAPHICS_CORE_SOURCES
     src/NebulaGraphicsCore/Core.hpp
 
+    # Math
+    src/NebulaGraphicsCore/Math.hpp # Eigen3 math typedefs
+
     # Geometry
     src/NebulaGraphicsCore/Geometry/Transform.hpp
     src/NebulaGraphicsCore/Geometry/Transform.cpp
@@ -19,6 +22,9 @@ set(NEBULA_GRAPHICS_CORE_SOURCES
     src/NebulaGraphicsCore/Event/KeyEvent.hpp
     src/NebulaGraphicsCore/Event/MouseEvent.hpp
     src/NebulaGraphicsCore/Event/WindowEvent.hpp
+
+    # Renderer
+    src/NebulaGraphicsCore/Renderer.hpp
 )
 
 add_subdirectory(vendor/Eigen)

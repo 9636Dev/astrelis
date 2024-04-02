@@ -1,7 +1,141 @@
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: None
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: AcrossEmptyLines
+#AlignConsecutiveShortCaseStatements: Consecutive
+#AlignConsecutiveTableGenBreakingDAGArgColons: None
+#AlignConsecutiveTableGenCondOperatorColons: None
+#AlignConsecutiveTableGenDefinitionColons: None
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments:
+    Kind: Always
+    OverEmptyLines: 1
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+#AllowBreakBeforeNoexceptSpecifier: Never
+#AllowShortBlocksOnASingleLine: Always
+#AllowShortCaseLabelsOnASingleLine: true
+#AllowShortCompoundRequirementOnASingleLine: true
+#AllowShortEnumsOnASingleLine: false
+#AllowShortFunctionsOnASingleLine: InlineOnly
+#AllowShortIfStatementsOnASingleLine: Never
+#AllowShortLambdasOnASingleLine: Inline
+#AllowShortLoopsOnASingleLine: false
+AlwaysBreakBeforeMultilineStrings: true
 BasedOnStyle: LLVM
-BreakBeforeBraces: Allman
+BinPackArguments: true
+BinPackParameters: false
+BitFieldColonSpacing: None
+BraceWrapping:
+    AfterCaseLabel: false
+    AfterClass: true
+    AfterControlStatement: Always
+    AfterEnum: true
+    AfterFunction: true
+    AfterNamespace: true
+    AfterObjCDeclaration: true
+    AfterStruct: true
+    AfterUnion: true
+    AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    BeforeLambdaBody: false
+    BeforeWhile: false
+    IndentBraces: false
+    SplitEmptyFunction: true
+    SplitEmptyRecord: true
+    SplitEmptyNamespace: true
+BracedInitializerIndentWidth: 4
+#BreakAdjacentStringLiterals: true
+BreakAfterAttributes: Never
+#BreakAfterJavaFieldAnnotations: false
+#ReturnTypeBreakingStyle: Automatic
+BreakArrays: true
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+BreakBeforeConceptDeclarations: Always
+BreakBeforeInlineASMColon: OnlyMultiline
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakStringLiterals: true
+#BreakTemplateDeclarations: Yes
+ColumnLimit: 120
+CompactNamespaces: false
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: Never
+FixNamespaceComments: true
+IncludeBlocks: Preserve
+IndentAccessModifiers: false
+IndentCaseBlocks: false
+IndentCaseLabels: false
+IndentExternBlock: AfterExternBlock
+IndentGotoLabels: false
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: true
 IndentWidth: 4
+IndentWrappedFunctionNames: true
+InsertBraces: false # There is clang-format bug
+InsertNewlineAtEOF: true
+InsertTrailingCommas: None
+IntegerLiteralSeparator:
+    Binary: 0
+    Decimal: 3
+    Hex: -1
+KeepEmptyLinesAtEOF: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: OuterScope
+LineEnding: LF
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+#ObjCBinPackProtocolList: Auto
+#ObjCBlockIndentWidth: 4
+#ObjCBreakBeforeNestedBlockParam: false
+#ObjCSpaceAfterProperty: true
+#ObjCSpaceBeforeProtocolList: true
+PPIndentWidth: -1
+PackConstructorInitializers: CurrentLine
+PointerAlignment: Left
+QualifierAlignment: Left
+ReferenceAlignment: Left
+ReflowComments: false
+RemoveBracesLLVM: false
+RemoveParentheses: Leave
+RemoveSemicolon: true
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+SeparateDefinitionBlocks: Always
+#SkipMacroDefinitionBody: false
+SortIncludes: CaseSensitive
+#SortJavaStaticImport: After
+SortUsingDeclarations: Lexicographic
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceAroundPointerQualifiers: Before
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeJsonColon: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: Never
+SpacesInContainerLiterals: false
+SpacesInParens: Never
+SpacesInSquareBrackets: false
+Standard: c++20
 TabWidth: 4
 UseTab: Never
-IndentCaseLabels: true
-ColumnLimit: 0
+

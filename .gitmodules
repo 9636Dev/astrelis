@@ -7,3 +7,6 @@
 [submodule "NebulaGraphics/OpenGL/vendor/glfw"]
 	path = NebulaGraphics/OpenGL/vendor/glfw
 	url = https://github.com/glfw/glfw
+[submodule "vendor/googletest"]
+	path = vendor/googletest
+	url = https://github.com/google/googletest

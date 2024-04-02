@@ -1,6 +1,48 @@
 [
 {
   "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googlemock\\CMakeFiles\\gmock.dir\\__\\googletest\\src\\gtest-all.cc.obj.modmap /Fovendor\\googletest\\googlemock\\CMakeFiles\\gmock.dir\\__\\googletest\\src\\gtest-all.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest-all.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest-all.cc",
+  "output": "vendor\\googletest\\googlemock\\CMakeFiles\\gmock.dir\\__\\googletest\\src\\gtest-all.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj.modmap /Fovendor\\googletest\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\src\\gmock-all.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\src\\gmock-all.cc",
+  "output": "vendor\\googletest\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\__\\googletest\\src\\gtest-all.cc.obj.modmap /Fovendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\__\\googletest\\src\\gtest-all.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest-all.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest-all.cc",
+  "output": "vendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\__\\googletest\\src\\gtest-all.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock-all.cc.obj.modmap /Fovendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock-all.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\src\\gmock-all.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\src\\gmock-all.cc",
+  "output": "vendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock-all.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock_main.cc.obj.modmap /Fovendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock_main.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\src\\gmock_main.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googlemock\\src\\gmock_main.cc",
+  "output": "vendor\\googletest\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock_main.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googletest\\CMakeFiles\\gtest.dir\\src\\gtest-all.cc.obj.modmap /Fovendor\\googletest\\googletest\\CMakeFiles\\gtest.dir\\src\\gtest-all.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest-all.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest-all.cc",
+  "output": "vendor\\googletest\\googletest\\CMakeFiles\\gtest.dir\\src\\gtest-all.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -external:IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -external:IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest -external:W0 /DWIN32 /D_WINDOWS  /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi -GS -W4 -WX -wd4251 -wd4275 -nologo -J -D_UNICODE -DUNICODE -DWIN32 -D_WIN32 -DSTRICT -DWIN32_LEAN_AND_MEAN -wd4702 -utf-8 -DGTEST_HAS_PTHREAD=0 -EHsc -D_HAS_EXCEPTIONS=1  @vendor\\googletest\\googletest\\CMakeFiles\\gtest_main.dir\\src\\gtest_main.cc.obj.modmap /Fovendor\\googletest\\googletest\\CMakeFiles\\gtest_main.dir\\src\\gtest_main.cc.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest_main.cc",
+  "file": "F:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\src\\gtest_main.cc",
+  "output": "vendor\\googletest\\googletest\\CMakeFiles\\gtest_main.dir\\src\\gtest_main.cc.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
   "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNebulaCore_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\CMakeFiles\\NebulaCore.dir\\src\\NebulaCore\\Log.cpp.obj.modmap /FoNebulaCore\\CMakeFiles\\NebulaCore.dir\\src\\NebulaCore\\Log.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\src\\NebulaCore\\Log.cpp",
   "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\src\\NebulaCore\\Log.cpp",
   "output": "NebulaCore\\CMakeFiles\\NebulaCore.dir\\src\\NebulaCore\\Log.cpp.obj"
@@ -49,6 +91,12 @@
 },
 {
   "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -external:IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest\\include -external:IF:\\CPP\\NebulaEngine\\vendor\\googletest\\googletest -external:W0 /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaCore\\tests\\CMakeFiles\\NebulaCoreTests.dir\\AssertionTests.cpp.obj.modmap /FoNebulaCore\\tests\\CMakeFiles\\NebulaCoreTests.dir\\AssertionTests.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaCore\\tests\\AssertionTests.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaCore\\tests\\AssertionTests.cpp",
+  "output": "NebulaCore\\tests\\CMakeFiles\\NebulaCoreTests.dir\\AssertionTests.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
   "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNebulaGraphicsCore_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaGraphics\\Core\\CMakeFiles\\NebulaGraphicsCore.dir\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp.obj.modmap /FoNebulaGraphics\\Core\\CMakeFiles\\NebulaGraphicsCore.dir\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp",
   "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp",
   "output": "NebulaGraphics\\Core\\CMakeFiles\\NebulaGraphicsCore.dir\\src\\NebulaGraphicsCore\\Geometry\\Transform.cpp.obj"
@@ -61,9 +109,21 @@
 },
 {
   "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
-  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_OPENGL_SHARED -DNebulaGraphicsOpenGL_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj.modmap /FoNebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Window.cpp",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_RENDERER_SHARED -DNebulaGraphicsRenderer_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi @NebulaGraphics\\Renderer\\CMakeFiles\\NebulaGraphicsRenderer.dir\\src\\NebulaGraphicsRenderer\\Renderer.cpp.obj.modmap /FoNebulaGraphics\\Renderer\\CMakeFiles\\NebulaGraphicsRenderer.dir\\src\\NebulaGraphicsRenderer\\Renderer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src\\NebulaGraphicsRenderer\\Renderer.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\Renderer\\src\\NebulaGraphicsRenderer\\Renderer.cpp",
+  "output": "NebulaGraphics\\Renderer\\CMakeFiles\\NebulaGraphicsRenderer.dir\\src\\NebulaGraphicsRenderer\\Renderer.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_OPENGL_SHARED -DNebulaGraphicsOpenGL_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi /wd4190 @NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj.modmap /FoNebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Window.cpp",
   "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Window.cpp",
   "output": "NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Window.cpp.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DNEBULA_CORE_SHARED -DNEBULA_DEBUG -DNEBULA_EXPORT_DLL -DNEBULA_GRAPHICS_CORE_SHARED -DNEBULA_GRAPHICS_OPENGL_SHARED -DNebulaGraphicsOpenGL_EXPORTS -DSPDLOG_ACTIVE_LEVEL=0 -DSPDLOG_COMPILED_LIB -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\src -IF:\\CPP\\NebulaEngine\\NebulaCore\\vendor\\spdlog\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\src -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\Core\\vendor\\Eigen -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi /wd4190 @NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Renderer.cpp.obj.modmap /FoNebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Renderer.cpp.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Renderer.cpp",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\src\\NebulaGraphicsOpenGL\\Renderer.cpp",
+  "output": "NebulaGraphics\\OpenGL\\CMakeFiles\\NebulaGraphicsOpenGL.dir\\src\\NebulaGraphicsOpenGL\\Renderer.cpp.obj"
 },
 {
   "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
@@ -190,6 +250,54 @@
   "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DUNICODE -D_CRT_SECURE_NO_WARNINGS -D_GLFW_WIN32 -D_UNICODE -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\include -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src -IF:\\CPP\\NebulaEngine\\build\\NeovimWindows\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src /DWIN32 /D_WINDOWS /Ob0 /Od /RTC1 -MDd -Zi /W3 /FoNebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\wgl_context.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\wgl_context.c",
   "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\wgl_context.c",
   "output": "NebulaGraphics\\OpenGL\\vendor\\glfw\\src\\CMakeFiles\\glfw.dir\\wgl_context.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DGLEW_BUILD -DGLEW_NO_GLU -DVC_EXTRALEAN -Dglew_EXPORTS -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include /DWIN32 /D_WINDOWS /Ob0 /Od  -MDd -Zi -GS- /FoNebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew.dir\\__\\__\\src\\glew.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\glew.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\glew.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew.dir\\__\\__\\src\\glew.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe -DGLEW_BUILD -DGLEW_NO_GLU -DVC_EXTRALEAN -Dglew_EXPORTS -I F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include -DWIN32 -D_DEBUG /fo NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew.dir\\__\\glew.rc.res F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\glew.rc",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\glew.rc",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew.dir\\__\\glew.rc.res"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DGLEW_NO_GLU -DGLEW_STATIC -DVC_EXTRALEAN -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include /DWIN32 /D_WINDOWS /Ob0 /Od  -MDd -Zi -GS- /FoNebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew_s.dir\\__\\__\\src\\glew.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\glew.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\glew.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew_s.dir\\__\\__\\src\\glew.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe -DGLEW_NO_GLU -DGLEW_STATIC -DVC_EXTRALEAN -I F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include -DWIN32 -D_DEBUG /fo NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew_s.dir\\__\\glew.rc.res F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\glew.rc",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\glew.rc",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glew_s.dir\\__\\glew.rc.res"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DGLEW_NO_GLU -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include /DWIN32 /D_WINDOWS /Ob0 /Od  -MDd -Zi /FoNebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glewinfo.dir\\__\\__\\src\\glewinfo.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\glewinfo.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\glewinfo.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glewinfo.dir\\__\\__\\src\\glewinfo.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe -DGLEW_NO_GLU -I F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include -DWIN32 -D_DEBUG /fo NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glewinfo.dir\\__\\glewinfo.rc.res F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\glewinfo.rc",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\glewinfo.rc",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\glewinfo.dir\\__\\glewinfo.rc.res"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~1\\MICROS~1\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DGLEW_NO_GLU -IF:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include /DWIN32 /D_WINDOWS /Ob0 /Od  -MDd -Zi /FoNebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\visualinfo.dir\\__\\__\\src\\visualinfo.c.obj /FdTARGET_COMPILE_PDB /FS -c F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\visualinfo.c",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\src\\visualinfo.c",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\visualinfo.dir\\__\\__\\src\\visualinfo.c.obj"
+},
+{
+  "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",
+  "command": "C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe -DGLEW_NO_GLU -I F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\..\\..\\include -DWIN32 -D_DEBUG /fo NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\visualinfo.dir\\__\\visualinfo.rc.res F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\visualinfo.rc",
+  "file": "F:\\CPP\\NebulaEngine\\NebulaGraphics\\OpenGL\\vendor\\glew\\build\\visualinfo.rc",
+  "output": "NebulaGraphics\\OpenGL\\vendor\\glew\\build\\cmake\\CMakeFiles\\visualinfo.dir\\__\\visualinfo.rc.res"
 },
 {
   "directory": "F:/CPP/NebulaEngine/build/NeovimWindows",

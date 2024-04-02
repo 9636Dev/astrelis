@@ -8,6 +8,8 @@ set(NEBULA_GRAPHICS_RENDERER_SOURCES
     src/NebulaGraphicsRenderer/Core.hpp
     src/NebulaGraphicsRenderer/Window.hpp
     src/NebulaGraphicsRenderer/Window.cpp
+    src/NebulaGraphicsRenderer/Renderer.hpp
+    src/NebulaGraphicsRenderer/Renderer.cpp
 )
 
 add_library(NebulaGraphicsRenderer SHARED ${NEBULA_GRAPHICS_RENDERER_SOURCES})

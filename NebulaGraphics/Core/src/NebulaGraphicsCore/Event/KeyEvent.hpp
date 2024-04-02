@@ -1,22 +1,23 @@
 #pragma once
 
-#include "KeyCodes.hpp"
 #include "Event.hpp"
+#include "KeyCodes.hpp"
 #include <sstream>
 
-namespace Nebula {
+namespace Nebula
+{
 
     class KeyEvent : public Event
     {
     public:
         [[nodiscard]] KeyCode GetKeyCode() const noexcept { return m_KeyCode; }
         [[nodiscard]] constexpr std::uint32_t GetCategoryFlags() const noexcept override { return EventCategory::Input | EventCategory::Keyboard; }
-        
+
     protected:
         explicit KeyEvent(const KeyCode keycode) noexcept
             : m_KeyCode(keycode) {}
 
-        KeyCode m_KeyCode; //NOLINT(misc-non-private-member-variables-in-classes, cppcoreguidelines-non-private-member-variables-in-classes)
+        KeyCode m_KeyCode; // NOLINT(misc-non-private-member-variables-in-classes, cppcoreguidelines-non-private-member-variables-in-classes)
     };
 
     class KeyPressedEvent : public KeyEvent
@@ -38,7 +39,7 @@ namespace Nebula {
         [[nodiscard]] constexpr EventType GetEventType() const noexcept override { return GetStaticType(); }
         [[nodiscard]] std::string GetName() const override { return "KeyPressed"; };
 
-      private:
+    private:
         bool m_IsRepeat;
     };
 
@@ -77,4 +78,4 @@ namespace Nebula {
         [[nodiscard]] constexpr EventType GetEventType() const noexcept override { return GetStaticType(); }
         [[nodiscard]] std::string GetName() const override { return "KeyTyped"; }
     };
-}  // namespace Nebula 
+} // namespace Nebula

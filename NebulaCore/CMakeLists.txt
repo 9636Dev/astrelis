@@ -70,3 +70,7 @@ target_link_libraries(NebulaCore PUBLIC spdlog::spdlog)
 if (MSVC)
     target_compile_definitions(spdlog PUBLIC _SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS)
 endif()
+
+if (NOT DEFINED NEBULA_DISABLE_TESTS)
+    add_subdirectory(tests)
+endif()

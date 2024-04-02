@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-namespace Nebula {
+namespace Nebula
+{
     enum class MouseCode : std::uint16_t
     {
         Button0 = 0,
@@ -19,4 +20,4 @@ namespace Nebula {
         ButtonRight = Button1,
         ButtonMiddle = Button2
     };
-}  // namespace Nebula 
+} // namespace Nebula
