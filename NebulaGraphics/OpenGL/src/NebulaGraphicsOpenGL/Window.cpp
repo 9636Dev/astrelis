@@ -166,13 +166,14 @@ extern "C"
         {
             if (glfwInit() != GLFW_TRUE)
             {
-                return {nullptr, Nebula::WindowCreationResult::ErrorType::GLFWInitFailed};
+                return {nullptr, Nebula::WindowCreationResult::ErrorType::ContextCreationFailed};
             }
             glfwInitialized = true;
         }
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, props.Context.MajorVersion);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, props.Context.MinorVersion);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE,
                        GLFW_OPENGL_CORE_PROFILE); // TODO(9636D): Make this configurable, as well
                                                   // as forward compatibility and debug contex t
@@ -194,6 +195,6 @@ extern "C"
             return {nullptr, Nebula::WindowCreationResult::ErrorType::WindowCreationFailed};
         }
         Nebula::GLFWWindowData data(props.Title, props.Width, props.Height, false);
-        return {std::make_shared<Nebula::GLFWWindow>(glfwWindow, data), Nebula::WindowCreationResult::ErrorType::None};
+        return {std::make_shared<Nebula::GLFWWindow>(glfwWindow, std::move(data)), Nebula::WindowCreationResult::ErrorType::None};
     }
 }

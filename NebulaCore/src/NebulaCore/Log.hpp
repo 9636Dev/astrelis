@@ -33,6 +33,8 @@ namespace Nebula
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define NEB_CORE_LOG_INFO(...) SPDLOG_LOGGER_INFO(::Nebula::Log::GetCoreLogger(), __VA_ARGS__)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define NEB_CORE_LOG_DEBUG(...) SPDLOG_LOGGER_DEBUG(::Nebula::Log::GetCoreLogger(), __VA_ARGS__)
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define NEB_CORE_LOG_TRACE(...) SPDLOG_LOGGER_TRACE(::Nebula::Log::GetCoreLogger(), __VA_ARGS__)
 
 // Client log macros
@@ -44,5 +46,7 @@ namespace Nebula
 #define NEB_LOG_WARN(...) SPDLOG_LOGGER_WARN(::Nebula::Log::GetClientLogger(), __VA_ARGS__)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define NEB_LOG_INFO(...) SPDLOG_LOGGER_INFO(::Nebula::Log::GetClientLogger(), __VA_ARGS__)
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define NEB_LOG_DEBUG(...) SPDLOG_LOGGER_DEBUG(::Nebula::Log::GetClientLogger(), __VA_ARGS__)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define NEB_LOG_TRACE(...) SPDLOG_LOGGER_TRACE(::Nebula::Log::GetClientLogger(), __VA_ARGS__)

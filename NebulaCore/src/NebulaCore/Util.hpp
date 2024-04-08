@@ -32,3 +32,9 @@
         #error "Platform doesn't support debugbreak yet!"
     #endif
 #endif
+
+#ifdef NEBULA_DEBUG
+#define NEB_RUN_IF_DEBUG(x) x
+#else
+#define NEB_RUN_IF_DEBUG(x)
+#endif

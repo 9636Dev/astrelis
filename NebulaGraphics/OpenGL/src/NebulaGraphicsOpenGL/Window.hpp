@@ -17,7 +17,8 @@ namespace Nebula
             Title(std::move(title)),
             Width(width),
             Height(height),
-            VSync(vsync)
+            VSync(vsync),
+            EventCallback([](Event&) {})
         {
         }
     };

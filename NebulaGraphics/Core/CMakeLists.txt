@@ -33,7 +33,9 @@ add_library(NebulaGraphicsCore SHARED ${NEBULA_GRAPHICS_CORE_SOURCES})
 add_dependencies(NebulaGraphicsCore NebulaCore)
 nebula_add_definitions(NebulaGraphicsCore "NEBULA_GRAPHICS_CORE" SHARED)
 
-target_include_directories(NebulaGraphicsCore PUBLIC src)
+target_include_directories(NebulaGraphicsCore PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 add_dependencies(NebulaGraphicsCore NebulaCore)
 target_link_libraries(NebulaGraphicsCore NebulaCore)

@@ -44,7 +44,9 @@ set(NEBULA_CORE_SOURCES
 
 add_library(NebulaCore ${NEBULA_LIBRARY_TYPE} ${NEBULA_CORE_SOURCES})
 nebula_add_definitions(NebulaCore "NEBULA_CORE" SHARED)
-target_include_directories(NebulaCore PUBLIC src)
+target_include_directories(NebulaCore PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 target_compile_definitions(NebulaCore PUBLIC
     # Logging

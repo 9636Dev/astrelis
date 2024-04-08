@@ -75,7 +75,6 @@ namespace Nebula
             None,
             LibraryLoadFailed,
             SymbolLoadFailed,
-            GLFWInitFailed,
             WindowCreationFailed,
             ContextCreationFailed,
             RendererInitFailed,

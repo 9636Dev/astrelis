@@ -22,4 +22,5 @@ set(NEBULA_RUNTIME_DIR ${CMAKE_SOURCE_DIR}/run)
 # We add the submodules
 add_subdirectory(NebulaCore)
 add_subdirectory(NebulaGraphics)
+add_subdirectory(NebulaShaders)
 add_subdirectory(examples) # NebulaExamples
