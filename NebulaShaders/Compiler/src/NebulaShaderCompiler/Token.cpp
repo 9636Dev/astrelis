@@ -110,6 +110,7 @@ namespace Nebula
         case TokenType::Tilde:
             return "Tilde";
         }
+        return "Unknown";
     }
 
     std::string Token::ToString() const

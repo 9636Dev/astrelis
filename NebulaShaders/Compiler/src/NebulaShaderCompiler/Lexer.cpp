@@ -1,6 +1,7 @@
 #include "Lexer.hpp"
 
 #include "NebulaCore/Assert.hpp"
+#include "NebulaCore/Log.hpp"
 
 namespace Nebula::Shader
 {
@@ -264,7 +265,7 @@ namespace Nebula::Shader
 
     void Lexer::SkipWhitespace() noexcept
     {
-        while (std::isspace(CurrentChar()) != 0)
+        while (std::isspace(CurrentChar()) != 0 && m_State == LexerState::NoError)
         {
             Advance();
         }

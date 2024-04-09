@@ -70,8 +70,8 @@ namespace Nebula
         Token() noexcept = default;
         Token(std::string_view text, std::size_t index, TokenType type) noexcept : Text(text), Index(index), Type(type) {}
 
-        [[nodiscard]] inline bool operator==(const Token& other) const noexcept;
-        [[nodiscard]] inline bool operator!=(const Token& other) const noexcept;
+        [[nodiscard]] bool operator==(const Token& other) const noexcept;
+        [[nodiscard]] bool operator!=(const Token& other) const noexcept;
 
         static std::string TypeString(TokenType type) noexcept;
         [[nodiscard]] std::string ToString() const;

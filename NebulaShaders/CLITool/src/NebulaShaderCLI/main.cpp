@@ -3,11 +3,13 @@
 #include <fstream>
 #include <sstream>
 
+#include "NebulaCore/Log.hpp"
 #include "NebulaShaderCompiler/Lexer.hpp"
 #include "NebulaShaderCompiler/Token.hpp"
 
 int main(int argc, char** argv)
 {
+    Nebula::Log::Init();
     std::vector<std::string> args;
     args.reserve(argc);
     for (int i = 0; i < argc; ++i)
@@ -22,17 +24,17 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::ofstream file(args[1]);
-    if (!file.is_open())
+    std::ifstream file(args[1]);
+    if (!file.good())
     {
-        std::cerr << "Failed to open file: " << args[1] << '\n';
+        std::cerr << "Failed to read file: " << args[1] << '\n';
         return 1;
     }
 
     // Read the file
-    std::ostringstream sstr;
-    sstr << file.rdbuf();
-    std::string src = sstr.str();
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string src = buffer.str();
     Nebula::Shader::Lexer lexer(src);
 
     Nebula::Token token;

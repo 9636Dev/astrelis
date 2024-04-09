@@ -5,7 +5,7 @@ project(NebulaShaderCompiler)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(NEBULA_SHADER_COMPILER_SOURCE
+set(NEBULA_SHADER_COMPILER_SOURCES
     src/NebulaShaderCompiler/Core.hpp
     src/NebulaShaderCompiler/Token.hpp
     src/NebulaShaderCompiler/Token.cpp
@@ -15,7 +15,7 @@ set(NEBULA_SHADER_COMPILER_SOURCE
     src/NebulaShaderCompiler/Parser.cpp
 )
 
-add_library(NebulaShaderCompiler ${NEBULA_LIBRARY_TYPE} ${NEBULA_SHADER_COMPILER_SOURCE})
+add_library(NebulaShaderCompiler SHARED ${NEBULA_SHADER_COMPILER_SOURCES})
 nebula_add_definitions(NebulaShaderCompiler "NEBULA_SHADER_COMPILER" SHARED)
 target_include_directories(NebulaShaderCompiler PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
