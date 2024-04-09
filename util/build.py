@@ -4,6 +4,7 @@ import sys
 import shutil
 import fnmatch
 import subprocess
+import re
 from pathlib import Path
 
 class ConfigType:
@@ -323,12 +324,22 @@ if action == 'run':
     if not file:
         print('Invalid input. Exiting...')
         exit(1)
+    args,res = safe_get_input('Enter any arguments', '')
+    if not res:
+        print('Invalid input. Exiting...')
+        exit(1)
 
-    print(f'Running {file}...')
+    print(f'Running {file} {args}...')
     cwd = os.path.join(PROJECT_DIR, get_profile_config(profile, 'working_dir'))
     path = os.path.join(BUILD_DIR, file)
+    cmd = [path]
+    pattern = r'(?:"[^"]*"|\S+)'
+    matches = re.findall(pattern, args)
+    for match in matches:
+        cmd.append(match.strip('"'))
+
     try:
-        result = subprocess.run(path,
+        result = subprocess.run(cmd,
                         cwd=cwd,  # Set your working directory
                         stdin=None,                  # Use the parent's stdin
                         text=True)

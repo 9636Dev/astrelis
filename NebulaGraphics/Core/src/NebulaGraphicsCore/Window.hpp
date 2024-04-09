@@ -49,6 +49,10 @@ namespace Nebula
         }
     };
 
+    struct MetalContext : public RenderFrameworkContext
+    {
+    };
+
     template<typename T>
         requires std::is_base_of_v<RenderFrameworkContext, T>
     struct WindowProps

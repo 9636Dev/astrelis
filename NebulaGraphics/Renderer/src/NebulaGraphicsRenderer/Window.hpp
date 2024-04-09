@@ -10,6 +10,8 @@ namespace Nebula
 {
     NEBULA_GRAPHICS_OPENGL_API WindowCreationResult CreateGLFWWindow(std::string libraryPath,
                                                                      WindowProps<OpenGLContext>& props);
+    NEBULA_GRAPHICS_OPENGL_API WindowCreationResult CreateMetalWindow(std::string libraryPath,
+                                                                      WindowProps<MetalContext>& props);
     NEBULA_GRAPHICS_OPENGL_API bool DestroyWindow(std::shared_ptr<Window>& window);
 
     template<typename T>
@@ -19,6 +21,11 @@ namespace Nebula
         if constexpr (std::is_same_v<T, OpenGLContext>)
         {
             return CreateGLFWWindow(libraryPath + NEBULA_PLATFORM_SHARED_LIBRARY_EXTENSION, props);
+        }
+
+        if constexpr (std::is_same_v<T, MetalContext>)
+        {
+            return CreateMetalWindow(libraryPath + NEBULA_PLATFORM_SHARED_LIBRARY_EXTENSION, props);
         }
     }
 

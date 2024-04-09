@@ -3,6 +3,7 @@
 !/build/*.py
 !/build/*.sh
 !/build/*.json
+/compile_commands.json
 
 # For Mac users
 .DS_Store

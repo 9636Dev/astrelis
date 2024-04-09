@@ -1,13 +1,13 @@
 #include "Window.hpp"
 
 #include "Core.hpp"
+#include "NebulaCore/Log.hpp"
 #include "NebulaGraphicsCore/Event/KeyEvent.hpp"
 #include "NebulaGraphicsCore/Event/MouseEvent.hpp"
 #include "NebulaGraphicsCore/Event/WindowEvent.hpp"
 #include "NebulaGraphicsCore/Window.hpp"
 
 #include <GLFW/glfw3.h>
-#include <NebulaCore/Log.hpp>
 
 namespace Nebula
 {
@@ -151,11 +151,13 @@ namespace Nebula
 
     void GLFWWindow::SetVSync(bool enabled)
     {
+        MakeContextCurrent();
         glfwSwapInterval(enabled ? 1 : 0);
         m_Data.VSync = enabled;
     }
 } // namespace Nebula
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern "C"
 {
     NEBULA_GRAPHICS_OPENGL_API Nebula::WindowCreationResult
@@ -164,6 +166,10 @@ extern "C"
         static bool glfwInitialized = false;
         if (!glfwInitialized)
         {
+            glfwSetErrorCallback([](int error, const char* description) {
+                NEB_CORE_LOG_ERROR("GLFW Error ({0}): {1}", error, description);
+            });
+
             if (glfwInit() != GLFW_TRUE)
             {
                 return {nullptr, Nebula::WindowCreationResult::ErrorType::ContextCreationFailed};
@@ -198,3 +204,4 @@ extern "C"
         return {std::make_shared<Nebula::GLFWWindow>(glfwWindow, std::move(data)), Nebula::WindowCreationResult::ErrorType::None};
     }
 }
+#pragma clang diagnostic pop

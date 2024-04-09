@@ -1,5 +1,3 @@
-#pragma once
-
 #include "GL.hpp"
 #include <GL/glew.h>
 

@@ -13,3 +13,6 @@
 [submodule "NebulaGraphics/OpenGL/vendor/glm"]
 	path = NebulaGraphics/OpenGL/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "NebulaGraphics/Metal/vendor/glfw"]
+	path = NebulaGraphics/Metal/vendor/glfw
+	url = https://github.com/glfw/glfw

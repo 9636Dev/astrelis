@@ -1,13 +1,7 @@
 #pragma once
 
-#include <NebulaGraphicsCore/Window.hpp>
 #include <NebulaGraphicsCore/Renderer.hpp>
-
-#include "OpenGL/GL.hpp" // TODO: Remove this include
-#include "OpenGL/IndexBuffer.hpp"
-#include "OpenGL/VertexArray.hpp"
-#include "OpenGL/VertexBuffer.hpp"
-#include "OpenGL/Shader.hpp"
+#include <NebulaGraphicsCore/Window.hpp>
 
 namespace Nebula
 {
@@ -26,12 +20,5 @@ namespace Nebula
     private:
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
         inline static std::size_t s_RendererCount = 0;
-
-        OpenGL::VertexArray vao;
-        OpenGL::VertexBuffer vbo;
-        OpenGL::IndexBuffer ibo;
-        OpenGL::Shader vertexShader;
-        OpenGL::Shader fragmentShader;
-        OpenGL::ShaderProgram shaderProgram;
     };
 } // namespace Nebula

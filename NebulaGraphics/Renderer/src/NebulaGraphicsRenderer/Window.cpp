@@ -36,6 +36,36 @@ namespace Nebula
         return result;
     }
 
+    WindowCreationResult CreateMetalWindow(std::string libraryPath, WindowProps<MetalContext>& props)
+    {
+        Loader::ModuleHandle library = Loader::LoadGraphicsLibrary(libraryPath);
+        if (library.Handle == nullptr)
+        {
+            NEB_CORE_LOG_ERROR("Failed to load library: {0}", libraryPath);
+            return {nullptr, WindowCreationResult::ErrorType::LibraryLoadFailed};
+        }
+
+        using CreateMetalWindowFunc = WindowCreationResult (*)(WindowProps<MetalContext>&);
+        auto* createMetalWindow =
+            /* NOLINT */ reinterpret_cast<CreateMetalWindowFunc>(
+                Loader::LoadSymbol(library, "nebulaGraphicsMetalCreateMetalWindow"));
+
+        if (createMetalWindow == nullptr)
+        {
+            NEB_CORE_LOG_ERROR("Failed to load symbol: nebulaGraphicsMetalCreateMetalWindow");
+            return {nullptr, WindowCreationResult::ErrorType::SymbolLoadFailed};
+        }
+
+        auto result = createMetalWindow(props);
+        if (result.Window == nullptr)
+        {
+            NEB_CORE_LOG_ERROR("Failed to create window");
+            return result;
+        }
+        Loader::InsertWindow(std::move(libraryPath), result.Window);
+        return result;
+    }
+
     bool DestroyWindow(std::shared_ptr<Window>& window)
     {
         if (window == nullptr)

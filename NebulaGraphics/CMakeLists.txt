@@ -11,7 +11,11 @@ project(NebulaGraphics)
 add_subdirectory(Core)
 add_subdirectory(Renderer)
 add_subdirectory(OpenGL)
-# TODO: Add Metal and DirectX implementations
+if (APPLE)
+    add_subdirectory(Metal)
+endif()
+
+# TODO: Add DirectX implementations
 
 add_library(NebulaGraphics INTERFACE)
 target_link_libraries(NebulaGraphics INTERFACE NebulaGraphicsRenderer)

@@ -16,6 +16,23 @@
             "compile_commands": "false",
             "working_dir": "run",
             "executable_files": []
+        },
+        "NeovimUnix": {
+            "cmake_generator": "Unix Makefiles",
+            "build_type": "Debug",
+            "compile_commands": "true",
+            "working_dir": "run",
+            "executable_files": [
+                "bin/NebulaExamples",
+                "bin/NebulaCoreTests"
+            ]
+        },
+        "Xcode": {
+            "cmake_generator": "Xcode",
+            "build_type": "Debug",
+            "compile_commands": "false",
+            "working_dir": "run",
+            "executable_files": []
         }
     }
 }

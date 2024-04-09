@@ -37,12 +37,15 @@ target_include_directories(NebulaGraphicsOpenGL PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-# Clang or GCC
 target_compile_options(NebulaGraphicsOpenGL PRIVATE
-    $<$<CXX_COMPILER_ID:Clang>:-Wno-return-type-c-linkage>
-    $<$<CXX_COMPILER_ID:GNU>:-Wno-return-type-c-linkage>
     $<$<CXX_COMPILER_ID:MSVC>:/wd4190>
 )
+
+if (APPLE)
+    target_compile_definitions(NebulaGraphicsOpenGL PRIVATE
+        CGL_SILENCE_DEPRECATION
+    )
+endif()
 
 target_include_directories(NebulaGraphicsOpenGL PRIVATE vendor/glew/include)
 
@@ -62,5 +65,5 @@ target_link_libraries(NebulaGraphicsOpenGL
 
 # Post build command to copy the shared library to the output directory
 add_custom_command(TARGET NebulaGraphicsOpenGL POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:NebulaGraphicsOpenGL> ${NEBULA_RUNTIME_DIR}/lib/
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:NebulaGraphicsOpenGL> ${NEBULA_RUNTIME_DIR}/lib/NebulaGraphicsOpenGL${CMAKE_SHARED_LIBRARY_SUFFIX}
 )

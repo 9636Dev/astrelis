@@ -1,8 +1,6 @@
-#pragma once
-
 #include "Renderer.hpp"
-#include "Loader.hpp"
 
+#include "Loader.hpp"
 #include "NebulaCore/Assert.hpp"
 #include "NebulaCore/Log.hpp"
 

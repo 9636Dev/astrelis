@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NEBULA_SHADER_COMPILER_SOURCE
     src/NebulaShaderCompiler/Core.hpp
+    src/NebulaShaderCompiler/Token.hpp
+    src/NebulaShaderCompiler/Token.cpp
     src/NebulaShaderCompiler/Lexer.hpp
     src/NebulaShaderCompiler/Lexer.cpp
     src/NebulaShaderCompiler/Parser.hpp

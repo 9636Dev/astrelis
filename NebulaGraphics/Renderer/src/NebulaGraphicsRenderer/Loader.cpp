@@ -5,6 +5,8 @@
 
 #ifdef NEBULA_PLATFORM_WINDOWS
     #include <Windows.h>
+#elif defined(NEBULA_PLATFORM_APPLE) || defined(NEBULA_PLATFORM_LINUX)
+    #include <dlfcn.h>
 #else
     #error "Platform not supported"
 #endif
@@ -21,7 +23,11 @@ namespace Nebula
         }
 
         NEB_CORE_LOG_TRACE("[Renderer] Loading library: {0}", libraryPath);
+    #ifdef NEBULA_PLATFORM_WINDOWS
         auto handle = ModuleHandle(LoadLibrary(libraryPath.c_str()));
+    #else
+        auto handle = ModuleHandle(dlopen(libraryPath.c_str(), RTLD_NOW | RTLD_GLOBAL));
+    #endif
 
         if (handle.Handle == nullptr)
         {
@@ -135,8 +141,12 @@ namespace Nebula
         {
             NEB_CORE_LOG_TRACE("[Renderer] Unloading library: {0}", iterator->first);
             s_LoadedLibraries.erase(iterator);
+        #ifdef NEBULA_PLATFORM_WINDOWS
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             FreeLibrary(reinterpret_cast<HMODULE>(handle.Handle));
+        #else
+            dlclose(handle.Handle);
+        #endif
             NEB_CORE_LOG_TRACE("[Renderer] Unloaded library");
         }
     }
@@ -148,8 +158,12 @@ namespace Nebula
             return nullptr;
         }
 
+    #ifdef NEBULA_PLATFORM_WINDOWS
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<void*>(GetProcAddress(reinterpret_cast<HMODULE>(handle.Handle), symbolName.c_str()));
+    #else
+        return dlsym(handle.Handle, symbolName.c_str());
+    #endif
     }
 } // namespace Nebula
 
