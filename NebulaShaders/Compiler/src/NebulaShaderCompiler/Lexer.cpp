@@ -1,17 +1,27 @@
 #include "Lexer.hpp"
 
 #include "NebulaCore/Assert.hpp"
-#include "NebulaCore/Log.hpp"
 
 namespace Nebula::Shader
 {
+    static std::unordered_map<std::string_view, TokenType> GetKeywordsMap()
+    {
+        return {
+            {"struct",   TokenType::StructKeyword  },
+            {"vertex",   TokenType::VertexKeyword  },
+            {"fragment", TokenType::FragmentKeyword},
+        };
+    }
+
     Lexer::Lexer(std::string_view source) noexcept : m_Source(source) {}
 
     Lexer::Lexer(const Lexer&)            = default;
     Lexer& Lexer::operator=(const Lexer&) = default;
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     Token Lexer::NextToken() noexcept
     {
+        static const auto keywords = GetKeywordsMap();
         SkipWhitespace();
 
         Token token;
@@ -23,7 +33,7 @@ namespace Nebula::Shader
             token.Type = TokenType::Invalid;
             Advance();
             token.Text = m_Source.substr(token.Index, m_Index - token.Index);
-            m_State = LexerState::NoError;
+            m_State    = LexerState::NoError;
             return token;
         }
 
@@ -63,7 +73,7 @@ namespace Nebula::Shader
             break;
         case '\'':
             token.Type = TokenType::Apostrophe;
-            if (!std::isspace(PeekChar()))
+            if (std::isspace(PeekChar()) == 0)
             {
                 token.Type = TokenType::CharacterLiteral;
                 Advance();
@@ -106,7 +116,15 @@ namespace Nebula::Shader
             token.Type = TokenType::NumberLiteral;
             break;
         case ':':
-            token.Type = TokenType::Colon;
+            if (PeekChar() == ':')
+            {
+                token.Type = TokenType::ColonColon;
+                Advance();
+            }
+            else
+            {
+                token.Type = TokenType::Colon;
+            }
             break;
         case ';':
             token.Type = TokenType::Semicolon;
@@ -203,7 +221,13 @@ namespace Nebula::Shader
         default:
             // Should only be alpha characters, but we assert just in case
             NEB_ASSERT(std::isalpha(CurrentChar()) != 0, "Invalid character in source");
-            return LexSymbol();
+            token = LexSymbol();
+            // Match the symbol to a keyword
+            if (keywords.find(token.Text) != keywords.end())
+            {
+                token.Type = keywords.at(token.Text);
+            }
+            return token;
         }
 
         Advance();
@@ -226,7 +250,8 @@ namespace Nebula::Shader
         }
         Advance(); // Skip the closing quote
 
-        return {m_Source.substr(start, m_Index - start), start, TokenType::StringLiteral};
+        // -1 because we advance one extra time
+        return {m_Source.substr(start, m_Index - start - 1), start, TokenType::StringLiteral};
     }
 
     Token Lexer::LexNumberLiteral() noexcept
@@ -248,7 +273,7 @@ namespace Nebula::Shader
 
     Token Lexer::LexSymbol() noexcept
     {
-        auto start = m_Index;
+        auto start     = m_Index;
         char character = CurrentChar();
         while (std::isalnum(character) != 0 || character == '_')
         {
@@ -297,7 +322,7 @@ namespace Nebula::Shader
 
     void Lexer::Advance() noexcept
     {
-        if (m_Index >= m_Source.size())
+        if (m_Index + 1 >= m_Source.size())
         {
             m_State = LexerState::EndOfFile;
             return;

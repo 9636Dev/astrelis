@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add Project Dependencies
 add_subdirectory(vendor/googletest)
+# Only for Linux
+#add_subdirectory(vendor/fuzztest)
 
 # Set Directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

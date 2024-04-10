@@ -3,36 +3,48 @@
         "NeovimWindows": {
             "cmake_generator": "Ninja",
             "build_type": "Debug",
-            "compile_commands": "true",
-            "working_dir": "run",
-            "executable_files": [
-                "bin\\NebulaExamples.exe",
-                "bin\\NebulaCoreTests.exe"
-            ]
+            "compile_commands": "true"
         },
         "VisualStudio2022": {
             "cmake_generator": "Visual Studio 17 2022",
             "build_type": "Debug",
-            "compile_commands": "false",
-            "working_dir": "run",
-            "executable_files": []
+            "compile_commands": "false"
         },
         "NeovimUnix": {
             "cmake_generator": "Unix Makefiles",
             "build_type": "Debug",
-            "compile_commands": "true",
-            "working_dir": "run",
-            "executable_files": [
-                "bin/NebulaExamples",
-                "bin/NebulaCoreTests"
-            ]
+            "compile_commands": "true"
         },
         "Xcode": {
             "cmake_generator": "Xcode",
             "build_type": "Debug",
-            "compile_commands": "false",
-            "working_dir": "run",
-            "executable_files": []
+            "compile_commands": "false"
         }
+    },
+
+    "run_configurations": {
+        "Examples": {
+            "binary": "bin/NebulaExamples",
+            "args": []
+        },
+        "CoreTests": {
+            "binary": "bin/NebulaCoreTests",
+            "args": []
+        },
+        "ShaderCLI": {
+            "binary": "bin/NebulaShaderCLI",
+            "args": [
+                "-verbose",
+                "-in=stdin"
+            ]
+        },
+        "ShaderCompilerTests": {
+            "binary": "bin/NebulaShaderCompilerTests",
+            "args": []
+        }
+    },
+
+    "global_configs": {
+        "working_dir": "run"
     }
 }

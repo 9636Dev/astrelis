@@ -11,6 +11,8 @@ set(NEBULA_SHADER_COMPILER_SOURCES
     src/NebulaShaderCompiler/Token.cpp
     src/NebulaShaderCompiler/Lexer.hpp
     src/NebulaShaderCompiler/Lexer.cpp
+    src/NebulaShaderCompiler/SyntaxNode.hpp
+    src/NebulaShaderCompiler/SyntaxNode.cpp
     src/NebulaShaderCompiler/Parser.hpp
     src/NebulaShaderCompiler/Parser.cpp
 )
@@ -23,3 +25,5 @@ target_include_directories(NebulaShaderCompiler PUBLIC
 
 add_dependencies(NebulaShaderCompiler NebulaCore)
 target_link_libraries(NebulaShaderCompiler NebulaCore)
+
+add_subdirectory(tests)

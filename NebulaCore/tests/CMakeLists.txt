@@ -14,7 +14,7 @@ include(GoogleTest)
 add_dependencies(NebulaCoreTests NebulaCore)
 target_link_libraries(NebulaCoreTests PRIVATE
     NebulaCore
-    gtest_main
+    GTest::gtest_main
 )
 
 gtest_discover_tests(NebulaCoreTests)

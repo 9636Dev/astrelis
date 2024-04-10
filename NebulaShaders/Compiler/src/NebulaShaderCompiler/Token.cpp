@@ -1,7 +1,7 @@
 #include "Token.hpp"
 #include <sstream>
 
-namespace Nebula
+namespace Nebula::Shader
 {
     bool Token::operator==(const Token& other) const noexcept { return Type == other.Type && Index == other.Index; }
 
@@ -15,6 +15,12 @@ namespace Nebula
             return "EndOfFile";
         case TokenType::Invalid:
             return "Invalid";
+        case TokenType::StructKeyword:
+            return "StructKeyword";
+        case TokenType::VertexKeyword:
+            return "VertexKeyword";
+        case TokenType::FragmentKeyword:
+            return "FragmentKeyword";
         case TokenType::ExclamationMark:
             return "ExclamationMark";
         case TokenType::ExclamationMarkEqual:
@@ -61,6 +67,8 @@ namespace Nebula
             return "InvalidNumberLiteral";
         case TokenType::Colon:
             return "Colon";
+        case TokenType::ColonColon:
+            return "ColonColon";
         case TokenType::Semicolon:
             return "Semicolon";
         case TokenType::LessThan:

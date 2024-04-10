@@ -10,5 +10,6 @@ Checks: '*,
 -misc-use-anonymous-namespace,
 -readability-magic-numbers,
 -altera-struct-pack-align,
--altera-unroll-loops
+-altera-unroll-loops,
+-altera-id-dependent-backward-branch
 '

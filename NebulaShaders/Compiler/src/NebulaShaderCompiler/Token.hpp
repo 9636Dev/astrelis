@@ -4,12 +4,17 @@
 #include <string>
 #include <string_view>
 
-namespace Nebula
+namespace Nebula::Shader
 {
     enum class TokenType
     {
         EndOfFile,
         Invalid,
+
+        // Keywords
+        StructKeyword,
+        VertexKeyword,
+        FragmentKeyword,
 
         // Based on ASCII order
         ExclamationMark,
@@ -35,6 +40,7 @@ namespace Nebula
         OctalNumberLiteral,
         InvalidNumberLiteral,
         Colon,
+        ColonColon,
         Semicolon,
         LessThan,
         LessThanEqual,

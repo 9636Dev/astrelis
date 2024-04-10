@@ -16,3 +16,6 @@
 [submodule "NebulaGraphics/Metal/vendor/glfw"]
 	path = NebulaGraphics/Metal/vendor/glfw
 	url = https://github.com/glfw/glfw
+[submodule "vendor/fuzztest"]
+	path = vendor/fuzztest
+	url = https://github.com/google/fuzztest

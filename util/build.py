@@ -4,7 +4,6 @@ import sys
 import shutil
 import fnmatch
 import subprocess
-import re
 from pathlib import Path
 
 class ConfigType:
@@ -30,6 +29,11 @@ class ConfigValue:
         self.type = type
         self.default_value = default_value
 
+
+# =================================================================================================
+# Modify the code below to suit your project
+# =================================================================================================
+
 EXCLUDED_CLEAN_FILES = []
 CMAKE_BINARY = "cmake"
 CURRENT_DIR = Path(__file__).resolve().parent
@@ -50,9 +54,20 @@ CONFIG_VALUES = {
     "cmake_generator": ConfigValue("cmake_generator", "The CMake generator to use", "generator", "Ninja"),
     "build_type": ConfigValue("build_type", "The build type to use", "build_type", "Debug"),
     "compile_commands": ConfigValue("compile_commands", "Generate compile_commands.json", "boolean", "true"),
-    "working_dir": ConfigValue("working_dir", "The relative path to the working directory", "path", "run"),
-    "executable_files": [ConfigValue("executable_files", "The files that are built", "string", "NebulaEngine")], # We use this to tell it that it is an array
 }
+
+RUN_CONFIG_VALUES = {
+    "binary": ConfigValue("binary", "The binary to run", "string", "bin/main"),
+    "args": [ConfigValue("arguments", "The arguments to pass to the binary", "string", "")],
+}
+
+GLOBAL_CONFIG_VALUES = {
+    "working_dir": ConfigValue("working_dir", "The relative path to the working directory", "path", "run"),
+}
+
+# =================================================================================================
+# Only Modify the code below if you know what you are doing
+# =================================================================================================
 
 def safe_get_input(prompt: str, default_value: str) -> tuple[str, bool]:
     try:
@@ -93,7 +108,8 @@ if not os.path.exists(config_file):
     config = {
         "profiles": {
             name: prof
-        }
+        },
+        "run_configurations": {}
     }
 
     print('Writing configuration file...')
@@ -116,11 +132,11 @@ if not config:
     print('Configuration file is empty. Exiting...')
     exit(1)
 
-# We parse each profile in the configuration file and make sure that the values are valid and have all the required keys
+# Profile configurations
 for profile_name, prof in config['profiles'].items():
     for key, value in CONFIG_VALUES.items():
         if key not in prof:
-            print(f'Profile {profile_name} is missing key {key}. \n{value.description}. \nExiting..')
+            print(f'Profile {profile_name} is missing key {key}. \n{value[0].description if type(value) == list else value.description}. \nExiting..')
             exit(1)
         if type(value) == list:
             for i, val in enumerate(prof[key]):
@@ -131,6 +147,37 @@ for profile_name, prof in config['profiles'].items():
         if not CONFIG_TYPES[value.type].validate(prof[key]):
             print(f'Profile {profile_name} has an invalid value for key {key}. \n{value.description}. \nExiting...')
             exit(1)
+
+# Run configurations
+for rconf_name, rconf in config['run_configurations'].items():
+    for key, value in RUN_CONFIG_VALUES.items():
+        if key not in rconf:
+            print(f'Run configuration {rconf_name} is missing key {key}. \n{value[0].description if type(value) == list else value.description}. \nExiting..')
+            exit(1)
+        if type(value) == list:
+            for i, val in enumerate(rconf[key]):
+                if not CONFIG_TYPES[value[0].type].validate(val):
+                    print(f'Run configuration {rconf_name} has an invalid value for key {key}. \n{value[0].description}. \nExiting...')
+                    exit(1)
+            continue
+        if not CONFIG_TYPES[value.type].validate(rconf[key]):
+            print(f'Run configuration {rconf_name} has an invalid value for key {key}. \n{value.description}. \nExiting...')
+            exit(1)
+
+# Global configurations
+for key, value in GLOBAL_CONFIG_VALUES.items():
+    if key not in config['global_configs']:
+        print(f'Global configuration is missing key {key}. \n{value[0].description if type(value) == list else value.description}. \nExiting..')
+        exit(1)
+    if type(value) == list:
+        for i, val in enumerate(config['global_configs'][key]):
+            if not CONFIG_TYPES[value[0].type].validate(val):
+                print(f'Global configuration has an invalid value for key {key}. \n{value[0].description}. \nExiting...')
+                exit(1)
+        continue
+    if not CONFIG_TYPES[value.type].validate(config['global_configs'][key]):
+        print(f'Global configuration has an invalid value for key {key}. \n{value.description}. \nExiting...')
+        exit(1)
 
 # If the arguments are not empty, we use them to select the profile
 if len(sys.argv) > 1:
@@ -273,7 +320,12 @@ if action == 'configure':
             continue
         print(f'{value.name}: {config["profiles"][profile][key]}')
 
-    cmd = f'{CMAKE_BINARY} -G "{generator}" -DCMAKE_BUILD_TYPE={build_type} -DCMAKE_EXPORT_COMPILE_COMMANDS={compile_commands} -S {PROJECT_DIR} -B {BUILD_DIR}'
+    arguments = [
+        f'-DCMAKE_BUILD_TYPE={build_type}',
+        f'-DCMAKE_EXPORT_COMPILE_COMMANDS={compile_commands}',
+    ]
+
+    cmd = f'{CMAKE_BINARY} -G "{generator}" {' '.join(arguments)} -S {PROJECT_DIR} -B {BUILD_DIR}'
     print(f'Running command: {cmd}')
     os.system(cmd)
 
@@ -289,54 +341,41 @@ if action == 'configure':
 
 if action == 'build':
     print('Building the project...')
-    os.system(f'{CMAKE_BINARY} --build {BUILD_DIR}')
+    os.system(f'{CMAKE_BINARY} --build {BUILD_DIR} --parallel {os.cpu_count()}')
     exit(0)
 
 if action == 'run':
-    files = []
-    for file in config['profiles'][profile]['executable_files']:
-        files.append(file)
+    cwd = config['global_configs']['working_dir']
 
-    if not files:
-        print('No executable files found. Exiting...')
-        exit(1)
+    EXECUTABLE_PREFIX = sys.platform == 'win32' and '' or './'
+    EXECUTABLE_SUFFIX = sys.platform == 'win32' and '.exe' or ''
 
-    for index,file in enumerate(files):
-        print(f'{index+1}. {file}')
+    for i, (key, value) in enumerate(config['run_configurations'].items()):
+        print(f'{i+1}. {key}')
 
-    inp, success = safe_get_input('Select an executable', files[0])
-    if not success:
-        print('Invalid input. Exiting...')
-        exit(1)
-
-    file = None
-    try:
-        f = int(inp)
-        if f < 1 or f > len(files):
-            print('Invalid input. Exiting...')
-            exit(1)
-        file = files[f-1]
-    except ValueError:
-        for f in files:
-            if f == inp:
-                file = inp
-                break
-    if not file:
-        print('Invalid input. Exiting...')
-        exit(1)
-    args,res = safe_get_input('Enter any arguments', '')
+    inp,res = safe_get_input('Select a run configuration', '1')
     if not res:
-        print('Invalid input. Exiting...')
+        print('Invalid selection. Exiting...')
         exit(1)
 
-    print(f'Running {file} {args}...')
-    cwd = os.path.join(PROJECT_DIR, get_profile_config(profile, 'working_dir'))
-    path = os.path.join(BUILD_DIR, file)
-    cmd = [path]
-    pattern = r'(?:"[^"]*"|\S+)'
-    matches = re.findall(pattern, args)
-    for match in matches:
-        cmd.append(match.strip('"'))
+    index = int(inp) - 1
+    if index < 0 or index >= len(config['run_configurations']):
+        print('Invalid selection. Exiting...')
+        exit(1)
+
+    name = list(config['run_configurations'].keys())[index]
+    conf = config['run_configurations'][name]
+
+    binary = EXECUTABLE_PREFIX + conf['binary'] + EXECUTABLE_SUFFIX
+    binary = os.path.join(BUILD_DIR, binary)
+    if not os.path.exists(binary):
+        print(f'Error: Binary {binary} not found. Exiting...')
+        exit(1)
+
+    arguments = conf['args']
+
+    print(f'Running {name} ({binary})...')
+    cmd = [binary, *arguments]
 
     try:
         result = subprocess.run(cmd,

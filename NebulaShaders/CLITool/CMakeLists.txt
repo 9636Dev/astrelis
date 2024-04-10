@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NEBULA_SHADER_CLI_SOURCES
-    src/NebulaShaderCLI/main.cpp
+    src/NebulaShaderCLI/Application.cpp
+    src/NebulaShaderCLI/Arguments.hpp
+    src/NebulaShaderCLI/Arguments.cpp
 )
 
 add_executable(NebulaShaderCLI ${NEBULA_SHADER_CLI_SOURCES})
