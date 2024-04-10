@@ -101,6 +101,14 @@ namespace Nebula::Shader
             token.Type = TokenType::Period;
             break;
         case '/':
+            if (PeekChar() == '/')
+            {
+                return LexComment();
+            }
+            if (PeekChar() == '*')
+            {
+                return LexBlockComment();
+            }
             token.Type = TokenType::Slash;
             break;
         case '0':
@@ -282,6 +290,45 @@ namespace Nebula::Shader
         }
 
         return {m_Source.substr(start, m_Index - start), start, TokenType::Symbol};
+    }
+
+    Token Lexer::LexComment() noexcept
+    {
+        auto start = m_Index;
+        Advance(); // Skip the opening slash
+        Advance(); // Skip the second slash
+
+        char character = CurrentChar();
+        while (character != '\n' && character != '\r' && m_State == LexerState::NoError)
+        {
+            Advance();
+            character = CurrentChar();
+        }
+
+        return {m_Source.substr(start, m_Index - start), start, TokenType::Comment};
+    }
+
+    Token Lexer::LexBlockComment() noexcept
+    {
+        auto start = m_Index;
+        Advance(); // Skip the opening slash
+        Advance(); // Skip the star
+
+        char character = CurrentChar();
+        while (m_State == LexerState::NoError)
+        {
+            if (character == '*' && PeekChar() == '/')
+            {
+                Advance(); // Skip the star
+                Advance(); // Skip the closing slash
+                break;
+            }
+            Advance();
+            character = CurrentChar();
+        }
+
+        // If we reached the end of the file, the block comment is invalid
+        return {m_Source.substr(start, m_Index - start), start, m_State == LexerState::NoError ? TokenType::BlockComment : TokenType::InvalidComment};
     }
 
     // ============================

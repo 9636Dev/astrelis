@@ -12,3 +12,9 @@
 /.cache/
 # Copied libs for runtime linking
 /run/lib/
+
+# Intermediate files
+# Precompiled Headers
+*.pc
+# Compiled Object files
+*.o
