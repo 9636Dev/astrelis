@@ -55,6 +55,10 @@ namespace Nebula::Shader
             return "Period";
         case TokenType::Slash:
             return "Slash";
+        case TokenType::Comment:
+            return "Comment";
+        case TokenType::BlockComment:
+            return "BlockComment";
         case TokenType::NumberLiteral:
             return "NumberLiteral";
         case TokenType::HexNumberLiteral:

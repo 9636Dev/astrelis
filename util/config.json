@@ -47,7 +47,7 @@
             "binary": "bin/NebulaShaderCLI",
             "args": [
                 "-verbose",
-                "-in=stdin"
+                "resources/Renderer.cpp"
             ]
         },
         "ShaderCompilerTests": {

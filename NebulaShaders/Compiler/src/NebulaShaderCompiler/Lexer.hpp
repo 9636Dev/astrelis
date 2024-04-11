@@ -24,6 +24,8 @@ namespace Nebula::Shader
         Token LexStringLiteral() noexcept;
         Token LexNumberLiteral() noexcept;
         Token LexSymbol() noexcept;
+        Token LexComment() noexcept;
+        Token LexBlockComment() noexcept;
 
         // Get the current character from the source
         [[nodiscard]] char CurrentChar() const noexcept;
