@@ -17,4 +17,5 @@ target_link_libraries(NebulaCoreTests PRIVATE
     GTest::gtest_main
 )
 
+#link_fuzztest(NebulaCoreTests)
 gtest_discover_tests(NebulaCoreTests)

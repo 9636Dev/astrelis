@@ -9,13 +9,14 @@ project(NebulaEngine VERSION 0.0.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Fuzzing
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+
 # Add Project Dependencies
-# Only for Linux
-if (LINUX)
-    add_subdirectory(vendor/fuzztest)
-else()
-    add_subdirectory(vendor/googletest)
-endif()
+#add_subdirectory(vendor/fuzztest)
+add_subdirectory(vendor/googletest)
 
 # Set Directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

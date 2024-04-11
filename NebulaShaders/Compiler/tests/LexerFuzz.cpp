@@ -1,7 +1,11 @@
-#include <fuzztest/fuzztest.h>
 #include <gtest/gtest.h>
+#include <fuzztest/fuzztest.h>
 
 #include "NebulaShaderCompiler/Lexer.hpp"
+
+TEST(LexerFuzzTests, LexerInitializes) {
+  Nebula::Shader::Lexer lexer("");
+}
 
 void LexerNeverCrashes(const std::string& input) {
     Nebula::Shader::Lexer lexer(input);
