@@ -3,22 +3,34 @@
         "NeovimWindows": {
             "cmake_generator": "Ninja",
             "build_type": "Debug",
-            "compile_commands": "true"
+            "compile_commands": "true",
+            "cmake_args": []
         },
         "VisualStudio2022": {
             "cmake_generator": "Visual Studio 17 2022",
             "build_type": "Debug",
-            "compile_commands": "false"
+            "compile_commands": "false",
+            "cmake_args": []
         },
         "NeovimUnix": {
             "cmake_generator": "Unix Makefiles",
             "build_type": "Debug",
-            "compile_commands": "true"
+            "compile_commands": "true",
+            "cmake_args": []
+        },
+        "LinuxFuzz": {
+            "cmake_generator": "Unix Makefiles",
+            "build_type": "Debug",
+            "compile_commands": "true",
+            "cmake_args": [
+                "-DFUZZTEST_FUZZING_MODE=on"
+            ]
         },
         "Xcode": {
             "cmake_generator": "Xcode",
             "build_type": "Debug",
-            "compile_commands": "false"
+            "compile_commands": "false",
+            "cmake_args": []
         }
     },
 

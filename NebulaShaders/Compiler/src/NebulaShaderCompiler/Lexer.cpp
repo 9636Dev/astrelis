@@ -21,6 +21,10 @@ namespace Nebula::Shader
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     Token Lexer::NextToken() noexcept
     {
+        if (m_Source.empty())
+        {
+            return {std::string(), 0, TokenType::EndOfFile};
+        }
         static const auto keywords = GetKeywordsMap();
         SkipWhitespace();
 

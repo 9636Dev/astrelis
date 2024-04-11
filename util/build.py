@@ -47,13 +47,12 @@ CONFIG_TYPES = {
     "build_type": ConfigType("build_type", "A build type", lambda x: x in ["Debug", "Release", "RelWithDebugInfo"], lambda x: x),
     "boolean": ConfigType("boolean", "A boolean value", lambda x: x in ["true", "false", True, False], lambda x: x == "true" or x == True),
     "path": ConfigType("path", "A path", lambda x: os.path.exists(x), lambda x: x),
-    "library_type": ConfigType("library_type", "The type of library to build", lambda x: x in ["shared", "static"], lambda x: x.upper()),
-    "simd_type": ConfigType("simd_type", "The SIMD type to use", lambda x: x in ["None", "SSE4.1", "AVX"], lambda x: x),
 }
 CONFIG_VALUES = {
     "cmake_generator": ConfigValue("cmake_generator", "The CMake generator to use", "generator", "Ninja"),
     "build_type": ConfigValue("build_type", "The build type to use", "build_type", "Debug"),
     "compile_commands": ConfigValue("compile_commands", "Generate compile_commands.json", "boolean", "true"),
+    "cmake_args": [ConfigValue("cmake_args", "The arguments to pass to CMake", "string", "")],
 }
 
 RUN_CONFIG_VALUES = {
@@ -226,6 +225,7 @@ ACTIONS = {
     "clean": "Clean the build directory",
     "configure": "Configure the project",
     "exit": "Exit the program",
+    "exec": "Open a shell in the build directory",
 
 }
 
@@ -302,6 +302,14 @@ if action == 'clean':
     exit(0)
 
 def get_profile_config(profile: str, key: str):
+    if (type(CONFIG_VALUES[key]) == list):
+        ctype = CONFIG_TYPES[CONFIG_VALUES[key][0].type]
+        res = [ctype.from_string(cfg) for cfg in config['profiles'][profile][key]]
+        for cfg,ex in res:
+            if ex:
+                print(f'Error: {ex}')
+                exit(1)
+        return [cfg for cfg,_ in res]
     cfg,ex= CONFIG_TYPES[CONFIG_VALUES[key].type].from_string(config['profiles'][profile][key])
     if ex:
         print(f'Error: {ex}')
@@ -324,6 +332,10 @@ if action == 'configure':
         f'-DCMAKE_BUILD_TYPE={build_type}',
         f'-DCMAKE_EXPORT_COMPILE_COMMANDS={compile_commands}',
     ]
+
+    cmake_args = get_profile_config(profile, 'cmake_args')
+    if cmake_args:
+        arguments.extend(cmake_args)
 
     cmd = f'{CMAKE_BINARY} -G "{generator}" {' '.join(arguments)} -S {PROJECT_DIR} -B {BUILD_DIR}'
     print(f'Running command: {cmd}')
@@ -389,3 +401,7 @@ if action == 'run':
         print(f'Error: {e}')
 
     exit(0)
+
+if action == 'exec':
+    # Open shell in project build directory
+    os.system(f'cd {BUILD_DIR} && $SHELL')

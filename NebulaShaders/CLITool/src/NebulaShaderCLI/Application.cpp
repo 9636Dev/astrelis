@@ -103,9 +103,9 @@ namespace CLI
             break;
         }
         case InputType::File: {
-            if (args.empty())
+            if (args.size() == 1)
             {
-                std::cerr << "Usage: " << args[1] << " <shader file>\n";
+                std::cerr << "Usage: " << args[0] << " <shader file>\n";
                 return 1;
             }
 
