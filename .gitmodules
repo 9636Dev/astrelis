@@ -19,3 +19,6 @@
 [submodule "vendor/fuzztest"]
 	path = vendor/fuzztest
 	url = https://github.com/google/fuzztest
+[submodule "util/nbuild"]
+	path = util/nbuild
+	url = https://github.com/HW9636/nbuild
