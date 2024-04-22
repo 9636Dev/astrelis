@@ -337,7 +337,7 @@ if action == 'configure':
     if cmake_args:
         arguments.extend(cmake_args)
 
-    cmd = f'{CMAKE_BINARY} -G "{generator}" {' '.join(arguments)} -S {PROJECT_DIR} -B {BUILD_DIR}'
+    cmd = f'{CMAKE_BINARY} -G "{generator}" {" ".join(arguments)} -S {PROJECT_DIR} -B {BUILD_DIR}'
     print(f'Running command: {cmd}')
     os.system(cmd)
 
