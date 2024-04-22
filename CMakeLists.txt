@@ -1,13 +1,22 @@
 # Main CMake List for NebulaEngine
 
+
 # CMake version
 cmake_minimum_required(VERSION 3.27)
+if (UNIX) # We still use msvc on windows
+    set(CMAKE_CXX_COMPILER "clang++")
+endif()
 
 project(NebulaEngine VERSION 0.0.1)
 
 # Set C++ Flags
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if (UNIX)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -lm")
+endif()
+
 
 # Fuzzing
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

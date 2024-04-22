@@ -50,6 +50,7 @@ namespace Nebula
 
         // GLFW Specific
         void MakeContextCurrent() const { glfwMakeContextCurrent(m_Window); }
+        static GLFWwindow* GetContextCurrent() { return glfwGetCurrentContext(); }
 
         [[nodiscard]] GLFWwindow* GetNativeWindow() const { return m_Window; }
     private:

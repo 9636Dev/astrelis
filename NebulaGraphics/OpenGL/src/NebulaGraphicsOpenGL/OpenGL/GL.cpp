@@ -55,9 +55,17 @@ namespace Nebula::OpenGL
             return;
         }
 
+        GLenum error = glGetError();
+        while (error != GL_NO_ERROR) {
+            NEB_CORE_LOG_ERROR("OpenGL error before GLEW init: {}", error);
+            error = glGetError();
+        }
+
         GLenum result = glewInit();
         if (result != GLEW_OK)
         {
+            const char* errorString = reinterpret_cast<const char*>(glewGetErrorString(result));
+            NEB_CORE_LOG_ERROR("Failed to initialize GLEW: {}", errorString);
             NEB_CORE_LOG_ERROR("[GL] Could not initialize GLEW! (Enum value: {})", result);
 
             version.Major = 0;

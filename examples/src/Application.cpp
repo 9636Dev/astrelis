@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     Nebula::Log::Init();
     NEB_CORE_LOG_INFO("Hello from NebulaCore!");
 
-    Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 5});
+    Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 1});
     const std::string libraryPath = "lib/NebulaGraphicsOpenGL";
     auto result = Nebula::CreateWindow(libraryPath, props);
     if (result.Error != Nebula::WindowCreationResult::ErrorType::None)

@@ -2,6 +2,7 @@
 
 #include "NebulaGraphicsCore/Core.hpp"
 
+#include <cstdint>
 #include <string>
 
 #define EVENT_CLASS_TYPE(type)                                                             \
