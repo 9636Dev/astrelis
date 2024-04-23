@@ -10,7 +10,6 @@
 #include "NebulaGraphicsCore/RenderPass.hpp"
 
 #include <Metal/Metal.h>
-#include <MetalCpp/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.h>
 
 namespace Nebula
@@ -64,7 +63,7 @@ namespace Nebula
         [[nodiscard]] NSWindow* GetNativeWindow() const { return m_NSWindow; }
     private:
         MetalWindowData m_Data;
-        MTL::Device* m_MetalDevice;
+        id<MTLDevice> m_MetalDevice;
         GLFWwindow* m_Window;
         NSWindow* m_NSWindow;
         CAMetalLayer* m_CAMetalLayer;

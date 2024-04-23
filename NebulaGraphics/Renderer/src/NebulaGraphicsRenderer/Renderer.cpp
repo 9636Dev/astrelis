@@ -37,6 +37,36 @@ namespace Nebula
         return result;
     }
 
+    RendererCreationResult CreateMetalRenderer(std::string libraryPath, const std::shared_ptr<Window> &window, const MetalContext &context)
+    {
+        Loader::ModuleHandle library = Loader::LoadGraphicsLibrary(libraryPath);
+        if (library.Handle == nullptr)
+        {
+            NEB_CORE_LOG_ERROR("Failed to load library: {0}", libraryPath);
+            return {nullptr, RendererCreationResult::ErrorType::LibraryLoadFailed};
+        }
+
+        using CreateGLFWRendererFunc = RendererCreationResult (*)(const MetalContext&, const std::shared_ptr<Window>&);
+        auto* createMetalRenderer =
+            /* NOLINT */ reinterpret_cast<CreateGLFWRendererFunc>(
+                Loader::LoadSymbol(library, "nebulaGraphicsMetalCreateMetalRenderer"));
+
+        if (createMetalRenderer == nullptr)
+        {
+            NEB_CORE_LOG_ERROR("Failed to load symbol: nebulaGraphicsMetalCreateMetalRenderer");
+            return {nullptr, RendererCreationResult::ErrorType::SymbolLoadFailed};
+        }
+
+        auto result = createMetalRenderer(context, window);
+        if (result.Renderer == nullptr)
+        {
+            NEB_CORE_LOG_ERROR("Failed to create Renderer");
+            return result;
+        }
+        Loader::InsertRenderer(std::move(libraryPath), result.Renderer);
+        return result;
+    }
+
     bool DestroyRenderer(std::shared_ptr<Renderer>& window)
     {
         if (window == nullptr)

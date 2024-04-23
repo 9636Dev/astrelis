@@ -123,14 +123,14 @@ namespace Nebula
     }
 
     MetalWindow::MetalWindow(GLFWwindow* window, MetalWindowData data, [[maybe_unused]] MetalContext& ctx) :
-        m_MetalDevice(MTL::CreateSystemDefaultDevice()),
+        m_MetalDevice(MTLCreateSystemDefaultDevice()),
         m_Window(window),
         m_Data(std::move(data)),
         m_NSWindow(glfwGetCocoaWindow(window)), m_CAMetalLayer([CAMetalLayer layer])
     {
         glfwSetWindowUserPointer(window, &m_Data);
 
-        m_CAMetalLayer.device             = (__bridge id<MTLDevice>)m_MetalDevice;
+        m_CAMetalLayer.device             = m_MetalDevice;
         m_CAMetalLayer.pixelFormat        = MTLPixelFormatBGRA8Unorm;
         m_NSWindow.contentView.layer      = m_CAMetalLayer;
         m_NSWindow.contentView.wantsLayer = YES;
@@ -142,7 +142,6 @@ namespace Nebula
     {
         glfwSetWindowUserPointer(m_Window, nullptr);
         glfwDestroyWindow(m_Window);
-        m_MetalDevice->release();
         glfwTerminate();
     }
 

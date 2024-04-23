@@ -12,7 +12,7 @@ project(NebulaEngine VERSION 0.0.1)
 # Set C++ Flags
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if (UNIX)
+if (UNIX AND NOT APPLE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -lm")
 endif()
