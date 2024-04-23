@@ -19,14 +19,17 @@ namespace Nebula
         std::string Title;
         unsigned int Width, Height;
         bool VSync;
+        // We store the microseconds we need to sleep for to achieve the desired frame rate
+        std::chrono::microseconds FrameTime;
 
         Window::EventCallbackFunction EventCallback;
 
-        MetalWindowData(std::string title, unsigned int width, unsigned int height, bool vsync) :
+        MetalWindowData(std::string title, unsigned int width, unsigned int height, bool vsync, std::chrono::microseconds frameTime) :
             Title(std::move(title)),
             Width(width),
             Height(height),
             VSync(vsync),
+            FrameTime(frameTime),
             EventCallback([](Event&) {})
         {
         }
@@ -36,9 +39,11 @@ namespace Nebula
     {
     };
 
+    class MetalRenderer;
     class MetalWindow : public Window
     {
     public:
+        friend class MetalRenderer;
         explicit MetalWindow(GLFWwindow* window, MetalWindowData data, MetalContext& ctx);
         ~MetalWindow() override;
         MetalWindow(const MetalWindow&)            = delete;
@@ -61,6 +66,8 @@ namespace Nebula
         [[nodiscard]] unsigned int GetHeight() const override { return m_Data.Height; }
 
         [[nodiscard]] NSWindow* GetNativeWindow() const { return m_NSWindow; }
+
+        [[nodiscard]] static std::size_t GetMonitorRefreshRate();
     private:
         MetalWindowData m_Data;
         id<MTLDevice> m_MetalDevice;

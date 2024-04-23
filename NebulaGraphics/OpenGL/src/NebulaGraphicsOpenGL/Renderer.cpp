@@ -1,6 +1,5 @@
 #include "Renderer.hpp"
 
-#include "NebulaCore/Log.hpp"
 #include "NebulaGraphicsOpenGL/Core.hpp"
 #include "OpenGL/GL.hpp"
 #include "Window.hpp"

@@ -4,8 +4,6 @@
 #include <vector>
 
 #include "NebulaCore/Log.hpp"
-#include "NebulaShaderCompiler/Lexer.hpp"
-#include "NebulaShaderCompiler/Token.hpp"
 
 #include "Arguments.hpp"
 
@@ -129,14 +127,6 @@ namespace CLI
             std::cout << "Start processing input (" << input.size() << " characters)\n";
         }
 
-        Nebula::Shader::Lexer lexer(input);
-
-        Nebula::Shader::Token token;
-        do
-        {
-            token = lexer.NextToken();
-            std::cout << token.ToString() << '\n';
-        } while (token.Type != Nebula::Shader::TokenType::EndOfFile);
 
         return 0;
     }

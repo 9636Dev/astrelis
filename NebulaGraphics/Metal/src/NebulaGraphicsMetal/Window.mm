@@ -6,6 +6,7 @@
 #include "NebulaGraphicsCore/Event/MouseEvent.hpp"
 #include "NebulaGraphicsCore/Event/WindowEvent.hpp"
 #include "NebulaGraphicsCore/Window.hpp"
+#include <chrono>
 
 namespace Nebula
 {
@@ -126,7 +127,8 @@ namespace Nebula
         m_MetalDevice(MTLCreateSystemDefaultDevice()),
         m_Window(window),
         m_Data(std::move(data)),
-        m_NSWindow(glfwGetCocoaWindow(window)), m_CAMetalLayer([CAMetalLayer layer])
+        m_NSWindow(glfwGetCocoaWindow(window)),
+        m_CAMetalLayer([CAMetalLayer layer])
     {
         glfwSetWindowUserPointer(window, &m_Data);
 
@@ -145,7 +147,24 @@ namespace Nebula
         glfwTerminate();
     }
 
-    void MetalWindow::SwapBuffers() {}
+    void MetalWindow::SwapBuffers()
+    {
+        static auto lastFrameTime = std::chrono::high_resolution_clock::now();
+        if (m_Data.VSync)
+        {
+            auto timeToSleep = m_Data.FrameTime - (std::chrono::high_resolution_clock::now() - lastFrameTime);
+            // TODO(9636D): We use our own percise sleep function here, because
+            // std::this_thread::sleep_for is not percise enough
+
+            // We ignore the impercision of the sleep function here, because we
+            if (timeToSleep.count() > 0)
+            {
+                auto sleepUntil = std::chrono::high_resolution_clock::now() + timeToSleep;
+                std::this_thread::sleep_until(sleepUntil);
+            }
+            lastFrameTime = std::chrono::high_resolution_clock::now();
+        }
+    }
 
     void MetalWindow::PollEvents() { glfwPollEvents(); }
 
@@ -153,10 +172,20 @@ namespace Nebula
 
     void MetalWindow::SetVSync(bool enabled)
     {
-        glfwSwapInterval(enabled ? 1 : 0);
         m_Data.VSync = enabled;
+        // We don't use a timer for VSync, the sleep happens in the SwapBuffers
     }
 
+    std::size_t MetalWindow::GetMonitorRefreshRate()
+    {
+        auto* monitor = glfwGetPrimaryMonitor();
+        if (monitor == nullptr)
+        {
+            return 0;
+        }
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        return static_cast<std::size_t>(mode->refreshRate);
+    }
 } // namespace Nebula
 
 #pragma clang diagnostic push
@@ -164,7 +193,8 @@ namespace Nebula
 extern "C"
 {
     NEBULA_GRAPHICS_METAL_API Nebula::WindowCreationResult
-        /* NOLINT(google-objc-function-naming) */ nebulaGraphicsMetalCreateMetalWindow(Nebula::WindowProps<Nebula::MetalContext>& props)
+        /* NOLINT(google-objc-function-naming) */
+        nebulaGraphicsMetalCreateMetalWindow(Nebula::WindowProps<Nebula::MetalContext>& props)
     {
         static bool glfwInitialized = false;
         if (!glfwInitialized)
@@ -198,7 +228,8 @@ extern "C"
         {
             return {nullptr, Nebula::WindowCreationResult::ErrorType::WindowCreationFailed};
         }
-        Nebula::MetalWindowData data(props.Title, props.Width, props.Height, false);
+        std::chrono::microseconds frameTime(1'000'000 / Nebula::MetalWindow::GetMonitorRefreshRate());
+        Nebula::MetalWindowData data(props.Title, props.Width, props.Height, false, frameTime);
         return {std::make_shared<Nebula::MetalWindow>(glfwWindow, std::move(data), props.Context),
                 Nebula::WindowCreationResult::ErrorType::None};
     }

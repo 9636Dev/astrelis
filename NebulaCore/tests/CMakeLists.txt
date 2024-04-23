@@ -11,10 +11,13 @@ add_executable(NebulaCoreTests ${NEBULA_CORE_TEST_SOURCES})
 enable_testing()
 include(GoogleTest)
 
-add_dependencies(NebulaCoreTests NebulaCore)
+add_dependencies(NebulaCoreTests
+    NebulaCore
+    gtest_main
+)
 target_link_libraries(NebulaCoreTests PRIVATE
     NebulaCore
-    GTest::gtest_main
+    gtest_main
 )
 
 #link_fuzztest(NebulaCoreTests)
