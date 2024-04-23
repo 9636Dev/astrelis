@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     Nebula::Log::Init();
     NEB_CORE_LOG_INFO("Hello from NebulaCore!");
 
-#define EXAMPLES_USE_METAL
+#define EXAMPLES_USE_OPENGL
 #ifdef EXAMPLES_USE_OPENGL
     Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 1});
     const std::string libraryPath = "lib/NebulaGraphicsOpenGL";

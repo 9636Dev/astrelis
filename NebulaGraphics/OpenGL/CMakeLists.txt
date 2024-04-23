@@ -4,10 +4,6 @@ project(NebulaGraphicsOpenGL)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(POLICY CMP0072)
-  cmake_policy(SET CMP0072 NEW)
-endif()
-set(OpenGL_GL_PREFERENCE "GLVND")
 
 set(NEBULA_GRAPHICS_OPENGL_SOURCES
     src/NebulaGraphicsOpenGL/Core.hpp
@@ -30,8 +26,13 @@ set(NEBULA_GRAPHICS_OPENGL_SOURCES
     src/NebulaGraphicsOpenGL/OpenGL/Shader.cpp
 )
 
+if(POLICY CMP0072)
+  cmake_policy(SET CMP0072 NEW)
+endif()
+set(OpenGL_GL_PREFERENCE "GLVND")
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 add_subdirectory(vendor/glfw)
-add_subdirectory(vendor/glew/build/cmake)
 add_subdirectory(vendor/glm)
 
 add_library(NebulaGraphicsOpenGL SHARED ${NEBULA_GRAPHICS_OPENGL_SOURCES})
@@ -55,7 +56,6 @@ target_include_directories(NebulaGraphicsOpenGL PRIVATE vendor/glew/include)
 
 add_dependencies(NebulaGraphicsOpenGL
     glfw
-    glew
     glm::glm
     NebulaGraphicsCore
 )
@@ -63,7 +63,7 @@ target_link_libraries(NebulaGraphicsOpenGL
     NebulaCore
     NebulaGraphicsCore
     glfw
-    glew
+    GLEW::GLEW
     glm::glm
 )
 

@@ -22,3 +22,6 @@
 [submodule "util/nbuild"]
 	path = util/nbuild
 	url = https://github.com/HW9636/nbuild
+[submodule "NebulaShaders/Conductor/vendor/DirectXShaderCompiler"]
+	path = NebulaShaders/Conductor/vendor/DirectXShaderCompiler
+	url = https://github.com/microsoft/DirectXShaderCompiler
