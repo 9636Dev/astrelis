@@ -17,8 +17,11 @@ set(NEBULA_SHADER_CONDUCTOR_SOURCES
     src/NebulaShaderConductor/Core.hpp
     src/NebulaShaderConductor/ShaderInput.hpp
     src/NebulaShaderConductor/ShaderInput.cpp
+    src/NebulaShaderConductor/ShaderOutput.hpp
     src/NebulaShaderConductor/Conductor.hpp
     src/NebulaShaderConductor/Conductor.cpp
+    src/NebulaShaderConductor/TargetProfile.hpp
+    src/NebulaShaderConductor/TargetProfile.cpp
 )
 
 
