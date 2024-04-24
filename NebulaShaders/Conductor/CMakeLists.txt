@@ -12,6 +12,7 @@ set(HLSL_INCLUDE_TESTS OFF CACHE BOOL "Include HLSL tests" FORCE)
 set(HLSL_COPY_GENERATED_SOURCES ON CACHE BOOL "Copy generated HLSL sources" FORCE)
 
 add_subdirectory(vendor/DirectXShaderCompiler)
+add_subdirectory(vendor/SPIRV-Cross)
 
 set(NEBULA_SHADER_CONDUCTOR_SOURCES
     src/NebulaShaderConductor/Core.hpp
@@ -36,6 +37,7 @@ target_compile_options(NebulaShaderConductor PRIVATE
 
 target_include_directories(NebulaShaderConductor PRIVATE
     vendor/DirectXShaderCompiler/include
+    vendor/SPIRV-Cross
 )
 
 target_include_directories(NebulaShaderConductor PUBLIC
@@ -43,13 +45,33 @@ target_include_directories(NebulaShaderConductor PUBLIC
 )
 add_dependencies(NebulaShaderConductor
     NebulaCore
+
+    # DXC
     dxcompiler
     LLVMDxcSupport
     LLVMSupport
+
+    # SPIRV-Cross
+    spirv-cross-core
+    spirv-cross-glsl
+    spirv-cross-hlsl
+    spirv-cross-msl
+    spirv-cross-util
+    SPIRV-Tools
 )
 target_link_libraries(NebulaShaderConductor PRIVATE
     NebulaCore
+
+    # DXC
     dxcompiler
     LLVMDxcSupport
     LLVMSupport
+
+    # SPIRV-Cross
+    spirv-cross-core
+    spirv-cross-glsl
+    spirv-cross-hlsl
+    spirv-cross-msl
+    spirv-cross-util
+    SPIRV-Tools
 )

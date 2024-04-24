@@ -8,9 +8,9 @@ namespace Nebula::ShaderConductor
 {
     struct ShaderInput
     {
-        std::wstring FileName;
-        std::wstring Source;
-        std::wstring EntryPoint;
+        std::string FileName;
+        std::string Source;
+        std::string EntryPoint;
         TargetProfile Profile;
     };
 } // namespace Nebula::ShaderConductor

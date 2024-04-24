@@ -1,12 +1,15 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 #include "NebulaCore/Log.hpp"
 #include "NebulaShaderConductor/Conductor.hpp"
 
 #include "Arguments.hpp"
+#include "NebulaShaderConductor/ShaderOutput.hpp"
+#include "NebulaShaderConductor/TargetProfile.hpp"
 
 namespace CLI
 {
@@ -28,11 +31,24 @@ namespace CLI
         Stdin
     };
 
+    enum class OutputType
+    {
+        GLSL,
+        SPIRV,
+        HLSL,
+        MSL,
+    };
+
     struct Config
     {
-        bool Verbose    = false;
-        InputType Input = InputType::File;
+        bool Verbose                                   = false;
+        InputType Input                                = InputType::File;
+        Nebula::ShaderConductor::TargetProfile Profile = {Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0};
+        std::string EntryPoint                         = "main";
         std::string OutputFile;
+        OutputType Output = OutputType::SPIRV;
+        Nebula::ShaderConductor::OptimizationLevel OptimizationLevel =
+            Nebula::ShaderConductor::OptimizationLevel::None;
     };
 
     Config ToConfig(const std::map<std::string, std::string>& options)
@@ -42,13 +58,61 @@ namespace CLI
         {
             config.Verbose = true;
         }
+        if (options.contains("outputfile"))
+        {
+            config.OutputFile = options.at("outputfile");
+        }
+        if (options.contains("entrypoint"))
+        {
+            config.EntryPoint = options.at("entrypoint");
+        }
         if (options.contains("output"))
         {
-            config.OutputFile = options.at("output");
+            if (options.at("output") == "glsl")
+            {
+                config.Output = OutputType::GLSL;
+            }
+            else if (options.at("output") == "spirv")
+            {
+                config.Output = OutputType::SPIRV;
+            }
+            else if (options.at("output") == "hlsl")
+            {
+                config.Output = OutputType::HLSL;
+            }
+            else if (options.at("output") == "msl")
+            {
+                config.Output = OutputType::MSL;
+            }
+            else
+            {
+                std::cerr << "Invalid output type: -output=" << options.at("output") << '\n';
+                std::exit(1);
+            }
         }
-        else if (options.contains("o"))
+        if (options.contains("optimization"))
         {
-            config.OutputFile = options.at("o");
+            if (options.at("optimization") == "none")
+            {
+                config.OptimizationLevel = Nebula::ShaderConductor::OptimizationLevel::None;
+            }
+            else if (options.at("optimization") == "1")
+            {
+                config.OptimizationLevel = Nebula::ShaderConductor::OptimizationLevel::Level1;
+            }
+            else if (options.at("optimization") == "22")
+            {
+                config.OptimizationLevel = Nebula::ShaderConductor::OptimizationLevel::Level2;
+            }
+            else if (options.at("optimization") == "3")
+            {
+                config.OptimizationLevel = Nebula::ShaderConductor::OptimizationLevel::Level3;
+            }
+            else
+            {
+                std::cerr << "Invalid optimization level: -optimization=" << options.at("optimization") << '\n';
+                std::exit(1);
+            }
         }
         if (options.contains("in"))
         {
@@ -129,6 +193,95 @@ namespace CLI
         }
 
         Nebula::ShaderConductor::ShaderConductor conductor;
+        if (!conductor.Initialize())
+        {
+            std::cerr << "Failed to initialize ShaderConductor\n";
+            return 1;
+        }
+        Nebula::ShaderConductor::ShaderInput shaderInput;
+        shaderInput.FileName   = config.Input == InputType::File ? args[1] : "stdin";
+        shaderInput.Source     = input;
+        shaderInput.EntryPoint = config.EntryPoint;
+        shaderInput.Profile    = config.Profile;
+
+        Nebula::ShaderConductor::ShaderOutput shaderOutput;
+        shaderOutput.Optimization = config.OptimizationLevel;
+
+        Nebula::ShaderConductor::SPIRVCompilationResult result = conductor.CompileToSPIRV(shaderInput, shaderOutput);
+
+        if (!result.success)
+        {
+            std::cerr << "Failed to compile shader: " << result.errorMessage << '\n';
+            return 1;
+        }
+
+        if (config.Verbose)
+        {
+            std::cout << "Compiled shader to SPIR-V (" << result.spirvCode.size() << " words)\n";
+        }
+
+        switch (config.Output)
+        {
+        case OutputType::SPIRV: {
+            if (config.OutputFile.empty())
+            {
+                std::cout << "No output file specified, not writing to disk (binary format)\n";
+                return 0;
+            }
+
+            std::ofstream file(config.OutputFile, std::ios::binary);
+            if (!file.good())
+            {
+                std::cerr << "Failed to open output file: " << config.OutputFile << '\n';
+                return 1;
+            }
+
+            file.write(reinterpret_cast<const char*>(result.spirvCode.data()),
+                       result.spirvCode.size() * sizeof(uint32_t));
+            break;
+        }
+        case OutputType::GLSL: {
+            Nebula::ShaderConductor::GLSLOutput glslOutput;
+            glslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
+            // TODO(9636D): Make this configurable
+            std::pair<std::string, std::string> glsl =
+                Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(result.spirvCode, glslOutput);
+
+            if (!config.OutputFile.empty())
+            {
+                std::ofstream file(config.OutputFile);
+                if (!file.good())
+                {
+                    std::cerr << "Failed to open output file: " << config.OutputFile << '\n';
+                    return 1;
+                }
+
+                if (glsl.second.empty())
+                {
+                    file << glsl.first;
+                }
+                else
+                {
+                    std::cerr << "Errors:\n" << glsl.second << '\n';
+                }
+
+                file << glsl.first;
+            }
+            else
+            {
+                if (glsl.second.empty())
+                {
+                    std::cout << glsl.first;
+                }
+                else
+                {
+                    std::cerr << "Errors:\n" << glsl.second << '\n';
+                }
+            }
+
+            break;
+        }
+        }
 
         return 0;
     }

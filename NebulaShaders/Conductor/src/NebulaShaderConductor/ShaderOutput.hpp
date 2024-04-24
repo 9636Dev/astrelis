@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 namespace Nebula::ShaderConductor
 {
     enum class OptimizationLevel
@@ -12,6 +14,13 @@ namespace Nebula::ShaderConductor
 
     struct ShaderOutput
     {
-        OptimizationLevel Optimization;
+        OptimizationLevel Optimization = OptimizationLevel::None;
     };
+
+    struct GLSLOutput : public ShaderOutput
+    {
+        std::size_t Version = 410;
+        bool GLES = false;
+    };
+
 } // namespace Nebula::ShaderConductor

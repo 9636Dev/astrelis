@@ -38,6 +38,7 @@ add_subdirectory(vendor/spdlog)
 set(NEBULA_CORE_SOURCES
     src/NebulaCore/Core.hpp
     src/NebulaCore/Util.hpp
+    src/NebulaCore/Result.hpp
     src/NebulaCore/Log.hpp
     src/NebulaCore/Log.cpp
 )

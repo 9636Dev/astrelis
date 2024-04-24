@@ -1,11 +1,15 @@
 #include "Conductor.hpp"
 
-#include "NebulaShaderConductor/ShaderInput.hpp"
-#include "NebulaShaderConductor/ShaderOutput.hpp"
+#include "NebulaCore/Log.hpp"
+#include "spirv_cross_error_handling.hpp"
 
 #include <dxc/Support/dxcapi.use.h>
 #include <dxc/dxcapi.h>
-#include <iostream>
+
+#include <spirv_glsl.hpp>
+#include <spirv_hlsl.hpp> // If the user wants to convet HLSL to a different version of HLSL, they can use this header
+#include <spirv_msl.hpp>
+
 #include <string>
 #include <vector>
 
@@ -17,42 +21,47 @@ namespace Nebula::ShaderConductor
     public:
         Impl()
         {
-            dxc::DxcDllSupport dxcSupport;
-            HRESULT hres = dxcSupport.Initialize();
+            HRESULT hres = m_DxcSupport.Initialize();
             if (FAILED(hres))
             {
-                std::cerr << "Failed to initialize DXC" << std::endl;
+                NEB_CORE_LOG_ERROR("Failed to initialize DXC support");
+            }
+
+            hres = m_DxcSupport.CreateInstance(CLSID_DxcCompiler, &m_Compiler);
+            if (FAILED(hres))
+            {
+                NEB_CORE_LOG_ERROR("Failed to create DXC compiler");
                 return;
             }
 
-            hres = dxcSupport.CreateInstance(CLSID_DxcCompiler, &m_Compiler);
+            hres = m_DxcSupport.CreateInstance(CLSID_DxcLibrary, &m_Library);
             if (FAILED(hres))
             {
-                std::cerr << "Failed to create DXC compiler" << std::endl;
-                return;
-            }
-
-            hres = dxcSupport.CreateInstance(CLSID_DxcLibrary, &m_Library);
-            if (FAILED(hres))
-            {
-                std::cerr << "Failed to create DXC compiler" << std::endl;
+                NEB_CORE_LOG_ERROR("Failed to create DXC library");
                 return;
             }
         }
 
-        CComPtr<IDxcBlobEncoding> StringToBlob(const std::string &str)
+        bool Initialize()
+        {
+            return m_Compiler != nullptr && m_Library != nullptr;
+        }
+
+        CComPtr<IDxcBlobEncoding> StringToBlob(const std::string& str)
         {
             CComPtr<IDxcBlobEncoding> blob;
             HRESULT hres = m_Library->CreateBlobWithEncodingFromPinned(str.c_str(), str.size(), CP_UTF8, &blob);
             if (FAILED(hres))
             {
-                std::cerr << "Failed to create blob from string" << std::endl;
+                NEB_CORE_LOG_DEBUG("Failed to create blob from string");
                 return nullptr;
             }
             return blob;
         }
 
-        static std::vector<LPCWSTR> GenerateArgsFromIO([[maybe_unused]] const ShaderInput& input, const ShaderOutput& output)
+
+        static std::vector<LPCWSTR> GenerateArgsFromIO([[maybe_unused]] const ShaderInput& input,
+                                                       const ShaderOutput& output)
         {
             std::vector<LPCWSTR> vector = {
                 L"-spirv",
@@ -77,38 +86,114 @@ namespace Nebula::ShaderConductor
             return vector;
         }
 
-        CComPtr<IDxcOperationResult> InternalCompile(const CComPtr<IDxcBlobEncoding>& source, const ShaderInput& input, std::vector<LPCWSTR> args)
+        CComPtr<IDxcOperationResult> InternalCompile(const CComPtr<IDxcBlobEncoding>& source,
+                                                     const ShaderInput& input,
+                                                     std::vector<LPCWSTR> args)
         {
+            std::wstring filename   = std::wstring(input.FileName.begin(), input.FileName.end());
+            std::wstring entryPoint = std::wstring(input.EntryPoint.begin(), input.EntryPoint.end());
+
             CComPtr<IDxcOperationResult> result;
-            m_Compiler->Compile(
-                source,  // pSource
-                input.FileName.c_str(),  // pSourceName
-                input.EntryPoint.c_str(),  // pEntryPoint
-                input.Profile.ToString().c_str(),  // pTargetProfile
-                args.data(), // pArguments
-                static_cast<UINT32>(args.size()), // argCount
-                nullptr, // pDefines
-                0, // defineCount
-                nullptr, // pIncludeHandler
-                &result // ppResult
+            m_Compiler->Compile(source,                           // pSource
+                                filename.c_str(),                 // pSourceName
+                                entryPoint.c_str(),               // pEntryPoint
+                                input.Profile.ToString().c_str(), // pTargetProfile
+                                args.data(),                      // pArguments
+                                static_cast<UINT32>(args.size()), // argCount
+                                nullptr,                          // pDefines
+                                0,                                // defineCount
+                                nullptr,                          // pIncludeHandler
+                                &result                           // ppResult
             );
+
             return result;
         }
 
-        ~Impl()
+       SPIRVCompilationResult CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output)
         {
+            CComPtr<IDxcBlobEncoding> source = StringToBlob(input.Source);
+            if (source == nullptr)
+            {
+                return {false, "Failed to create blob from source", {}};
+            }
+
+            std::vector<LPCWSTR> args           = GenerateArgsFromIO(input, output);
+            CComPtr<IDxcOperationResult> result = InternalCompile(source, input, args);
+
+            HRESULT status = 0;
+            result->GetStatus(&status);
+            if (FAILED(status))
+            {
+                CComPtr<IDxcBlobEncoding> errorsBlob;
+                result->GetErrorBuffer(&errorsBlob);
+                std::string errorMsg(static_cast<char*>(errorsBlob->GetBufferPointer()), errorsBlob->GetBufferSize());
+                return {false, errorMsg, {}};
+            }
+
+            CComPtr<IDxcBlob> outputBlob;
+            result->GetResult(&outputBlob);
+            if (outputBlob->GetBufferSize() % sizeof(uint32_t) != 0)
+            {
+                return {false, "SPIR-V output blob size is not aligned to 32-bit words, which is unexpected.", {}};
+            }
+
+            const auto* data = static_cast<const uint32_t*>(outputBlob->GetBufferPointer());
+            size_t size      = outputBlob->GetBufferSize() / sizeof(uint32_t);
+
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            std::vector<uint32_t> spirv(data, data + size);
+            return {true, "", std::move(spirv)};
         }
 
-        Impl(const Impl &) = delete;
-        Impl &operator=(const Impl &) = delete;
-        Impl(Impl &&) = delete;
-        Impl &operator=(Impl &&) = delete;
+
+        ~Impl()
+        {
+            // Release the compiler and library
+            m_Compiler.Release();
+            m_Library.Release();
+        }
+
+        Impl(const Impl&)            = delete;
+        Impl& operator=(const Impl&) = delete;
+        Impl(Impl&&)                 = delete;
+        Impl& operator=(Impl&&)      = delete;
 
         CComPtr<IDxcCompiler> m_Compiler;
         CComPtr<IDxcLibrary> m_Library;
+        dxc::DxcDllSupport m_DxcSupport;
     };
 
-    ShaderConductor::ShaderConductor() : m_Impl()
+    ShaderConductor::ShaderConductor() : m_Impl(new Impl()) {}
+    ShaderConductor::~ShaderConductor() { delete m_Impl; }
+
+    SPIRVCompilationResult ShaderConductor::CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output)
     {
+        return m_Impl->CompileToSPIRV(input, output);
     }
+
+    bool ShaderConductor::Initialize()
+    {
+        return m_Impl->Initialize();
+    }
+
+    // TODO(9636D): Include metadata as well on the output
+    ShaderConductor::CompileOutput ShaderConductor::CompileToGLSL(const std::vector<uint32_t>& spirv, const GLSLOutput& output)
+    {
+        try
+        {
+        spirv_cross::CompilerGLSL compiler(spirv);
+        spirv_cross::CompilerGLSL::Options options;
+
+        options.version = output.Version;
+        options.es      = output.GLES;
+        compiler.set_common_options(options);
+
+        return {compiler.compile().c_str(), ""};
+        }
+        catch (const spirv_cross::CompilerError& e)
+        {
+            return {"", e.what()};
+        }
+    }
+
 } // namespace Nebula::ShaderConductor
