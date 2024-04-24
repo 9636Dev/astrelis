@@ -200,6 +200,11 @@ namespace Nebula::OpenGL
         NEB_GLCall(glBindBuffer, static_cast<std::uint32_t>(target), buffer);
     }
 
+    void GL::BindBufferBase(BufferTarget target, std::uint32_t index, Buffer_t buffer)
+    {
+        NEB_GLCall(glBindBufferBase, static_cast<std::uint32_t>(target), index, buffer);
+    }
+
     void GL::BufferData(BufferTarget target, sizeiptr_t size, const void* data, BufferUsage usage)
     {
         NEB_GLCall(glBufferData, static_cast<std::uint32_t>(target), size, data, static_cast<std::uint32_t>(usage));
@@ -514,7 +519,7 @@ namespace Nebula::OpenGL
         }
         if (severity_int > 0)
         {
-            NEB_DEBUGBREAK();
+            //NEB_DEBUGBREAK();
         }
     }
 } // namespace Nebula::OpenGL

@@ -42,10 +42,7 @@ namespace Nebula::ShaderConductor
             }
         }
 
-        bool Initialize()
-        {
-            return m_Compiler != nullptr && m_Library != nullptr;
-        }
+        bool Initialize() { return m_Compiler != nullptr && m_Library != nullptr; }
 
         CComPtr<IDxcBlobEncoding> StringToBlob(const std::string& str)
         {
@@ -58,7 +55,6 @@ namespace Nebula::ShaderConductor
             }
             return blob;
         }
-
 
         static std::vector<LPCWSTR> GenerateArgsFromIO([[maybe_unused]] const ShaderInput& input,
                                                        const ShaderOutput& output)
@@ -109,7 +105,7 @@ namespace Nebula::ShaderConductor
             return result;
         }
 
-       SPIRVCompilationResult CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output)
+        SPIRVCompilationResult CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output)
         {
             CComPtr<IDxcBlobEncoding> source = StringToBlob(input.Source);
             if (source == nullptr)
@@ -145,7 +141,6 @@ namespace Nebula::ShaderConductor
             return {true, "", std::move(spirv)};
         }
 
-
         ~Impl()
         {
             // Release the compiler and library
@@ -164,6 +159,7 @@ namespace Nebula::ShaderConductor
     };
 
     ShaderConductor::ShaderConductor() : m_Impl(new Impl()) {}
+
     ShaderConductor::~ShaderConductor() { delete m_Impl; }
 
     SPIRVCompilationResult ShaderConductor::CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output)
@@ -171,24 +167,22 @@ namespace Nebula::ShaderConductor
         return m_Impl->CompileToSPIRV(input, output);
     }
 
-    bool ShaderConductor::Initialize()
-    {
-        return m_Impl->Initialize();
-    }
+    bool ShaderConductor::Initialize() { return m_Impl->Initialize(); }
 
     // TODO(9636D): Include metadata as well on the output
-    ShaderConductor::CompileOutput ShaderConductor::CompileToGLSL(const std::vector<uint32_t>& spirv, const GLSLOutput& output)
+    ShaderConductor::CompileOutput ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
+                                                                  const GLSLOutput& output)
     {
         try
         {
-        spirv_cross::CompilerGLSL compiler(spirv);
-        spirv_cross::CompilerGLSL::Options options;
+            spirv_cross::CompilerGLSL compiler(spirv);
+            spirv_cross::CompilerGLSL::Options options;
 
-        options.version = output.Version;
-        options.es      = output.GLES;
-        compiler.set_common_options(options);
+            options.version = output.Version;
+            options.es      = output.GLES;
+            compiler.set_common_options(options);
 
-        return {compiler.compile().c_str(), ""};
+            return {compiler.compile().c_str(), ""};
         }
         catch (const spirv_cross::CompilerError& e)
         {
@@ -196,4 +190,41 @@ namespace Nebula::ShaderConductor
         }
     }
 
+    ShaderConductor::CompileOutput ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv,
+                                                                  const HLSLOutput& output)
+    {
+        try
+        {
+            spirv_cross::CompilerHLSL compiler(spirv);
+            spirv_cross::CompilerHLSL::Options options;
+
+            options.shader_model = output.HLSLVersion;
+            // Currently, SPIRV-Cross does not support options for HLSL
+
+            return {compiler.compile().c_str(), ""};
+        }
+        catch (const spirv_cross::CompilerError& e)
+        {
+            return {"", e.what()};
+        }
+    }
+
+    ShaderConductor::CompileOutput ShaderConductor::CompileToMetal(const std::vector<std::uint32_t>& spirv,
+                                                                   const MetalOutput& output)
+    {
+        try
+        {
+            spirv_cross::CompilerMSL compiler(spirv);
+            spirv_cross::CompilerMSL::Options options;
+
+            options.msl_version = output.MslVersion;
+            // Currently, SPIRV-Cross does not support options for Metal
+
+            return {compiler.compile().c_str(), ""};
+        }
+        catch (const spirv_cross::CompilerError& e)
+        {
+            return {"", e.what()};
+        }
+    }
 } // namespace Nebula::ShaderConductor

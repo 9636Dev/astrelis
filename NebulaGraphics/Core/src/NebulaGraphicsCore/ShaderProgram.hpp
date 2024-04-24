@@ -1,14 +1,14 @@
 #pragma once
 
+#include "NebulaShaderConductor/ShaderInput.hpp"
 #include <string>
 
 namespace Nebula
 {
-    // Just a temporary struct to hold shader data, in the future we will have a shader compiler
     struct ShaderProgram
     {
         std::string Name;
-        std::string VertexShader;
-        std::string FragmentShader;
+        ShaderConductor::ShaderInput VertexShader;
+        ShaderConductor::ShaderInput FragmentShader;
     };
 } // namespace Nebula

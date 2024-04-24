@@ -12,11 +12,11 @@ namespace Nebula
     using Vector4f = Vector<float, 4>;
 
     template<typename Type, int Rows, int Cols>
-    using Matrix = Eigen::Matrix<Type, Rows, Cols>;
+    using ColMatrix = Eigen::Matrix<Type, Rows, Cols>;
 
-    using Matrix2f = Matrix<float, 2, 2>;
-    using Matrix3f = Matrix<float, 3, 3>;
-    using Matrix4f = Matrix<float, 4, 4>;
+    using CMatrix2f = ColMatrix<float, 2, 2>;
+    using CMatrix3f = ColMatrix<float, 3, 3>;
+    using CMatrix4f = ColMatrix<float, 4, 4>;
 
     template<typename Type, int Rows, int Cols>
     using RowMatrix = Eigen::Matrix<Type, Rows, Cols, Eigen::RowMajor>;
@@ -24,6 +24,11 @@ namespace Nebula
     using RMatrix2f = RowMatrix<float, 2, 2>;
     using RMatrix3f = RowMatrix<float, 3, 3>;
     using RMatrix4f = RowMatrix<float, 4, 4>;
+
+    // Normal matrices are row major, since we are using HLSL, and by convention, HLSL uses row major matrices
+    using Matrix2f = RMatrix2f;
+    using Matrix3f = RMatrix3f;
+    using Matrix4f = RMatrix4f;
 
     template<typename Type>
     using Quaternion = Eigen::Quaternion<Type>;

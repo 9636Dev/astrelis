@@ -23,4 +23,14 @@ namespace Nebula::ShaderConductor
         bool GLES = false;
     };
 
+    struct HLSLOutput : public ShaderOutput
+    {
+        std::size_t HLSLVersion = 50;
+    };
+
+    struct MetalOutput : public ShaderOutput
+    {
+        std::size_t MslVersion = 2;
+    };
+
 } // namespace Nebula::ShaderConductor

@@ -58,6 +58,15 @@ namespace Nebula::OpenGL
 
     ShaderProgram::~ShaderProgram() { GL::DeleteProgram(m_Program); }
 
+    ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept : m_Program(other.m_Program) { other.m_Program = 0; }
+
+    ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept
+    {
+        m_Program       = other.m_Program;
+        other.m_Program = 0;
+        return *this;
+    }
+
     // NOLINTNEXTLINE(readability-make-member-function-const)
     void ShaderProgram::AttachShader(const Shader& shader) { GL::AttachShader(m_Program, shader.m_Shader); }
 

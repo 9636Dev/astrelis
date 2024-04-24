@@ -25,6 +25,11 @@ set(NEBULA_GRAPHICS_CORE_SOURCES
 
     # Renderer
     src/NebulaGraphicsCore/Renderer.hpp
+    src/NebulaGraphicsCore/Renderer.cpp
+    src/NebulaGraphicsCore/RenderableObject.hpp
+    src/NebulaGraphicsCore/Mesh/BaseMesh.hpp
+    src/NebulaGraphicsCore/Mesh/2DStaticMesh.hpp
+    src/NebulaGraphicsCore/Mesh/2DStaticMesh.cpp
 )
 
 add_subdirectory(vendor/Eigen)
@@ -37,7 +42,13 @@ target_include_directories(NebulaGraphicsCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-add_dependencies(NebulaGraphicsCore NebulaCore)
-target_link_libraries(NebulaGraphicsCore NebulaCore)
-add_dependencies(NebulaGraphicsCore Eigen3::Eigen)
-target_link_libraries(NebulaGraphicsCore Eigen3::Eigen)
+add_dependencies(NebulaGraphicsCore
+    NebulaCore
+    Eigen3::Eigen
+    NebulaShaderConductor
+)
+target_link_libraries(NebulaGraphicsCore PUBLIC
+    NebulaCore
+    Eigen3::Eigen
+    NebulaShaderConductor
+)

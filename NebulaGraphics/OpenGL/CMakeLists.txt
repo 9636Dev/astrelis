@@ -22,6 +22,8 @@ set(NEBULA_GRAPHICS_OPENGL_SOURCES
     src/NebulaGraphicsOpenGL/OpenGL/VertexBuffer.cpp
     src/NebulaGraphicsOpenGL/OpenGL/IndexBuffer.hpp
     src/NebulaGraphicsOpenGL/OpenGL/IndexBuffer.cpp
+    src/NebulaGraphicsOpenGL/OpenGL/UniformBuffer.hpp
+    src/NebulaGraphicsOpenGL/OpenGL/UniformBuffer.cpp
     src/NebulaGraphicsOpenGL/OpenGL/Shader.hpp
     src/NebulaGraphicsOpenGL/OpenGL/Shader.cpp
 )
@@ -70,3 +72,7 @@ target_link_libraries(NebulaGraphicsOpenGL
 add_custom_command(TARGET NebulaGraphicsOpenGL POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:NebulaGraphicsOpenGL> ${NEBULA_RUNTIME_DIR}/lib/NebulaGraphicsOpenGL${CMAKE_SHARED_LIBRARY_SUFFIX}
 )
+
+if (NOT DEFINED NEBULA_DISABLE_TESTS)
+    add_subdirectory(tests)
+endif()

@@ -103,6 +103,7 @@ namespace Nebula::OpenGL
 
         static void BindVertexArray(VertexArray_t array);
         static void BindBuffer(BufferTarget target, Buffer_t buffer);
+        static void BindBufferBase(BufferTarget target, std::uint32_t index, Buffer_t buffer);
 
         static void BufferData(BufferTarget target, sizeiptr_t size, const void* data, BufferUsage usage);
         static void BufferSubData(BufferTarget target, intptr_t offset, sizeiptr_t size, const void* data);

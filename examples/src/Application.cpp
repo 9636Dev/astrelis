@@ -1,7 +1,10 @@
 #include "NebulaCore/Log.hpp"
+#include "NebulaGraphicsCore/Mesh/2DStaticMesh.hpp"
 #include "NebulaGraphicsCore/Window.hpp"
 #include "NebulaGraphicsRenderer/Renderer.hpp"
 #include "NebulaGraphicsRenderer/Window.hpp"
+
+#include <fstream>
 
 int main(int argc, char** argv)
 {
@@ -12,7 +15,7 @@ int main(int argc, char** argv)
 #ifdef EXAMPLES_USE_OPENGL
     Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 1});
     const std::string libraryPath = "lib/NebulaGraphicsOpenGL";
-    auto result = Nebula::CreateWindow(libraryPath, props);
+    auto result                   = Nebula::CreateWindow(libraryPath, props);
     if (result.Error != Nebula::WindowCreationResult::ErrorType::None)
     {
         NEB_CORE_LOG_ERROR("Failed to create window");
@@ -21,7 +24,7 @@ int main(int argc, char** argv)
 #elif defined(EXAMPLES_USE_METAL)
     Nebula::WindowProps<Nebula::MetalContext> props("Nebula", 1'080, 720, {});
     const std::string libraryPath = "lib/NebulaGraphicsMetal";
-    auto result = Nebula::CreateWindow(libraryPath, props);
+    auto result                   = Nebula::CreateWindow(libraryPath, props);
     if (result.Error != Nebula::WindowCreationResult::ErrorType::None)
     {
         NEB_CORE_LOG_ERROR("Failed to create window");
@@ -33,7 +36,7 @@ int main(int argc, char** argv)
 #endif
 
     // !IMPORTANT! There must only be one shared pointer to the window when it is destroyed
-    auto window = std::move(result.Window);
+    auto window         = std::move(result.Window);
     auto rendererResult = Nebula::CreateRenderer(libraryPath, window, props.Context);
     if (rendererResult.Error != Nebula::RendererCreationResult::ErrorType::None)
     {
@@ -41,6 +44,42 @@ int main(int argc, char** argv)
         return -1;
     }
     auto renderer = std::move(rendererResult.Renderer);
+
+    std::string shaderSrc;
+    {
+        std::ifstream file("resources/shaders/BasicShader.hlsl");
+        if (!file.good())
+        {
+            NEB_CORE_LOG_ERROR("Failed to open shader file");
+            return -1;
+        }
+
+        // Just read the whole buffer into a sstream
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        shaderSrc = buffer.str();
+    }
+
+    Nebula::ShaderProgram shaderProgram = {
+        "BasicShader",
+        Nebula::ShaderConductor::ShaderInput(
+            "BasicShader.hlsl", shaderSrc, "VertexShader",
+            Nebula::ShaderConductor::TargetProfile(Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0)),
+        Nebula::ShaderConductor::ShaderInput(
+            "BasicShader.hlsl", shaderSrc, "PixelShader",
+            Nebula::ShaderConductor::TargetProfile(Nebula::ShaderConductor::ShaderStage::Pixel, 6, 0))};
+    Nebula::RenderPass renderPass = {"2DRenderPass", shaderProgram};
+    renderer->AddRenderPass(renderPass);
+
+    auto mesh = std::make_shared<Nebula::Static2DMesh>();
+    mesh->Vertices() = {
+        -0.5F, -0.5F, 0.5F, -0.5F, 0.5F, 0.5F, -0.5F, 0.5F,
+    };
+    mesh->Indices() = {0, 1, 2, 0, 2, 3};
+    Nebula::Transform transform;
+    Nebula::RenderableObject renderableObject(transform, mesh);
+    renderer->AddRenderableObject(renderableObject, 0);
+
     window->SetVSync(true);
     //window->SetEventCallback([](Nebula::Event& event) { NEB_CORE_LOG_TRACE("{0}", event.ToString()); });
 

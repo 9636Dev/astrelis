@@ -1,47 +1,54 @@
 #include "Transform.hpp"
 
+#include <Eigen/Geometry>
+
 namespace Nebula
 {
-    void Transform2D::Translate(float transX, float transY) noexcept
+    void Transform::Translate(float transX, float transY, float transZ) noexcept
     {
         m_Translation.x() += transX;
         m_Translation.y() += transY;
+        m_Translation.z() += transZ;
     }
 
-    void Transform2D::Translate(const Vector2f& translation) noexcept
+    void Transform::Translate(const Vector3f& translation) noexcept
     {
         m_Translation += translation;
     }
 
-    void Transform2D::Rotate(float angle) noexcept
+    void Transform::Rotate(float angle, const Vector3f& axis) noexcept
     {
-        m_Rotation += angle;
+        auto rotation = Eigen::AngleAxisf(angle, axis);
+        m_Rotation = m_Rotation * Quaternionf(rotation);
     }
 
-    void Transform2D::Scale(float scaleX, float scaleY) noexcept
+    void Transform::Scale(float scaleX, float scaleY, float scaleZ) noexcept
     {
         m_Scale.x() *= scaleX;
         m_Scale.y() *= scaleY;
+        m_Scale.z() *= scaleZ;
     }
 
-    void Transform2D::Scale(const Vector2f& scale) noexcept
+    void Transform::Scale(const Vector3f& scale) noexcept
     {
         m_Scale.x() *= scale.x();
         m_Scale.y() *= scale.y();
+        m_Scale.z() *= scale.z();
     }
 
-    [[nodiscard]] Vector2f Transform2D::GetTranslation() const noexcept
+    Matrix4f Transform::GetModelMatrix() const noexcept
     {
-        return m_Translation;
-    }
+        Matrix4f scaleMatrix = Matrix4f::Identity();
+        scaleMatrix(0, 0) = m_Scale.x();
+        scaleMatrix(1, 1) = m_Scale.y();
+        scaleMatrix(2, 2) = m_Scale.z();
 
-    [[nodiscard]] float Transform2D::GetRotation() const noexcept
-    {
-        return m_Rotation;
-    }
+        Matrix4f rotationMatrix = Matrix4f::Identity();
+        rotationMatrix.block<3, 3>(0, 0) = m_Rotation.toRotationMatrix();
 
-    [[nodiscard]] Vector2f Transform2D::GetScale() const noexcept
-    {
-        return m_Scale;
+        Matrix4f translationMatrix = Matrix4f::Identity();
+        translationMatrix.block<3, 1>(0, 3) = m_Translation;
+
+        return translationMatrix * rotationMatrix * scaleMatrix;
     }
 } // namespace Nebula
