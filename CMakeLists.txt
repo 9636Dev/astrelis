@@ -1,9 +1,11 @@
 # Main CMake List for NebulaEngine
 
 
+# We assume you are using Clang or MSVC, GCC support may come later
+
 # CMake version
 cmake_minimum_required(VERSION 3.27)
-if (UNIX) # We still use msvc on windows
+if (UNIX AND NOT APPLE) # Linux
     set(CMAKE_CXX_COMPILER "clang++")
 endif()
 
@@ -18,7 +20,7 @@ if (UNIX AND NOT APPLE)
 endif()
 
 
-# Fuzzing
+# PThread
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)

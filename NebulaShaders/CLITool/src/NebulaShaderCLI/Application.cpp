@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "NebulaCore/Log.hpp"
+#include "NebulaShaderConductor/Conductor.hpp"
 
 #include "Arguments.hpp"
 
@@ -127,6 +128,7 @@ namespace CLI
             std::cout << "Start processing input (" << input.size() << " characters)\n";
         }
 
+        Nebula::ShaderConductor::ShaderConductor conductor;
 
         return 0;
     }

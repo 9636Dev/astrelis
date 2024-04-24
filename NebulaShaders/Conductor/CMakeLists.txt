@@ -20,12 +20,23 @@ set(NEBULA_SHADER_CONDUCTOR_SOURCES
     src/NebulaShaderConductor/Conductor.hpp
     src/NebulaShaderConductor/Conductor.cpp
 )
+
+
 add_library(NebulaShaderConductor SHARED ${NEBULA_SHADER_CONDUCTOR_SOURCES})
 nebula_add_definitions(NebulaShaderConductor "NEBULA_SHADER_CONDUCTOR" SHARED)
 
+
+target_compile_options(NebulaShaderConductor PRIVATE
+    -fms-extensions
+    -Wno-language-extension-token
+)
+
+target_include_directories(NebulaShaderConductor PRIVATE
+    vendor/DirectXShaderCompiler/include
+)
+
 target_include_directories(NebulaShaderConductor PUBLIC
     src
-    vendor/DirectXShaderCompiler/include
 )
 add_dependencies(NebulaShaderConductor
     NebulaCore

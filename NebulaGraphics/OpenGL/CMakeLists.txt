@@ -49,7 +49,6 @@ target_compile_options(NebulaGraphicsOpenGL PRIVATE
 
 if (APPLE)
     target_compile_definitions(NebulaGraphicsOpenGL PRIVATE GL_SILENCE_DEPRECATION)
-    target_compile_definitions(glew_s PRIVATE GL_SILENCE_DEPRECATION)
 endif()
 
 target_include_directories(NebulaGraphicsOpenGL PRIVATE vendor/glew/include)

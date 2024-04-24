@@ -2,8 +2,6 @@
 
 #include "Core.hpp"
 
-#include <memory>
-
 namespace Nebula::ShaderConductor
 {
     class NEBULA_SHADER_CONDUCTOR_API ShaderConductor
@@ -13,6 +11,6 @@ namespace Nebula::ShaderConductor
 
     private:
         class Impl;
-        std::unique_ptr<Impl> m_Impl;
+        Impl* m_Impl;
     };
 } // namespace Nebula::ShaderConductor

@@ -5,4 +5,4 @@ project(NebulaShaders)
 # We will just use ShaderConductor from Microsoft for now
 # add_subdirectory(Compiler)
 add_subdirectory(Conductor)
-#add_subdirectory(CLITool)
+add_subdirectory(CLITool)
