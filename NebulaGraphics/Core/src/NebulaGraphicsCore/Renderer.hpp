@@ -45,6 +45,9 @@ namespace Nebula
         void AddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex);
 
         [[nodiscard]] std::size_t GetIndexOfRenderPass(const std::string& name) const;
+
+        virtual void OnResize(std::uint32_t width, std::uint32_t height) = 0;
+        virtual void SetClearColor(float red, float green, float blue, float alpha) = 0;
     protected:
         virtual void InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex) = 0;
         virtual void InternalRemoveRenderPass(std::size_t index) = 0;

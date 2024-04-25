@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
     Nebula::Log::Init();
     NEB_CORE_LOG_INFO("Hello from NebulaCore!");
@@ -44,6 +44,7 @@ int main(int argc, char** argv)
         return -1;
     }
     auto renderer = std::move(rendererResult.Renderer);
+    renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
 
     std::string shaderSrc;
     {

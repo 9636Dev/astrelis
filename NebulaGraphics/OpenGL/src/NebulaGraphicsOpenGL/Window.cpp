@@ -13,6 +13,12 @@ namespace Nebula
 {
     inline static void SetupGLFWCallbacks(GLFWwindow* window)
     {
+
+        glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int newWidth, int newHeight) {
+            auto* data = static_cast<GLFWWindowData*>(glfwGetWindowUserPointer(window));
+            data->FrameBufferSizeCallback(newWidth, newHeight);
+        });
+
         glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int newWidth, int newHeight) {
             auto* data   = static_cast<GLFWWindowData*>(glfwGetWindowUserPointer(window));
             data->Width  = newWidth;
@@ -181,8 +187,8 @@ extern "C"
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, props.Context.MinorVersion);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE,
-                       GLFW_OPENGL_CORE_PROFILE); // TODO(9636D): Make this configurable, as well
-                                                  // as forward compatibility and debug contex t
+                       GLFW_OPENGL_CORE_PROFILE); // TODO(9636D): Make this configurable,
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Required on MacOS
         // We need to check for overflow here, because GLFW uses signed integers
         if (props.Width > static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max()) ||
             props.Height > static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max()))

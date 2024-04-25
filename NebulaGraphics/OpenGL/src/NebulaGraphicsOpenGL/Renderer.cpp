@@ -1,22 +1,28 @@
 #include "Renderer.hpp"
 
 #include "NebulaGraphicsOpenGL/Core.hpp"
-#include "NebulaGraphicsOpenGL/OpenGL/VertexBuffer.hpp"
 #include "NebulaShaderConductor/Conductor.hpp"
 #include "OpenGL/GL.hpp"
 #include "Window.hpp"
-#include <GL/gl.h>
 
 namespace Nebula
 {
-    OpenGLRenderer::OpenGLRenderer()
+    OpenGLRenderer::OpenGLRenderer(std::shared_ptr<GLFWWindow> window)
+        : m_Window(std::move(window))
     {
 
         s_RendererCount++;
+
+        // We set the framebuffer size callback
+        m_Window->SetFrameBufferSizeCallback([](std::int32_t width, std::int32_t height) {
+            glViewport(0, 0, width, height);
+        });
     }
 
     OpenGLRenderer::~OpenGLRenderer()
     {
+        m_Window->SetFrameBufferSizeCallback([](std::int32_t, std::int32_t) {});
+
         if (--s_RendererCount == 0)
         {
             OpenGL::GL::Terminate();
@@ -143,6 +149,17 @@ namespace Nebula
             }
         }
     }
+
+
+    void OpenGLRenderer::OnResize(std::uint32_t width, std::uint32_t height)
+    {
+        // We use the frame buffer for OpenGL viewport
+    }
+
+    void OpenGLRenderer::SetClearColor(float red, float green, float blue, float alpha)
+    {
+        OpenGL::GL::ClearColor(red, green, blue, alpha);
+    }
 } // namespace Nebula
 //
 #pragma clang diagnostic push
@@ -166,8 +183,7 @@ extern "C" NEBULA_GRAPHICS_OPENGL_API Nebula::RendererCreationResult
         return {nullptr, Nebula::RendererCreationResult::ErrorType::RendererInitFailed};
     }
 
-    Nebula::OpenGL::GL::Viewport(0, 0, windowPtr->GetWidth(), windowPtr->GetHeight());
-    auto renderer = std::make_shared<Nebula::OpenGLRenderer>();
+    auto renderer = std::make_shared<Nebula::OpenGLRenderer>(windowPtr);
     return {renderer, Nebula::RendererCreationResult::ErrorType::None};
 }
 #pragma clang diagnostic pop

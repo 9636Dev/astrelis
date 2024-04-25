@@ -10,6 +10,7 @@ set(NEBULA_GRAPHICS_OPENGL_TESTS_SOURCE
 )
 
 enable_testing()
+# This also acts as a compile-time check to make sure that the library is built correctly and linked correctly
 add_executable(NebulaGraphicsOpenGLTests ${NEBULA_GRAPHICS_OPENGL_TESTS_SOURCE})
 
 add_dependencies(NebulaGraphicsOpenGLTests NebulaGraphicsOpenGL)

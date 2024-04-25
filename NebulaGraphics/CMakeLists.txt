@@ -12,7 +12,7 @@ add_subdirectory(Core)
 add_subdirectory(Renderer)
 add_subdirectory(OpenGL)
 if (APPLE)
-    add_subdirectory(Metal)
+    #add_subdirectory(Metal)
 endif()
 
 # TODO: Add DirectX implementations

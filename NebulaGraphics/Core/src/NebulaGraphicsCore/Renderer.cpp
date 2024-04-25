@@ -15,7 +15,7 @@ namespace Nebula
         else
         {
             NEB_ASSERT(insertionIndex <= m_RenderPasses.size(), "Insertion index is out of bounds");
-            auto index = static_cast<std::_Bit_const_iterator::difference_type>(insertionIndex);
+            auto index = static_cast<std::int64_t>(insertionIndex);
             m_RenderPasses.insert(m_RenderPasses.begin() + index, std::move(renderPass));
             m_RenderPassObjectCount.insert(m_RenderPassObjectCount.begin() + index, 0);
         }
@@ -27,12 +27,12 @@ namespace Nebula
     {
         NEB_ASSERT(index < m_RenderPasses.size(), "Index is out of bounds");
         auto renderPass = std::move(m_RenderPasses[index]);
-        m_RenderPasses.erase(m_RenderPasses.begin() + static_cast<std::_Bit_const_iterator::difference_type>(index));
+        m_RenderPasses.erase(m_RenderPasses.begin() + static_cast<std::int64_t>(index));
         std::size_t objectCount = m_RenderPassObjectCount[index];
-        m_RenderPassObjectCount.erase(m_RenderPassObjectCount.begin() + static_cast<std::_Bit_const_iterator::difference_type>(index));
+        m_RenderPassObjectCount.erase(m_RenderPassObjectCount.begin() + static_cast<std::int64_t>(index));
         // Now we need to remove that many elements from the renderable objects vector
         auto offset = GetStartOffsetForRenderPass(index);
-        m_RenderableObjects.erase(m_RenderableObjects.begin() + static_cast<std::_Bit_const_iterator::difference_type>(offset), m_RenderableObjects.begin() + static_cast<std::_Bit_const_iterator::difference_type>(offset + objectCount));
+        m_RenderableObjects.erase(m_RenderableObjects.begin() + static_cast<std::int64_t>(offset), m_RenderableObjects.begin() + static_cast<std::int64_t>(offset + objectCount));
 
         InternalRemoveRenderPass(index);
         return renderPass;
