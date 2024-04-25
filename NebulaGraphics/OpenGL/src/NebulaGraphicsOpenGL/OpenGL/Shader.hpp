@@ -58,6 +58,9 @@ namespace Nebula::OpenGL
         void SetUniform(const std::string& name, const glm::vec4& value);
         void SetUniform(const std::string& name, const glm::mat3& value);
         void SetUniform(const std::string& name, const glm::mat4& value);
+
+        std::uint32_t GetUniformBlockIndex(const std::string& name) const;
+        void UniformBlockBinding(std::uint32_t uniformBlockIndex, std::uint32_t uniformBlockBinding);
     private:
         std::int32_t GetUniformLocation(const std::string& name) const;
 

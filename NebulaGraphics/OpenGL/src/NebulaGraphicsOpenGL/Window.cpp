@@ -13,7 +13,6 @@ namespace Nebula
 {
     inline static void SetupGLFWCallbacks(GLFWwindow* window)
     {
-
         glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int newWidth, int newHeight) {
             auto* data = static_cast<GLFWWindowData*>(glfwGetWindowUserPointer(window));
             data->FrameBufferSizeCallback(newWidth, newHeight);
@@ -162,52 +161,52 @@ namespace Nebula
         m_Data.VSync = enabled;
     }
 } // namespace Nebula
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
-extern "C"
+
+extern "C" NEBULA_GRAPHICS_OPENGL_API Nebula::WindowCreationResult
+    nebulaGraphicsOpenGLCreateGLFWWindow(Nebula::WindowProps<Nebula::OpenGLContext>& props)
 {
-    NEBULA_GRAPHICS_OPENGL_API Nebula::WindowCreationResult
-        nebulaGraphicsOpenGLCreateGLFWWindow(Nebula::WindowProps<Nebula::OpenGLContext>& props)
+    static bool glfwInitialized = false;
+    if (!glfwInitialized)
     {
-        static bool glfwInitialized = false;
-        if (!glfwInitialized)
+        glfwSetErrorCallback([](int error, const char* description) {
+            NEB_CORE_LOG_ERROR("GLFW Error ({0}): {1}", error, description);
+        });
+
+        if (glfwInit() != GLFW_TRUE)
         {
-            glfwSetErrorCallback([](int error, const char* description) {
-                NEB_CORE_LOG_ERROR("GLFW Error ({0}): {1}", error, description);
-            });
-
-            if (glfwInit() != GLFW_TRUE)
-            {
-                return {nullptr, Nebula::WindowCreationResult::ErrorType::ContextCreationFailed};
-            }
-            glfwInitialized = true;
+            return {nullptr, Nebula::WindowCreationResult::ErrorType::ContextCreationFailed};
         }
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, props.Context.MajorVersion);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, props.Context.MinorVersion);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-        glfwWindowHint(GLFW_OPENGL_PROFILE,
-                       GLFW_OPENGL_CORE_PROFILE); // TODO(9636D): Make this configurable,
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Required on MacOS
-        // We need to check for overflow here, because GLFW uses signed integers
-        if (props.Width > static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max()) ||
-            props.Height > static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max()))
-        {
-            return {nullptr, Nebula::WindowCreationResult::ErrorType::InvalidArguments};
-        }
-
-        // TODO(9636D): Setup glfw error callback, so we can check if it is the
-        // version of OpenGL that is not supported or if the window creation failed
-
-        auto* glfwWindow =
-            glfwCreateWindow(static_cast<std::int32_t>(props.Width), static_cast<std::int32_t>(props.Height),
-                             props.Title.c_str(), nullptr, nullptr);
-        if (glfwWindow == nullptr)
-        {
-            return {nullptr, Nebula::WindowCreationResult::ErrorType::WindowCreationFailed};
-        }
-        Nebula::GLFWWindowData data(props.Title, props.Width, props.Height, false);
-        return {std::make_shared<Nebula::GLFWWindow>(glfwWindow, std::move(data)), Nebula::WindowCreationResult::ErrorType::None};
+        glfwInitialized = true;
     }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, props.Context.MajorVersion);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, props.Context.MinorVersion);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE,
+                   GLFW_OPENGL_CORE_PROFILE);            // TODO(9636D): Make this configurable,
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Required on MacOS
+    // We need to check for overflow here, because GLFW uses signed integers
+    if (props.Width > static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max()) ||
+        props.Height > static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max()))
+    {
+        return {nullptr, Nebula::WindowCreationResult::ErrorType::InvalidArguments};
+    }
+
+    // TODO(9636D): Setup glfw error callback, so we can check if it is the
+    // version of OpenGL that is not supported or if the window creation failed
+
+    auto* glfwWindow = glfwCreateWindow(static_cast<std::int32_t>(props.Width), static_cast<std::int32_t>(props.Height),
+                                        props.Title.c_str(), nullptr, nullptr);
+    if (glfwWindow == nullptr)
+    {
+        return {nullptr, Nebula::WindowCreationResult::ErrorType::WindowCreationFailed};
+    }
+    Nebula::GLFWWindowData data(props.Title, props.Width, props.Height, false);
+    return {std::make_shared<Nebula::GLFWWindow>(glfwWindow, std::move(data)),
+            Nebula::WindowCreationResult::ErrorType::None};
 }
+
 #pragma clang diagnostic pop

@@ -180,6 +180,12 @@ namespace Nebula::ShaderConductor
 
             options.version = output.Version;
             options.es      = output.GLES;
+
+            if (options.version == 410)
+            {
+                options.enable_420pack_extension = false; // For MACOS Compatibility
+            }
+
             compiler.set_common_options(options);
 
             return {compiler.compile().c_str(), ""};

@@ -87,6 +87,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
     while (!window->ShouldClose())
     {
         renderer->Render();
+        auto& transform = renderer->GetRenderableObject(0).GetTransform();
+        transform.Translate(0.01F, 0.00F, 0.0F);
 
         window->PollEvents();
         window->SwapBuffers();

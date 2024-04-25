@@ -331,6 +331,16 @@ namespace Nebula::OpenGL
         NEB_GLCall(glGetUniformfv, program, location, params);
     }
 
+    std::uint32_t GL::GetUniformBlockIndex(Program_t program, const char* uniformBlockName)
+    {
+        return NEB_GLCallR(glGetUniformBlockIndex, program, uniformBlockName);
+    }
+
+    void GL::UniformBlockBinding(Program_t program, std::uint32_t uniformBlockIndex, std::uint32_t uniformBlockBinding)
+    {
+        NEB_GLCall(glUniformBlockBinding, program, uniformBlockIndex, uniformBlockBinding);
+    }
+
     void GL::GenTextures(sizei_t n, Texture_t* textures) { NEB_GLCall(glGenTextures, n, textures); }
 
     void GL::DeleteTextures(sizei_t n, const Texture_t* textures) { NEB_GLCall(glDeleteTextures, n, textures); }

@@ -28,3 +28,6 @@
 [submodule "NebulaShaders/Conductor/vendor/SPIRV-Cross"]
 	path = NebulaShaders/Conductor/vendor/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross
+[submodule "NebulaGraphics/Core/vendor/imgui"]
+	path = NebulaGraphics/Core/vendor/imgui
+	url = https://github.com/ocornut/imgui

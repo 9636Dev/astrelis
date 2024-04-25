@@ -15,14 +15,14 @@ namespace Nebula::OpenGL
     void UniformBuffer::SetData(const void* data, std::uint32_t size, BufferUsage usage)
     {
         Bind();
-        GL::BufferData(BufferTarget::ArrayBuffer, size, data, usage);
+        GL::BufferData(BufferTarget::UniformBuffer, size, data, usage);
         Unbind();
     }
 
     void UniformBuffer::SetSubData(const void* data, std::uint32_t size, std::uint32_t offset)
     {
         Bind();
-        GL::BufferSubData(BufferTarget::ArrayBuffer, offset, size, data);
+        GL::BufferSubData(BufferTarget::UniformBuffer, offset, size, data);
     }
 
     void UniformBuffer::BindBase(std::uint32_t index) const

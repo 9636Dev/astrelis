@@ -19,6 +19,9 @@ namespace Nebula
             m_Mesh(std::move(mesh))
         {
         }
+
+        [[nodiscard]] Transform& GetTransform() { return m_Transform; }
+        [[nodiscard]] const Transform& GetTransform() const { return m_Transform; }
     private:
         Transform m_Transform;
         std::shared_ptr<BaseMesh> m_Mesh;

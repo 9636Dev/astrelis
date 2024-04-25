@@ -4,34 +4,54 @@
 #include "NebulaShaderConductor/Conductor.hpp"
 #include "OpenGL/GL.hpp"
 #include "Window.hpp"
+#include <chrono>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#ifdef NEBULA_INCLUDE_IMGUI
+    #include <backends/imgui_impl_glfw.h>
+    #include <backends/imgui_impl_opengl3.h>
+    #include <imgui.h>
+#endif
 
 namespace Nebula
 {
-    OpenGLRenderer::OpenGLRenderer(std::shared_ptr<GLFWWindow> window)
-        : m_Window(std::move(window))
+    OpenGLRenderer::OpenGLRenderer(std::shared_ptr<GLFWWindow> window) : m_Window(std::move(window))
     {
-
         s_RendererCount++;
 
         // We set the framebuffer size callback
-        m_Window->SetFrameBufferSizeCallback([](std::int32_t width, std::int32_t height) {
-            glViewport(0, 0, width, height);
-        });
+        m_Window->SetFrameBufferSizeCallback(
+            [](std::int32_t width, std::int32_t height) { glViewport(0, 0, width, height); });
+
+#ifdef NEBULA_INCLUDE_IMGUI
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL(m_Window->GetNativeWindow(), true);
+        ImGui_ImplOpenGL3_Init("#version 330"); // Should never be lower than 330
+#endif
     }
 
     OpenGLRenderer::~OpenGLRenderer()
     {
         m_Window->SetFrameBufferSizeCallback([](std::int32_t, std::int32_t) {});
 
+#ifdef NEBULA_INCLUDE_IMGUI
+#endif
+
         if (--s_RendererCount == 0)
         {
             OpenGL::GL::Terminate();
         }
-
     }
 
     void OpenGLRenderer::InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex)
     {
+        NEB_CORE_LOG_DEBUG("Generating Render Pass: {0}", insertionIndex);
         ShaderConductor::ShaderConductor shaderConductor;
         // Compile the shader program
         OpenGL::ShaderProgram shaderProgram;
@@ -92,7 +112,7 @@ namespace Nebula
         glRenderPassObject.ShaderProgram = std::move(shaderProgram);
         glRenderPassObject.UniformBuffer = OpenGL::UniformBuffer();
 
-        m_GLRenderPasses.push_back(std::move(glRenderPassObject));
+        m_GLRenderPasses.insert(m_GLRenderPasses.begin() + insertionIndex, std::move(glRenderPassObject));
     }
 
     void OpenGLRenderer::InternalRemoveRenderPass(std::size_t index)
@@ -103,16 +123,20 @@ namespace Nebula
     void OpenGLRenderer::InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex)
     {
         GLRenderableObject glRenderableObject;
-        glRenderableObject.VertexArray = OpenGL::VertexArray();
+        glRenderableObject.VertexArray  = OpenGL::VertexArray();
         glRenderableObject.VertexBuffer = OpenGL::VertexBuffer();
-        glRenderableObject.IndexBuffer = OpenGL::IndexBuffer();
+        glRenderableObject.IndexBuffer  = OpenGL::IndexBuffer();
 
-        glRenderableObject.VertexBuffer.SetData(renderableObject.m_Mesh->GetVertexData().data(), static_cast<std::uint32_t>(renderableObject.m_Mesh->GetVertexData().size() * sizeof(float)));
+        glRenderableObject.VertexBuffer.SetData(
+            renderableObject.m_Mesh->GetVertexData().data(),
+            static_cast<std::uint32_t>(renderableObject.m_Mesh->GetVertexData().size() * sizeof(float)));
         OpenGL::VertexBufferLayout layout;
         layout.Push<float>(2);
         glRenderableObject.VertexArray.AddBuffer(glRenderableObject.VertexBuffer, layout);
 
-        glRenderableObject.IndexBuffer.SetData(renderableObject.m_Mesh->GetIndexData().data(), static_cast<std::uint32_t>(renderableObject.m_Mesh->GetIndexData().size() * sizeof(std::uint32_t)));
+        glRenderableObject.IndexBuffer.SetData(
+            renderableObject.m_Mesh->GetIndexData().data(),
+            static_cast<std::uint32_t>(renderableObject.m_Mesh->GetIndexData().size() * sizeof(std::uint32_t)));
 
         m_GLRenderableObjects.push_back(std::move(glRenderableObject));
     }
@@ -124,32 +148,52 @@ namespace Nebula
 
     void OpenGLRenderer::Render()
     {
+        std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
         // We are just using this function to test the renderer at the moment
-        NEB_CORE_LOG_DEBUG("Clearing the screen");
         OpenGL::GL::Clear(OpenGL::ClearTarget::ColorBufferBit | OpenGL::ClearTarget::DepthBufferBit);
 
-        NEB_CORE_LOG_DEBUG("Rendering the objects");
         for (std::size_t i = 0; i < m_RenderPasses.size(); i++)
         {
-            NEB_CORE_LOG_DEBUG("Rendering objects in render pass {0}", i);
             m_GLRenderPasses[i].ShaderProgram.Use();
-            //m_GLRenderPasses[i].UniformBuffer.Bind();
-            //m_GLRenderPasses[i].UniformBuffer.BindBase(0);
+            m_GLRenderPasses[i].UniformBuffer.Bind();
+            m_GLRenderPasses[i].UniformBuffer.BindBase(0);
+            std::uint32_t index = m_GLRenderPasses[i].ShaderProgram.GetUniformBlockIndex("type_VertexBuffer");
+            m_GLRenderPasses[i].ShaderProgram.UniformBlockBinding(index, 0);
 
             for (std::size_t j = 0; j < m_RenderPassObjectCount[i]; j++)
             {
-                NEB_CORE_LOG_DEBUG("Rendering object {0}", j);
-                //Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
-                //m_GLRenderPasses[i].UniformBuffer.SetData(&modelMatrix, sizeof(Matrix4f));
+                Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
+
+                m_GLRenderPasses[i].UniformBuffer.SetData(&modelMatrix, sizeof(modelMatrix));
                 m_GLRenderableObjects[j].VertexArray.Bind();
                 m_GLRenderableObjects[j].IndexBuffer.Bind();
 
-                NEB_CORE_LOG_DEBUG("Drawing the elements");
-                OpenGL::GL::DrawElements(OpenGL::DrawMode::Triangles, m_RenderableObjects[j].m_Mesh->GetIndexData().size(), OpenGL::GL::GetGLType<std::uint32_t>(), nullptr);
+                OpenGL::GL::DrawElements(OpenGL::DrawMode::Triangles,
+                                         m_RenderableObjects[j].m_Mesh->GetIndexData().size(),
+                                         OpenGL::GL::GetGLType<std::uint32_t>(), nullptr);
             }
         }
-    }
 
+        std::chrono::high_resolution_clock::time_point newTime = std::chrono::high_resolution_clock::now();
+        auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(newTime - currentTime).count();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Render Statistics");
+
+        ImGui::Text("Renderer: OpenGL");
+        ImGui::Text("Render Passes: %lu", m_RenderPasses.size());
+        ImGui::Text("Renderable Objects: %lu", m_RenderableObjects.size());
+        ImGui::Text("Frame Time: %f ms", static_cast<float>(elapsedTime) / 1000.0F);
+
+        ImGui::End();
+
+        ImGui::Render();
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
 
     void OpenGLRenderer::OnResize(std::uint32_t width, std::uint32_t height)
     {
@@ -161,9 +205,11 @@ namespace Nebula
         OpenGL::GL::ClearColor(red, green, blue, alpha);
     }
 } // namespace Nebula
+
 //
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
+
 extern "C" NEBULA_GRAPHICS_OPENGL_API Nebula::RendererCreationResult
     nebulaGraphicsOpenGLCreateOpenGLRenderer(const Nebula::OpenGLContext& context,
                                              const std::shared_ptr<Nebula::Window>& window)
@@ -186,4 +232,5 @@ extern "C" NEBULA_GRAPHICS_OPENGL_API Nebula::RendererCreationResult
     auto renderer = std::make_shared<Nebula::OpenGLRenderer>(windowPtr);
     return {renderer, Nebula::RendererCreationResult::ErrorType::None};
 }
+
 #pragma clang diagnostic pop

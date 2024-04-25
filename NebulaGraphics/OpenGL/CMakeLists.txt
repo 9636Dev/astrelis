@@ -60,13 +60,16 @@ add_dependencies(NebulaGraphicsOpenGL
     glm::glm
     NebulaGraphicsCore
 )
-target_link_libraries(NebulaGraphicsOpenGL
+target_link_libraries(NebulaGraphicsOpenGL PUBLIC
     NebulaCore
     NebulaGraphicsCore
+)
+target_link_libraries(NebulaGraphicsOpenGL PRIVATE
     glfw
     GLEW::GLEW
     glm::glm
 )
+ImGuiAddLibrary(NebulaGraphicsOpenGL "GLFWOpenGL3")
 
 # Post build command to copy the shared library to the output directory
 add_custom_command(TARGET NebulaGraphicsOpenGL POST_BUILD

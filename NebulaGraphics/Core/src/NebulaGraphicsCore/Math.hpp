@@ -26,9 +26,9 @@ namespace Nebula
     using RMatrix4f = RowMatrix<float, 4, 4>;
 
     // Normal matrices are row major, since we are using HLSL, and by convention, HLSL uses row major matrices
-    using Matrix2f = RMatrix2f;
-    using Matrix3f = RMatrix3f;
-    using Matrix4f = RMatrix4f;
+    using Matrix2f = CMatrix2f;
+    using Matrix3f = CMatrix3f;
+    using Matrix4f = CMatrix4f;
 
     template<typename Type>
     using Quaternion = Eigen::Quaternion<Type>;

@@ -38,17 +38,12 @@ namespace Nebula
 
     Matrix4f Transform::GetModelMatrix() const noexcept
     {
-        Matrix4f scaleMatrix = Matrix4f::Identity();
-        scaleMatrix(0, 0) = m_Scale.x();
-        scaleMatrix(1, 1) = m_Scale.y();
-        scaleMatrix(2, 2) = m_Scale.z();
+        Eigen::Transform<float, 3, Eigen::Affine> transform = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 
-        Matrix4f rotationMatrix = Matrix4f::Identity();
-        rotationMatrix.block<3, 3>(0, 0) = m_Rotation.toRotationMatrix();
+        transform.translate(m_Translation);
+        transform.rotate(m_Rotation);
+        transform.scale(m_Scale);
 
-        Matrix4f translationMatrix = Matrix4f::Identity();
-        translationMatrix.block<3, 1>(0, 3) = m_Translation;
-
-        return translationMatrix * rotationMatrix * scaleMatrix;
+        return transform.matrix();
     }
 } // namespace Nebula

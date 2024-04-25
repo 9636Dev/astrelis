@@ -106,6 +106,16 @@ namespace Nebula::OpenGL
         return location;
     }
 
+    std::uint32_t ShaderProgram::GetUniformBlockIndex(const std::string& name) const
+    {
+        return GL::GetUniformBlockIndex(m_Program, name.c_str());
+    }
+
+    void ShaderProgram::UniformBlockBinding(std::uint32_t uniformBlockIndex, std::uint32_t uniformBlockBinding)
+    {
+        GL::UniformBlockBinding(m_Program, uniformBlockIndex, uniformBlockBinding);
+    }
+
     void ShaderProgram::SetUniform(const std::string& name, std::int32_t value)
     {
         // Don't bind the program here, because it might be bound already for performance reasons

@@ -42,6 +42,10 @@ target_include_directories(NebulaGraphicsCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+target_compile_definitions(NebulaGraphicsCore PUBLIC
+    NEBULA_INCLUDE_IMGUI
+)
+
 add_dependencies(NebulaGraphicsCore
     NebulaCore
     Eigen3::Eigen
@@ -52,3 +56,5 @@ target_link_libraries(NebulaGraphicsCore PUBLIC
     Eigen3::Eigen
     NebulaShaderConductor
 )
+
+add_subdirectory(vendor)
