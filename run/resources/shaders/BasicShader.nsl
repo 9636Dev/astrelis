@@ -1,0 +1,52 @@
+Name "BasicShader"
+
+Bindings {
+    Uniforms {
+        float4x4 Model : MODEL_MATRIX;
+    }
+    Textures {}
+}
+
+Input {
+    float2 Position : POSITION2D;
+}
+
+PixelInput {
+    float4 Position : OUTPUT_POSITION;
+}
+
+// HLSL Code
+Shader {
+    Shared {
+        cbuffer VertexBuffer : register(b0)
+        {
+            float4x4 modelMatrix;
+        }
+
+        struct PixelInput
+        {
+            float4 pos : SV_POSITION;
+        }
+    }
+
+    Vertex {
+        PixelInput VertexShader(VertexInput input)
+        {
+            PixelInput output;
+            output.pos = float4(input.pos, 0.0, 1.0);
+            return output;
+        }
+    }
+
+    Fragment {
+        float4 PixelShader(PixelInput input)
+        {
+            return float4(1.0, 1.0, 1.0, 1.0);
+        }
+    }
+
+    Entrypoint {
+        Vertex "VertexShader"
+        Fragment "PixelShader"
+    }
+}

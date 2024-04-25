@@ -5,29 +5,41 @@
 
 # CMake version
 cmake_minimum_required(VERSION 3.27)
-if (UNIX AND NOT APPLE) # Linux
+
+if (LINUX)
+    message(STATUS "NebulaEngine: Linux detected - Setting up to use Clang")
+
     set(CMAKE_CXX_COMPILER "clang++")
-endif()
+    set(CMAKE_C_COMPILER "clang")
 
-project(NebulaEngine VERSION 0.0.1)
-
-# Set C++ Flags
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if (UNIX AND NOT APPLE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -lm")
 endif()
 
+project(NebulaEngine VERSION 0.0.1)
 
-# PThread
-set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-find_package(Threads REQUIRED)
+include(cmake/UtilFunctions.cmake)
+include(cmake/DefaultConfig.cmake)
+include(cmake/VerifyConfig.cmake)
 
-# Add Project Dependencies
+# Set C++ Flags
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
+if (NEBULA_USE_PTHREADS)
+    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
+endif()
+
+# ========================
+# Project Dependencies
+# ========================
 #add_subdirectory(vendor/fuzztest)
-add_subdirectory(vendor/googletest)
+if (NEBULA_BUILD_TESTS AND NOT TARGET gtest_main) # If we are building tests and gtest_main is not a target
+    add_subdirectory(vendor/googletest)
+endif()
 
 # Set Directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -37,7 +49,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(NEBULA_RUNTIME_DIR ${CMAKE_SOURCE_DIR}/run)
 
 # We add the submodules
-add_subdirectory(NebulaCore)
-add_subdirectory(NebulaGraphics)
-add_subdirectory(NebulaShaders)
-add_subdirectory(examples) # NebulaExamples
+#add_subdirectory(NebulaCore)
+#add_subdirectory(NebulaGraphics)
+#add_subdirectory(NebulaShaders)
+#add_subdirectory(examples) # NebulaExamples

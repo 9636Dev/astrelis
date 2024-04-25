@@ -45,8 +45,9 @@ Shader {
         cbuffer VertexBuffer : register(b0)
         {
             float4 Color;
-            Texture2D Diffuse;
         };
+
+        Texture2D Diffuse;
     }
 
     Vertex Generated;

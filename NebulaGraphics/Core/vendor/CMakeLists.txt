@@ -5,10 +5,10 @@ project(ImGui)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(IMGUI_SOURCE_DIR CACHE "Imgui Source Dir" ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
-
+set_property(GLOBAL PROPERTY IMGUI_SOURCE_DIR_PROP ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 function(ImGuiAddLibrary target backend)
     set(IMGUI_TARGET_NAME ImGui_${backend})
+    get_property(IMGUI_SOURCE_DIR GLOBAL PROPERTY IMGUI_SOURCE_DIR_PROP)
 
     set(IMGUI_SRC
         ${IMGUI_SOURCE_DIR}/imgui.cpp

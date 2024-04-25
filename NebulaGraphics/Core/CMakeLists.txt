@@ -50,11 +50,13 @@ add_dependencies(NebulaGraphicsCore
     NebulaCore
     Eigen3::Eigen
     NebulaShaderConductor
+    NebulaShaderCompiler
 )
 target_link_libraries(NebulaGraphicsCore PUBLIC
     NebulaCore
     Eigen3::Eigen
     NebulaShaderConductor
+    NebulaShaderCompiler
 )
 
 add_subdirectory(vendor)

@@ -57,6 +57,8 @@ namespace Nebula
         OpenGL::ShaderProgram shaderProgram;
         ShaderConductor::GLSLOutput output;
         output.Version = 410;
+        output.Enable420PackExtension = output.Version >= 420; // TODO(9636D): We check and cache the ARB_shading_language_420pack extension
+
         {
             OpenGL::Shader vertexShader(OpenGL::ShaderType::VertexShader);
             auto spirv = shaderConductor.CompileToSPIRV(renderPass.ShaderProgram.VertexShader, output);
@@ -157,8 +159,11 @@ namespace Nebula
             m_GLRenderPasses[i].ShaderProgram.Use();
             m_GLRenderPasses[i].UniformBuffer.Bind();
             m_GLRenderPasses[i].UniformBuffer.BindBase(0);
-            std::uint32_t index = m_GLRenderPasses[i].ShaderProgram.GetUniformBlockIndex("type_VertexBuffer");
-            m_GLRenderPasses[i].ShaderProgram.UniformBlockBinding(index, 0);
+            if (OpenGL::GL::GetVersion().Major < 4 || OpenGL::GL::GetVersion().Minor < 2)
+            {
+                std::uint32_t index = m_GLRenderPasses[i].ShaderProgram.GetUniformBlockIndex("type_VertexBuffer");
+                m_GLRenderPasses[i].ShaderProgram.UniformBlockBinding(index, 0);
+            }
 
             for (std::size_t j = 0; j < m_RenderPassObjectCount[i]; j++)
             {

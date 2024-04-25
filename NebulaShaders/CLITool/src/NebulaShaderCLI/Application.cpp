@@ -47,6 +47,7 @@ namespace CLI
         Nebula::ShaderConductor::TargetProfile Profile = {Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0};
         std::string EntryPoint                         = "main";
         std::string OutputFile;
+        std::uint32_t OutputVersion                    = 450;
         OutputType Output                                            = OutputType::SPIRV;
         Nebula::ShaderConductor::OptimizationLevel OptimizationLevel = Nebula::ShaderConductor::OptimizationLevel::None;
     };
@@ -90,6 +91,10 @@ namespace CLI
                 config.CorrectConfig = false;
                 return config;
             }
+        }
+        if (options.contains("outputversion"))
+        {
+            config.OutputVersion = std::stoul(options.at("outputversion"));
         }
         if (options.contains("optimization"))
         {
@@ -215,6 +220,7 @@ namespace CLI
         case OutputType::GLSL: {
             Nebula::ShaderConductor::GLSLOutput glslOutput;
             glslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
+            glslOutput.Version      = config.OutputVersion;
             // TODO(9636D): Make this configurable
             output = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(result.spirvCode, glslOutput);
 

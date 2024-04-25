@@ -163,6 +163,8 @@ namespace Nebula::OpenGL
         [[nodiscard]] static Program_t GetBoundProgram();
         [[nodiscard]] static VertexArray_t GetBoundVertexArray();
         static void SetLogLevel(std::uint32_t logLevel);
+
+        inline static const GLVersion& GetVersion() { return s_Version; }
     private:
         static void NebulaGLCallback(std::uint32_t source,
                                      std::uint32_t type,

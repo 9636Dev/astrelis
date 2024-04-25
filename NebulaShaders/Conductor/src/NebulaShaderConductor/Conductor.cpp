@@ -169,6 +169,15 @@ namespace Nebula::ShaderConductor
 
     bool ShaderConductor::Initialize() { return m_Impl->Initialize(); }
 
+    struct GLSLResource
+    {
+        // ID
+        std::uint32_t ID;
+        std::string Name;
+        std::uint32_t Set;
+        std::uint32_t Binding;
+    };
+
     // TODO(9636D): Include metadata as well on the output
     ShaderConductor::CompileOutput ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
                                                                   const GLSLOutput& output)
@@ -178,24 +187,38 @@ namespace Nebula::ShaderConductor
             spirv_cross::CompilerGLSL compiler(spirv);
             spirv_cross::CompilerGLSL::Options options;
 
-            options.version = output.Version;
-            options.es      = output.GLES;
+            options.version                          = output.Version;
+            options.es                               = output.GLES;
+            options.force_zero_initialized_variables = true;
+            options.enable_420pack_extension         = output.Enable420PackExtension;
 
-            if (options.version == 410)
+            std::vector<GLSLResource> glResources;
             {
-                options.enable_420pack_extension = false; // For MACOS Compatibility
+                const auto& resources = compiler.get_shader_resources();
+                for (const auto& texture : resources.separate_images)
+                {
+                    auto set     = compiler.get_decoration(texture.id, spv::DecorationDescriptorSet);
+                    auto binding = compiler.get_decoration(texture.id, spv::DecorationBinding);
+                    glResources.push_back({texture.id, texture.name, set, binding});
+                }
             }
 
             compiler.set_common_options(options);
+            compiler.build_combined_image_samplers();
 
-            const auto& resources = compiler.get_shader_resources();
-            compiler.build_combined_image_samplers(); // Call here to ensure it applies to all resources
-            for (const auto& resource : resources.sampled_images)
             {
-                auto set     = compiler.get_decoration(resource.id, spv::DecorationDescriptorSet);
-                auto binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-                compiler.set_name(resource.id, "u_tex" + std::to_string(binding));
+                const auto& resources = compiler.get_shader_resources();
+                for (std::size_t i = 0; i < resources.sampled_images.size(); ++i)
+                {
+                    const auto& texture    = resources.sampled_images[i];
+                    const auto& glResource = glResources[i];
+                    compiler.set_name(texture.id, glResource.Name);
+                    compiler.set_decoration(texture.id, spv::DecorationDescriptorSet, glResource.Set);
+                    compiler.set_decoration(texture.id, spv::DecorationBinding, glResource.Binding);
+                }
             }
+
+            // We try to preserve the texture binding and name to the combined image samplers
 
             return {compiler.compile().c_str(), ""};
         }

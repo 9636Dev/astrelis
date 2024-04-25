@@ -88,7 +88,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
     {
         renderer->Render();
         auto& transform = renderer->GetRenderableObject(0).GetTransform();
-        transform.Translate(0.01F, 0.00F, 0.0F);
+        transform.Rotate(0.01F, Nebula::Vector3f(0.0F, 0.0F, 1.0F));
 
         window->PollEvents();
         window->SwapBuffers();
