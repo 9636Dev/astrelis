@@ -188,6 +188,15 @@ namespace Nebula::ShaderConductor
 
             compiler.set_common_options(options);
 
+            const auto& resources = compiler.get_shader_resources();
+            compiler.build_combined_image_samplers(); // Call here to ensure it applies to all resources
+            for (const auto& resource : resources.sampled_images)
+            {
+                auto set     = compiler.get_decoration(resource.id, spv::DecorationDescriptorSet);
+                auto binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+                compiler.set_name(resource.id, "u_tex" + std::to_string(binding));
+            }
+
             return {compiler.compile().c_str(), ""};
         }
         catch (const spirv_cross::CompilerError& e)

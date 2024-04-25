@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NEBULA_SHADER_COMPILER_TEST_SOURCES
     LexerTests.cpp
+    CompilerTests.cpp
     #LexerFuzz.cpp
 )
 
@@ -16,7 +17,7 @@ include(GoogleTest)
 add_dependencies(NebulaShaderCompilerTests NebulaShaderCompiler)
 target_link_libraries(NebulaShaderCompilerTests PRIVATE
     NebulaShaderCompiler
-    GTest::gtest_main
+    gtest_main
 )
 
 #link_fuzztest(NebulaShaderCompilerTests)

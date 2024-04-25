@@ -7,9 +7,18 @@ namespace Nebula::Shader
     static std::unordered_map<std::string_view, TokenType> GetKeywordsMap()
     {
         return {
-            {"struct",   TokenType::StructKeyword  },
-            {"vertex",   TokenType::VertexKeyword  },
-            {"fragment", TokenType::FragmentKeyword},
+            {"Name",   TokenType::NameKeyword  },
+            {"Bindings",   TokenType::BindingsKeyword},
+            {"Uniforms", TokenType::UniformsKeyword},
+            {"Textures",  TokenType::TexturesKeyword},
+            {"Input",     TokenType::InputKeyword},
+            {"PixelInput",TokenType::FragmentInputKeyword},
+            {"Shader",    TokenType::ShaderKeyword},
+            {"Shared",    TokenType::SharedKeyword},
+            {"Vertex",    TokenType::VertexKeyword},
+            {"Fragment",  TokenType::FragmentKeyword},
+            {"Generated", TokenType::GeneratedKeyword},
+            {"Entrypoint",TokenType::EntrypointKeyword},
         };
     }
 
@@ -255,7 +264,12 @@ namespace Nebula::Shader
         while (true)
         {
             Advance();
-            if (CurrentChar() == '"')
+            char current = CurrentChar();
+            if (current == '\0' || current == '\n' || current == '\r')
+            {
+                return {m_Source.substr(start, m_Index - start), start, TokenType::InvalidStringLiteral};
+            }
+            if (current == '"')
             {
                 break; // TODO(9636D): Handle escape characters
             }

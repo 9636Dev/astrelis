@@ -43,13 +43,6 @@
             "binary": "bin/NebulaCoreTests",
             "args": []
         },
-        "ShaderCLI": {
-            "binary": "bin/NebulaShaderCLI",
-            "args": [
-                "-verbose",
-                "resources/Renderer.cpp"
-            ]
-        },
         "ShaderCompilerTests": {
             "binary": "bin/NebulaShaderCompilerTests",
             "args": []

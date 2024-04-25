@@ -15,18 +15,38 @@ namespace Nebula::Shader
             return "EndOfFile";
         case TokenType::Invalid:
             return "Invalid";
-        case TokenType::StructKeyword:
-            return "StructKeyword";
+        case TokenType::NameKeyword:
+            return "NameKeyword";
+        case TokenType::BindingsKeyword:
+            return "BindingsKeyword";
+        case TokenType::UniformsKeyword:
+            return "UniformsKeyword";
+        case TokenType::TexturesKeyword:
+            return "TexturesKeyword";
+        case TokenType::InputKeyword:
+            return "InputKeyword";
+        case TokenType::FragmentInputKeyword:
+            return "PixelInputKeyword";
+        case TokenType::ShaderKeyword:
+            return "ShaderKeyword";
+        case TokenType::SharedKeyword:
+            return "SharedKeyword";
         case TokenType::VertexKeyword:
             return "VertexKeyword";
         case TokenType::FragmentKeyword:
             return "FragmentKeyword";
+        case TokenType::GeneratedKeyword:
+            return "GeneratedKeyword";
+        case TokenType::EntrypointKeyword:
+            return "EntrypointKeyword";
         case TokenType::ExclamationMark:
             return "ExclamationMark";
         case TokenType::ExclamationMarkEqual:
-        return "ExclamationMarkEqual";
+            return "ExclamationMarkEqual";
         case TokenType::StringLiteral:
             return "StringLiteral";
+        case TokenType::InvalidStringLiteral:
+            return "InvalidStringLiteral";
         case TokenType::Hash:
             return "Hash";
         case TokenType::Dollar:
@@ -59,6 +79,8 @@ namespace Nebula::Shader
             return "Comment";
         case TokenType::BlockComment:
             return "BlockComment";
+        case TokenType::InvalidComment:
+            return "InvalidComment";
         case TokenType::NumberLiteral:
             return "NumberLiteral";
         case TokenType::HexNumberLiteral:
@@ -132,4 +154,4 @@ namespace Nebula::Shader
         stringStream << " at index " << Index << ": '" << Text << "'";
         return stringStream.str();
     }
-} // namespace Nebula
+} // namespace Nebula::Shader

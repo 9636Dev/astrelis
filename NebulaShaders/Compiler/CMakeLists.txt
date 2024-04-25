@@ -11,10 +11,8 @@ set(NEBULA_SHADER_COMPILER_SOURCES
     src/NebulaShaderCompiler/Token.cpp
     src/NebulaShaderCompiler/Lexer.hpp
     src/NebulaShaderCompiler/Lexer.cpp
-    src/NebulaShaderCompiler/SyntaxNode.hpp
-    src/NebulaShaderCompiler/SyntaxNode.cpp
-    src/NebulaShaderCompiler/Parser.hpp
-    src/NebulaShaderCompiler/Parser.cpp
+    src/NebulaShaderCompiler/ShaderCompiler.hpp
+    src/NebulaShaderCompiler/ShaderCompiler.cpp
 )
 
 add_library(NebulaShaderCompiler SHARED ${NEBULA_SHADER_COMPILER_SOURCES})
@@ -23,7 +21,15 @@ target_include_directories(NebulaShaderCompiler PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-add_dependencies(NebulaShaderCompiler NebulaCore)
-target_link_libraries(NebulaShaderCompiler NebulaCore)
+add_dependencies(NebulaShaderCompiler
+    NebulaCore
+    NebulaShaderConductor
+)
+target_link_libraries(NebulaShaderCompiler PUBLIC
+    NebulaCore
+    NebulaShaderConductor
+)
 
-add_subdirectory(tests)
+if (NOT DEFINED NEBULA_DISABLE_TESTS)
+    add_subdirectory(tests)
+endif()

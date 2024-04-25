@@ -12,14 +12,24 @@ namespace Nebula::Shader
         Invalid,
 
         // Keywords
-        StructKeyword,
+        NameKeyword,
+        BindingsKeyword,
+        UniformsKeyword,
+        TexturesKeyword,
+        InputKeyword,
+        FragmentInputKeyword,
+        ShaderKeyword,
+        SharedKeyword,
         VertexKeyword,
         FragmentKeyword,
+        GeneratedKeyword,
+        EntrypointKeyword,
 
         // Based on ASCII order
         ExclamationMark,
         ExclamationMarkEqual,
         StringLiteral,
+        InvalidStringLiteral,
         Hash,
         Dollar,
         Percent,
