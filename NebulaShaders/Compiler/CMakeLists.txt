@@ -28,11 +28,11 @@ target_include_directories(NebulaShaderCompiler PUBLIC
 
 add_dependencies(NebulaShaderCompiler
     NebulaCore
-    NebulaShaderConductor
+    NebulaShaderCommon
 )
 target_link_libraries(NebulaShaderCompiler PUBLIC
     NebulaCore
-    NebulaShaderConductor
+    NebulaShaderCommon
 )
 
 if (NOT DEFINED NEBULA_DISABLE_TESTS)

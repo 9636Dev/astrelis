@@ -18,9 +18,11 @@ target_include_directories(NebulaShaderCLI PRIVATE
 
 add_dependencies(NebulaShaderCLI
     NebulaCore
+    NebulaShaderCompiler
     NebulaShaderConductor
 )
 target_link_libraries(NebulaShaderCLI
     NebulaCore
+    NebulaShaderCompiler
     NebulaShaderConductor
 )

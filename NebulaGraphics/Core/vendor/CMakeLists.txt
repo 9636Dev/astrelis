@@ -31,8 +31,6 @@ function(ImGuiAddLibrary target backend)
         message(FATAL_ERROR "Unknown backend: ${backend}")
     endif()
 
-    message(STATUS "IMGUI: ${IMGUI_SRC}")
-
     add_library(${IMGUI_TARGET_NAME} STATIC ${IMGUI_SRC})
     target_include_directories(${IMGUI_TARGET_NAME} PUBLIC ${IMGUI_SOURCE_DIR})
 

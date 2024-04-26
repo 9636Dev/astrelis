@@ -8,7 +8,7 @@
 #include <dxc/dxcapi.h>
 
 #include <spirv_glsl.hpp>
-#include <spirv_hlsl.hpp> // If the user wants to convet HLSL to a different version of HLSL, they can use this header
+#include <spirv_hlsl.hpp>
 #include <spirv_msl.hpp>
 
 #include <string>
@@ -268,7 +268,6 @@ namespace Nebula::ShaderConductor
             spirv_cross::CompilerHLSL::Options options;
 
             options.shader_model = output.HLSLVersion;
-            // Currently, SPIRV-Cross does not support options for HLSL
 
             return {{compiler.compile().c_str(), ""}, {}};
         }

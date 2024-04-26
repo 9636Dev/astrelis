@@ -1,4 +1,4 @@
-Name "BasicShader"
+Name "BasicShader";
 
 Bindings {
     Uniforms {
@@ -8,7 +8,7 @@ Bindings {
 }
 
 Input {
-    float2 Position : POSITION2D;
+    float2 Position : POSITION;
 }
 
 PixelInput {
@@ -21,15 +21,20 @@ Shader {
         cbuffer VertexBuffer : register(b0)
         {
             float4x4 modelMatrix;
-        }
+        };
 
         struct PixelInput
         {
             float4 pos : SV_POSITION;
-        }
+        };
     }
 
     Vertex {
+        struct VertexInput
+        {
+            float2 pos : POSITION;
+        };
+
         PixelInput VertexShader(VertexInput input)
         {
             PixelInput output;
@@ -39,14 +44,14 @@ Shader {
     }
 
     Fragment {
-        float4 PixelShader(PixelInput input)
+        float4 PixelShader(PixelInput input) : SV_TARGET
         {
             return float4(1.0, 1.0, 1.0, 1.0);
         }
     }
 
     Entrypoint {
-        Vertex "VertexShader"
-        Fragment "PixelShader"
+        Vertex "VertexShader";
+        Fragment "PixelShader";
     }
 }

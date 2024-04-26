@@ -11,6 +11,8 @@ else()
 endif()
 set_property(CACHE NEBULA_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 
+set(NEBULA_SHADER_DIRECTORY "${NEBULA_RUNTIME_DIR}/resources/shaders" CACHE STRING "Directory for shaders")
+
 option(NEBULA_USE_PTHREADS "Use pthreads for threading" ON)
 
 # This can be tuned for the specific project

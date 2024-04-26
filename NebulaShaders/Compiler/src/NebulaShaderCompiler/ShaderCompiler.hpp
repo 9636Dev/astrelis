@@ -2,11 +2,16 @@
 
 #include "Core.hpp"
 
+#include "ShaderCommon/Bindings.hpp"
+#include "ShaderCommon/Inputs.hpp"
+#include "Lexer.hpp"
+
 #include <array>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
+
 
 namespace Nebula::Shader
 {
@@ -53,12 +58,23 @@ namespace Nebula::Shader
         ~Compiler()                              = default;
 
         std::optional<Error> Compile();
+
+        [[nodiscard]] std::vector<StringBinding> GetBindings() const;
+        [[nodiscard]] std::vector<StringBinding> GetTextures() const;
+        [[nodiscard]] std::vector<StringInput> GetInputs() const;
+        [[nodiscard]] std::vector<StringInput> GetFragmentInputs() const;
+
+        [[nodiscard]] std::string GetVertexEntrypoint() const { return m_Meta.VertexEntrypoint; }
+        [[nodiscard]] std::string GetFragmentEntrypoint() const { return m_Meta.FragmentEntrypoint; }
+
         [[nodiscard]] std::array<std::size_t, 2> GetRowColumn(std::size_t index) const;
 
         [[nodiscard]] const Meta& GetMeta() const { return m_Meta; }
 
         [[nodiscard]] const Sources& GetSources() const { return m_Sources; }
     private:
+        std::optional<Error> ParseBindings(Lexer& lexer, Token& token);
+
         Meta m_Meta;
         Sources m_Sources;
         std::string m_Source;

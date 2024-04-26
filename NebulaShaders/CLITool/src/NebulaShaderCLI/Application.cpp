@@ -5,9 +5,11 @@
 #include <vector>
 
 #include "NebulaCore/Log.hpp"
+#include "NebulaShaderCompiler/ShaderCompiler.hpp"
 #include "NebulaShaderConductor/Conductor.hpp"
 
 #include "Arguments.hpp"
+#include "NebulaShaderConductor/ShaderInput.hpp"
 #include "NebulaShaderConductor/ShaderOutput.hpp"
 #include "NebulaShaderConductor/TargetProfile.hpp"
 
@@ -41,17 +43,16 @@ namespace CLI
 
     struct Config
     {
-        bool CorrectConfig                             = true;
-        bool Verbose                                   = false;
-        InputType Input                                = InputType::File;
-        Nebula::ShaderConductor::TargetProfile Profile = {Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0};
-        std::string EntryPoint                         = "main";
+        bool CorrectConfig = true;
+        bool Verbose       = false;
+        InputType Input    = InputType::File;
         std::string OutputFile;
-        std::uint32_t OutputVersion                    = 450;
+        std::uint32_t OutputVersion                                  = 450;
         OutputType Output                                            = OutputType::SPIRV;
         Nebula::ShaderConductor::OptimizationLevel OptimizationLevel = Nebula::ShaderConductor::OptimizationLevel::None;
     };
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     Config ToConfig(const std::map<std::string, std::string>& options)
     {
         Config config;
@@ -62,10 +63,6 @@ namespace CLI
         if (options.contains("outputfile"))
         {
             config.OutputFile = options.at("outputfile");
-        }
-        if (options.contains("entrypoint"))
-        {
-            config.EntryPoint = options.at("entrypoint");
         }
         if (options.contains("output"))
         {
@@ -121,24 +118,6 @@ namespace CLI
                 return config;
             }
         }
-        if (options.contains("profile"))
-        {
-            auto profile = options.at("profile");
-            if (profile == "vertex")
-            {
-                config.Profile.Stage = Nebula::ShaderConductor::ShaderStage::Vertex;
-            }
-            else if (profile == "fragment")
-            {
-                config.Profile.Stage = Nebula::ShaderConductor::ShaderStage::Pixel;
-            }
-            else
-            {
-                std::cerr << "Invalid profile: -profile=" << profile << '\n';
-                config.CorrectConfig = false;
-                return config;
-            }
-        }
         if (options.contains("in"))
         {
             if (options.at("in") == "stdin")
@@ -160,135 +139,151 @@ namespace CLI
         return config;
     }
 
-    int GenerateCode(Config& config, std::string input, std::vector<std::string> args)
+    int GenerateCode(Config& config, std::string input)
     {
-        Nebula::ShaderConductor::ShaderConductor conductor;
-        if (!conductor.Initialize())
+        Nebula::Shader::Compiler compiler(std::move(input));
+        auto result = compiler.Compile();
+        if (result.has_value())
         {
-            std::cerr << "Failed to initialize ShaderConductor\n";
-            return 1;
-        }
-        Nebula::ShaderConductor::ShaderInput shaderInput;
-        shaderInput.FileName   = config.Input == InputType::File ? args[1] : "stdin";
-        shaderInput.Source     = std::move(input);
-        shaderInput.EntryPoint = config.EntryPoint;
-        shaderInput.Profile    = config.Profile;
-
-        Nebula::ShaderConductor::ShaderOutput shaderOutput;
-        shaderOutput.Optimization = config.OptimizationLevel;
-
-        Nebula::ShaderConductor::SPIRVCompilationResult result = conductor.CompileToSPIRV(shaderInput, shaderOutput);
-
-        if (!result.success)
-        {
-            std::cerr << "Failed to compile shader: " << result.errorMessage << '\n';
+            auto [row, col] = compiler.GetRowColumn(result->Index);
+            std::cerr << "Failed to compile shader at " << row << ":" << col << ": " << result->Message << '\n';
             return 1;
         }
 
         if (config.Verbose)
         {
-            std::cout << "Compiled shader to SPIR-V (" << result.spirvCode.size() << " words)\n";
+            std::cout << "Successfully compiled shader\n";
         }
 
-        if (config.Output == OutputType::SPIRV)
+        auto bindings      = compiler.GetBindings();
+        auto textures      = compiler.GetTextures();
+        auto inputs        = compiler.GetInputs();
+        auto fragmentInput = compiler.GetFragmentInputs();
+
+        auto vertexEntry   = compiler.GetVertexEntrypoint();
+        auto fragmentEntry = compiler.GetFragmentEntrypoint();
+
+        auto sources = compiler.GetSources();
+
+        if (!sources.Vertex.has_value() || !sources.Fragment.has_value())
         {
-            if (config.OutputFile.empty())
+            std::cerr << "Generated shaders are not supported yet\n";
+            return 1;
+        }
+
+        auto vertexSource   = sources.Shared.value_or("") + sources.Vertex.value();
+        auto fragmentSource = sources.Shared.value_or("") + sources.Fragment.value();
+
+        if (config.Verbose)
+        {
+            std::cout << "Bindings:\n";
+            for (const auto& binding : bindings)
             {
-                std::cout << "No output file specified, not writing to disk (binary format)\n";
-                return 0;
+                std::cout << "  " << binding.Type << " " << binding.Name << " -> " << binding.Target << '\n';
+            }
+            std::cout << "Textures:\n";
+            for (const auto& texture : textures)
+            {
+                std::cout << "  " << texture.Type << " " << texture.Name << " -> " << texture.Target << '\n';
+            }
+            std::cout << "Inputs:\n";
+            for (const auto& input : inputs)
+            {
+                std::cout << "  " << input.Type << " " << input.Name << " -> " << input.Semantic << '\n';
+            }
+            std::cout << "Fragment Inputs:\n";
+            for (const auto& input : fragmentInput)
+            {
+                std::cout << "  " << input.Type << " " << input.Name << " -> " << input.Semantic << '\n';
             }
 
-            // We just cast it to a void* and write it to the file
-            std::ofstream file(config.OutputFile, std::ios::binary);
-            if (!file.good())
+            std::cout << "Vertex Entrypoint: " << vertexEntry << '\n';
+            std::cout << "Fragment Entrypoint: " << fragmentEntry << '\n';
+
+            std::cout << "Vertex Shader:\n" << vertexSource << '\n';
+            std::cout << "Fragment Shader:\n" << fragmentSource << '\n';
+        }
+
+        Nebula::ShaderConductor::ShaderConductor conductor;
+        Nebula::ShaderConductor::TargetProfile vertexProfile(Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0);
+        Nebula::ShaderConductor::TargetProfile fragmentProfile(Nebula::ShaderConductor::ShaderStage::Pixel, 6, 0);
+
+        Nebula::ShaderConductor::ShaderInput vertexInput;
+        vertexInput.Source = vertexSource;
+        vertexInput.EntryPoint = vertexEntry;
+        vertexInput.Profile = vertexProfile;
+        vertexInput.FileName = compiler.GetMeta().Name + "_VS";
+
+
+        Nebula::ShaderConductor::ShaderInput pixelInput;
+        pixelInput.Source = fragmentSource;
+        pixelInput.EntryPoint = fragmentEntry;
+        pixelInput.Profile = fragmentProfile;
+        pixelInput.FileName = compiler.GetMeta().Name + "_PS";
+
+        Nebula::ShaderConductor::ShaderOutput output;
+        output.Optimization = config.OptimizationLevel;
+
+
+        auto spirvVertex = conductor.CompileToSPIRV(vertexInput, output);
+        auto spirvFragment = conductor.CompileToSPIRV(pixelInput, output);
+
+        if (!spirvVertex.success)
+        {
+            std::cerr << "Failed to compile vertex shader: " << spirvVertex.errorMessage << '\n';
+            return 1;
+        }
+
+        if (!spirvFragment.success)
+        {
+            std::cerr << "Failed to compile fragment shader: " << spirvFragment.errorMessage << '\n';
+            return 1;
+        }
+
+        if (config.Output == OutputType::GLSL)
+        {
+            Nebula::ShaderConductor::GLSLOutput glslOutput;
+            glslOutput.Version = config.OutputVersion;
+            glslOutput.Optimization = config.OptimizationLevel;
+
+            auto [glslVertex, vertexMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(spirvVertex.spirvCode, glslOutput);
+            auto [glslFragment, fragmentMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(spirvFragment.spirvCode, glslOutput);
+
+            if (!glslVertex.second.empty())
             {
-                std::cerr << "Failed to open output file: " << config.OutputFile << '\n';
+                std::cerr << "Failed to compile vertex shader to GLSL: " << glslVertex.second << '\n';
                 return 1;
             }
 
-            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-            file.write(reinterpret_cast<const char*>(result.spirvCode.data()),
-                       static_cast<std::int64_t>(result.spirvCode.size() * sizeof(uint32_t)));
-            return 0;
-        }
-
-        std::pair<std::string, std::string> output;
-        switch (config.Output)
-        {
-        case OutputType::SPIRV:
-            return 1;
-        case OutputType::GLSL: {
-            Nebula::ShaderConductor::GLSLOutput glslOutput;
-            glslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
-            glslOutput.Version      = config.OutputVersion;
-            // TODO(9636D): Make this configurable
-            auto [glsl, meta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(result.spirvCode, glslOutput);
-            output = std::move(glsl);
-
-            for (const auto& [name, buffer] : meta.UniformBuffers)
+            if (!glslFragment.second.empty())
             {
-                std::cout << "Uniform Buffer: " << name << '\n';
-                std::cout << "Newname: " << buffer.Name << "  Binding: " << buffer.Binding.value_or(-1) << '\n';
+                std::cerr << "Failed to compile fragment shader to GLSL: " << glslFragment.second << '\n';
+                return 1;
             }
 
-            for (const auto& [name, sampler] : meta.Samplers)
+            if (config.Verbose)
             {
-                std::cout << "Sampler: " << name << '\n';
-                if (sampler.Binding.has_value())
+                std::cout << "Vertex GLSL:\n" << glslVertex.first << '\n';
+                std::cout << "Fragment GLSL:\n" << glslFragment.first << '\n';
+
+                std::cout << "Vertex Meta:\n";
+                for (const auto& uniform : vertexMeta.UniformBuffers)
                 {
-                    std::cout << "Newname: " << sampler.Name << "  Binding: " << sampler.Binding.value_or(-1) << '\n';
+                    std::cout << "  " << uniform.first << " -> " << uniform.second.Name << " - " <<  uniform.second.Binding.value_or(-1) << '\n';
+                }
+
+                for (const auto& texture : vertexMeta.Samplers)
+                {
+                    std::cout << "  " << texture.first << " -> " << texture.second.Name << " - " <<  texture.second.Binding.value_or(-1) << '\n';
+                }
+
+                std::cout << "Fragment Meta:\n";
+                for (const auto& uniform : fragmentMeta.UniformBuffers)
+                {
+                    std::cout << "  " << uniform.first << " -> " << uniform.second.Name << " - " <<  uniform.second.Binding.value_or(-1) << '\n';
                 }
             }
 
-            break;
-        }
-        case OutputType::HLSL: {
-            Nebula::ShaderConductor::HLSLOutput hlslOutput;
-            hlslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
-            auto [hlsl, meta] = Nebula::ShaderConductor::ShaderConductor::CompileToHLSL(result.spirvCode, hlslOutput);
-            output = std::move(hlsl);
-            break;
-        }
-
-        case OutputType::MSL: {
-            Nebula::ShaderConductor::MetalOutput mslOutput;
-            mslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
-            auto [msl, meta] = Nebula::ShaderConductor::ShaderConductor::CompileToMetal(result.spirvCode, mslOutput);
-            output = std::move(msl);
-            break;
-        }
-        }
-
-        if (!config.OutputFile.empty())
-        {
-            std::ofstream file(config.OutputFile);
-            if (!file.good())
-            {
-                std::cerr << "Failed to open output file: " << config.OutputFile << '\n';
-                return 1;
-            }
-
-            if (output.second.empty())
-            {
-                file << output.first;
-            }
-            else
-            {
-                std::cerr << "Errors:\n" << output.second << '\n';
-            }
-
-            file << output.first;
-        }
-        else
-        {
-            if (output.second.empty())
-            {
-                std::cout << output.first;
-            }
-            else
-            {
-                std::cerr << "Errors:\n" << output.second << '\n';
-            }
         }
 
         return 0;
@@ -297,14 +292,17 @@ namespace CLI
     int main(std::vector<std::string> args)
     {
         auto options = ParseOptions(RemoveOptions(args));
-        if (options.contains("help"))
+        if (options.contains("help") || options.contains("h") || options.contains("?"))
         {
             // We completely ignore the other arguments
             std::cout << "Usage: " << args[0]
                       << " <shader file>\n"
                          "Options:\n"
                          "  -help    -- prints this message\n"
-                         "  -verbose -- outputs verbose debugging information\n";
+                         "  -verbose -- outputs verbose debugging information\n"
+                         "  -output=<type> -- specifies the output type (glsl, spirv, hlsl, msl)\n"
+                         "  -outputversion=<version> -- specifies the output version (default: 450)\n"
+                         "  -optimization=<level> -- specifies the optimization level (none, 1, 22, 3)\n";
             return 0;
         }
         auto config = ToConfig(options);
@@ -357,7 +355,7 @@ namespace CLI
             std::cout << "Start processing input (" << input.size() << " characters)\n";
         }
 
-        return GenerateCode(config, std::move(input), std::move(args));
+        return GenerateCode(config, std::move(input));
     }
 } // namespace CLI
 

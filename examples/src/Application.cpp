@@ -1,4 +1,5 @@
 #include "NebulaCore/Log.hpp"
+#include "NebulaGraphicsCore/Geometry/Transform.hpp"
 #include "NebulaGraphicsCore/Mesh/2DStaticMesh.hpp"
 #include "NebulaGraphicsCore/Window.hpp"
 #include "NebulaGraphicsRenderer/Renderer.hpp"
@@ -77,11 +78,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
         -0.5F, -0.5F, 0.5F, -0.5F, 0.5F, 0.5F, -0.5F, 0.5F,
     };
     mesh->Indices() = {0, 1, 2, 0, 2, 3};
-    Nebula::Transform transform;
-    Nebula::RenderableObject renderableObject(transform, mesh);
-    renderer->AddRenderableObject(renderableObject, 0);
+    Nebula::RenderableObject renderableObject(Nebula::Transform(), mesh);
+    Nebula::RenderableObject renderableObject2(Nebula::Transform(), mesh);
 
-    window->SetVSync(true);
+    renderer->AddRenderableObject(renderableObject, 0);
+    renderer->AddRenderableObject(renderableObject2, 0);
+
+    window->SetVSync(false);
     //window->SetEventCallback([](Nebula::Event& event) { NEB_CORE_LOG_TRACE("{0}", event.ToString()); });
 
     while (!window->ShouldClose())
@@ -89,6 +92,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
         renderer->Render();
         auto& transform = renderer->GetRenderableObject(0).GetTransform();
         transform.Rotate(0.01F, Nebula::Vector3f(0.0F, 0.0F, 1.0F));
+        auto& transform2 = renderer->GetRenderableObject(1).GetTransform();
+        transform2.Rotate(-0.01F, Nebula::Vector3f(0.0F, 0.0F, 1.0F));
 
         window->PollEvents();
         window->SwapBuffers();

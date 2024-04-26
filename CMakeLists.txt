@@ -18,6 +18,11 @@ endif()
 
 project(NebulaEngine VERSION 0.0.1)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(NEBULA_RUNTIME_DIR ${CMAKE_SOURCE_DIR}/run)
+
 include(cmake/UtilFunctions.cmake)
 include(cmake/DefaultConfig.cmake)
 include(cmake/VerifyConfig.cmake)
@@ -41,12 +46,7 @@ if (NEBULA_BUILD_TESTS AND NOT TARGET gtest_main) # If we are building tests and
     add_subdirectory(vendor/googletest)
 endif()
 
-# Set Directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Used by Visual Studio
-set(NEBULA_RUNTIME_DIR ${CMAKE_SOURCE_DIR}/run)
 
 # We add the submodules
 add_subdirectory(NebulaCore)
