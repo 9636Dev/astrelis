@@ -15,8 +15,13 @@ set(NEBULA_SHADER_COMPILER_SOURCES
     src/NebulaShaderCompiler/ShaderCompiler.cpp
 )
 
-add_library(NebulaShaderCompiler SHARED ${NEBULA_SHADER_COMPILER_SOURCES})
-nebula_add_definitions(NebulaShaderCompiler "NEBULA_SHADER_COMPILER" SHARED)
+set(NEBULA_SHADER_COMPILER_LIBRARY_TYPE "Inherit" CACHE STRING "The type of library to build")
+set_property(CACHE NEBULA_SHADER_COMPILER_LIBRARY_TYPE PROPERTY STRINGS "Inherit" "Static" "Shared")
+nebula_library_type(NEBULA_SHADER_COMPILER_LIBRARY_TYPE NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL)
+message(STATUS "NebulaEngine: NebukaShaderCompiler built as: ${NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL}")
+add_library(NebulaShaderCompiler ${NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL} ${NEBULA_SHADER_COMPILER_SOURCES})
+nebula_add_definitions(NebulaShaderCompiler "NEBULA_SHADER_COMPILER" ${NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL})
+
 target_include_directories(NebulaShaderCompiler PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

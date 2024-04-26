@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 
+#include "NebulaCore/Log.hpp"
 #include "NebulaGraphicsOpenGL/Core.hpp"
 #include "NebulaShaderConductor/Conductor.hpp"
 #include "OpenGL/GL.hpp"
@@ -64,19 +65,19 @@ namespace Nebula
             auto spirv = shaderConductor.CompileToSPIRV(renderPass.ShaderProgram.VertexShader, output);
             if (!spirv.success)
             {
-                throw std::runtime_error(spirv.errorMessage);
+                throw std::runtime_error("Could not compile to SPIRV: " + spirv.errorMessage);
             }
 
-            auto glsl = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
+            auto [glsl, meta] = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
             if (!glsl.second.empty())
             {
-                throw std::runtime_error(glsl.second);
+                throw std::runtime_error("Could not compile to GLSL: " + glsl.second);
             }
 
             vertexShader.ShaderSource(glsl.first);
             if (!vertexShader.Compile())
             {
-                throw std::runtime_error(vertexShader.GetInfoLog());
+                throw std::runtime_error("GLSL Was not compiled: " + vertexShader.GetInfoLog());
             }
 
             shaderProgram.AttachShader(vertexShader);
@@ -87,19 +88,19 @@ namespace Nebula
             auto spirv = shaderConductor.CompileToSPIRV(renderPass.ShaderProgram.FragmentShader, output);
             if (!spirv.success)
             {
-                throw std::runtime_error(spirv.errorMessage);
+                throw std::runtime_error("Could not compile to SPIRV: " + spirv.errorMessage);
             }
 
-            auto glsl = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
+            auto [glsl, meta] = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
             if (!glsl.second.empty())
             {
-                throw std::runtime_error(glsl.second);
+                throw std::runtime_error("Could not compile to GLSL: " + glsl.second);
             }
 
             fragmentShader.ShaderSource(glsl.first);
             if (!fragmentShader.Compile())
             {
-                throw std::runtime_error(fragmentShader.GetInfoLog());
+                throw std::runtime_error("GLSL Was not compiled: " + fragmentShader.GetInfoLog());
             }
 
             shaderProgram.AttachShader(fragmentShader);
@@ -161,7 +162,7 @@ namespace Nebula
             m_GLRenderPasses[i].UniformBuffer.BindBase(0);
             if (OpenGL::GL::GetVersion().Major < 4 || OpenGL::GL::GetVersion().Minor < 2)
             {
-                std::uint32_t index = m_GLRenderPasses[i].ShaderProgram.GetUniformBlockIndex("type_VertexBuffer");
+                std::uint32_t index = m_GLRenderPasses[i].ShaderProgram.GetUniformBlockIndex("ubo_VertexBuffer");
                 m_GLRenderPasses[i].ShaderProgram.UniformBlockBinding(index, 0);
             }
 

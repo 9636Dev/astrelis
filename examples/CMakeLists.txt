@@ -9,7 +9,7 @@ set(NEBULA_EXAMPLES_SOURCES
 )
 
 add_executable(NebulaExamples ${NEBULA_EXAMPLES_SOURCES})
-add_dependencies(NebulaExamples 
+add_dependencies(NebulaExamples
     NebulaCore
     NebulaGraphics
 )

@@ -1,6 +1,7 @@
 #include "Conductor.hpp"
 
 #include "NebulaCore/Log.hpp"
+#include "spirv_cross.hpp"
 #include "spirv_cross_error_handling.hpp"
 
 #include <dxc/Support/dxcapi.use.h>
@@ -179,11 +180,15 @@ namespace Nebula::ShaderConductor
     };
 
     // TODO(9636D): Include metadata as well on the output
-    ShaderConductor::CompileOutput ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
+    ShaderConductor::CompileOutput<GLSLMeta> ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
                                                                   const GLSLOutput& output)
     {
+        constexpr auto UniformBufferPrefix = "ubo_";
+        constexpr auto SamplerPrefix       = "sampler_";
+
         try
         {
+            GLSLMeta meta;
             spirv_cross::CompilerGLSL compiler(spirv);
             spirv_cross::CompilerGLSL::Options options;
 
@@ -192,9 +197,32 @@ namespace Nebula::ShaderConductor
             options.force_zero_initialized_variables = true;
             options.enable_420pack_extension         = output.Enable420PackExtension;
 
+            bool CanUseUniformBufferBinding = options.version >= 420 || options.enable_420pack_extension;
+            bool CanUseSamplerBinding       = options.version >= 420 || options.enable_420pack_extension;
+
             std::vector<GLSLResource> glResources;
             {
                 const auto& resources = compiler.get_shader_resources();
+
+                for (const auto& buffer : resources.uniform_buffers)
+                {
+                    auto binding = compiler.get_decoration(buffer.id, spv::DecorationBinding);
+                    // The naming convention is type.{OriginalName}
+                    // We need to extract the original name
+                    auto name = buffer.name;
+                    if (name.starts_with("type."))
+                    {
+                        name = name.substr(5);
+                    }
+
+                    auto newname = UniformBufferPrefix + name;
+                    compiler.set_name(buffer.id, newname);
+
+                    std::optional<std::uint32_t> bindingOpt = CanUseUniformBufferBinding ? std::make_optional(binding) : std::nullopt;
+                    GLSLMeta::UniformBuffer ubo(newname, bindingOpt);
+                    meta.UniformBuffers.insert({name, std::move(ubo)});
+                }
+
                 for (const auto& texture : resources.separate_images)
                 {
                     auto set     = compiler.get_decoration(texture.id, spv::DecorationDescriptorSet);
@@ -212,23 +240,26 @@ namespace Nebula::ShaderConductor
                 {
                     const auto& texture    = resources.sampled_images[i];
                     const auto& glResource = glResources[i];
-                    compiler.set_name(texture.id, glResource.Name);
+
+                    std::optional<std::uint32_t> binding = CanUseSamplerBinding ? std::make_optional(glResource.Binding) : std::nullopt;
+                    auto newname = SamplerPrefix + glResource.Name;
+                    auto sampler = GLSLMeta::Sampler(newname, binding);
+                    meta.Samplers.insert({glResource.Name, std::move(sampler)});
+                    compiler.set_name(texture.id, newname);
                     compiler.set_decoration(texture.id, spv::DecorationDescriptorSet, glResource.Set);
                     compiler.set_decoration(texture.id, spv::DecorationBinding, glResource.Binding);
                 }
             }
 
-            // We try to preserve the texture binding and name to the combined image samplers
-
-            return {compiler.compile().c_str(), ""};
+            return {{compiler.compile().c_str(), ""}, meta};
         }
         catch (const spirv_cross::CompilerError& e)
         {
-            return {"", e.what()};
+            return {{"", e.what()}, {}};
         }
     }
 
-    ShaderConductor::CompileOutput ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv,
+    ShaderConductor::CompileOutput<HLSLMeta> ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv,
                                                                   const HLSLOutput& output)
     {
         try
@@ -239,15 +270,15 @@ namespace Nebula::ShaderConductor
             options.shader_model = output.HLSLVersion;
             // Currently, SPIRV-Cross does not support options for HLSL
 
-            return {compiler.compile().c_str(), ""};
+            return {{compiler.compile().c_str(), ""}, {}};
         }
         catch (const spirv_cross::CompilerError& e)
         {
-            return {"", e.what()};
+            return {{"", e.what()}, {}};
         }
     }
 
-    ShaderConductor::CompileOutput ShaderConductor::CompileToMetal(const std::vector<std::uint32_t>& spirv,
+    ShaderConductor::CompileOutput<MetalMeta> ShaderConductor::CompileToMetal(const std::vector<std::uint32_t>& spirv,
                                                                    const MetalOutput& output)
     {
         try
@@ -258,11 +289,11 @@ namespace Nebula::ShaderConductor
             options.msl_version = output.MslVersion;
             // Currently, SPIRV-Cross does not support options for Metal
 
-            return {compiler.compile().c_str(), ""};
+            return {{compiler.compile().c_str(), ""}, {}};
         }
         catch (const spirv_cross::CompilerError& e)
         {
-            return {"", e.what()};
+            return {{"", e.what()}, {}};
         }
     }
 } // namespace Nebula::ShaderConductor

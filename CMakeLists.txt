@@ -49,7 +49,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(NEBULA_RUNTIME_DIR ${CMAKE_SOURCE_DIR}/run)
 
 # We add the submodules
-#add_subdirectory(NebulaCore)
-#add_subdirectory(NebulaGraphics)
-#add_subdirectory(NebulaShaders)
-#add_subdirectory(examples) # NebulaExamples
+add_subdirectory(NebulaCore)
+add_subdirectory(NebulaGraphics)
+add_subdirectory(NebulaShaders)
+add_subdirectory(examples) # NebulaExamples

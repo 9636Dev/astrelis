@@ -1,6 +1,8 @@
 #include "GL.hpp"
 #include <GL/glew.h>
 
+#include "NebulaCore/Log.hpp"
+
 namespace Nebula::OpenGL
 {
 #ifdef NEBULA_DEBUG
@@ -56,7 +58,8 @@ namespace Nebula::OpenGL
         }
 
         GLenum error = glGetError();
-        while (error != GL_NO_ERROR) {
+        while (error != GL_NO_ERROR)
+        {
             NEB_CORE_LOG_ERROR("OpenGL error before GLEW init: {}", error);
             error = glGetError();
         }
@@ -157,16 +160,14 @@ namespace Nebula::OpenGL
     {
         NEB_GLCall(glGenVertexArrays, n, arrays);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_VertexArrays.insert(arrays[i]));
-}
+        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_VertexArrays.insert(arrays[i]); });
     }
 
     void GL::DeleteVertexArrays(sizei_t n, const VertexArray_t* arrays)
     {
         NEB_GLCall(glDeleteVertexArrays, n, arrays);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_VertexArrays.erase(arrays[i]));
-}
+        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_VertexArrays.erase(arrays[i]); });
     }
 
     void GL::BindVertexArray(VertexArray_t array)
@@ -183,16 +184,14 @@ namespace Nebula::OpenGL
     {
         NEB_GLCall(glGenBuffers, n, buffers);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_Buffers.insert(buffers[i]));
-}
+        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_Buffers.insert(buffers[i]); });
     }
 
     void GL::DeleteBuffers(sizei_t n, const Buffer_t* buffers)
     {
         NEB_GLCall(glDeleteBuffers, n, buffers);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_Buffers.erase(buffers[i]));
-}
+        NEB_RUN_IF_DEBUG(for (sizei_t i = 0; i < n; i++) { s_Buffers.erase(buffers[i]); });
     }
 
     void GL::BindBuffer(BufferTarget target, Buffer_t buffer)
@@ -502,26 +501,26 @@ namespace Nebula::OpenGL
         switch (severity)
         {
         case GL_DEBUG_SEVERITY_HIGH:
-            NEB_CORE_LOG_ERROR("[OpenGL Error] Source: {0}, Type: {1}, Id: {2}, Severity: {3}, Message: {4}", source_str,
-                          type_str, msgId, severity_str, message);
+            NEB_CORE_LOG_ERROR("[OpenGL Error] Source: {0}, Type: {1}, Id: {2}, Severity: {3}, Message: {4}",
+                               source_str, type_str, msgId, severity_str, message);
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
             NEB_CORE_LOG_WARN("[OpenGL Error] Source: {0}, Type: {1}, Id: {2}, Severity: {3}, Message: {4}", source_str,
-                         type_str, msgId, severity_str, message);
+                              type_str, msgId, severity_str, message);
             break;
         case GL_DEBUG_SEVERITY_LOW:
             NEB_CORE_LOG_INFO("[OpenGL Error] Source: {0}, Type: {1}, Id: {2}, Severity: {3}, Message: {4}", source_str,
-                         type_str, msgId, severity_str, message);
+                              type_str, msgId, severity_str, message);
             break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            NEB_CORE_LOG_TRACE("[OpenGL Error] Source: {0}, Type: {1}, Id: {2}, Severity: {3}, Message: {4}", source_str,
-                          type_str, msgId, severity_str, message);
+            NEB_CORE_LOG_TRACE("[OpenGL Error] Source: {0}, Type: {1}, Id: {2}, Severity: {3}, Message: {4}",
+                               source_str, type_str, msgId, severity_str, message);
             break;
         default:
             break;
         }
         NEB_CORE_LOG_DEBUG("[GL] GLCall: {0}, at {1}:{2}", s_LastFunction.Function, s_LastFunction.File,
-                      s_LastFunction.Line);
+                           s_LastFunction.Line);
 
         if (type == GL_DEBUG_TYPE_PERFORMANCE)
         {

@@ -2,6 +2,8 @@
 
 #include "NebulaCore/Assert.hpp"
 
+#include <unordered_map>
+
 namespace Nebula::Shader
 {
     static std::unordered_map<std::string_view, TokenType> GetKeywordsMap()

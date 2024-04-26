@@ -34,9 +34,12 @@ set(NEBULA_GRAPHICS_CORE_SOURCES
 
 add_subdirectory(vendor/Eigen)
 
-add_library(NebulaGraphicsCore SHARED ${NEBULA_GRAPHICS_CORE_SOURCES})
-add_dependencies(NebulaGraphicsCore NebulaCore)
-nebula_add_definitions(NebulaGraphicsCore "NEBULA_GRAPHICS_CORE" SHARED)
+set(NEBULA_GRAPHICS_CORE_LIBRARY_TYPE "Inherit" CACHE STRING "The type of library to build")
+set_property(CACHE NEBULA_GRAPHICS_CORE_LIBRARY_TYPE PROPERTY STRINGS "Inherit" "Static" "Shared")
+nebula_library_type(NEBULA_GRAPHICS_CORE_LIBRARY_TYPE NEBULA_GRAPHICS_CORE_LIBRARY_TYPE_FINAL)
+message(STATUS "NebulaEngine: NebulaGraphicsCore built as: ${NEBULA_GRAPHICS_CORE_LIBRARY_TYPE_FINAL}")
+add_library(NebulaGraphicsCore ${NEBULA_GRAPHICS_CORE_LIBRARY_TYPE_FINAL} ${NEBULA_GRAPHICS_CORE_SOURCES})
+nebula_add_definitions(NebulaGraphicsCore "NEBULA_GRAPHICS_CORE" ${NEBULA_GRAPHICS_CORE_LIBRARY_TYPE_FINAL})
 
 target_include_directories(NebulaGraphicsCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -55,7 +58,7 @@ add_dependencies(NebulaGraphicsCore
 target_link_libraries(NebulaGraphicsCore PUBLIC
     NebulaCore
     Eigen3::Eigen
-    NebulaShaderConductor
+    NebulaShaderConductor # TODO: Check these dependencies
     NebulaShaderCompiler
 )
 

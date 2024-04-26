@@ -31,9 +31,14 @@ set(NEBULA_GRAPHICS_OPENGL_SOURCES
 if(POLICY CMP0072)
   cmake_policy(SET CMP0072 NEW)
 endif()
-set(OpenGL_GL_PREFERENCE "GLVND")
+
+if (LINUX)
+    set(OpenGL_GL_PREFERENCE "GLVND")
+endif()
+
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
+
 add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glm)
 

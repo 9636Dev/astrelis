@@ -8,7 +8,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
     set(NEBULA_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 else()
     set(NEBULA_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-else()
+endif()
 set_property(CACHE NEBULA_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 
 option(NEBULA_USE_PTHREADS "Use pthreads for threading" ON)

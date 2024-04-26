@@ -1,6 +1,6 @@
 # Build Files
 /build/
-/compile_commands.json
+compile_commands.json
 # Buildscript cache
 /util/config/cache.json
 

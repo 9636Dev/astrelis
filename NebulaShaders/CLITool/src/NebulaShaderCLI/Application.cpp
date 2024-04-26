@@ -222,22 +222,39 @@ namespace CLI
             glslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
             glslOutput.Version      = config.OutputVersion;
             // TODO(9636D): Make this configurable
-            output = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(result.spirvCode, glslOutput);
+            auto [glsl, meta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(result.spirvCode, glslOutput);
+            output = std::move(glsl);
 
+            for (const auto& [name, buffer] : meta.UniformBuffers)
+            {
+                std::cout << "Uniform Buffer: " << name << '\n';
+                std::cout << "Newname: " << buffer.Name << "  Binding: " << buffer.Binding.value_or(-1) << '\n';
+            }
+
+            for (const auto& [name, sampler] : meta.Samplers)
+            {
+                std::cout << "Sampler: " << name << '\n';
+                if (sampler.Binding.has_value())
+                {
+                    std::cout << "Newname: " << sampler.Name << "  Binding: " << sampler.Binding.value_or(-1) << '\n';
+                }
+            }
 
             break;
         }
         case OutputType::HLSL: {
             Nebula::ShaderConductor::HLSLOutput hlslOutput;
             hlslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
-            output = Nebula::ShaderConductor::ShaderConductor::CompileToHLSL(result.spirvCode, hlslOutput);
+            auto [hlsl, meta] = Nebula::ShaderConductor::ShaderConductor::CompileToHLSL(result.spirvCode, hlslOutput);
+            output = std::move(hlsl);
             break;
         }
 
         case OutputType::MSL: {
             Nebula::ShaderConductor::MetalOutput mslOutput;
             mslOutput.Optimization = shaderOutput.Optimization; // Doesn't get used, but good to set anyway
-            output = Nebula::ShaderConductor::ShaderConductor::CompileToMetal(result.spirvCode, mslOutput);
+            auto [msl, meta] = Nebula::ShaderConductor::ShaderConductor::CompileToMetal(result.spirvCode, mslOutput);
+            output = std::move(msl);
             break;
         }
         }

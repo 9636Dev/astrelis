@@ -8,14 +8,35 @@ project(NebulaGraphics)
 # Metal - Metal implementation
 # DirectX - DirectX implementation
 
+option(NEBULA_GRAPHICS_OPENGL "Enable OpenGL implementation" ON)
+option(NEBULA_GRAPHICS_METAL "Enable Metal implementation" $<BOOL:${APPLE}>)
+option(NEBULA_GRAPHICS_DIRECTX "Enable DirectX implementation" OFF)
+option(NEBULA_GRAPHICS_VULKAN "Enable Vulkan implementation" OFF)
+
 add_subdirectory(Core)
 add_subdirectory(Renderer)
-add_subdirectory(OpenGL)
-if (APPLE)
+
+set(RENDERER_INCLUDED FALSE)
+if (NEBULA_GRAPHICS_OPENGL)
+    set(RENDERER_INCLUDED TRUE)
+    add_subdirectory(OpenGL)
+endif()
+if (NEBULA_GRAPHICS_METAL)
+    set(RENDERER_INCLUDED TRUE)
     #add_subdirectory(Metal)
 endif()
+if (NEBULA_GRAPHICS_DIRECTX)
+    set(RENDERER_INCLUDED TRUE)
+    #add_subdirectory(DirectX)
+endif()
+if (NEBULA_GRAPHICS_VULKAN)
+    set(RENDERER_INCLUDED TRUE)
+    #add_subdirectory(Vulkan)
+endif()
 
-# TODO: Add DirectX implementations
+if (NOT RENDERER_INCLUDED)
+    message(FATAL_ERROR "No graphics API implementations enabled")
+endif()
 
 add_library(NebulaGraphics INTERFACE)
 target_link_libraries(NebulaGraphics INTERFACE NebulaGraphicsRenderer)

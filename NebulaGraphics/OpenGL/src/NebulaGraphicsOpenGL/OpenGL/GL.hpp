@@ -3,6 +3,7 @@
 #include "Enum.hpp"
 
 #include <set>
+#include <string>
 #include <utility>
 
 namespace Nebula::OpenGL
@@ -145,7 +146,8 @@ namespace Nebula::OpenGL
         static void GetUniformfv(Program_t program, std::int32_t location, float* params);
 
         static std::uint32_t GetUniformBlockIndex(Program_t program, const char* uniformBlockName);
-        static void UniformBlockBinding(Program_t program, std::uint32_t uniformBlockIndex, std::uint32_t uniformBlockBinding);
+        static void
+            UniformBlockBinding(Program_t program, std::uint32_t uniformBlockIndex, std::uint32_t uniformBlockBinding);
 
         static void BindTexture(TextureTarget target, std::uint32_t texture);
         static void TexImage2D(TextureTarget target,

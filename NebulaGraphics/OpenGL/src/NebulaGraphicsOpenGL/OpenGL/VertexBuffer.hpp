@@ -3,6 +3,8 @@
 #include "Enum.hpp"
 #include "GL.hpp"
 
+#include <vector>
+
 namespace Nebula::OpenGL
 {
     class VertexArray;
