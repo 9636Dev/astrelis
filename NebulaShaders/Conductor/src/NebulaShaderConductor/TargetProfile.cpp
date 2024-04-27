@@ -7,10 +7,10 @@ namespace Nebula::ShaderConductor
         std::wstring result;
         switch (Stage)
         {
-        case ShaderStage::Vertex:
+        case Shader::ShaderStage::Vertex:
             result += L"vs";
             break;
-        case ShaderStage::Pixel:
+        case Shader::ShaderStage::Pixel:
             result += L"ps";
             break;
         default:

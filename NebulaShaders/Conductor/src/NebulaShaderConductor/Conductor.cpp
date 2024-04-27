@@ -180,7 +180,7 @@ namespace Nebula::ShaderConductor
     };
 
     // TODO(9636D): Include metadata as well on the output
-    ShaderConductor::CompileOutput<GLSLMeta> ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
+    ShaderConductor::CompileOutput<Shader::GLSLMeta> ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
                                                                   const GLSLOutput& output)
     {
         constexpr auto UniformBufferPrefix = "ubo_";
@@ -188,7 +188,7 @@ namespace Nebula::ShaderConductor
 
         try
         {
-            GLSLMeta meta;
+            Shader::GLSLMeta meta;
             spirv_cross::CompilerGLSL compiler(spirv);
             spirv_cross::CompilerGLSL::Options options;
 
@@ -219,7 +219,7 @@ namespace Nebula::ShaderConductor
                     compiler.set_name(buffer.id, newname);
 
                     std::optional<std::uint32_t> bindingOpt = CanUseUniformBufferBinding ? std::make_optional(binding) : std::nullopt;
-                    GLSLMeta::UniformBuffer ubo(newname, bindingOpt);
+                    Shader::GLSLMeta::UniformBuffer ubo(newname, bindingOpt);
                     meta.UniformBuffers.insert({name, std::move(ubo)});
                 }
 
@@ -243,7 +243,7 @@ namespace Nebula::ShaderConductor
 
                     std::optional<std::uint32_t> binding = CanUseSamplerBinding ? std::make_optional(glResource.Binding) : std::nullopt;
                     auto newname = SamplerPrefix + glResource.Name;
-                    auto sampler = GLSLMeta::Sampler(newname, binding);
+                    auto sampler = Shader::GLSLMeta::Sampler(newname, binding);
                     meta.Samplers.insert({glResource.Name, std::move(sampler)});
                     compiler.set_name(texture.id, newname);
                     compiler.set_decoration(texture.id, spv::DecorationDescriptorSet, glResource.Set);
@@ -259,7 +259,7 @@ namespace Nebula::ShaderConductor
         }
     }
 
-    ShaderConductor::CompileOutput<HLSLMeta> ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv,
+    ShaderConductor::CompileOutput<Shader::HLSLMeta> ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv,
                                                                   const HLSLOutput& output)
     {
         try
@@ -277,7 +277,7 @@ namespace Nebula::ShaderConductor
         }
     }
 
-    ShaderConductor::CompileOutput<MetalMeta> ShaderConductor::CompileToMetal(const std::vector<std::uint32_t>& spirv,
+    ShaderConductor::CompileOutput<Shader::MetalMeta> ShaderConductor::CompileToMetal(const std::vector<std::uint32_t>& spirv,
                                                                    const MetalOutput& output)
     {
         try

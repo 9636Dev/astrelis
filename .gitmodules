@@ -31,3 +31,6 @@
 [submodule "NebulaGraphics/Core/vendor/imgui"]
 	path = NebulaGraphics/Core/vendor/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "NebulaIO/vendor/cereal"]
+	path = NebulaIO/vendor/cereal
+	url = https://github.com/USCiLab/cereal

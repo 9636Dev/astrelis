@@ -193,7 +193,7 @@ namespace Nebula::Shader
                     }
                     else if (token.Type == TokenType::FragmentKeyword)
                     {
-                        if (m_Sources.Fragment.has_value())
+                        if (m_Sources.Pixel.has_value())
                         {
                             return Error {"Fragment shader already set", token.Index};
                         }
@@ -215,7 +215,7 @@ namespace Nebula::Shader
                             m_Source.substr(toks.front().Index, toks.back().Index - toks.front().Index);
                         toks.pop_back();
 
-                        m_Sources.Fragment = source;
+                        m_Sources.Pixel = source;
                     }
                     else if (token.Type == TokenType::EntrypointKeyword)
                     {

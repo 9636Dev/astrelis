@@ -161,18 +161,18 @@ namespace CLI
         auto fragmentInput = compiler.GetFragmentInputs();
 
         auto vertexEntry   = compiler.GetVertexEntrypoint();
-        auto fragmentEntry = compiler.GetFragmentEntrypoint();
+        auto fragmentEntry = compiler.GetPixelEntrypoint();
 
         auto sources = compiler.GetSources();
 
-        if (!sources.Vertex.has_value() || !sources.Fragment.has_value())
+        if (!sources.Vertex.has_value() || !sources.Pixel.has_value())
         {
             std::cerr << "Generated shaders are not supported yet\n";
             return 1;
         }
 
         auto vertexSource   = sources.Shared.value_or("") + sources.Vertex.value();
-        auto fragmentSource = sources.Shared.value_or("") + sources.Fragment.value();
+        auto fragmentSource = sources.Shared.value_or("") + sources.Pixel.value();
 
         if (config.Verbose)
         {
@@ -205,8 +205,8 @@ namespace CLI
         }
 
         Nebula::ShaderConductor::ShaderConductor conductor;
-        Nebula::ShaderConductor::TargetProfile vertexProfile(Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0);
-        Nebula::ShaderConductor::TargetProfile fragmentProfile(Nebula::ShaderConductor::ShaderStage::Pixel, 6, 0);
+        Nebula::ShaderConductor::TargetProfile vertexProfile(Nebula::Shader::ShaderStage::Vertex, 6, 0);
+        Nebula::ShaderConductor::TargetProfile fragmentProfile(Nebula::Shader::ShaderStage::Pixel, 6, 0);
 
         Nebula::ShaderConductor::ShaderInput vertexInput;
         vertexInput.Source = vertexSource;

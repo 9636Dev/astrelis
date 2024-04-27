@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Core.hpp"
-
 namespace Nebula::Shader
 {
-    class NEBULA_SHADER_BUILDER_API IntermediateFormat
+    enum class ShaderStage
     {
+        Vertex,
+        Pixel,
     };
 } // namespace Nebula::Shader

@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NEBULA_SHADER_BUILDER_SOURCES
-    src/NebulaShaderBuilder/Intermediate/FileFormat.hpp
-    src/NebulaShaderBuilder/Intermediate/FileFormat.cpp
+    src/NebulaShaderBuilder/FileFormat.hpp
+    src/NebulaShaderBuilder/FileFormat.cpp
 )
 
 set(NEBULA_SHADER_BUILDER_LIBRARY_TYPE "Inherit" CACHE STRING "The type of library to build")
@@ -18,8 +18,22 @@ nebula_add_definitions(NebulaShaderBuilder "NEBULA_SHADER_BUILDER" ${NEBULA_SHAD
 
 target_include_directories(NebulaShaderBuilder PUBLIC src)
 
-target_link_libraries(NebulaShaderBuilder PUBLIC
+add_dependencies(NebulaShaderBuilder
     NebulaCore
+    NebulaIO
+    NebulaShaderCommon
     NebulaShaderCompiler
     NebulaShaderConductor
 )
+
+target_link_libraries(NebulaShaderBuilder PUBLIC
+    NebulaCore
+    NebulaIO
+    NebulaShaderCommon
+    NebulaShaderCompiler
+    NebulaShaderConductor
+)
+
+if (NEBULA_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

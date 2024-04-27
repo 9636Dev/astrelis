@@ -66,10 +66,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
         "BasicShader",
         Nebula::ShaderConductor::ShaderInput(
             "BasicShader.hlsl", shaderSrc, "VertexShader",
-            Nebula::ShaderConductor::TargetProfile(Nebula::ShaderConductor::ShaderStage::Vertex, 6, 0)),
+            Nebula::ShaderConductor::TargetProfile(Nebula::Shader::ShaderStage::Vertex, 6, 0)),
         Nebula::ShaderConductor::ShaderInput(
             "BasicShader.hlsl", shaderSrc, "PixelShader",
-            Nebula::ShaderConductor::TargetProfile(Nebula::ShaderConductor::ShaderStage::Pixel, 6, 0))};
+            Nebula::ShaderConductor::TargetProfile(Nebula::Shader::ShaderStage::Pixel, 6, 0))};
     Nebula::RenderPass renderPass = {"2DRenderPass", shaderProgram};
     renderer->AddRenderPass(renderPass);
 

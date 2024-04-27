@@ -35,6 +35,6 @@ target_link_libraries(NebulaShaderCompiler PUBLIC
     NebulaShaderCommon
 )
 
-if (NOT DEFINED NEBULA_DISABLE_TESTS)
+if (NEBULA_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

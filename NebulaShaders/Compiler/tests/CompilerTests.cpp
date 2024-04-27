@@ -124,6 +124,6 @@ Shader {
 
     std::cout << "Vertex: " << compiler.GetSources().Vertex.value_or("N/A") << std::endl;
 
-    std::cout << "Fragment: " << compiler.GetSources().Fragment.value_or("N/A") << std::endl;
+    std::cout << "Fragment: " << compiler.GetSources().Pixel.value_or("N/A") << std::endl;
 }
 

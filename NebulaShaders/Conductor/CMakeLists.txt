@@ -25,7 +25,6 @@ set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ${CMAKE_SUPPRESS_DEVELOPER_WARNINGS_OLD} C
 set(NEBULA_SHADER_CONDUCTOR_SOURCES
     src/NebulaShaderConductor/Core.hpp
     src/NebulaShaderConductor/ShaderInput.hpp
-    src/NebulaShaderConductor/ShaderInput.cpp
     src/NebulaShaderConductor/ShaderOutput.hpp
     src/NebulaShaderConductor/Conductor.hpp
     src/NebulaShaderConductor/Conductor.cpp
@@ -55,6 +54,7 @@ target_include_directories(NebulaShaderConductor PUBLIC
 )
 add_dependencies(NebulaShaderConductor
     NebulaCore
+    NebulaShaderCommon
 
     # DXC
     dxcompiler
@@ -70,8 +70,6 @@ add_dependencies(NebulaShaderConductor
     SPIRV-Tools
 )
 target_link_libraries(NebulaShaderConductor PRIVATE
-    NebulaCore
-
     # DXC
     dxcompiler
     LLVMDxcSupport
@@ -85,3 +83,12 @@ target_link_libraries(NebulaShaderConductor PRIVATE
     spirv-cross-util
     SPIRV-Tools
 )
+
+target_link_libraries(NebulaShaderConductor PUBLIC
+    NebulaCore
+    NebulaShaderCommon
+)
+
+if (NEBULA_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <utility>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/string.hpp>
+
 namespace Nebula::Shader
 {
     /**
@@ -31,6 +34,19 @@ namespace Nebula::Shader
         InvalidType,
         InvalidTarget,
     };
+
+    inline std::string BindingErrorToString(BindingError error)
+    {
+        switch (error)
+        {
+        case BindingError::None:
+            return "None";
+        case BindingError::InvalidType:
+            return "InvalidType";
+        case BindingError::InvalidTarget:
+            return "InvalidTarget";
+        }
+    }
 
 
     enum class BindingType
@@ -115,6 +131,8 @@ namespace Nebula::Shader
 
             return {Binding(*type, stringBinding.Name, *target), BindingError::None};
         }
+
+        template<typename Archive> void serialize(Archive& archive) { archive(Type, Name, Target); }
     };
 
     enum class TextureType
@@ -187,5 +205,7 @@ namespace Nebula::Shader
 
             return {TextureBinding(*type, stringBinding.Name, *target), BindingError::None};
         }
+
+        template<typename Archive> void serialize(Archive& archive) { archive(Type, Name, Target); }
     };
 } // namespace Nebula::Shader

@@ -4,6 +4,9 @@
 #include <string>
 #include <unordered_map>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/string.hpp>
+
 namespace Nebula::Shader
 {
     struct StringInput
@@ -57,7 +60,7 @@ namespace Nebula::Shader
     {
         static const std::unordered_map<std::string, InputSemantic> map = {
             {"POSITION", InputSemantic::Position},
-            {"NORMAL", InputSemantic::Normal},
+            {"NORMAL",   InputSemantic::Normal  },
             {"TEXCOORD", InputSemantic::TexCoord},
         };
 
@@ -82,6 +85,8 @@ namespace Nebula::Shader
             Semantic(semantic)
         {
         }
+
+        template<typename Archive> void serialize(Archive& archive) { archive(Type, Name, Semantic); }
     };
 
 } // namespace Nebula::Shader

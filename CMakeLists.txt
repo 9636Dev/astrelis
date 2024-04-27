@@ -50,6 +50,7 @@ endif()
 
 # We add the submodules
 add_subdirectory(NebulaCore)
+add_subdirectory(NebulaIO)
 add_subdirectory(NebulaGraphics)
 add_subdirectory(NebulaShaders)
 add_subdirectory(examples) # NebulaExamples

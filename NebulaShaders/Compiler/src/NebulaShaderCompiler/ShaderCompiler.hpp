@@ -2,16 +2,15 @@
 
 #include "Core.hpp"
 
-#include "ShaderCommon/Bindings.hpp"
-#include "ShaderCommon/Inputs.hpp"
 #include "Lexer.hpp"
+#include "NebulaShaderCommon/Bindings.hpp"
+#include "NebulaShaderCommon/Inputs.hpp"
 
 #include <array>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-
 
 namespace Nebula::Shader
 {
@@ -44,9 +43,9 @@ namespace Nebula::Shader
 
         struct Sources
         {
-            std::optional<std::string> Shared = std::nullopt;
-            std::optional<std::string> Vertex = std::nullopt;
-            std::optional<std::string> Fragment = std::nullopt;
+            std::optional<std::string> Shared   = std::nullopt;
+            std::optional<std::string> Vertex   = std::nullopt;
+            std::optional<std::string> Pixel = std::nullopt;
         };
 
         explicit Compiler(std::string source) : m_Source(std::move(source)) {}
@@ -65,7 +64,8 @@ namespace Nebula::Shader
         [[nodiscard]] std::vector<StringInput> GetFragmentInputs() const;
 
         [[nodiscard]] std::string GetVertexEntrypoint() const { return m_Meta.VertexEntrypoint; }
-        [[nodiscard]] std::string GetFragmentEntrypoint() const { return m_Meta.FragmentEntrypoint; }
+
+        [[nodiscard]] std::string GetPixelEntrypoint() const { return m_Meta.FragmentEntrypoint; }
 
         [[nodiscard]] std::array<std::size_t, 2> GetRowColumn(std::size_t index) const;
 

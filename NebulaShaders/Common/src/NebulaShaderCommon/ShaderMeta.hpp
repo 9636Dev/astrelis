@@ -13,7 +13,8 @@ namespace Nebula::Shader
     */
     struct ProgramMeta
     {
-        std::vector<StringBinding> Bindings;
+        std::string Name;
+        std::vector<Binding> Bindings;
         std::vector<TextureBinding> Textures;
     };
 
