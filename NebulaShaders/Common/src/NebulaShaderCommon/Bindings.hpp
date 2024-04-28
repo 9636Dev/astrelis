@@ -115,6 +115,11 @@ namespace Nebula::Shader
         {
         }
 
+        Binding() :
+            Binding(BindingType::Float, "", BindingTarget::ModelMatrix)
+        {
+        }
+
         static std::pair<Binding, BindingError> FromStringBinding(const StringBinding& stringBinding)
         {
             auto type = StringToBindingType(stringBinding.Type);
@@ -181,10 +186,16 @@ namespace Nebula::Shader
         std::string Name;
         TextureTarget Target;
 
+
         TextureBinding(TextureType type, std::string name, TextureTarget target) :
             Type(type),
             Name(std::move(name)),
             Target(target)
+        {
+        }
+
+        TextureBinding() :
+            TextureBinding(TextureType::Sampler2D, "", TextureTarget::Diffuse)
         {
         }
 

@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/types/vector.hpp>
+
 namespace Nebula::Shader
 {
     /**
@@ -16,6 +20,13 @@ namespace Nebula::Shader
         std::string Name;
         std::vector<Binding> Bindings;
         std::vector<TextureBinding> Textures;
+
+        ProgramMeta() = default;
+
+        template<typename Archive> void serialize(Archive& archive)
+        {
+            archive(Name, Bindings, Textures);
+        }
     };
 
     /**

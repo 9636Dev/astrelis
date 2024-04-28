@@ -1,6 +1,7 @@
-#include <gtest/gtest.h>
 #include "NebulaShaderBuilder/FileFormat.hpp"
+#include "NebulaShaderBuilder/FileToOutput.hpp"
 #include "NebulaShaderConductor/ShaderOutput.hpp"
+#include <gtest/gtest.h>
 
 using namespace Nebula::Shader; // NOLINT
 
@@ -64,9 +65,11 @@ Shader {
 }
 )";
 
-TEST(NebulaShaderTests, ToIntermediate) {
+TEST(NebulaShaderTests, ToIntermediate)
+{
     auto intermediate = IntermediateFormat::FromSource(source);
-    if (!intermediate.second.empty()) {
+    if (!intermediate.second.empty())
+    {
         std::cout << "Intemediate File: " << intermediate.second << std::endl;
     }
     ASSERT_TRUE(intermediate.second.empty());
@@ -74,16 +77,40 @@ TEST(NebulaShaderTests, ToIntermediate) {
     auto& file = intermediate.first;
 
     Nebula::ShaderConductor::GLSLOutput output;
-    output.Version = 410;
+    output.Version     = 410;
     std::string result = file.GenerateGlsl(output);
-    if (!result.empty()) {
+    if (!result.empty())
+    {
         std::cout << "Errors: " << result << std::endl;
     }
 
-    // Write to a.out
-    /*auto aout = Nebula::File::FromPathString("a.out");
+    // Generate a temp file in the system temp directory
+    auto tempFile = std::filesystem::temp_directory_path() / "NebulaShaderBuilderTemp.cnsl"; // 'compiled-nsl' file
+
+    auto aout        = Nebula::File(tempFile);
     auto writeResult = file.WriteToFile(aout);
 
     ASSERT_TRUE(writeResult.Success);
-    ASSERT_GT(writeResult.BytesWritten, 0); */
+    ASSERT_GT(writeResult.BytesWritten, 0);
+    ASSERT_TRUE(std::filesystem::exists(tempFile));
+
+    auto readResult = IntermediateOutput::FromFile(aout);
+    if (readResult.Header.Identifier.empty())
+    {
+        std::cout << "Failed to read file: " << tempFile << std::endl;
+    }
+
+    ASSERT_TRUE(readResult.GlslSource.has_value());
+    ASSERT_EQ(readResult.Header.Meta.Name, "BasicShader");
+    ASSERT_GT(readResult.Header.Meta.Bindings.size(), 0);
+    ASSERT_EQ(readResult.Header.Meta.Textures.size(), 0);
+    ASSERT_GT(readResult.GlslSource->VertexSource.size(), 0);
+    ASSERT_GT(readResult.GlslSource->PixelSource.size(), 0);
+
+    // Cleanup
+    auto res = std::filesystem::remove(tempFile);
+    if (!res)
+    {
+        std::cout << "Failed to remove temp file: " << tempFile << std::endl;
+    }
 }

@@ -138,7 +138,7 @@ namespace Nebula::Shader
         }
 
         FileHeader header;
-        header.Name = m_ProgramMeta.Name;
+        header.Meta = m_ProgramMeta;
         header.GlslPresent = m_GlslSource.has_value();
 
         cereal::BinaryOutputArchive archive(out); // Bind the archive directly to the file output stream

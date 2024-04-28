@@ -25,6 +25,8 @@ namespace Nebula::Shader
             {
             }
 
+            UniformBuffer() = default;
+
             ~UniformBuffer()                               = default;
             UniformBuffer(const UniformBuffer&)            = default;
             UniformBuffer(UniformBuffer&&)                 = default;
@@ -42,6 +44,7 @@ namespace Nebula::Shader
             std::optional<std::uint32_t> Binding;
 
             Sampler(std::string name, std::optional<std::uint32_t> binding) : Name(std::move(name)), Binding(binding) {}
+            Sampler() = default;
 
             ~Sampler()                         = default;
             Sampler(const Sampler&)            = default;
