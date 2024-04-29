@@ -1,6 +1,5 @@
 #pragma once
 
-#include "NebulaGraphicsCore/ShaderProgram.hpp"
 #include <string>
 
 namespace Nebula
@@ -10,6 +9,6 @@ namespace Nebula
         // The name of the render pass
         std::string Name;
         // The shader program to use for the render pass
-        ShaderProgram ShaderProgram;
+        std::string ShaderProgram;
     };
 } // namespace Nebula

@@ -38,7 +38,7 @@ Shader {
         PixelInput VertexShader(VertexInput input)
         {
             PixelInput output;
-            output.pos = float4(input.pos, 0.0, 1.0);
+            output.pos = mul(modelMatrix, float4(input.pos, 0.0, 1.0));
             return output;
         }
     }

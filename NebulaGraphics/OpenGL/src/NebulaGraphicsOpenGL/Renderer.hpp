@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NebulaGraphicsOpenGL/AssetLoader.hpp"
+#include "NebulaShaderBuilder/Glsl.hpp"
 #include "OpenGL/IndexBuffer.hpp"
 #include "OpenGL/Shader.hpp"
 #include "OpenGL/UniformBuffer.hpp"
@@ -45,6 +47,8 @@ namespace Nebula
 
         void OnResize(std::uint32_t width, std::uint32_t height) override;
         void SetClearColor(float red, float green, float blue, float alpha) override;
+
+        AssetLoader& GetAssetLoader() override { return m_AssetLoader; }
     private:
         std::vector<GLRenderableObject> m_GLRenderableObjects;
         std::vector<GLRenderPassObject> m_GLRenderPasses;
@@ -53,5 +57,6 @@ namespace Nebula
 
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
         inline static std::size_t s_RendererCount = 0;
+        GlAssetLoader m_AssetLoader;
     };
 } // namespace Nebula

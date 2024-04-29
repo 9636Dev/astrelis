@@ -30,6 +30,9 @@ set(NEBULA_GRAPHICS_CORE_SOURCES
     src/NebulaGraphicsCore/Mesh/BaseMesh.hpp
     src/NebulaGraphicsCore/Mesh/2DStaticMesh.hpp
     src/NebulaGraphicsCore/Mesh/2DStaticMesh.cpp
+
+    # Assets
+    src/NebulaGraphicsCore/AssetLoader.hpp
 )
 
 add_subdirectory(vendor/Eigen)
@@ -51,15 +54,13 @@ target_compile_definitions(NebulaGraphicsCore PUBLIC
 
 add_dependencies(NebulaGraphicsCore
     NebulaCore
+    NebulaIO
     Eigen3::Eigen
-    NebulaShaderConductor
-    NebulaShaderCompiler
 )
 target_link_libraries(NebulaGraphicsCore PUBLIC
     NebulaCore
+    NebulaIO
     Eigen3::Eigen
-    NebulaShaderConductor # TODO: Check these dependencies
-    NebulaShaderCompiler
 )
 
 add_subdirectory(vendor)

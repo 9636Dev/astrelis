@@ -163,6 +163,7 @@ namespace Nebula::Shader
         }
 
         glslSource.Version      = output.Version;
+        glslSource.Glsl420Pack  = output.Enable420PackExtension;
         glslSource.VertexSource = glslVertex.first.first;
         glslSource.PixelSource  = glslPixel.first.first;
         glslSource.Meta         = glslVertex.second;

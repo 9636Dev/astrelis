@@ -2,7 +2,7 @@
 
 #include "NebulaCore/Log.hpp"
 #include "NebulaGraphicsOpenGL/Core.hpp"
-#include "NebulaShaderConductor/Conductor.hpp"
+#include "NebulaGraphicsOpenGL/OpenGL/Enum.hpp"
 #include "OpenGL/GL.hpp"
 #include "Window.hpp"
 #include <chrono>
@@ -53,99 +53,65 @@ namespace Nebula
     void OpenGLRenderer::InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex)
     {
         NEB_CORE_LOG_DEBUG("Generating Render Pass: {0}", insertionIndex);
-        ShaderConductor::ShaderConductor shaderConductor;
-        // Compile the shader program
-        OpenGL::ShaderProgram shaderProgram;
-        ShaderConductor::GLSLOutput output;
-        output.Version = 410;
-        output.Enable420PackExtension =
-            output.Version >= 420; // TODO(9636D): We check and cache the ARB_shading_language_420pack extension
+        NEB_ASSERT(m_AssetLoader.m_Shaders.contains(renderPass.ShaderProgram), "Shader program does not exist");
+        auto& shader = m_AssetLoader.m_Shaders[renderPass.ShaderProgram];
 
-        Shader::GLSLMeta meta;
+        GLRenderPassObject glRenderPassObject;
 
         {
             OpenGL::Shader vertexShader(OpenGL::ShaderType::VertexShader);
-            auto spirv = shaderConductor.CompileToSPIRV(renderPass.ShaderProgram.VertexShader, output);
-            if (!spirv.success)
-            {
-                throw std::runtime_error("Could not compile to SPIRV: " + spirv.errorMessage);
-            }
-
-            auto [glsl, vMeta] = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
-            if (!glsl.second.empty())
-            {
-                throw std::runtime_error("Could not compile to GLSL: " + glsl.second);
-            }
-
-            meta = vMeta;
-
-            vertexShader.ShaderSource(glsl.first);
+            vertexShader.ShaderSource(shader.VertexSource);
             if (!vertexShader.Compile())
             {
                 throw std::runtime_error("GLSL Was not compiled: " + vertexShader.GetInfoLog());
             }
 
-            shaderProgram.AttachShader(vertexShader);
+            glRenderPassObject.ShaderProgram.AttachShader(vertexShader);
         }
 
         {
             OpenGL::Shader fragmentShader(OpenGL::ShaderType::FragmentShader);
-            auto spirv = shaderConductor.CompileToSPIRV(renderPass.ShaderProgram.FragmentShader, output);
-            if (!spirv.success)
-            {
-                throw std::runtime_error("Could not compile to SPIRV: " + spirv.errorMessage);
-            }
+            fragmentShader.ShaderSource(shader.PixelSource);
 
-            auto [glsl, meta] = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
-            if (!glsl.second.empty())
-            {
-                throw std::runtime_error("Could not compile to GLSL: " + glsl.second);
-            }
-
-            fragmentShader.ShaderSource(glsl.first);
             if (!fragmentShader.Compile())
             {
                 throw std::runtime_error("GLSL Was not compiled: " + fragmentShader.GetInfoLog());
             }
 
-            shaderProgram.AttachShader(fragmentShader);
+            glRenderPassObject.ShaderProgram.AttachShader(fragmentShader);
         }
 
-        if (!shaderProgram.Link())
+        if (!glRenderPassObject.ShaderProgram.Link())
         {
-            throw std::runtime_error(shaderProgram.GetInfoLog());
+            throw std::runtime_error(glRenderPassObject.ShaderProgram.GetInfoLog());
         }
 
-        GLRenderPassObject glRenderPassObject;
-        glRenderPassObject.ShaderProgram = std::move(shaderProgram);
-        glRenderPassObject.UniformBuffer = OpenGL::UniformBuffer();
-
-        if (meta.UniformBuffers.size() == 1)
-        {
-            if (output.Version < 420 && !output.Enable420PackExtension)
-            {
-                glRenderPassObject.ShaderProgram.Use();
-                glRenderPassObject.UniformBuffer.Bind();
-                if (OpenGL::GL::GetVersion().Major < 4 || OpenGL::GL::GetVersion().Minor < 2)
-                {
-                    std::uint32_t index = glRenderPassObject.ShaderProgram.GetUniformBlockIndex("type_VertexBuffer");
-                    if (index != OpenGL::GL::InvalidIndex)
-                    {
-                        glRenderPassObject.ShaderProgram.UniformBlockBinding(index, 0);
-                    }
-                    else
-                    {
-                        NEB_CORE_LOG_WARN("Could not find uniform block index for ubo_VertexBuffer");
-                    }
-                }
-            }
-            glRenderPassObject.UniformBuffer.BindBase(0);
-        }
-        else
+        if (shader.Bindings.size() != 1)
         {
             NEB_CORE_LOG_WARN("Uniform buffer count is not 1 (More than one not supported yet)");
+            m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex), std::move(glRenderPassObject));
+            return;
         }
 
+        auto& uniform = shader.Bindings[0];
+
+        glRenderPassObject.ShaderProgram.Use();
+        glRenderPassObject.UniformBuffer.Bind();
+
+        if (shader.GlslVersion < 420 && !shader.Glsl420PackEnabled)
+        {
+            std::uint32_t index = glRenderPassObject.ShaderProgram.GetUniformBlockIndex(uniform.Name);
+            if (index != OpenGL::GL::InvalidIndex)
+            {
+                glRenderPassObject.ShaderProgram.UniformBlockBinding(index, 0);
+            }
+            else
+            {
+                NEB_CORE_LOG_WARN("Could not find uniform block index for {0}", uniform.Name);
+            }
+        }
+
+        glRenderPassObject.UniformBuffer.BindBase(uniform.Slot.value_or(0));
 
         m_GLRenderPasses.insert(m_GLRenderPasses.begin() + insertionIndex, std::move(glRenderPassObject));
     }
@@ -193,6 +159,7 @@ namespace Nebula
             {
                 Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
 
+                // TODO(Dev9636): Actually parse the Binding and set the data
                 m_GLRenderPasses[i].UniformBuffer.SetData(&modelMatrix, sizeof(modelMatrix));
                 m_GLRenderableObjects[j].VertexArray.Bind();
                 m_GLRenderableObjects[j].IndexBuffer.Bind();

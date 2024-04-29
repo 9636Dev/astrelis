@@ -54,6 +54,8 @@ namespace Nebula::Shader
         }
 
         return Glsl(name,
+                    output.GlslSource->Version,
+                    output.GlslSource->Glsl420Pack,
                     std::move(inputs),
                     std::move(outputs),
                     std::move(bindings),

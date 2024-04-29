@@ -42,6 +42,8 @@ namespace Nebula::Shader
         };
 
         std::string Name;
+        std::uint32_t GlslVersion;
+        bool Glsl420PackEnabled;
         std::vector<Input> Inputs;
         std::vector<Input> PixelInputs;
         std::vector<Binding> Bindings;
@@ -52,6 +54,8 @@ namespace Nebula::Shader
         static std::optional<Glsl> FromFile(const Nebula::File& file);
 
         Glsl(std::string name,
+             std::uint32_t glslVersion,
+             bool glsl420PackEnabled,
              std::vector<Input> inputs,
              std::vector<Input> pixelInputs,
              std::vector<Binding> bindings,
@@ -59,6 +63,8 @@ namespace Nebula::Shader
              std::string vertexSource,
              std::string pixelSource) :
             Name(std::move(name)),
+            GlslVersion(glslVersion),
+            Glsl420PackEnabled(glsl420PackEnabled),
             Inputs(std::move(inputs)),
             PixelInputs(std::move(pixelInputs)),
             Bindings(std::move(bindings)),
@@ -67,5 +73,7 @@ namespace Nebula::Shader
             PixelSource(std::move(pixelSource))
         {
         }
+
+        Glsl() = default;
     };
 } // namespace Nebula::Shader

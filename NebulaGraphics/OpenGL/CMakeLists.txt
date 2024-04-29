@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NEBULA_GRAPHICS_OPENGL_SOURCES
     src/NebulaGraphicsOpenGL/Core.hpp
+    src/NebulaGraphicsOpenGL/AssetLoader.hpp
+    src/NebulaGraphicsOpenGL/AssetLoader.cpp
     src/NebulaGraphicsOpenGL/Window.hpp
     src/NebulaGraphicsOpenGL/Window.cpp
     src/NebulaGraphicsOpenGL/Renderer.hpp
@@ -63,11 +65,14 @@ target_include_directories(NebulaGraphicsOpenGL PRIVATE vendor/glew/include)
 add_dependencies(NebulaGraphicsOpenGL
     glfw
     glm::glm
+    GLEW::GLEW
     NebulaGraphicsCore
+    NebulaShaderBuilder
 )
 target_link_libraries(NebulaGraphicsOpenGL PUBLIC
     NebulaCore
     NebulaGraphicsCore
+    NebulaShaderBuilder
 )
 target_link_libraries(NebulaGraphicsOpenGL PRIVATE
     glfw

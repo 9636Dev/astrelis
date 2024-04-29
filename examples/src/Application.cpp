@@ -46,31 +46,18 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
     }
     auto renderer = std::move(rendererResult.Renderer);
     renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+    auto& assetLoader = renderer->GetAssetLoader();
 
-    std::string shaderSrc;
+    auto file = Nebula::File::FromPathString("resources/shaders/BasicShader.cnsl");
+    bool res = assetLoader.LoadShader(file);
+
+    if (!res)
     {
-        std::ifstream file("resources/shaders/BasicShader.hlsl");
-        if (!file.good())
-        {
-            NEB_CORE_LOG_ERROR("Failed to open shader file");
-            return -1;
-        }
-
-        // Just read the whole buffer into a sstream
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        shaderSrc = buffer.str();
+        NEB_CORE_LOG_ERROR("Failed to load shader");
+        return -1;
     }
 
-    Nebula::ShaderProgram shaderProgram = {
-        "BasicShader",
-        Nebula::ShaderConductor::ShaderInput(
-            "BasicShader.hlsl", shaderSrc, "VertexShader",
-            Nebula::ShaderConductor::TargetProfile(Nebula::Shader::ShaderStage::Vertex, 6, 0)),
-        Nebula::ShaderConductor::ShaderInput(
-            "BasicShader.hlsl", shaderSrc, "PixelShader",
-            Nebula::ShaderConductor::TargetProfile(Nebula::Shader::ShaderStage::Pixel, 6, 0))};
-    Nebula::RenderPass renderPass = {"2DRenderPass", shaderProgram};
+    Nebula::RenderPass renderPass = {"2DRenderPass", "BasicShader"};
     renderer->AddRenderPass(renderPass);
 
     auto mesh = std::make_shared<Nebula::Static2DMesh>();

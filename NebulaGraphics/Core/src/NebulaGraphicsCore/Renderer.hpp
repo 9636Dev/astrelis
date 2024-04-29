@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NebulaGraphicsCore/AssetLoader.hpp"
 #include "NebulaGraphicsCore/RenderPass.hpp"
 #include "NebulaGraphicsCore/RenderableObject.hpp"
 #include <limits>
@@ -48,6 +49,7 @@ namespace Nebula
 
         virtual void OnResize(std::uint32_t width, std::uint32_t height) = 0;
         virtual void SetClearColor(float red, float green, float blue, float alpha) = 0;
+        virtual AssetLoader& GetAssetLoader() = 0;
 
         RenderableObject& GetRenderableObject(std::size_t index) { return m_RenderableObjects[index]; }
     protected:
