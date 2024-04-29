@@ -5,9 +5,9 @@
 #include <utility>
 
 #include "Core.hpp"
-#include "File.hpp"
 #include "NebulaIO/File.hpp"
 #include "NebulaShaderCommon/ShaderMeta.hpp"
+#include "NebulaShaderCommon/ShaderSource.hpp"
 #include "NebulaShaderConductor/ShaderOutput.hpp"
 
 namespace Nebula::Shader
@@ -33,7 +33,7 @@ namespace Nebula::Shader
         std::string m_PixelEntrypoint;
 
         // Variables below this line are stored in the intermediate format
-        ProgramMeta m_ProgramMeta;
+        ShaderProgram m_Program;
         std::optional<GLSLShaderSource> m_GlslSource;
     };
 } // namespace Nebula::Shader

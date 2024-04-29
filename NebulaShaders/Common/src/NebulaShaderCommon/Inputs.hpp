@@ -11,13 +11,13 @@ namespace Nebula::Shader
 {
     struct StringInput
     {
-        std::string Name;
         std::string Type;
+        std::string Name;
         std::string Semantic;
 
-        StringInput(std::string name, std::string type, std::string semantic) :
-            Name(std::move(name)),
+        StringInput(std::string type, std::string name, std::string semantic) :
             Type(std::move(type)),
+            Name(std::move(name)),
             Semantic(std::move(semantic))
         {
         }
@@ -52,6 +52,7 @@ namespace Nebula::Shader
     enum class InputSemantic
     {
         Position,
+        OutputPosition,
         Normal,
         TexCoord,
     };
@@ -60,6 +61,7 @@ namespace Nebula::Shader
     {
         static const std::unordered_map<std::string, InputSemantic> map = {
             {"POSITION", InputSemantic::Position},
+            {"OUTPUT_POSITION", InputSemantic::OutputPosition},
             {"NORMAL",   InputSemantic::Normal  },
             {"TEXCOORD", InputSemantic::TexCoord},
         };
@@ -73,17 +75,59 @@ namespace Nebula::Shader
         return std::nullopt;
     }
 
+    enum class InputError
+    {
+        None,
+        InvalidType,
+        InvalidSemantic,
+    };
+
+    inline std::string InputErrorToString(InputError error)
+    {
+        switch (error)
+        {
+        case InputError::None:
+            return "None";
+        case InputError::InvalidType:
+            return "InvalidType";
+        case InputError::InvalidSemantic:
+            return "InvalidSemantic";
+        }
+    }
+
     struct Input
     {
         InputType Type;
         std::string Name;
         InputSemantic Semantic;
 
+        Input() :
+            Type(InputType::Float),
+            Semantic(InputSemantic::Position)
+        {
+        }
         Input(InputType type, std::string name, InputSemantic semantic) :
             Type(type),
             Name(std::move(name)),
             Semantic(semantic)
         {
+        }
+
+        inline static std::pair<Input, InputError> FromStringInput(const StringInput& input)
+        {
+            auto typeRes = StringToInputType(input.Type);
+            if (!typeRes.has_value())
+            {
+                return std::make_pair(Input(InputType::Float, "", InputSemantic::Position), InputError::InvalidType);
+            }
+
+            auto semanticRes = StringToInputSemantic(input.Semantic);
+            if (!semanticRes.has_value())
+            {
+                return std::make_pair(Input(InputType::Float, "", InputSemantic::Position), InputError::InvalidSemantic);
+            }
+
+            return std::make_pair(Input(typeRes.value(), input.Name, semanticRes.value()), InputError::None);
         }
 
         template<typename Archive> void serialize(Archive& archive) { archive(Type, Name, Semantic); }

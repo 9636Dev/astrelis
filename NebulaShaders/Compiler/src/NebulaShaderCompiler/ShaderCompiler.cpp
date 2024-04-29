@@ -104,7 +104,6 @@ namespace Nebula::Shader
 
                     token = inputs[++index];
                     COMPILER_EXPECT(Symbol);
-
                     binding.Name = token.Text;
 
                     token = inputs[++index];
@@ -112,7 +111,6 @@ namespace Nebula::Shader
 
                     token = inputs[++index];
                     COMPILER_EXPECT(Symbol);
-
                     binding.Binding = token.Text;
 
                     token = inputs[++index];
@@ -377,7 +375,7 @@ namespace Nebula::Shader
         return inputs;
     }
 
-    std::vector<StringInput> Compiler::GetFragmentInputs() const
+    std::vector<StringInput> Compiler::GetPixelInputs() const
     {
         std::vector<StringInput> inputs;
         inputs.reserve(m_Meta.FragmentInputs.size());

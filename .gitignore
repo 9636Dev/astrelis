@@ -12,6 +12,9 @@ compile_commands.json
 # Copied libs for runtime linking
 /run/lib/
 
+# Compiled NebulaShaderLanguage files
+*.cnsl
+
 # Intermediate files
 # Precompiled Headers
 *.pc

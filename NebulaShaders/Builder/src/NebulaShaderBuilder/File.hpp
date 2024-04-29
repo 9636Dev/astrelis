@@ -16,10 +16,10 @@ namespace Nebula::Shader
     {
         std::string Identifier = ".NSL";
         std::uint32_t Version  = 1;
-        ProgramMeta Meta;
+        ShaderProgram Program;
         bool GlslPresent = false;
 
-        template<typename Archive> void serialize(Archive& archive) { archive(Identifier, Version, Meta, GlslPresent); }
+        template<typename Archive> void serialize(Archive& archive) { archive(Identifier, Version, Program, GlslPresent); }
     };
 
     using GLSLSource = GLSLShaderSource;

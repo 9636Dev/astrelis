@@ -61,7 +61,7 @@ namespace Nebula::Shader
         [[nodiscard]] std::vector<StringBinding> GetBindings() const;
         [[nodiscard]] std::vector<StringBinding> GetTextures() const;
         [[nodiscard]] std::vector<StringInput> GetInputs() const;
-        [[nodiscard]] std::vector<StringInput> GetFragmentInputs() const;
+        [[nodiscard]] std::vector<StringInput> GetPixelInputs() const;
 
         [[nodiscard]] std::string GetVertexEntrypoint() const { return m_Meta.VertexEntrypoint; }
 

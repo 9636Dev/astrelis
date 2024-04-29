@@ -4,6 +4,8 @@
 #include <sstream>
 
 #include "NebulaCore/Assert.hpp"
+#include "NebulaShaderBuilder/File.hpp"
+#include "NebulaShaderCommon/ShaderMeta.hpp"
 #include "NebulaShaderCompiler/ShaderCompiler.hpp"
 #include "NebulaShaderConductor/Conductor.hpp"
 #include "NebulaShaderConductor/TargetProfile.hpp"
@@ -25,6 +27,43 @@ namespace Nebula::Shader
             auto [row, column] = compiler.GetRowColumn(compilerError->Index);
             sstream << " at " << row << ":" << column;
             return std::make_pair(std::move(intermediateFormat), sstream.str());
+        }
+        ShaderProgram program;
+        {
+            auto vertexStringInputs = compiler.GetInputs();
+            auto pixelStringInputs = compiler.GetPixelInputs();
+
+            std::vector<Input> vertexInputs;
+            std::vector<Input> pixelInputs;
+
+            for (const auto& input : vertexStringInputs)
+            {
+                auto inputRes = Input::FromStringInput(input);
+                if (inputRes.second != InputError::None)
+                {
+                    return std::make_pair(std::move(intermediateFormat),
+                                          "Failed to convert StringInput to Input: " +
+                                              InputErrorToString(inputRes.second) + " for input: " + input.Type + " " + input.Name + " : " + input.Semantic);
+                }
+
+                vertexInputs.push_back(std::move(inputRes.first));
+            }
+
+            for (const auto& input : pixelStringInputs)
+            {
+                auto inputRes = Input::FromStringInput(input);
+                if (inputRes.second != InputError::None)
+                {
+                    return std::make_pair(std::move(intermediateFormat),
+                                          "Failed to convert StringInput to Input: " +
+                                              InputErrorToString(inputRes.second) + " for input: " + input.Type + " " + input.Name + " : " + input.Semantic);
+                }
+
+                pixelInputs.push_back(std::move(inputRes.first));
+            }
+
+            program.Vertex = ShaderMeta(compiler.GetVertexEntrypoint(), std::move(vertexInputs));
+            program.Fragment = ShaderMeta(compiler.GetPixelEntrypoint(), std::move(pixelInputs));
         }
 
         // Bindings and textures
@@ -61,7 +100,9 @@ namespace Nebula::Shader
                 programMeta.Textures.push_back(std::move(textureRes.first));
             }
 
-            intermediateFormat.m_ProgramMeta = std::move(programMeta);
+            program.Meta = std::move(programMeta);
+
+            intermediateFormat.m_Program = std::move(program);
         }
 
         auto sources = compiler.GetSources();
@@ -138,7 +179,7 @@ namespace Nebula::Shader
         }
 
         FileHeader header;
-        header.Meta = m_ProgramMeta;
+        header.Program = m_Program;
         header.GlslPresent = m_GlslSource.has_value();
 
         cereal::BinaryOutputArchive archive(out); // Bind the archive directly to the file output stream

@@ -210,16 +210,32 @@ namespace Nebula::ShaderConductor
                     // The naming convention is type.{OriginalName}
                     // We need to extract the original name
                     auto name = buffer.name;
+                    auto type = compiler.get_type(buffer.base_type_id);
+                    auto type_name = compiler.get_name(type.self);
+
                     if (name.starts_with("type."))
                     {
                         name = name.substr(5);
+                    }
+                    else
+                    {
+                        name = type_name.substr(5);
                     }
 
                     auto newname = UniformBufferPrefix + name;
                     compiler.set_name(buffer.id, newname);
 
+                    // We change the '.' in the typename to an '_'
+                    for (auto& character : type_name)
+                    {
+                        if (character == '.')
+                        {
+                            character = '_';
+                        }
+                    }
+
                     std::optional<std::uint32_t> bindingOpt = CanUseUniformBufferBinding ? std::make_optional(binding) : std::nullopt;
-                    Shader::GLSLMeta::UniformBuffer ubo(newname, bindingOpt);
+                    Shader::GLSLMeta::UniformBuffer ubo(type_name, bindingOpt);
                     meta.UniformBuffers.insert({name, std::move(ubo)});
                 }
 

@@ -58,7 +58,10 @@ namespace Nebula
         OpenGL::ShaderProgram shaderProgram;
         ShaderConductor::GLSLOutput output;
         output.Version = 410;
-        output.Enable420PackExtension = output.Version >= 420; // TODO(9636D): We check and cache the ARB_shading_language_420pack extension
+        output.Enable420PackExtension =
+            output.Version >= 420; // TODO(9636D): We check and cache the ARB_shading_language_420pack extension
+
+        Shader::GLSLMeta meta;
 
         {
             OpenGL::Shader vertexShader(OpenGL::ShaderType::VertexShader);
@@ -68,11 +71,13 @@ namespace Nebula
                 throw std::runtime_error("Could not compile to SPIRV: " + spirv.errorMessage);
             }
 
-            auto [glsl, meta] = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
+            auto [glsl, vMeta] = ShaderConductor::ShaderConductor::CompileToGLSL(spirv.spirvCode, output);
             if (!glsl.second.empty())
             {
                 throw std::runtime_error("Could not compile to GLSL: " + glsl.second);
             }
+
+            meta = vMeta;
 
             vertexShader.ShaderSource(glsl.first);
             if (!vertexShader.Compile())
@@ -114,6 +119,33 @@ namespace Nebula
         GLRenderPassObject glRenderPassObject;
         glRenderPassObject.ShaderProgram = std::move(shaderProgram);
         glRenderPassObject.UniformBuffer = OpenGL::UniformBuffer();
+
+        if (meta.UniformBuffers.size() == 1)
+        {
+            if (output.Version < 420 && !output.Enable420PackExtension)
+            {
+                glRenderPassObject.ShaderProgram.Use();
+                glRenderPassObject.UniformBuffer.Bind();
+                if (OpenGL::GL::GetVersion().Major < 4 || OpenGL::GL::GetVersion().Minor < 2)
+                {
+                    std::uint32_t index = glRenderPassObject.ShaderProgram.GetUniformBlockIndex("type_VertexBuffer");
+                    if (index != OpenGL::GL::InvalidIndex)
+                    {
+                        glRenderPassObject.ShaderProgram.UniformBlockBinding(index, 0);
+                    }
+                    else
+                    {
+                        NEB_CORE_LOG_WARN("Could not find uniform block index for ubo_VertexBuffer");
+                    }
+                }
+            }
+            glRenderPassObject.UniformBuffer.BindBase(0);
+        }
+        else
+        {
+            NEB_CORE_LOG_WARN("Uniform buffer count is not 1 (More than one not supported yet)");
+        }
+
 
         m_GLRenderPasses.insert(m_GLRenderPasses.begin() + insertionIndex, std::move(glRenderPassObject));
     }
@@ -157,15 +189,6 @@ namespace Nebula
 
         for (std::size_t i = 0; i < m_RenderPasses.size(); i++)
         {
-            m_GLRenderPasses[i].ShaderProgram.Use();
-            m_GLRenderPasses[i].UniformBuffer.Bind();
-            m_GLRenderPasses[i].UniformBuffer.BindBase(0);
-            if (OpenGL::GL::GetVersion().Major < 4 || OpenGL::GL::GetVersion().Minor < 2)
-            {
-                std::uint32_t index = m_GLRenderPasses[i].ShaderProgram.GetUniformBlockIndex("ubo_VertexBuffer");
-                m_GLRenderPasses[i].ShaderProgram.UniformBlockBinding(index, 0);
-            }
-
             for (std::size_t j = 0; j < m_RenderPassObjectCount[i]; j++)
             {
                 Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
@@ -183,6 +206,7 @@ namespace Nebula
         std::chrono::high_resolution_clock::time_point newTime = std::chrono::high_resolution_clock::now();
         auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(newTime - currentTime).count();
 
+#ifdef NEBULA_INCLUDE_IMGUI
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -199,6 +223,7 @@ namespace Nebula
         ImGui::Render();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
     }
 
     void OpenGLRenderer::OnResize(std::uint32_t width, std::uint32_t height)

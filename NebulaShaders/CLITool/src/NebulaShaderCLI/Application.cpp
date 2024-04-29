@@ -158,7 +158,7 @@ namespace CLI
         auto bindings      = compiler.GetBindings();
         auto textures      = compiler.GetTextures();
         auto inputs        = compiler.GetInputs();
-        auto fragmentInput = compiler.GetFragmentInputs();
+        auto fragmentInput = compiler.GetPixelInputs();
 
         auto vertexEntry   = compiler.GetVertexEntrypoint();
         auto fragmentEntry = compiler.GetPixelEntrypoint();
@@ -191,17 +191,17 @@ namespace CLI
             {
                 std::cout << "  " << input.Type << " " << input.Name << " -> " << input.Semantic << '\n';
             }
-            std::cout << "Fragment Inputs:\n";
+            std::cout << "Pixel Inputs:\n";
             for (const auto& input : fragmentInput)
             {
                 std::cout << "  " << input.Type << " " << input.Name << " -> " << input.Semantic << '\n';
             }
 
             std::cout << "Vertex Entrypoint: " << vertexEntry << '\n';
-            std::cout << "Fragment Entrypoint: " << fragmentEntry << '\n';
+            std::cout << "Pixel Entrypoint: " << fragmentEntry << '\n';
 
             std::cout << "Vertex Shader:\n" << vertexSource << '\n';
-            std::cout << "Fragment Shader:\n" << fragmentSource << '\n';
+            std::cout << "Pixel Shader:\n" << fragmentSource << '\n';
         }
 
         Nebula::ShaderConductor::ShaderConductor conductor;
@@ -226,7 +226,7 @@ namespace CLI
 
 
         auto spirvVertex = conductor.CompileToSPIRV(vertexInput, output);
-        auto spirvFragment = conductor.CompileToSPIRV(pixelInput, output);
+        auto spirvPixel = conductor.CompileToSPIRV(pixelInput, output);
 
         if (!spirvVertex.success)
         {
@@ -234,9 +234,9 @@ namespace CLI
             return 1;
         }
 
-        if (!spirvFragment.success)
+        if (!spirvPixel.success)
         {
-            std::cerr << "Failed to compile fragment shader: " << spirvFragment.errorMessage << '\n';
+            std::cerr << "Failed to compile fragment shader: " << spirvPixel.errorMessage << '\n';
             return 1;
         }
 
@@ -247,7 +247,7 @@ namespace CLI
             glslOutput.Optimization = config.OptimizationLevel;
 
             auto [glslVertex, vertexMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(spirvVertex.spirvCode, glslOutput);
-            auto [glslFragment, fragmentMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(spirvFragment.spirvCode, glslOutput);
+            auto [glslPixel, fragmentMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToGLSL(spirvPixel.spirvCode, glslOutput);
 
             if (!glslVertex.second.empty())
             {
@@ -255,16 +255,16 @@ namespace CLI
                 return 1;
             }
 
-            if (!glslFragment.second.empty())
+            if (!glslPixel.second.empty())
             {
-                std::cerr << "Failed to compile fragment shader to GLSL: " << glslFragment.second << '\n';
+                std::cerr << "Failed to compile fragment shader to GLSL: " << glslPixel.second << '\n';
                 return 1;
             }
 
             if (config.Verbose)
             {
                 std::cout << "Vertex GLSL:\n" << glslVertex.first << '\n';
-                std::cout << "Fragment GLSL:\n" << glslFragment.first << '\n';
+                std::cout << "Pixel GLSL:\n" << glslPixel.first << '\n';
 
                 std::cout << "Vertex Meta:\n";
                 for (const auto& uniform : vertexMeta.UniformBuffers)
@@ -277,7 +277,7 @@ namespace CLI
                     std::cout << "  " << texture.first << " -> " << texture.second.Name << " - " <<  texture.second.Binding.value_or(-1) << '\n';
                 }
 
-                std::cout << "Fragment Meta:\n";
+                std::cout << "Pixel Meta:\n";
                 for (const auto& uniform : fragmentMeta.UniformBuffers)
                 {
                     std::cout << "  " << uniform.first << " -> " << uniform.second.Name << " - " <<  uniform.second.Binding.value_or(-1) << '\n';

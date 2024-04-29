@@ -47,6 +47,8 @@ namespace Nebula::OpenGL
     class GL
     {
     public:
+        static constexpr std::uint32_t InvalidIndex = 0xFFFFFFFFU;
+
         static void Init(GLVersion& version);
         static void Terminate();
 
