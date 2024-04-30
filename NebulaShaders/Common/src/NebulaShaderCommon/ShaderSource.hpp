@@ -25,4 +25,12 @@ namespace Nebula::Shader
             archive(Version, Glsl420Pack, Meta, VertexSource, PixelSource);
         }
     };
+
+    struct MSLShaderSource
+    {
+        MSLShaderSource() = default;
+
+        std::uint32_t Version = 2;
+        //MSLMeta Meta;
+    };
 } // namespace Nebula::Shader

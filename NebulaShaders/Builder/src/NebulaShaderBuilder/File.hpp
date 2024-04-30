@@ -33,4 +33,5 @@ namespace Nebula::Shader
     };
 
     using GLSLSource = GLSLShaderSource;
+
 } // namespace Nebula::Shader

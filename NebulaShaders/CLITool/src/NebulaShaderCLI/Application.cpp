@@ -18,6 +18,8 @@ namespace CLI
     int main(std::vector<std::string> args);
 } // namespace CLI
 
+// TODO(9636Dev): Refactor, and add both stages of compiler building to same CLI
+
 int main(int argc, char** argv)
 {
     Nebula::Log::Init();
@@ -261,29 +263,32 @@ namespace CLI
                 return 1;
             }
 
-            if (config.Verbose)
+            std::cout << "\n\nVertex Shader:\n" << glslVertex.first << '\n';
+            std::cout << "\n\nFragment Shader:\n" << glslPixel.first << '\n';
+
+        }
+        else if (config.Output == OutputType::MSL)
+        {
+            Nebula::ShaderConductor::MslOutput mslOutput;
+            mslOutput.Optimization = config.OptimizationLevel;
+
+            auto [mslVertex, vertexMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToMsl(spirvVertex.spirvCode, mslOutput);
+            auto [mslPixel, fragmentMeta] = Nebula::ShaderConductor::ShaderConductor::CompileToMsl(spirvPixel.spirvCode, mslOutput);
+
+            if (!mslVertex.second.empty())
             {
-                std::cout << "Vertex GLSL:\n" << glslVertex.first << '\n';
-                std::cout << "Pixel GLSL:\n" << glslPixel.first << '\n';
-
-                std::cout << "Vertex Meta:\n";
-                for (const auto& uniform : vertexMeta.UniformBuffers)
-                {
-                    std::cout << "  " << uniform.first << " -> " << uniform.second.Name << " - " <<  uniform.second.Binding.value_or(-1) << '\n';
-                }
-
-                for (const auto& texture : vertexMeta.Samplers)
-                {
-                    std::cout << "  " << texture.first << " -> " << texture.second.Name << " - " <<  texture.second.Binding.value_or(-1) << '\n';
-                }
-
-                std::cout << "Pixel Meta:\n";
-                for (const auto& uniform : fragmentMeta.UniformBuffers)
-                {
-                    std::cout << "  " << uniform.first << " -> " << uniform.second.Name << " - " <<  uniform.second.Binding.value_or(-1) << '\n';
-                }
+                std::cerr << "Failed to compile vertex shader to MSL: " << mslVertex.second << '\n';
+                return 1;
             }
 
+            if (!mslPixel.second.empty())
+            {
+                std::cerr << "Failed to compile fragment shader to MSL: " << mslPixel.second << '\n';
+                return 1;
+            }
+
+            std::cout << "\n\nVertex Shader:\n" << mslVertex.first << '\n';
+            std::cout << "\n\nFragment Shader:\n" << mslPixel.first << '\n';
         }
 
         return 0;

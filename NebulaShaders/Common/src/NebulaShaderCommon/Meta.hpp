@@ -44,6 +44,7 @@ namespace Nebula::Shader
             std::optional<std::uint32_t> Binding;
 
             Sampler(std::string name, std::optional<std::uint32_t> binding) : Name(std::move(name)), Binding(binding) {}
+
             Sampler() = default;
 
             ~Sampler()                         = default;
@@ -78,5 +79,77 @@ namespace Nebula::Shader
 
     struct MetalMeta
     {
+        struct Binding
+        {
+            std::string Name;
+            std::uint32_t Index = 0;
+
+            Binding() = default;
+
+            Binding(std::string name, std::uint32_t index) : Name(std::move(name)), Index(index) {}
+
+            ~Binding()                         = default;
+            Binding(const Binding&)            = default;
+            Binding(Binding&&)                 = default;
+            Binding& operator=(const Binding&) = default;
+            Binding& operator=(Binding&&)      = default;
+
+            bool operator==(const Binding& other) const { return Name == other.Name && Index == other.Index; }
+
+            template<typename Archive> void serialize(Archive& archive) { archive(Name, Index); }
+        };
+
+        struct Texture
+        {
+            std::string Name;
+            std::uint32_t Index = 0;
+
+            Texture() = default;
+
+            Texture(std::string name, std::uint32_t index) : Name(std::move(name)), Index(index) {}
+
+            ~Texture()                         = default;
+            Texture(const Texture&)            = default;
+            Texture(Texture&&)                 = default;
+            Texture& operator=(const Texture&) = default;
+            Texture& operator=(Texture&&)      = default;
+
+            bool operator==(const Texture& other) const { return Name == other.Name && Index == other.Index; }
+
+            template<typename Archive> void serialize(Archive& archive) { archive(Name, Index); }
+        };
+
+        struct Sampler
+        {
+            std::string Name;
+            std::uint32_t Index = 0;
+
+            Sampler() = default;
+
+            Sampler(std::string name, std::uint32_t index) : Name(std::move(name)), Index(index) {}
+
+            ~Sampler()                         = default;
+            Sampler(const Sampler&)            = default;
+            Sampler(Sampler&&)                 = default;
+            Sampler& operator=(const Sampler&) = default;
+            Sampler& operator=(Sampler&&)      = default;
+
+            bool operator==(const Sampler& other) const { return Name == other.Name && Index == other.Index; }
+
+            template<typename Archive> void serialize(Archive& archive) { archive(Name, Index); }
+        };
+
+        std::map<std::string, Binding> Bindings;
+        std::map<std::string, Texture> Textures;
+        std::map<std::string, Sampler> Samplers;
+
+        MetalMeta() = default;
+
+        bool operator==(const MetalMeta& other) const
+        {
+            return Bindings == other.Bindings && Textures == other.Textures && Samplers == other.Samplers;
+        }
+
+        template<typename Archive> void serialize(Archive& archive) { archive(Bindings, Textures, Samplers); }
     };
 } // namespace Nebula::Shader

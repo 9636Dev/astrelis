@@ -29,7 +29,7 @@ namespace Nebula::ShaderConductor
         std::size_t HLSLVersion = 50;
     };
 
-    struct MetalOutput : public ShaderOutput
+    struct MslOutput : public ShaderOutput
     {
         std::size_t MslVersion = 2;
     };

@@ -38,5 +38,9 @@ if (NOT RENDERER_INCLUDED)
     message(FATAL_ERROR "No graphics API implementations enabled")
 endif()
 
+if (NEBULA_BUILD_TESTS)
+    add_subdirectory(Tests)
+endif()
+
 add_library(NebulaGraphics INTERFACE)
 target_link_libraries(NebulaGraphics INTERFACE NebulaGraphicsRenderer)

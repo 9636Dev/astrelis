@@ -180,103 +180,111 @@ namespace Nebula::ShaderConductor
     };
 
     // TODO(9636D): Include metadata as well on the output
-    ShaderConductor::CompileOutput<Shader::GLSLMeta> ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv,
-                                                                  const GLSLOutput& output)
+    ShaderConductor::CompileOutput<Shader::GLSLMeta>
+        ShaderConductor::CompileToGLSL(const std::vector<std::uint32_t>& spirv, const GLSLOutput& output)
     {
         constexpr auto UniformBufferPrefix = "ubo_";
         constexpr auto SamplerPrefix       = "sampler_";
 
+        Shader::GLSLMeta meta;
+        spirv_cross::CompilerGLSL compiler(spirv);
+        spirv_cross::CompilerGLSL::Options options;
+
+        options.version                          = output.Version;
+        options.es                               = output.GLES;
+        options.force_zero_initialized_variables = true;
+        options.enable_420pack_extension         = output.Enable420PackExtension;
+
+        bool CanUseUniformBufferBinding = options.version >= 420 || options.enable_420pack_extension;
+        bool CanUseSamplerBinding       = options.version >= 420 || options.enable_420pack_extension;
+
+        std::vector<GLSLResource> glResources;
+        {
+            const auto& resources = compiler.get_shader_resources();
+
+            for (const auto& buffer : resources.uniform_buffers)
+            {
+                auto binding = compiler.get_decoration(buffer.id, spv::DecorationBinding);
+                // The naming convention is type.{OriginalName}
+                // We need to extract the original name
+                auto name      = buffer.name;
+                auto type      = compiler.get_type(buffer.base_type_id);
+                auto type_name = compiler.get_name(type.self);
+
+                if (name.starts_with("type."))
+                {
+                    name = name.substr(5);
+                }
+                else
+                {
+                    name = type_name.substr(5);
+                }
+
+                auto newname = UniformBufferPrefix + name;
+                compiler.set_name(buffer.id, newname);
+
+                // We change the '.' in the typename to an '_'
+                for (auto& character : type_name)
+                {
+                    if (character == '.')
+                    {
+                        character = '_';
+                    }
+                }
+
+                std::optional<std::uint32_t> bindingOpt =
+                    CanUseUniformBufferBinding ? std::make_optional(binding) : std::nullopt;
+                Shader::GLSLMeta::UniformBuffer ubo(type_name, bindingOpt);
+                meta.UniformBuffers.insert({name, std::move(ubo)});
+            }
+
+            for (const auto& texture : resources.separate_images)
+            {
+                auto set     = compiler.get_decoration(texture.id, spv::DecorationDescriptorSet);
+                auto binding = compiler.get_decoration(texture.id, spv::DecorationBinding);
+                glResources.push_back({texture.id, texture.name, set, binding});
+            }
+        }
+
+        compiler.set_common_options(options);
+        compiler.build_combined_image_samplers();
+
+        {
+            const auto& resources = compiler.get_shader_resources();
+            for (std::size_t i = 0; i < resources.sampled_images.size(); ++i)
+            {
+                const auto& texture    = resources.sampled_images[i];
+                const auto& glResource = glResources[i];
+
+                std::optional<std::uint32_t> binding =
+                    CanUseSamplerBinding ? std::make_optional(glResource.Binding) : std::nullopt;
+                auto newname = SamplerPrefix + glResource.Name;
+                auto sampler = Shader::GLSLMeta::Sampler(newname, binding);
+                meta.Samplers.insert({glResource.Name, std::move(sampler)});
+                compiler.set_name(texture.id, newname);
+                compiler.set_decoration(texture.id, spv::DecorationDescriptorSet, glResource.Set);
+                compiler.set_decoration(texture.id, spv::DecorationBinding, glResource.Binding);
+            }
+        }
+
         try
         {
-            Shader::GLSLMeta meta;
-            spirv_cross::CompilerGLSL compiler(spirv);
-            spirv_cross::CompilerGLSL::Options options;
-
-            options.version                          = output.Version;
-            options.es                               = output.GLES;
-            options.force_zero_initialized_variables = true;
-            options.enable_420pack_extension         = output.Enable420PackExtension;
-
-            bool CanUseUniformBufferBinding = options.version >= 420 || options.enable_420pack_extension;
-            bool CanUseSamplerBinding       = options.version >= 420 || options.enable_420pack_extension;
-
-            std::vector<GLSLResource> glResources;
-            {
-                const auto& resources = compiler.get_shader_resources();
-
-                for (const auto& buffer : resources.uniform_buffers)
-                {
-                    auto binding = compiler.get_decoration(buffer.id, spv::DecorationBinding);
-                    // The naming convention is type.{OriginalName}
-                    // We need to extract the original name
-                    auto name = buffer.name;
-                    auto type = compiler.get_type(buffer.base_type_id);
-                    auto type_name = compiler.get_name(type.self);
-
-                    if (name.starts_with("type."))
-                    {
-                        name = name.substr(5);
-                    }
-                    else
-                    {
-                        name = type_name.substr(5);
-                    }
-
-                    auto newname = UniformBufferPrefix + name;
-                    compiler.set_name(buffer.id, newname);
-
-                    // We change the '.' in the typename to an '_'
-                    for (auto& character : type_name)
-                    {
-                        if (character == '.')
-                        {
-                            character = '_';
-                        }
-                    }
-
-                    std::optional<std::uint32_t> bindingOpt = CanUseUniformBufferBinding ? std::make_optional(binding) : std::nullopt;
-                    Shader::GLSLMeta::UniformBuffer ubo(type_name, bindingOpt);
-                    meta.UniformBuffers.insert({name, std::move(ubo)});
-                }
-
-                for (const auto& texture : resources.separate_images)
-                {
-                    auto set     = compiler.get_decoration(texture.id, spv::DecorationDescriptorSet);
-                    auto binding = compiler.get_decoration(texture.id, spv::DecorationBinding);
-                    glResources.push_back({texture.id, texture.name, set, binding});
-                }
-            }
-
-            compiler.set_common_options(options);
-            compiler.build_combined_image_samplers();
-
-            {
-                const auto& resources = compiler.get_shader_resources();
-                for (std::size_t i = 0; i < resources.sampled_images.size(); ++i)
-                {
-                    const auto& texture    = resources.sampled_images[i];
-                    const auto& glResource = glResources[i];
-
-                    std::optional<std::uint32_t> binding = CanUseSamplerBinding ? std::make_optional(glResource.Binding) : std::nullopt;
-                    auto newname = SamplerPrefix + glResource.Name;
-                    auto sampler = Shader::GLSLMeta::Sampler(newname, binding);
-                    meta.Samplers.insert({glResource.Name, std::move(sampler)});
-                    compiler.set_name(texture.id, newname);
-                    compiler.set_decoration(texture.id, spv::DecorationDescriptorSet, glResource.Set);
-                    compiler.set_decoration(texture.id, spv::DecorationBinding, glResource.Binding);
-                }
-            }
-
-            return {{compiler.compile().c_str(), ""}, meta};
+            return {
+                {compiler.compile().c_str(), ""},
+                meta
+            };
         }
         catch (const spirv_cross::CompilerError& e)
         {
-            return {{"", e.what()}, {}};
+            return {
+                {"", e.what()},
+                {}
+            };
         }
     }
 
-    ShaderConductor::CompileOutput<Shader::HLSLMeta> ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv,
-                                                                  const HLSLOutput& output)
+    ShaderConductor::CompileOutput<Shader::HLSLMeta>
+        ShaderConductor::CompileToHLSL(const std::vector<std::uint32_t>& spirv, const HLSLOutput& output)
     {
         try
         {
@@ -285,16 +293,22 @@ namespace Nebula::ShaderConductor
 
             options.shader_model = output.HLSLVersion;
 
-            return {{compiler.compile().c_str(), ""}, {}};
+            return {
+                {compiler.compile().c_str(), ""},
+                {}
+            };
         }
         catch (const spirv_cross::CompilerError& e)
         {
-            return {{"", e.what()}, {}};
+            return {
+                {"", e.what()},
+                {}
+            };
         }
     }
 
-    ShaderConductor::CompileOutput<Shader::MetalMeta> ShaderConductor::CompileToMetal(const std::vector<std::uint32_t>& spirv,
-                                                                   const MetalOutput& output)
+    ShaderConductor::CompileOutput<Shader::MetalMeta>
+        ShaderConductor::CompileToMsl(const std::vector<std::uint32_t>& spirv, const MslOutput& output)
     {
         try
         {
@@ -302,13 +316,18 @@ namespace Nebula::ShaderConductor
             spirv_cross::CompilerMSL::Options options;
 
             options.msl_version = output.MslVersion;
-            // Currently, SPIRV-Cross does not support options for Metal
 
-            return {{compiler.compile().c_str(), ""}, {}};
+            return {
+                {compiler.compile().c_str(), ""},
+                {}
+            };
         }
         catch (const spirv_cross::CompilerError& e)
         {
-            return {{"", e.what()}, {}};
+            return {
+                {"", e.what()},
+                {}
+            };
         }
     }
 } // namespace Nebula::ShaderConductor

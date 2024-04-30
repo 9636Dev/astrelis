@@ -44,7 +44,7 @@ namespace Nebula::ShaderConductor
         SPIRVCompilationResult CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output);
         static CompileOutput<Shader::GLSLMeta> CompileToGLSL(const std::vector<uint32_t>& spirv, const GLSLOutput& output);
         static CompileOutput<Shader::HLSLMeta> CompileToHLSL(const std::vector<uint32_t>& spirv, const HLSLOutput& output);
-        static CompileOutput<Shader::MetalMeta> CompileToMetal(const std::vector<uint32_t>& spirv, const MetalOutput& output);
+        static CompileOutput<Shader::MetalMeta> CompileToMsl(const std::vector<uint32_t>& spirv, const MslOutput& output);
 
         bool Initialize();
     private:
