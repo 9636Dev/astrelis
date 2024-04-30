@@ -14,12 +14,22 @@ namespace Nebula::Shader
 
     struct FileHeader
     {
+        static constexpr auto VERSION = 1;
         std::string Identifier = ".NSL";
-        std::uint32_t Version  = 1;
+        std::uint32_t Version  = VERSION;
         ShaderProgram Program;
         bool GlslPresent = false;
 
-        template<typename Archive> void serialize(Archive& archive) { archive(Identifier, Version, Program, GlslPresent); }
+        template<typename Archive> void serialize(Archive& archive) {
+
+            archive(Identifier, Version);
+
+            if (Version != VERSION) {
+                throw std::runtime_error("Invalid version");
+            }
+
+            archive(Program, GlslPresent);
+        }
     };
 
     using GLSLSource = GLSLShaderSource;
