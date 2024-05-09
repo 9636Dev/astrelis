@@ -3,7 +3,6 @@
 // Include this file to be able to use the Intermediate file to Glsl conversion
 
 #include "Core.hpp"
-#include "File.hpp"
 #include "NebulaIO/File.hpp"
 
 #include "NebulaShaderCommon/Bindings.hpp"
@@ -42,8 +41,8 @@ namespace Nebula::Shader
         };
 
         std::string Name;
-        std::uint32_t GlslVersion;
-        bool Glsl420PackEnabled;
+        std::uint32_t GlslVersion {};
+        bool Glsl420PackEnabled {};
         std::vector<Input> Inputs;
         std::vector<Input> PixelInputs;
         std::vector<Binding> Bindings;
@@ -51,6 +50,7 @@ namespace Nebula::Shader
         std::string VertexSource;
         std::string PixelSource;
 
+        static std::optional<Glsl> FromSource(std::string source);
         static std::optional<Glsl> FromFile(const Nebula::File& file);
 
         Glsl(std::string name,

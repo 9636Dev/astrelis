@@ -26,13 +26,11 @@ namespace Nebula::ShaderConductor
         }
     };
 
-
     class NEBULA_SHADER_CONDUCTOR_API ShaderConductor
     {
     public:
-        using ShaderCompileOutput = std::pair<std::string, std::string>;
-        template <typename T>
-        using CompileOutput = std::pair<ShaderCompileOutput, T>;
+        using ShaderCompileOutput                = std::pair<std::string, std::string>;
+        template<typename T> using CompileOutput = std::pair<ShaderCompileOutput, T>;
         ShaderConductor();
         ~ShaderConductor();
 
@@ -42,9 +40,12 @@ namespace Nebula::ShaderConductor
         ShaderConductor& operator=(ShaderConductor&&)      = default;
 
         SPIRVCompilationResult CompileToSPIRV(const ShaderInput& input, const ShaderOutput& output);
-        static CompileOutput<Shader::GLSLMeta> CompileToGLSL(const std::vector<uint32_t>& spirv, const GLSLOutput& output);
-        static CompileOutput<Shader::HLSLMeta> CompileToHLSL(const std::vector<uint32_t>& spirv, const HLSLOutput& output);
-        static CompileOutput<Shader::MetalMeta> CompileToMsl(const std::vector<uint32_t>& spirv, const MslOutput& output);
+        static CompileOutput<Shader::GLSLMeta> CompileToGLSL(const std::vector<uint32_t>& spirv,
+                                                             const GLSLOutput& output);
+        static CompileOutput<Shader::HLSLMeta> CompileToHLSL(const std::vector<uint32_t>& spirv,
+                                                             const HLSLOutput& output);
+        static CompileOutput<Shader::MetalMeta> CompileToMsl(const std::vector<uint32_t>& spirv,
+                                                             const MslOutput& output);
 
         bool Initialize();
     private:

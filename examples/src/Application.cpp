@@ -10,8 +10,6 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
     Nebula::Log::Init();
-    NEB_CORE_LOG_INFO("Hello from NebulaCore!");
-
 #define EXAMPLES_USE_OPENGL
 #ifdef EXAMPLES_USE_OPENGL
     Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 1});

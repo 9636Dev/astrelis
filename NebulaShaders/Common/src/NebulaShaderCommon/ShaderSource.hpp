@@ -14,13 +14,12 @@ namespace Nebula::Shader
         GLSLShaderSource() = default;
 
         std::uint32_t Version = 450;
-        bool Glsl420Pack = false;
+        bool Glsl420Pack      = false;
         GLSLMeta Meta;
         std::string VertexSource;
         std::string PixelSource;
 
-        template <typename Archive>
-        void serialize(Archive& archive)
+        template<typename Archive> void serialize(Archive& archive)
         {
             archive(Version, Glsl420Pack, Meta, VertexSource, PixelSource);
         }

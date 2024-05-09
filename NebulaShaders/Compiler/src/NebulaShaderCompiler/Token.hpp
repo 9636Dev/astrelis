@@ -84,10 +84,13 @@ namespace Nebula::Shader
     {
         std::string_view Text;
         std::size_t Index = 0;
-        TokenType Type = TokenType::EndOfFile;
+        TokenType Type    = TokenType::EndOfFile;
 
         Token() noexcept = default;
-        Token(std::string_view text, std::size_t index, TokenType type) noexcept : Text(text), Index(index), Type(type) {}
+
+        Token(std::string_view text, std::size_t index, TokenType type) noexcept : Text(text), Index(index), Type(type)
+        {
+        }
 
         [[nodiscard]] bool operator==(const Token& other) const noexcept;
         [[nodiscard]] bool operator!=(const Token& other) const noexcept;
@@ -95,4 +98,4 @@ namespace Nebula::Shader
         static std::string TypeString(TokenType type) noexcept;
         [[nodiscard]] std::string ToString() const;
     };
-} // namespace Nebula
+} // namespace Nebula::Shader

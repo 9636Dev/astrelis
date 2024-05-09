@@ -60,10 +60,10 @@ namespace Nebula::Shader
     inline std::optional<InputSemantic> StringToInputSemantic(const std::string& semantic)
     {
         static const std::unordered_map<std::string, InputSemantic> map = {
-            {"POSITION", InputSemantic::Position},
+            {"POSITION",        InputSemantic::Position      },
             {"OUTPUT_POSITION", InputSemantic::OutputPosition},
-            {"NORMAL",   InputSemantic::Normal  },
-            {"TEXCOORD", InputSemantic::TexCoord},
+            {"NORMAL",          InputSemantic::Normal        },
+            {"TEXCOORD",        InputSemantic::TexCoord      },
         };
 
         auto iter = map.find(semantic);
@@ -101,11 +101,8 @@ namespace Nebula::Shader
         std::string Name;
         InputSemantic Semantic;
 
-        Input() :
-            Type(InputType::Float),
-            Semantic(InputSemantic::Position)
-        {
-        }
+        Input() : Type(InputType::Float), Semantic(InputSemantic::Position) {}
+
         Input(InputType type, std::string name, InputSemantic semantic) :
             Type(type),
             Name(std::move(name)),
@@ -124,7 +121,8 @@ namespace Nebula::Shader
             auto semanticRes = StringToInputSemantic(input.Semantic);
             if (!semanticRes.has_value())
             {
-                return std::make_pair(Input(InputType::Float, "", InputSemantic::Position), InputError::InvalidSemantic);
+                return std::make_pair(Input(InputType::Float, "", InputSemantic::Position),
+                                      InputError::InvalidSemantic);
             }
 
             return std::make_pair(Input(typeRes.value(), input.Name, semanticRes.value()), InputError::None);

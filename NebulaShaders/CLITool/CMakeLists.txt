@@ -8,6 +8,8 @@ set(NEBULA_SHADER_CLI_SOURCES
     src/NebulaShaderCLI/Application.cpp
     src/NebulaShaderCLI/Arguments.hpp
     src/NebulaShaderCLI/Arguments.cpp
+    src/NebulaShaderCLI/Input.hpp
+    src/NebulaShaderCLI/Input.cpp
 )
 
 add_executable(NebulaShaderCLI ${NEBULA_SHADER_CLI_SOURCES})
@@ -18,11 +20,11 @@ target_include_directories(NebulaShaderCLI PRIVATE
 
 add_dependencies(NebulaShaderCLI
     NebulaCore
-    NebulaShaderCompiler
+    NebulaShaderBuilder
     NebulaShaderConductor
 )
 target_link_libraries(NebulaShaderCLI
     NebulaCore
-    NebulaShaderCompiler
+    NebulaShaderBuilder
     NebulaShaderConductor
 )

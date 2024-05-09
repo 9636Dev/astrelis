@@ -8,8 +8,8 @@ namespace Nebula
     class NEBULA_GRAPHICS_CORE_API Transform
     {
     public:
-        Transform()                              = default;
-        ~Transform()                             = default;
+        Transform()                            = default;
+        ~Transform()                           = default;
         Transform(const Transform& other)      = default;
         Transform& operator=(const Transform&) = default;
         Transform(Transform&& other)           = delete;
@@ -22,7 +22,9 @@ namespace Nebula
         void Scale(const Vector3f& scale) noexcept;
 
         [[nodiscard]] Vector3f GetTranslation() const noexcept { return m_Translation; }
+
         [[nodiscard]] Quaternionf GetRotation() const noexcept { return m_Rotation; }
+
         [[nodiscard]] Vector3f GetScale() const noexcept { return m_Scale; }
 
         [[nodiscard]] Matrix4f GetModelMatrix() const noexcept;

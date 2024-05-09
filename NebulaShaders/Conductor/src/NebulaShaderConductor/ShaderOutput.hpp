@@ -19,9 +19,9 @@ namespace Nebula::ShaderConductor
 
     struct GLSLOutput : public ShaderOutput
     {
-        std::size_t Version = 410;
+        std::size_t Version         = 410;
         bool Enable420PackExtension = false;
-        bool GLES = false;
+        bool GLES                   = false;
     };
 
     struct HLSLOutput : public ShaderOutput

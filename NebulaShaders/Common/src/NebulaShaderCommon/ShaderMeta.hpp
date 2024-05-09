@@ -24,10 +24,7 @@ namespace Nebula::Shader
 
         ProgramMeta() = default;
 
-        template<typename Archive> void serialize(Archive& archive)
-        {
-            archive(Name, Bindings, Textures);
-        }
+        template<typename Archive> void serialize(Archive& archive) { archive(Name, Bindings, Textures); }
     };
 
     /**
@@ -39,16 +36,14 @@ namespace Nebula::Shader
         std::vector<Input> Inputs;
 
         ShaderMeta() = default;
+
         ShaderMeta(std::string entrypoint, std::vector<Input> inputs) :
             Entrypoint(std::move(entrypoint)),
             Inputs(std::move(inputs))
         {
         }
 
-        template<typename Archive> void serialize(Archive& archive)
-        {
-            archive(Entrypoint, Inputs);
-        }
+        template<typename Archive> void serialize(Archive& archive) { archive(Entrypoint, Inputs); }
     };
 
     struct ShaderProgram
@@ -66,9 +61,6 @@ namespace Nebula::Shader
         {
         }
 
-        template<typename Archive> void serialize(Archive& archive)
-        {
-            archive(Meta, Vertex, Fragment);
-        }
+        template<typename Archive> void serialize(Archive& archive) { archive(Meta, Vertex, Fragment); }
     };
 } // namespace Nebula::Shader

@@ -38,7 +38,7 @@ namespace CLI
     std::map<std::string, std::string> ParseOptions(const std::vector<std::string>& args)
     {
         std::map<std::string, std::string> options;
-        for (auto& arg : args)
+        for (const auto& arg : args)
         {
             auto pos = arg.find('=');
             if (pos != std::string::npos)

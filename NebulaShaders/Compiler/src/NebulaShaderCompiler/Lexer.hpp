@@ -19,7 +19,6 @@ namespace Nebula::Shader
 
         // Get the next token from the source
         [[nodiscard]] Token NextToken() noexcept;
-
     private:
         Token LexStringLiteral() noexcept;
         Token LexNumberLiteral() noexcept;

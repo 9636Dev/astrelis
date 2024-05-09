@@ -39,13 +39,6 @@ target_link_libraries(NebulaShaderBuilder PUBLIC
     NebulaShaderConductor
 )
 
-set(NEBULA_SHADER_BUILDER_EXECUTABLE_SOURCES
-    exec/Application.cpp
-)
-
-add_executable(NebulaShaderBuilderExecutable ${NEBULA_SHADER_BUILDER_EXECUTABLE_SOURCES})
-target_link_libraries(NebulaShaderBuilderExecutable PRIVATE NebulaShaderBuilder)
-
 if (NEBULA_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

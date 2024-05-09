@@ -42,6 +42,7 @@ nebula_add_definitions(NebulaShaderConductor "NEBULA_SHADER_CONDUCTOR" ${NEBULA_
 target_compile_options(NebulaShaderConductor PRIVATE
     -fms-extensions
     -Wno-language-extension-token
+    -Wambiguous-reversed-operator
 )
 
 target_include_directories(NebulaShaderConductor PRIVATE

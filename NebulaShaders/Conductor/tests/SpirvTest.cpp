@@ -12,15 +12,18 @@ using Nebula::ShaderConductor::ShaderInput, Nebula::ShaderConductor::ShaderOutpu
 class SpirvTest : public ::testing::Test
 {
 protected:
-    ShaderInput input; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
+    ShaderInput input;   // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
     ShaderOutput output; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
 
     void SetUp() override {}
 
     void TearDown() override {}
 
-    void CompileShader(const std::string& source, const std::string& entryPoint,
-                       Nebula::Shader::ShaderStage stage, int majorVersion, int minorVersion,
+    void CompileShader(const std::string& source,
+                       const std::string& entryPoint,
+                       Nebula::Shader::ShaderStage stage,
+                       int majorVersion,
+                       int minorVersion,
                        Nebula::ShaderConductor::OptimizationLevel optimizationLevel)
     {
         input.Profile    = TargetProfile(stage, majorVersion, minorVersion);

@@ -1,24 +1,23 @@
 #include "Glsl.hpp"
 
+#include "File.hpp"
 #include "FileToOutput.hpp"
 
 namespace Nebula::Shader
 {
-    std::optional<Glsl> Glsl::FromFile(const Nebula::File& file)
+    inline static std::optional<Glsl> FromIntermediate(IntermediateOutput output)
     {
-        IntermediateOutput output = IntermediateOutput::FromFile(file);
-
         if (!output.GlslSource.has_value())
         {
             return std::nullopt;
         }
 
         std::string name = output.Header.Program.Meta.Name;
-        auto inputs = output.Header.Program.Vertex.Inputs;
-        auto outputs = output.Header.Program.Fragment.Inputs;
+        auto inputs      = output.Header.Program.Vertex.Inputs;
+        auto outputs     = output.Header.Program.Fragment.Inputs;
 
-        std::vector<Binding> bindings;
-        std::vector<Texture> textures;
+        std::vector<Glsl::Binding> bindings;
+        std::vector<Glsl::Texture> textures;
         {
             auto programBindings = output.Header.Program.Meta.Bindings;
 
@@ -53,14 +52,20 @@ namespace Nebula::Shader
             }
         }
 
-        return Glsl(name,
-                    output.GlslSource->Version,
-                    output.GlslSource->Glsl420Pack,
-                    std::move(inputs),
-                    std::move(outputs),
-                    std::move(bindings),
-                    std::move(textures),
-                    output.GlslSource->VertexSource,
+        return Glsl(name, output.GlslSource->Version, output.GlslSource->Glsl420Pack, std::move(inputs),
+                    std::move(outputs), std::move(bindings), std::move(textures), output.GlslSource->VertexSource,
                     output.GlslSource->PixelSource);
+    }
+
+    std::optional<Glsl> Glsl::FromFile(const Nebula::File& file)
+    {
+        IntermediateOutput output = IntermediateOutput::FromFile(file);
+        return FromIntermediate(output);
+    }
+
+    std::optional<Glsl> Glsl::FromSource(std::string source)
+    {
+        IntermediateOutput output = IntermediateOutput::FromSource(source);
+        return FromIntermediate(output);
     }
 } // namespace Nebula::Shader

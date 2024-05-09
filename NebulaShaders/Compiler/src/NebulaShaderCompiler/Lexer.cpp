@@ -9,18 +9,18 @@ namespace Nebula::Shader
     static std::unordered_map<std::string_view, TokenType> GetKeywordsMap()
     {
         return {
-            {"Name",   TokenType::NameKeyword  },
-            {"Bindings",   TokenType::BindingsKeyword},
-            {"Uniforms", TokenType::UniformsKeyword},
-            {"Textures",  TokenType::TexturesKeyword},
-            {"Input",     TokenType::InputKeyword},
-            {"PixelInput",TokenType::FragmentInputKeyword},
-            {"Shader",    TokenType::ShaderKeyword},
-            {"Shared",    TokenType::SharedKeyword},
-            {"Vertex",    TokenType::VertexKeyword},
-            {"Fragment",  TokenType::FragmentKeyword},
-            {"Generated", TokenType::GeneratedKeyword},
-            {"Entrypoint",TokenType::EntrypointKeyword},
+            {"Name",       TokenType::NameKeyword         },
+            {"Bindings",   TokenType::BindingsKeyword     },
+            {"Uniforms",   TokenType::UniformsKeyword     },
+            {"Textures",   TokenType::TexturesKeyword     },
+            {"Input",      TokenType::InputKeyword        },
+            {"PixelInput", TokenType::FragmentInputKeyword},
+            {"Shader",     TokenType::ShaderKeyword       },
+            {"Shared",     TokenType::SharedKeyword       },
+            {"Vertex",     TokenType::VertexKeyword       },
+            {"Fragment",   TokenType::FragmentKeyword     },
+            {"Generated",  TokenType::GeneratedKeyword    },
+            {"Entrypoint", TokenType::EntrypointKeyword   },
         };
     }
 
@@ -348,7 +348,8 @@ namespace Nebula::Shader
         }
 
         // If we reached the end of the file, the block comment is invalid
-        return {m_Source.substr(start, m_Index - start), start, m_State == LexerState::NoError ? TokenType::BlockComment : TokenType::InvalidComment};
+        return {m_Source.substr(start, m_Index - start), start,
+                m_State == LexerState::NoError ? TokenType::BlockComment : TokenType::InvalidComment};
     }
 
     // ============================

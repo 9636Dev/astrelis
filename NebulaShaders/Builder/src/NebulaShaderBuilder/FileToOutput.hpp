@@ -11,5 +11,6 @@ namespace Nebula::Shader
         std::optional<GLSLSource> GlslSource;
 
         static IntermediateOutput FromFile(const File& file);
+        static IntermediateOutput FromSource(const std::string& source);
     };
 } // namespace Nebula::Shader

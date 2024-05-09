@@ -19,8 +19,11 @@ protected:
 
     void TearDown() override {}
 
-    void CompileShader(const std::string& source, const std::string& entryPoint,
-                       Nebula::Shader::ShaderStage stage, int majorVersion, int minorVersion,
+    void CompileShader(const std::string& source,
+                       const std::string& entryPoint,
+                       Nebula::Shader::ShaderStage stage,
+                       int majorVersion,
+                       int minorVersion,
                        Nebula::ShaderConductor::OptimizationLevel optimizationLevel,
                        std::uint32_t targetVersion = 0)
     {
@@ -28,8 +31,8 @@ protected:
         input.Source     = source;
         input.EntryPoint = entryPoint;
 
-        output.Optimization = optimizationLevel;
-        output.Version = targetVersion;
+        output.Optimization           = optimizationLevel;
+        output.Version                = targetVersion;
         output.Enable420PackExtension = false;
 
         ShaderConductor conductor;

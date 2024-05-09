@@ -1,6 +1,6 @@
+#include "NebulaShaderCompiler/ShaderCompiler.hpp"
 #include <gtest/gtest.h>
 #include <iostream>
-#include "NebulaShaderCompiler/ShaderCompiler.hpp"
 
 TEST(Compiler, Compile)
 {
@@ -91,7 +91,7 @@ Shader {
     if (error.has_value())
     {
         auto [row, column] = compiler.GetRowColumn(error->Index);
-        std::cout << "Error: " << error->Message << " at: " <<  row << ":" << column << std::endl;
+        std::cout << "Error: " << error->Message << " at: " << row << ":" << column << std::endl;
     }
     ASSERT_FALSE(error.has_value());
 
@@ -113,7 +113,8 @@ Shader {
 
     for (const auto& fragmentInput : compiler.GetMeta().FragmentInputs)
     {
-        std::cout << "FragmentInput: " << fragmentInput.Type << " " << fragmentInput.Name << " : " << fragmentInput.Binding << std::endl;
+        std::cout << "FragmentInput: " << fragmentInput.Type << " " << fragmentInput.Name << " : "
+                  << fragmentInput.Binding << std::endl;
     }
 
     std::cout << "Vertex Entrypoint: " << compiler.GetMeta().VertexEntrypoint << std::endl;

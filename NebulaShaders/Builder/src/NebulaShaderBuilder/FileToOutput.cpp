@@ -29,4 +29,25 @@ namespace Nebula::Shader
 
         return output;
     }
+
+    IntermediateOutput IntermediateOutput::FromSource(const std::string& source)
+    {
+        IntermediateOutput output;
+
+        std::stringstream input(source);
+        cereal::BinaryInputArchive archive(input);
+
+        FileHeader header;
+        archive(header);
+        output.Header = header;
+
+        if (header.GlslPresent)
+        {
+            GLSLSource glslSource;
+            archive(glslSource);
+            output.GlslSource = glslSource;
+        }
+
+        return output;
+    }
 } // namespace Nebula::Shader

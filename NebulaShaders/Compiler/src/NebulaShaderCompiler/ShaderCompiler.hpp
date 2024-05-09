@@ -43,9 +43,9 @@ namespace Nebula::Shader
 
         struct Sources
         {
-            std::optional<std::string> Shared   = std::nullopt;
-            std::optional<std::string> Vertex   = std::nullopt;
-            std::optional<std::string> Pixel = std::nullopt;
+            std::optional<std::string> Shared = std::nullopt;
+            std::optional<std::string> Vertex = std::nullopt;
+            std::optional<std::string> Pixel  = std::nullopt;
         };
 
         explicit Compiler(std::string source) : m_Source(std::move(source)) {}

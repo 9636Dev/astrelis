@@ -1,12 +1,12 @@
 #include "ShaderCompiler.hpp"
 
-#define COMPILER_EXPECT_INTERNAL(tokType, tokRef, ...) \
-    if (tokRef.Type != TokenType::tokType) \
-    { \
-        return Error {"Expected token " # tokType " got: " + Token::TypeString(tokRef.Type), tokRef.Index}; \
+#define COMPILER_EXPECT_INTERNAL(tokType, tokRef, ...)                                                     \
+    if (tokRef.Type != TokenType::tokType)                                                                 \
+    {                                                                                                      \
+        return Error {"Expected token " #tokType " got: " + Token::TypeString(tokRef.Type), tokRef.Index}; \
     }
 
-#define COMPILER_EXPECT(tokType, ...) COMPILER_EXPECT_INTERNAL(tokType __VA_OPT__(,) __VA_ARGS__ , token)
+#define COMPILER_EXPECT(tokType, ...) COMPILER_EXPECT_INTERNAL(tokType __VA_OPT__(, ) __VA_ARGS__, token)
 
 namespace Nebula::Shader
 {
@@ -67,7 +67,7 @@ namespace Nebula::Shader
                 }
 
                 m_Meta.Name = token.Text;
-                token = lexer.NextToken();
+                token       = lexer.NextToken();
                 COMPILER_EXPECT(Semicolon);
                 break;
             case TokenType::BindingsKeyword: {
@@ -81,7 +81,7 @@ namespace Nebula::Shader
             case TokenType::InputKeyword:
             case TokenType::FragmentInputKeyword: {
                 auto& inputsVec = token.Type == TokenType::InputKeyword ? m_Meta.Inputs : m_Meta.FragmentInputs;
-                token = lexer.NextToken();
+                token           = lexer.NextToken();
                 COMPILER_EXPECT(LeftBrace);
 
                 auto inputs = LexScope(lexer);
@@ -279,9 +279,9 @@ namespace Nebula::Shader
         return std::nullopt;
     }
 
-    std::optional<Compiler::Error> Compiler::ParseBindings(Lexer& lexer, Token& token) // NOLINT(readability-function-cognitive-complexity)
+    std::optional<Compiler::Error>
+        Compiler::ParseBindings(Lexer& lexer, Token& token) // NOLINT(readability-function-cognitive-complexity)
     {
-
         token = lexer.NextToken();
         COMPILER_EXPECT(LeftBrace);
 
@@ -298,12 +298,12 @@ namespace Nebula::Shader
         {
             if (bindings[i].Type == TokenType::UniformsKeyword || bindings[i].Type == TokenType::TexturesKeyword)
             {
-                auto& bindingsVec = bindings[i++].Type == TokenType::UniformsKeyword ? m_Meta.Uniforms : m_Meta.Textures;
+                auto& bindingsVec =
+                    bindings[i++].Type == TokenType::UniformsKeyword ? m_Meta.Uniforms : m_Meta.Textures;
                 COMPILER_EXPECT(LeftBrace, bindings[i]);
 
                 while (bindings[++i].Type != TokenType::RightBrace && i < bindings.size())
                 {
-
                     // Type Name : Binding ;
                     Binding binding;
 

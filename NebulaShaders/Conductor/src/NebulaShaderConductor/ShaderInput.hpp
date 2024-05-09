@@ -14,8 +14,8 @@ namespace Nebula::ShaderConductor
         std::string EntryPoint;
         TargetProfile Profile = {};
 
-        ShaderInput() = default;
-        ~ShaderInput() = default;
+        ShaderInput()                              = default;
+        ~ShaderInput()                             = default;
         ShaderInput(const ShaderInput&)            = default;
         ShaderInput(ShaderInput&&)                 = default;
         ShaderInput& operator=(const ShaderInput&) = default;

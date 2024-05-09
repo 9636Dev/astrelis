@@ -11,15 +11,12 @@ namespace Nebula
         m_Translation.z() += transZ;
     }
 
-    void Transform::Translate(const Vector3f& translation) noexcept
-    {
-        m_Translation += translation;
-    }
+    void Transform::Translate(const Vector3f& translation) noexcept { m_Translation += translation; }
 
     void Transform::Rotate(float angle, const Vector3f& axis) noexcept
     {
         auto rotation = Eigen::AngleAxisf(angle, axis);
-        m_Rotation = m_Rotation * Quaternionf(rotation);
+        m_Rotation    = m_Rotation * Quaternionf(rotation);
     }
 
     void Transform::Scale(float scaleX, float scaleY, float scaleZ) noexcept
@@ -40,9 +37,9 @@ namespace Nebula
     {
         Eigen::Transform<float, 3, Eigen::Affine> transform = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 
-        transform.translate(m_Translation);
-        transform.rotate(m_Rotation);
         transform.scale(m_Scale);
+        transform.rotate(m_Rotation);
+        transform.translate(m_Translation);
 
         return transform.matrix();
     }
