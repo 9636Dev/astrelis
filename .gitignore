@@ -4,6 +4,9 @@ compile_commands.json
 # Buildscript cache
 /util/config/cache.json
 
+# Clang DummyConfigureOutput
+DummyConfigureOutput
+
 # For Mac users
 .DS_Store
 
