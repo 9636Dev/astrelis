@@ -28,13 +28,13 @@ namespace Nebula
 
     std::shared_ptr<spdlog::logger>& Log::GetCoreLogger()
     {
-        NEB_ASSERT(s_CoreLogger, "Core logger not initialized!");
+        NEB_ASSERT(s_CoreLogger != nullptr, "Core logger not initialized!");
         return s_CoreLogger;
     }
 
     std::shared_ptr<spdlog::logger>& Log::GetClientLogger()
     {
-        NEB_ASSERT(s_ClientLogger, "Client logger not initialized!");
+        NEB_ASSERT(s_ClientLogger != nullptr, "Client logger not initialized!");
         return s_ClientLogger;
     }
 } // namespace Nebula
