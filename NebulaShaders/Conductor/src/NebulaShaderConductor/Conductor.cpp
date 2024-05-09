@@ -307,8 +307,8 @@ namespace Nebula::ShaderConductor
         }
     }
 
-    ShaderConductor::CompileOutput<Shader::MetalMeta>
-        ShaderConductor::CompileToMsl(const std::vector<std::uint32_t>& spirv, const MslOutput& output)
+    ShaderConductor::CompileOutput<Shader::MSLMeta>
+        ShaderConductor::CompileToMsl(const std::vector<std::uint32_t>& spirv, const MSLOutput& output)
     {
         try
         {

@@ -12,6 +12,8 @@ set(NEBULA_SHADER_BUILDER_SOURCES
     src/NebulaShaderBuilder/FileToOutput.cpp
     src/NebulaShaderBuilder/Glsl.hpp
     src/NebulaShaderBuilder/Glsl.cpp
+    src/NebulaShaderBuilder/Msl.hpp
+    src/NebulaShaderBuilder/Msl.cpp
 )
 
 set(NEBULA_SHADER_BUILDER_LIBRARY_TYPE "Inherit" CACHE STRING "The type of library to build")

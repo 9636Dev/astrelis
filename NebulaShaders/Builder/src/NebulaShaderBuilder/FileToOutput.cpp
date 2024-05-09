@@ -4,18 +4,13 @@
 
 namespace Nebula::Shader
 {
-    IntermediateOutput IntermediateOutput::FromFile(const File& file)
+    template<typename T>
+    requires std::derived_from<T, std::istream>
+    static IntermediateOutput ReadFromStream(T& stream)
     {
         IntermediateOutput output;
 
-        std::ifstream input(file.GetPath(), std::ios::binary);
-        if (!input.good())
-        {
-            output.Header.Identifier.clear();
-            return output;
-        }
-
-        cereal::BinaryInputArchive archive(input);
+        cereal::BinaryInputArchive archive(stream);
         FileHeader header;
         archive(header);
         output.Header = header;
@@ -25,29 +20,41 @@ namespace Nebula::Shader
             GLSLSource glslSource;
             archive(glslSource);
             output.GlslSource = glslSource;
+        }
+
+        if (header.MslPresent)
+        {
+            MSLSource mslSource;
+            archive(mslSource);
+            output.MslSource = mslSource;
         }
 
         return output;
     }
 
-    IntermediateOutput IntermediateOutput::FromSource(const std::string& source)
+    IntermediateOutput IntermediateOutput::FromFile(const File& file)
     {
-        IntermediateOutput output;
-
-        std::stringstream input(source);
-        cereal::BinaryInputArchive archive(input);
-
-        FileHeader header;
-        archive(header);
-        output.Header = header;
-
-        if (header.GlslPresent)
+        std::ifstream input(file.GetPath(), std::ios::binary);
+        if (!input.good())
         {
-            GLSLSource glslSource;
-            archive(glslSource);
-            output.GlslSource = glslSource;
+            IntermediateOutput output;
+            output.Header.Identifier.clear();
+            return output;
         }
 
-        return output;
+        return ReadFromStream(input);
+    }
+
+    IntermediateOutput IntermediateOutput::FromSource(const std::string& source)
+    {
+        std::stringstream input(source);
+        if (!input.good())
+        {
+            IntermediateOutput output;
+            output.Header.Identifier.clear();
+            return output;
+        }
+
+        return ReadFromStream(input);
     }
 } // namespace Nebula::Shader

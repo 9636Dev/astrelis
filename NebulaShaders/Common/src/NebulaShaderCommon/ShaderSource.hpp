@@ -30,6 +30,12 @@ namespace Nebula::Shader
         MSLShaderSource() = default;
 
         std::uint32_t Version = 2;
-        //MSLMeta Meta;
+        std::string VertexSource;
+        std::string PixelSource;
+
+        template<typename Archive> void serialize(Archive& archive)
+        {
+            archive(Version, VertexSource, PixelSource);
+        }
     };
 } // namespace Nebula::Shader

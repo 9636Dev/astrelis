@@ -19,6 +19,7 @@ namespace Nebula::ShaderConductor
 
     struct GLSLOutput : public ShaderOutput
     {
+        // Version is in the format of 410 for 4.1
         std::size_t Version         = 410;
         bool Enable420PackExtension = false;
         bool GLES                   = false;
@@ -26,12 +27,14 @@ namespace Nebula::ShaderConductor
 
     struct HLSLOutput : public ShaderOutput
     {
+        // HLSL version is in the format of 50 for 5.0
         std::size_t HLSLVersion = 50;
     };
 
-    struct MslOutput : public ShaderOutput
+    struct MSLOutput : public ShaderOutput
     {
-        std::size_t MslVersion = 2;
+        // MSL version is in the format of 10200 for 1.2.0
+        std::size_t MslVersion = 20000;
     };
 
 } // namespace Nebula::ShaderConductor

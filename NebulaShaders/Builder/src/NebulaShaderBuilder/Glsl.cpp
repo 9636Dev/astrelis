@@ -63,7 +63,7 @@ namespace Nebula::Shader
         return FromIntermediate(output);
     }
 
-    std::optional<Glsl> Glsl::FromSource(std::string source)
+    std::optional<Glsl> Glsl::FromSource(const std::string& source)
     {
         IntermediateOutput output = IntermediateOutput::FromSource(source);
         return FromIntermediate(output);

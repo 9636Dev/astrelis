@@ -6,8 +6,8 @@
 
 #include "Core.hpp"
 #include "NebulaIO/File.hpp"
+#include "NebulaShaderBuilder/File.hpp"
 #include "NebulaShaderCommon/ShaderMeta.hpp"
-#include "NebulaShaderCommon/ShaderSource.hpp"
 #include "NebulaShaderConductor/ShaderOutput.hpp"
 
 namespace Nebula::Shader
@@ -22,6 +22,7 @@ namespace Nebula::Shader
         * @return The error message if there was an error
         */
         [[nodiscard]] std::string GenerateGlsl(const ShaderConductor::GLSLOutput& output);
+        [[nodiscard]] std::string GenerateMsl(const ShaderConductor::MSLOutput& output);
 
 
         [[nodiscard]] FileWriteResult WriteToFile(const File& file) const;
@@ -34,6 +35,7 @@ namespace Nebula::Shader
 
         // Variables below this line are stored in the intermediate format
         ShaderProgram m_Program;
-        std::optional<GLSLShaderSource> m_GlslSource;
+        std::optional<GLSLSource> m_GlslSource;
+        std::optional<MSLSource> m_MslSource;
     };
 } // namespace Nebula::Shader

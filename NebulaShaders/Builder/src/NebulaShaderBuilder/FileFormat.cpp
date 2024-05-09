@@ -176,6 +176,58 @@ namespace Nebula::Shader
         return "";
     }
 
+
+    std::string IntermediateFormat::GenerateMsl(const ShaderConductor::MSLOutput& output)
+    {
+        if (m_MslSource.has_value())
+        {
+            return "MSL code already exists";
+        }
+
+        MSLSource mslSource;
+        ShaderConductor::ShaderConductor conductor;
+
+        ShaderConductor::ShaderInput vertexInput;
+        vertexInput.Source     = m_VertexSource;
+        vertexInput.Profile    = ShaderConductor::TargetProfile(ShaderStage::Vertex, 6, 0);
+        vertexInput.EntryPoint = m_VertexEntrypoint;
+
+        auto spirvVertex = conductor.CompileToSPIRV(vertexInput, output);
+        if (!spirvVertex.success)
+        {
+            return spirvVertex.errorMessage;
+        }
+
+        ShaderConductor::ShaderInput pixelInput;
+        pixelInput.Source     = m_PixelSource;
+        pixelInput.Profile    = ShaderConductor::TargetProfile(ShaderStage::Pixel, 6, 0);
+        pixelInput.EntryPoint = m_PixelEntrypoint;
+
+        auto spirvPixel = conductor.CompileToSPIRV(pixelInput, output);
+        if (!spirvPixel.success)
+        {
+            return spirvPixel.errorMessage;
+        }
+
+        auto [vertexResult, _vertexMeta] = ShaderConductor::ShaderConductor::CompileToMsl(spirvVertex.spirvCode, output);
+        if (!vertexResult.second.empty())
+        {
+            return vertexResult.second;
+        }
+
+        auto [pixelResult, _pixelMeta] = ShaderConductor::ShaderConductor::CompileToMsl(spirvPixel.spirvCode, output);
+        if (!pixelResult.second.empty())
+        {
+            return pixelResult.second;
+        }
+
+        mslSource.VertexSource = vertexResult.first;
+        mslSource.PixelSource = pixelResult.first;
+        m_MslSource = std::move(mslSource);
+
+        return "";
+    }
+
     FileWriteResult IntermediateFormat::WriteToFile(const File& file) const
     {
         std::ofstream out(file.GetPath(), std::ios::binary);

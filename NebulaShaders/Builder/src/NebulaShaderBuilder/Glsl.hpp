@@ -50,7 +50,7 @@ namespace Nebula::Shader
         std::string VertexSource;
         std::string PixelSource;
 
-        static std::optional<Glsl> FromSource(std::string source);
+        static std::optional<Glsl> FromSource(const std::string& source);
         static std::optional<Glsl> FromFile(const Nebula::File& file);
 
         Glsl(std::string name,

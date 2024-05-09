@@ -77,7 +77,7 @@ namespace Nebula::Shader
     {
     };
 
-    struct MetalMeta
+    struct MSLMeta
     {
         struct Binding
         {
@@ -143,9 +143,9 @@ namespace Nebula::Shader
         std::map<std::string, Texture> Textures;
         std::map<std::string, Sampler> Samplers;
 
-        MetalMeta() = default;
+        MSLMeta() = default;
 
-        bool operator==(const MetalMeta& other) const
+        bool operator==(const MSLMeta& other) const
         {
             return Bindings == other.Bindings && Textures == other.Textures && Samplers == other.Samplers;
         }
