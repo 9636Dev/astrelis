@@ -13,11 +13,6 @@ set(NEBULA_GRAPHICS_METAL_SOURCES
     src/NebulaGraphicsMetal/Window.mm
 )
 
-
-if (NOT TARGET glfw)
-    add_subdirectory(vendor/glfw)
-endif()
-
 add_library(NebulaGraphicsMetal SHARED ${NEBULA_GRAPHICS_METAL_SOURCES})
 nebula_add_definitions(NebulaGraphicsMetal "NEBULA_GRAPHICS_METAL" SHARED)
 

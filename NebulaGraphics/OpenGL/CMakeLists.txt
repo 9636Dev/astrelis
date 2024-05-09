@@ -41,7 +41,6 @@ endif()
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glm)
 
 add_library(NebulaGraphicsOpenGL SHARED ${NEBULA_GRAPHICS_OPENGL_SOURCES})
