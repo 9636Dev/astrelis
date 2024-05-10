@@ -139,12 +139,12 @@ namespace Nebula
             renderableObject.m_Mesh->GetIndexData().data(),
             static_cast<std::uint32_t>(renderableObject.m_Mesh->GetIndexData().size() * sizeof(std::uint32_t)));
 
-        m_GLRenderableObjects.push_back(std::move(glRenderableObject));
+        m_GLRenderableObjects.insert(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(renderPassIndex), std::move(glRenderableObject));
     }
 
     void OpenGLRenderer::InternalRemoveRenderableObject(std::size_t index)
     {
-        m_GLRenderableObjects.erase(m_GLRenderableObjects.begin() + index);
+        m_GLRenderableObjects.erase(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(index));
     }
 
     void OpenGLRenderer::Render()
@@ -165,7 +165,7 @@ namespace Nebula
                 m_GLRenderableObjects[j].IndexBuffer.Bind();
 
                 OpenGL::GL::DrawElements(OpenGL::DrawMode::Triangles,
-                                         m_RenderableObjects[j].m_Mesh->GetIndexData().size(),
+                                         static_cast<std::int32_t>(m_RenderableObjects[j].m_Mesh->GetIndexData().size()),
                                          OpenGL::GL::GetGLType<std::uint32_t>(), nullptr);
             }
         }
