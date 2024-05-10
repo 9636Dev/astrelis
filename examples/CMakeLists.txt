@@ -14,5 +14,4 @@ add_dependencies(NebulaExamples
     NebulaGraphics
 )
 target_link_libraries(NebulaExamples NebulaCore)
-target_link_libraries(NebulaExamples NebulaGraphicsCore)
-target_link_libraries(NebulaExamples NebulaGraphicsRenderer)
+target_link_libraries(NebulaExamples NebulaGraphics)

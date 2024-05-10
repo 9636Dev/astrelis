@@ -46,8 +46,6 @@ if (NEBULA_BUILD_TESTS AND NOT TARGET gtest_main) # If we are building tests and
     add_subdirectory(vendor/googletest)
 endif()
 
-# Used by Visual Studio
-
 # We add the submodules
 add_subdirectory(NebulaCore)
 add_subdirectory(NebulaIO)
