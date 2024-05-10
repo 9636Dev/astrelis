@@ -4,7 +4,6 @@ namespace CLI
 {
     std::vector<std::string> ConstructArgumentList(int argc, char** argv)
     {
-
         std::vector<std::string> args;
         args.reserve(argc);
         for (int i = 0; i < argc; ++i)

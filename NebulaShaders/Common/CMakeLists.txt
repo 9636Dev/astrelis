@@ -15,6 +15,7 @@ set(NEBULA_SHADER_COMMON_SOURCES
 
 add_library(NebulaShaderCommon INTERFACE ${NEBULA_SHADER_COMMON_SOURCES})
 target_include_directories(NebulaShaderCommon INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+nebula_format_project(NebulaShaderCommon ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_SHADER_COMMON_SOURCES}")
 
 add_dependencies(NebulaShaderCommon cereal)
 target_link_libraries(NebulaShaderCommon INTERFACE cereal)

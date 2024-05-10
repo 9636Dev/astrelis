@@ -17,10 +17,13 @@ add_subdirectory(Core)
 add_subdirectory(Renderer)
 
 set(RENDERER_INCLUDED FALSE)
+set(NEBULA_GRAPHICS_FORMAT_DEPENDENCIES "")
+
 if (NEBULA_GRAPHICS_OPENGL)
     message(STATUS "Nebula: Including OpenGL renderer")
     set(RENDERER_INCLUDED TRUE)
     add_subdirectory(OpenGL)
+    LIST(APPEND NEBULA_GRAPHICS_FORMAT_DEPENDENCIES "NebulaGraphicsOpenGL_format")
     if (NOT TARGET glfw)
         add_subdirectory(vendor/glfw)
     endif()
@@ -29,6 +32,7 @@ if (NEBULA_GRAPHICS_METAL)
     message(STATUS "Nebula: Including Metal renderer")
     set(RENDERER_INCLUDED TRUE)
     #add_subdirectory(Metal)
+    #LIST(APPEND NEBULA_GRAPHICS_FORMAT_DEPENDENCIES "NebulaGraphicsMetal_format")
     if (NOT TARGET glfw)
         add_subdirectory(vendor/glfw)
     endif()
@@ -37,11 +41,13 @@ if (NEBULA_GRAPHICS_DIRECTX)
     message(STATUS "Nebula: Including DirectX renderer")
     set(RENDERER_INCLUDED TRUE)
     #add_subdirectory(DirectX)
+    #LIST(APPEND NEBULA_GRAPHICS_FORMAT_DEPENDENCIES "NebulaGraphicsDirectX_format")
 endif()
 if (NEBULA_GRAPHICS_VULKAN)
     message(STATUS "Nebula: Including Vulkan renderer")
     set(RENDERER_INCLUDED TRUE)
     #add_subdirectory(Vulkan)
+    #LIST(APPEND NEBULA_GRAPHICS_FORMAT_DEPENDENCIES "NebulaGraphicsVulkan_format")
 endif()
 
 if (NOT RENDERER_INCLUDED)
@@ -57,3 +63,12 @@ target_link_libraries(NebulaGraphics INTERFACE
     NebulaGraphicsCore
     NebulaGraphicsRenderer
 )
+
+if (NEBULA_ENABLE_CLANG_FORMAT)
+    add_custom_target(NebulaGraphics_format)
+    add_dependencies(NebulaGraphics_format
+        NebulaGraphicsCore_format
+        NebulaGraphicsRenderer_format
+        ${NEBULA_GRAPHICS_FORMAT_DEPENDENCIES}
+    )
+endif()

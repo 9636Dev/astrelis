@@ -52,9 +52,13 @@ namespace Nebula
 
         // GLFW Specific
         void MakeContextCurrent() const { glfwMakeContextCurrent(m_Window); }
+
         static GLFWwindow* GetContextCurrent() { return glfwGetCurrentContext(); }
 
-        void SetFrameBufferSizeCallback(const std::function<void(std::int32_t, std::int32_t)>& callback) { m_Data.FrameBufferSizeCallback = callback; }
+        void SetFrameBufferSizeCallback(const std::function<void(std::int32_t, std::int32_t)>& callback)
+        {
+            m_Data.FrameBufferSizeCallback = callback;
+        }
 
         [[nodiscard]] GLFWwindow* GetNativeWindow() const { return m_Window; }
     private:

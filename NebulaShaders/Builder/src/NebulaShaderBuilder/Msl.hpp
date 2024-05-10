@@ -4,6 +4,7 @@
 #include "NebulaShaderCommon/Bindings.hpp"
 #include "NebulaShaderCommon/Inputs.hpp"
 #include <vector>
+
 namespace Nebula::Shader
 {
     struct Msl
@@ -19,6 +20,7 @@ namespace Nebula::Shader
         static std::optional<Msl> FromFile(const Nebula::File& file);
 
         Msl() = default;
+
         Msl(std::vector<Input> inputs,
             std::vector<Input> pixelInputs,
             std::vector<Binding> bindings,

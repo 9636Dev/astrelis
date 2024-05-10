@@ -21,6 +21,7 @@ nebula_library_type(NEBULA_IO_LIBRARY_TYPE NEBULA_IO_LIBRARY_TYPE_FINAL)
 message(STATUS "NebulaEngine: NebulaIO built as: ${NEBULA_IO_LIBRARY_TYPE_FINAL}")
 add_library(NebulaIO ${NEBULA_IO_LIBRARY_TYPE_FINAL} ${NEBULA_IO_SOURCES})
 nebula_add_definitions(NebulaIO "NEBULA_IO" ${NEBULA_IO_LIBRARY_TYPE_FINAL})
+nebula_format_project(NebulaIO ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_IO_SOURCES}")
 
 target_include_directories(NebulaIO PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src

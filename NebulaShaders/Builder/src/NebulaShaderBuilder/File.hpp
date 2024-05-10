@@ -42,14 +42,13 @@ namespace Nebula::Shader
         std::string PixelSource;
 
         MSLSource() = default;
-        MSLSource(std::string vertexSource, std::string pixelSource)
-            : VertexSource(std::move(vertexSource)), PixelSource(std::move(pixelSource))
+
+        MSLSource(std::string vertexSource, std::string pixelSource) :
+            VertexSource(std::move(vertexSource)),
+            PixelSource(std::move(pixelSource))
         {
         }
 
-        template<typename Archive> void serialize(Archive& archive)
-        {
-            archive(VertexSource, PixelSource);
-        }
+        template<typename Archive> void serialize(Archive& archive) { archive(VertexSource, PixelSource); }
     };
 } // namespace Nebula::Shader

@@ -27,6 +27,14 @@ include(cmake/UtilFunctions.cmake)
 include(cmake/DefaultConfig.cmake)
 include(cmake/VerifyConfig.cmake)
 
+# Find Clang format
+if (NEBULA_ENABLE_CLANG_FORMAT)
+    find_program(CLANG_FORMAT "clang-format")
+    if (NOT CLANG_FORMAT)
+        message(FATAL_ERROR "Clang-format not found")
+    endif()
+endif()
+
 # Set C++ Flags
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -52,3 +60,14 @@ add_subdirectory(NebulaIO)
 add_subdirectory(NebulaGraphics)
 add_subdirectory(NebulaShaders)
 add_subdirectory(examples) # NebulaExamples
+
+# We define a target for format
+if (NEBULA_ENABLE_CLANG_FORMAT)
+    add_custom_target(format)
+    add_dependencies(format
+        NebulaCore_format
+        NebulaGraphics_format
+        NebulaIO_format
+        NebulaShaders_format
+    )
+endif()

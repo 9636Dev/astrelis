@@ -21,6 +21,7 @@ nebula_library_type(NEBULA_SHADER_COMPILER_LIBRARY_TYPE NEBULA_SHADER_COMPILER_L
 message(STATUS "NebulaEngine: NebukaShaderCompiler built as: ${NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL}")
 add_library(NebulaShaderCompiler ${NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL} ${NEBULA_SHADER_COMPILER_SOURCES})
 nebula_add_definitions(NebulaShaderCompiler "NEBULA_SHADER_COMPILER" ${NEBULA_SHADER_COMPILER_LIBRARY_TYPE_FINAL})
+nebula_format_project(NebulaShaderCompiler ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_SHADER_COMPILER_SOURCES}")
 
 target_include_directories(NebulaShaderCompiler PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src

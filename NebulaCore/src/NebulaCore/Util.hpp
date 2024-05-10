@@ -34,7 +34,7 @@
 #endif
 
 #ifdef NEBULA_DEBUG
-#define NEB_RUN_IF_DEBUG(x) x
+    #define NEB_RUN_IF_DEBUG(x) x
 #else
-#define NEB_RUN_IF_DEBUG(x)
+    #define NEB_RUN_IF_DEBUG(x)
 #endif

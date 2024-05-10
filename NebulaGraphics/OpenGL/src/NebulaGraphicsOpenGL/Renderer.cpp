@@ -89,7 +89,8 @@ namespace Nebula
         if (shader.Bindings.size() != 1)
         {
             NEB_CORE_LOG_WARN("Uniform buffer count is not 1 (More than one not supported yet)");
-            m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex), std::move(glRenderPassObject));
+            m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex),
+                                    std::move(glRenderPassObject));
             return;
         }
 
@@ -139,7 +140,8 @@ namespace Nebula
             renderableObject.m_Mesh->GetIndexData().data(),
             static_cast<std::uint32_t>(renderableObject.m_Mesh->GetIndexData().size() * sizeof(std::uint32_t)));
 
-        m_GLRenderableObjects.insert(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(renderPassIndex), std::move(glRenderableObject));
+        m_GLRenderableObjects.insert(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(renderPassIndex),
+                                     std::move(glRenderableObject));
     }
 
     void OpenGLRenderer::InternalRemoveRenderableObject(std::size_t index)
@@ -164,9 +166,10 @@ namespace Nebula
                 m_GLRenderableObjects[j].VertexArray.Bind();
                 m_GLRenderableObjects[j].IndexBuffer.Bind();
 
-                OpenGL::GL::DrawElements(OpenGL::DrawMode::Triangles,
-                                         static_cast<std::int32_t>(m_RenderableObjects[j].m_Mesh->GetIndexData().size()),
-                                         OpenGL::GL::GetGLType<std::uint32_t>(), nullptr);
+                OpenGL::GL::DrawElements(
+                    OpenGL::DrawMode::Triangles,
+                    static_cast<std::int32_t>(m_RenderableObjects[j].m_Mesh->GetIndexData().size()),
+                    OpenGL::GL::GetGLType<std::uint32_t>(), nullptr);
             }
         }
 

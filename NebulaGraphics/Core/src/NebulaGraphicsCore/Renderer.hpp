@@ -47,16 +47,16 @@ namespace Nebula
 
         [[nodiscard]] std::size_t GetIndexOfRenderPass(const std::string& name) const;
 
-        virtual void OnResize(std::uint32_t width, std::uint32_t height) = 0;
+        virtual void OnResize(std::uint32_t width, std::uint32_t height)            = 0;
         virtual void SetClearColor(float red, float green, float blue, float alpha) = 0;
-        virtual AssetLoader& GetAssetLoader() = 0;
+        virtual AssetLoader& GetAssetLoader()                                       = 0;
 
         RenderableObject& GetRenderableObject(std::size_t index) { return m_RenderableObjects[index]; }
     protected:
-        virtual void InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex) = 0;
-        virtual void InternalRemoveRenderPass(std::size_t index) = 0;
+        virtual void InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex)                    = 0;
+        virtual void InternalRemoveRenderPass(std::size_t index)                                                 = 0;
         virtual void InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex) = 0;
-        virtual void InternalRemoveRenderableObject(std::size_t index) = 0;
+        virtual void InternalRemoveRenderableObject(std::size_t index)                                           = 0;
 
         [[nodiscard]] std::size_t GetStartOffsetForRenderPass(std::size_t renderPassIndex) const;
 
@@ -72,12 +72,14 @@ namespace Nebula
         // - We need to iterate over the renderable objects quickly
         // - Changing the size is a common operation, but not as common as iterating over the renderable objects
         // - We don't use a 2D vector, because we store the offsets for the render passes in a different vector
-        std::vector<RenderableObject> m_RenderableObjects; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
+        std::vector<RenderableObject>
+            m_RenderableObjects; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
         // Offsets into the RenderableObjects vector, where each index corresponds to number of elements in each RenderPass
         // This is only access when switching render passes.
         // The render passes should be accessed in order, so each switch is just an addition of the offset to the current index
         // We do this to avoid changing offsets every time we add a new renderable object, which is O(n) operation, instead of O(1)
-        std::vector<size_t> m_RenderPassObjectCount; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
+        std::vector<size_t>
+            m_RenderPassObjectCount; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
     };
 
     struct RendererCreationResult

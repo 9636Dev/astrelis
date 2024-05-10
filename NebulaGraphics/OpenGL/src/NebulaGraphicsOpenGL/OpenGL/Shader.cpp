@@ -98,9 +98,10 @@ namespace Nebula::OpenGL
 
     std::int32_t ShaderProgram::GetUniformLocation(const std::string& name) const
     {
-        if (m_UniformLocations.find(name) != m_UniformLocations.end()) {
+        if (m_UniformLocations.find(name) != m_UniformLocations.end())
+        {
             return m_UniformLocations[name];
-}
+        }
         std::int32_t location    = GL::GetUniformLocation(m_Program, name.c_str());
         m_UniformLocations[name] = location;
         return location;

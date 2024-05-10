@@ -20,7 +20,8 @@ namespace Nebula
 
     template<typename T>
         requires std::is_base_of_v<RenderFrameworkContext, T>
-    RendererCreationResult CreateRenderer(const std::string& libraryPath, const std::shared_ptr<Window>& window, const T& context)
+    RendererCreationResult
+        CreateRenderer(const std::string& libraryPath, const std::shared_ptr<Window>& window, const T& context)
     {
         if constexpr (std::is_same_v<T, OpenGLContext>)
         {

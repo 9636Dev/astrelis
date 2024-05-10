@@ -46,6 +46,7 @@ add_subdirectory(vendor/glm)
 add_library(NebulaGraphicsOpenGL SHARED ${NEBULA_GRAPHICS_OPENGL_SOURCES})
 add_dependencies(NebulaGraphicsOpenGL NebulaCore)
 nebula_add_definitions(NebulaGraphicsOpenGL "NEBULA_GRAPHICS_OPENGL" SHARED)
+nebula_format_project(NebulaGraphicsOpenGL ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_GRAPHICS_OPENGL_SOURCES}")
 
 target_include_directories(NebulaGraphicsOpenGL PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src

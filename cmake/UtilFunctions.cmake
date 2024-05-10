@@ -21,3 +21,14 @@ function(nebula_library_type type output)
         set(${output} STATIC PARENT_SCOPE)
     endif()
 endfunction()
+
+function(nebula_format_project target dir sources)
+    if (NEBULA_ENABLE_CLANG_FORMAT)
+        set(format_target ${target}_format)
+
+        add_custom_target(${format_target}
+            COMMAND ${CLANG_FORMAT} -i -style=file ${sources}
+            WORKING_DIRECTORY ${dir}
+        )
+    endif()
+endfunction()

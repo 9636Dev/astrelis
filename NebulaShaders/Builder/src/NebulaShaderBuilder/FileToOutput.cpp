@@ -5,7 +5,7 @@
 namespace Nebula::Shader
 {
     template<typename T>
-    requires std::derived_from<T, std::istream>
+        requires std::derived_from<T, std::istream>
     static IntermediateOutput ReadFromStream(T& stream)
     {
         IntermediateOutput output;

@@ -21,7 +21,8 @@ namespace Nebula
 
         [[nodiscard]] bool Is3D() const noexcept override { return false; }
 
-        std::vector<float>& Vertices() noexcept { return m_VertexData; };
-        std::vector<uint32_t>& Indices() noexcept { return m_IndexData; };
+        std::vector<float>& Vertices() noexcept { return m_VertexData; }
+
+        std::vector<uint32_t>& Indices() noexcept { return m_IndexData; }
     };
 } // namespace Nebula

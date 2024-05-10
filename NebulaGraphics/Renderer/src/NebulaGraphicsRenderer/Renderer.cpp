@@ -37,7 +37,8 @@ namespace Nebula
         return result;
     }
 
-    RendererCreationResult CreateMetalRenderer(std::string libraryPath, const std::shared_ptr<Window> &window, const MetalContext &context)
+    RendererCreationResult
+        CreateMetalRenderer(std::string libraryPath, const std::shared_ptr<Window>& window, const MetalContext& context)
     {
         Loader::ModuleHandle library = Loader::LoadGraphicsLibrary(libraryPath);
         if (library.Handle == nullptr)

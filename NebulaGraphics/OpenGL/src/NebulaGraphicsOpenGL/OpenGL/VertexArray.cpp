@@ -39,11 +39,12 @@ namespace Nebula::OpenGL
         std::ptrdiff_t offset = 0;
         for (const auto& [index, attribute] : attributes)
         {
-            std::int32_t stride   = attribute.Stride == -1 ? static_cast<std::int32_t>(layout.m_Stride)
-                                                           : static_cast<std::int32_t>(attribute.Stride);
+            std::int32_t stride = attribute.Stride == -1 ? static_cast<std::int32_t>(layout.m_Stride)
+                                                         : static_cast<std::int32_t>(attribute.Stride);
             // Disabled linting for: reinterpret_cast, and number to pointer conversion (OpenGL Specificication)
-            const void* offsetPtr = attribute.Offset == -1 ? /* NOLINT */ reinterpret_cast<const void*>(offset)
-                                                           : /* NOLINT */ reinterpret_cast<const void*>(attribute.Offset);
+            const void* offsetPtr = attribute.Offset == -1
+                                        ? /* NOLINT */ reinterpret_cast<const void*>(offset)
+                                        : /* NOLINT */ reinterpret_cast<const void*>(attribute.Offset);
 
             GL::EnableVertexAttribArray(index);
             if (attribute.Type == Type::Double)

@@ -17,3 +17,5 @@ option(NEBULA_USE_PTHREADS "Use pthreads for threading" ON)
 
 # This can be tuned for the specific project
 option(NEBULA_BUILD_TESTS "Build tests" ON)
+
+option(NEBULA_ENABLE_CLANG_FORMAT "Enable clang-format" ON)

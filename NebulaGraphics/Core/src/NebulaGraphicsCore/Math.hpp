@@ -4,22 +4,19 @@
 
 namespace Nebula
 {
-    template<typename Type, int Size>
-    using Vector = Eigen::Vector<Type, Size>;
+    template<typename Type, int Size> using Vector = Eigen::Vector<Type, Size>;
 
     using Vector2f = Vector<float, 2>;
     using Vector3f = Vector<float, 3>;
     using Vector4f = Vector<float, 4>;
 
-    template<typename Type, int Rows, int Cols>
-    using ColMatrix = Eigen::Matrix<Type, Rows, Cols>;
+    template<typename Type, int Rows, int Cols> using ColMatrix = Eigen::Matrix<Type, Rows, Cols>;
 
     using CMatrix2f = ColMatrix<float, 2, 2>;
     using CMatrix3f = ColMatrix<float, 3, 3>;
     using CMatrix4f = ColMatrix<float, 4, 4>;
 
-    template<typename Type, int Rows, int Cols>
-    using RowMatrix = Eigen::Matrix<Type, Rows, Cols, Eigen::RowMajor>;
+    template<typename Type, int Rows, int Cols> using RowMatrix = Eigen::Matrix<Type, Rows, Cols, Eigen::RowMajor>;
 
     using RMatrix2f = RowMatrix<float, 2, 2>;
     using RMatrix3f = RowMatrix<float, 3, 3>;
@@ -30,8 +27,7 @@ namespace Nebula
     using Matrix3f = CMatrix3f;
     using Matrix4f = CMatrix4f;
 
-    template<typename Type>
-    using Quaternion = Eigen::Quaternion<Type>;
+    template<typename Type> using Quaternion = Eigen::Quaternion<Type>;
 
     using Quaternionf = Quaternion<float>;
 } // namespace Nebula

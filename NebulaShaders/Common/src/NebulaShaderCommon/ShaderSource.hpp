@@ -33,9 +33,6 @@ namespace Nebula::Shader
         std::string VertexSource;
         std::string PixelSource;
 
-        template<typename Archive> void serialize(Archive& archive)
-        {
-            archive(Version, VertexSource, PixelSource);
-        }
+        template<typename Archive> void serialize(Archive& archive) { archive(Version, VertexSource, PixelSource); }
     };
 } // namespace Nebula::Shader

@@ -23,11 +23,11 @@ namespace Nebula
         }
 
         NEB_CORE_LOG_TRACE("[Renderer] Loading library: {0}", libraryPath);
-    #ifdef NEBULA_PLATFORM_WINDOWS
+#ifdef NEBULA_PLATFORM_WINDOWS
         auto handle = ModuleHandle(LoadLibrary(libraryPath.c_str()));
-    #else
+#else
         auto handle = ModuleHandle(dlopen(libraryPath.c_str(), RTLD_NOW | RTLD_GLOBAL));
-    #endif
+#endif
 
         if (handle.Handle == nullptr)
         {
@@ -141,12 +141,12 @@ namespace Nebula
         {
             NEB_CORE_LOG_TRACE("[Renderer] Unloading library: {0}", iterator->first);
             s_LoadedLibraries.erase(iterator);
-        #ifdef NEBULA_PLATFORM_WINDOWS
+#ifdef NEBULA_PLATFORM_WINDOWS
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             FreeLibrary(reinterpret_cast<HMODULE>(handle.Handle));
-        #else
+#else
             dlclose(handle.Handle);
-        #endif
+#endif
             NEB_CORE_LOG_TRACE("[Renderer] Unloaded library");
         }
     }
@@ -158,12 +158,12 @@ namespace Nebula
             return nullptr;
         }
 
-    #ifdef NEBULA_PLATFORM_WINDOWS
+#ifdef NEBULA_PLATFORM_WINDOWS
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<void*>(GetProcAddress(reinterpret_cast<HMODULE>(handle.Handle), symbolName.c_str()));
-    #else
+#else
         return dlsym(handle.Handle, symbolName.c_str());
-    #endif
+#endif
     }
 } // namespace Nebula
 

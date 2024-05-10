@@ -38,6 +38,7 @@ nebula_library_type(NEBULA_SHADER_CONDUCTOR_LIBRARY_TYPE NEBULA_SHADER_CONDUCTOR
 message(STATUS "NebulaEngine: NebukaShaderConductor built as: ${NEBULA_SHADER_CONDUCTOR_LIBRARY_TYPE_FINAL}")
 add_library(NebulaShaderConductor ${NEBULA_SHADER_CONDUCTOR_LIBRARY_TYPE_FINAL} ${NEBULA_SHADER_CONDUCTOR_SOURCES})
 nebula_add_definitions(NebulaShaderConductor "NEBULA_SHADER_CONDUCTOR" ${NEBULA_SHADER_CONDUCTOR_LIBRARY_TYPE_FINAL})
+nebula_format_project(NebulaShaderConductor ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_SHADER_CONDUCTOR_SOURCES}")
 
 target_compile_options(NebulaShaderConductor PRIVATE
     -fms-extensions

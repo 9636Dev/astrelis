@@ -31,7 +31,6 @@ namespace Nebula::OpenGL
         void BindBase(std::uint32_t index) const;
         void Bind() const;
         void Unbind() const;
-
     private:
         Buffer_t m_Buffer;
     };

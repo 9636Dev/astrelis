@@ -10,8 +10,8 @@ namespace Nebula
     class GlAssetLoader : public AssetLoader
     {
     public:
-        GlAssetLoader() = default;
-        ~GlAssetLoader() override = default;
+        GlAssetLoader()                                = default;
+        ~GlAssetLoader() override                      = default;
         GlAssetLoader(const GlAssetLoader&)            = default;
         GlAssetLoader(GlAssetLoader&&)                 = default;
         GlAssetLoader& operator=(const GlAssetLoader&) = default;

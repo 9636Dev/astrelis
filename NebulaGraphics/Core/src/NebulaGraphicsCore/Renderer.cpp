@@ -32,7 +32,8 @@ namespace Nebula
         m_RenderPassObjectCount.erase(m_RenderPassObjectCount.begin() + static_cast<std::int64_t>(index));
         // Now we need to remove that many elements from the renderable objects vector
         auto offset = GetStartOffsetForRenderPass(index);
-        m_RenderableObjects.erase(m_RenderableObjects.begin() + static_cast<std::int64_t>(offset), m_RenderableObjects.begin() + static_cast<std::int64_t>(offset + objectCount));
+        m_RenderableObjects.erase(m_RenderableObjects.begin() + static_cast<std::int64_t>(offset),
+                                  m_RenderableObjects.begin() + static_cast<std::int64_t>(offset + objectCount));
 
         InternalRemoveRenderPass(index);
         return renderPass;

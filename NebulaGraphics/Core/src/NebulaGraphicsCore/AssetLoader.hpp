@@ -7,8 +7,8 @@ namespace Nebula
     class AssetLoader
     {
     public:
-        AssetLoader() = default;
-        virtual ~AssetLoader() = default;
+        AssetLoader()                              = default;
+        virtual ~AssetLoader()                     = default;
         AssetLoader(const AssetLoader&)            = default;
         AssetLoader(AssetLoader&&)                 = default;
         AssetLoader& operator=(const AssetLoader&) = default;

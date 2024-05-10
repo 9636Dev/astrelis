@@ -17,6 +17,7 @@ set(NEBULA_GRAPHICS_RENDERER_SOURCES
 add_library(NebulaGraphicsRenderer SHARED ${NEBULA_GRAPHICS_RENDERER_SOURCES})
 add_dependencies(NebulaGraphicsRenderer NebulaCore)
 nebula_add_definitions(NebulaGraphicsRenderer "NEBULA_GRAPHICS_RENDERER" SHARED)
+nebula_format_project(NebulaGraphicsRenderer ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_GRAPHICS_RENDERER_SOURCES}")
 
 target_include_directories(NebulaGraphicsRenderer PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src

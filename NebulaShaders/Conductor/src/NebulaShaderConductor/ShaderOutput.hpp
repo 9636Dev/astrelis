@@ -34,7 +34,7 @@ namespace Nebula::ShaderConductor
     struct MSLOutput : public ShaderOutput
     {
         // MSL version is in the format of 10200 for 1.2.0
-        std::size_t MslVersion = 20000;
+        std::size_t MslVersion = 20'000;
     };
 
 } // namespace Nebula::ShaderConductor

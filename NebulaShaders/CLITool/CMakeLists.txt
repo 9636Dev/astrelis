@@ -13,6 +13,7 @@ set(NEBULA_SHADER_CLI_SOURCES
 )
 
 add_executable(NebulaShaderCLI ${NEBULA_SHADER_CLI_SOURCES})
+nebula_format_project(NebulaShaderCLI ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_SHADER_CLI_SOURCES}")
 
 target_include_directories(NebulaShaderCLI PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src

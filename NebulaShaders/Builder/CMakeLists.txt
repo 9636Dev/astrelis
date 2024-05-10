@@ -22,6 +22,7 @@ nebula_library_type(NEBULA_SHADER_BUILDER_LIBRARY_TYPE NEBULA_SHADER_BUILDER_LIB
 message(STATUS "NebulaEngine: NebulaShaderBuilder built as: ${NEBULA_SHADER_BUILDER_LIBRARY_TYPE_FINAL}")
 add_library(NebulaShaderBuilder ${NEBULA_SHADER_BUILDER_LIBRARY_TYPE_FINAL} ${NEBULA_SHADER_BUILDER_SOURCES})
 nebula_add_definitions(NebulaShaderBuilder "NEBULA_SHADER_BUILDER" ${NEBULA_SHADER_BUILDER_LIBRARY_TYPE_FINAL})
+nebula_format_project(NebulaShaderBuilder ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_SHADER_BUILDER_SOURCES}")
 
 target_include_directories(NebulaShaderBuilder PUBLIC src)
 

@@ -176,7 +176,6 @@ namespace Nebula::Shader
         return "";
     }
 
-
     std::string IntermediateFormat::GenerateMsl(const ShaderConductor::MSLOutput& output)
     {
         if (m_MslSource.has_value())
@@ -209,7 +208,8 @@ namespace Nebula::Shader
             return spirvPixel.errorMessage;
         }
 
-        auto [vertexResult, _vertexMeta] = ShaderConductor::ShaderConductor::CompileToMsl(spirvVertex.spirvCode, output);
+        auto [vertexResult, _vertexMeta] =
+            ShaderConductor::ShaderConductor::CompileToMsl(spirvVertex.spirvCode, output);
         if (!vertexResult.second.empty())
         {
             return vertexResult.second;
@@ -222,8 +222,8 @@ namespace Nebula::Shader
         }
 
         mslSource.VertexSource = vertexResult.first;
-        mslSource.PixelSource = pixelResult.first;
-        m_MslSource = std::move(mslSource);
+        mslSource.PixelSource  = pixelResult.first;
+        m_MslSource            = std::move(mslSource);
 
         return "";
     }

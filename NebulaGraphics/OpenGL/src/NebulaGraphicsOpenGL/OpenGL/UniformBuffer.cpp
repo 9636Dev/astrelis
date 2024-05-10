@@ -8,6 +8,7 @@ namespace Nebula::OpenGL
         GL::GenBuffers(1, &buffer);
         return buffer;
     }
+
     UniformBuffer::UniformBuffer() : m_Buffer(GenerateUniformBuffer()) {}
 
     UniformBuffer::~UniformBuffer() { GL::DeleteBuffers(1, &m_Buffer); }
@@ -34,4 +35,4 @@ namespace Nebula::OpenGL
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     void UniformBuffer::Unbind() const { GL::BindBuffer(BufferTarget::UniformBuffer, 0); }
-}  // namespace Nebula::OpenGL
+} // namespace Nebula::OpenGL
