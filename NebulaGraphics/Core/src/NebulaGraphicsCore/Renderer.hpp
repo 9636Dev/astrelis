@@ -43,7 +43,7 @@ namespace Nebula
         * @param renderPassIndex The index of the render pass to add the renderable object to, defaults to the first render pass
         * @note If the render pass index is out of bounds, the renderable object will be added to the first render pass
         */
-        void AddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex);
+        void AddRenderableObject(RenderableObject renderableObject, std::size_t renderableIndex);
 
         [[nodiscard]] std::size_t GetIndexOfRenderPass(const std::string& name) const;
 
@@ -55,7 +55,7 @@ namespace Nebula
     protected:
         virtual void InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex)                    = 0;
         virtual void InternalRemoveRenderPass(std::size_t index)                                                 = 0;
-        virtual void InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex) = 0;
+        virtual void InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderableIndex) = 0;
         virtual void InternalRemoveRenderableObject(std::size_t index)                                           = 0;
 
         [[nodiscard]] std::size_t GetStartOffsetForRenderPass(std::size_t renderPassIndex) const;

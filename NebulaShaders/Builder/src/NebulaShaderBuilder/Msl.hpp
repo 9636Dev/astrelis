@@ -9,6 +9,7 @@ namespace Nebula::Shader
 {
     struct Msl
     {
+        std::string Name;
         std::vector<Input> Inputs;
         std::vector<Input> PixelInputs;
         std::vector<Binding> Bindings;
@@ -21,12 +22,14 @@ namespace Nebula::Shader
 
         Msl() = default;
 
-        Msl(std::vector<Input> inputs,
+        Msl(std::string name,
+            std::vector<Input> inputs,
             std::vector<Input> pixelInputs,
             std::vector<Binding> bindings,
             std::vector<TextureBinding> textures,
             std::string vertexSource,
             std::string pixelSource) :
+            Name(std::move(name)),
             Inputs(std::move(inputs)),
             PixelInputs(std::move(pixelInputs)),
             Bindings(std::move(bindings)),

@@ -122,7 +122,7 @@ namespace Nebula
         m_GLRenderPasses.erase(m_GLRenderPasses.begin() + index);
     }
 
-    void OpenGLRenderer::InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex)
+    void OpenGLRenderer::InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderableIndex)
     {
         GLRenderableObject glRenderableObject;
         glRenderableObject.VertexArray  = OpenGL::VertexArray();
@@ -140,7 +140,7 @@ namespace Nebula
             renderableObject.m_Mesh->GetIndexData().data(),
             static_cast<std::uint32_t>(renderableObject.m_Mesh->GetIndexData().size() * sizeof(std::uint32_t)));
 
-        m_GLRenderableObjects.insert(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(renderPassIndex),
+        m_GLRenderableObjects.insert(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(renderableIndex),
                                      std::move(glRenderableObject));
     }
 
@@ -159,6 +159,7 @@ namespace Nebula
         {
             for (std::size_t j = 0; j < m_RenderPassObjectCount[i]; j++)
             {
+                // TODO(9636D): Logid bug here, we are not using the correct index (Unless we are using the first render pass)
                 Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
 
                 // TODO(Dev9636): Actually parse the Binding and set the data

@@ -320,6 +320,19 @@ namespace Nebula::ShaderConductor
             spirv_cross::CompilerMSL compiler(spirv);
             spirv_cross::CompilerMSL::Options options;
 
+            auto entrypoints = compiler.get_entry_points_and_stages();
+            for (const auto& entrypoint : entrypoints)
+            {
+                if (entrypoint.execution_model == spv::ExecutionModelVertex)
+                {
+                    compiler.rename_entry_point(entrypoint.name, "vertexMain", entrypoint.execution_model);
+                }
+                else if (entrypoint.execution_model == spv::ExecutionModelFragment)
+                {
+                    compiler.rename_entry_point(entrypoint.name, "fragmentMain", entrypoint.execution_model);
+                }
+            }
+
             options.msl_version = output.MslVersion;
 
             return {

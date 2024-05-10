@@ -39,17 +39,17 @@ namespace Nebula
         return renderPass;
     }
 
-    void Renderer::AddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex)
+    void Renderer::AddRenderableObject(RenderableObject renderableObject, std::size_t renderableIndex)
     {
-        if (renderPassIndex >= m_RenderPasses.size())
+        if (renderableIndex >= m_RenderPasses.size())
         {
-            renderPassIndex = 0;
+            renderableIndex = 0;
         }
 
         m_RenderableObjects.push_back(std::move(renderableObject));
-        m_RenderPassObjectCount[renderPassIndex]++;
+        m_RenderPassObjectCount[renderableIndex]++;
 
-        InternalAddRenderableObject(m_RenderableObjects.back(), renderPassIndex);
+        InternalAddRenderableObject(m_RenderableObjects.back(), renderableIndex);
     }
 
     std::size_t Renderer::GetIndexOfRenderPass(const std::string& name) const

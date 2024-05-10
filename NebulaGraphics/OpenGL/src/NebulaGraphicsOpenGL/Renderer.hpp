@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NebulaGraphicsOpenGL/AssetLoader.hpp"
-#include "NebulaShaderBuilder/Glsl.hpp"
 #include "OpenGL/IndexBuffer.hpp"
 #include "OpenGL/Shader.hpp"
 #include "OpenGL/UniformBuffer.hpp"
@@ -10,7 +9,6 @@
 #include "Window.hpp"
 
 #include "NebulaGraphicsCore/Renderer.hpp"
-#include "NebulaGraphicsCore/Window.hpp"
 
 namespace Nebula
 {
@@ -42,7 +40,7 @@ namespace Nebula
 
         void InternalAddRenderPass(RenderPass renderPass, std::size_t insertionIndex) override;
         void InternalRemoveRenderPass(std::size_t index) override;
-        void InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderPassIndex) override;
+        void InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderableIndex) override;
         void InternalRemoveRenderableObject(std::size_t index) override;
 
         void OnResize(std::uint32_t width, std::uint32_t height) override;

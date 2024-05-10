@@ -7,51 +7,106 @@
 #include "NebulaGraphicsRenderer/Renderer.hpp"
 #include "NebulaGraphicsRenderer/Window.hpp"
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+
+enum class GraphicsAPI
+{
+    OpenGL,
+    Metal,
+};
+
+int main(int argc, char** argv)
 {
     Nebula::Log::Init();
 
-#define EXAMPLES_USE_OPENGL
-#ifdef EXAMPLES_USE_OPENGL
-    Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 1});
-    const std::string libraryPath = "lib/NebulaGraphicsOpenGL";
-#elif defined(EXAMPLES_USE_METAL)
-    Nebula::WindowProps<Nebula::MetalContext> props("Nebula", 1'080, 720, {});
-    const std::string libraryPath = "lib/NebulaGraphicsMetal";
-#else
-    #error "No graphics API selected"
-#endif
+    GraphicsAPI api = GraphicsAPI::OpenGL;
+    if (argc < 2)
+    {
+        NEB_LOG_INFO("No graphics API specified, defaulting to OpenGL");
+    }
+    else
+    {
+        std::string apiString = argv[1]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        if (apiString == "OpenGL")
+        {
+            api = GraphicsAPI::OpenGL;
+        }
+        else if (apiString == "Metal")
+        {
+            api = GraphicsAPI::Metal;
+        }
+        else
+        {
+            NEB_CORE_LOG_ERROR("Invalid graphics API specified");
+            return -1;
+        }
+    }
 
     std::shared_ptr<Nebula::Window> window;
     std::shared_ptr<Nebula::Renderer> renderer;
 
+    if (api == GraphicsAPI::OpenGL)
     {
-        auto result = Nebula::CreateWindow(libraryPath, props);
-        if (result.Error != Nebula::WindowCreationResult::ErrorType::None)
+        NEB_CORE_LOG_INFO("Using OpenGL");
+        Nebula::WindowProps<Nebula::OpenGLContext> props("Nebula", 1'080, 720, {4, 1});
+        const std::string libraryPath = "lib/NebulaGraphicsOpenGL";
         {
-            NEB_CORE_LOG_ERROR("Failed to create window");
-            return -1;
+            auto result = Nebula::CreateWindow(libraryPath, props);
+            if (result.Error != Nebula::WindowCreationResult::ErrorType::None)
+            {
+                NEB_CORE_LOG_ERROR("Failed to create window");
+                return -1;
+            }
+
+            // !IMPORTANT! There must only be one shared pointer to the window when it is destroyed
+            window = std::move(result.Window);
         }
 
-        // !IMPORTANT! There must only be one shared pointer to the window when it is destroyed
-        window = std::move(result.Window);
-    }
-
-    {
-        auto result = Nebula::CreateRenderer(libraryPath, window, props.Context);
-        if (result.Error != Nebula::RendererCreationResult::ErrorType::None)
         {
-            NEB_CORE_LOG_ERROR("Failed to create renderer");
-            return -1;
+            auto result = Nebula::CreateRenderer(libraryPath, window, props.Context);
+            if (result.Error != Nebula::RendererCreationResult::ErrorType::None)
+            {
+                NEB_CORE_LOG_ERROR("Failed to create renderer");
+                return -1;
+            }
+
+            renderer = std::move(result.Renderer);
+            renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+        }
+    }
+    else if (api == GraphicsAPI::Metal)
+    {
+        NEB_CORE_LOG_INFO("Using Metal");
+        Nebula::WindowProps<Nebula::MetalContext> props("Nebula", 1'080, 720, {});
+        const std::string libraryPath = "lib/NebulaGraphicsMetal";
+        {
+            auto result = Nebula::CreateWindow(libraryPath, props);
+            if (result.Error != Nebula::WindowCreationResult::ErrorType::None)
+            {
+                NEB_CORE_LOG_ERROR("Failed to create window");
+                return -1;
+            }
+
+            // !IMPORTANT! There must only be one shared pointer to the window when it is destroyed
+            window = std::move(result.Window);
         }
 
-        renderer = std::move(result.Renderer);
-        renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+        {
+            auto result = Nebula::CreateRenderer(libraryPath, window, props.Context);
+            if (result.Error != Nebula::RendererCreationResult::ErrorType::None)
+            {
+                NEB_CORE_LOG_ERROR("Failed to create renderer");
+                return -1;
+            }
+
+            renderer = std::move(result.Renderer);
+            renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+        }
     }
+
 
     {
         auto file = Nebula::File::FromPathString("resources/shaders/BasicShader.cnsl");
-        bool res = renderer->GetAssetLoader().LoadShader(file);
+        bool res  = renderer->GetAssetLoader().LoadShader(file);
 
         if (!res)
         {

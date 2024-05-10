@@ -17,6 +17,22 @@ set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS_OLD ${CMAKE_SUPPRESS_DEVELOPER_WARNINGS})
 set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE STRING "No dev warnings" FORCE)
 
 add_subdirectory(vendor/DirectXShaderCompiler)
+
+
+option(SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS "Instead of throwing exceptions assert" OFF)
+option(SPIRV_CROSS_SHARED "Build the C API as a single shared library." OFF)
+option(SPIRV_CROSS_STATIC "Build the C and C++ API as static libraries." ON)
+option(SPIRV_CROSS_CLI "Build the CLI binary. Requires SPIRV_CROSS_STATIC." OFF)
+option(SPIRV_CROSS_ENABLE_TESTS "Enable SPIRV-Cross tests." OFF)
+
+option(SPIRV_CROSS_ENABLE_GLSL "Enable GLSL support." ON)
+option(SPIRV_CROSS_ENABLE_HLSL "Enable HLSL target support." ON)
+option(SPIRV_CROSS_ENABLE_MSL "Enable MSL target support." ON)
+option(SPIRV_CROSS_ENABLE_CPP "Enable C++ target support." OFF)
+option(SPIRV_CROSS_ENABLE_REFLECT "Enable JSON reflection target support." OFF)
+option(SPIRV_CROSS_ENABLE_C_API "Enable C API wrapper support in static library." OFF)
+option(SPIRV_CROSS_ENABLE_UTIL "Enable util module support." OFF)
+
 add_subdirectory(vendor/SPIRV-Cross)
 
 # We restore the old value

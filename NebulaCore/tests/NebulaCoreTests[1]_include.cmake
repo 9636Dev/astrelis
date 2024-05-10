@@ -1,0 +1,5 @@
+if(EXISTS "/Users/henny.wang/Documents/CPP/NebulaEngine/NebulaCore/tests/NebulaCoreTests[1]_tests.cmake")
+  include("/Users/henny.wang/Documents/CPP/NebulaEngine/NebulaCore/tests/NebulaCoreTests[1]_tests.cmake")
+else()
+  add_test(NebulaCoreTests_NOT_BUILT NebulaCoreTests_NOT_BUILT)
+endif()

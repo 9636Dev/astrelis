@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "NebulaShaderConductor/ShaderOutput.hpp"
 
@@ -31,9 +33,8 @@ namespace CLI
         bool Verbose                   = false;
         InputType Input                = InputType::File;
         std::size_t InputStage         = 1;
-        std::uint32_t OutputVersion    = 450;
-        OutputType Output              = OutputType::SPIRV;
         Optimization OptimizationLevel = Optimization::None;
+        std::vector<std::pair<OutputType, std::uint32_t>> OutputFormats;
     };
 
     Config ToConfig(std::map<std::string, std::string>& options);

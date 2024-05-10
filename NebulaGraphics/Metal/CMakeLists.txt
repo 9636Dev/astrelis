@@ -11,6 +11,8 @@ set(NEBULA_GRAPHICS_METAL_SOURCES
     src/NebulaGraphicsMetal/Renderer.mm
     src/NebulaGraphicsMetal/Window.hpp
     src/NebulaGraphicsMetal/Window.mm
+    src/NebulaGraphicsMetal/AssetLoader.hpp
+    src/NebulaGraphicsMetal/AssetLoader.mm
 )
 
 add_library(NebulaGraphicsMetal SHARED ${NEBULA_GRAPHICS_METAL_SOURCES})
@@ -22,6 +24,7 @@ target_include_directories(NebulaGraphicsMetal PUBLIC src)
 add_dependencies(NebulaGraphicsMetal
     NebulaCore
     NebulaGraphicsCore
+    NebulaShaderBuilder
     glfw
 )
 
@@ -31,6 +34,7 @@ target_link_libraries(NebulaGraphicsMetal PUBLIC
     "-framework Foundation"
     NebulaCore
     NebulaGraphicsCore
+    NebulaShaderBuilder
     glfw
 )
 

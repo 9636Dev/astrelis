@@ -239,6 +239,7 @@ namespace Nebula::Shader
         FileHeader header;
         header.Program     = m_Program;
         header.GlslPresent = m_GlslSource.has_value();
+        header.MslPresent  = m_MslSource.has_value();
 
         cereal::BinaryOutputArchive archive(out); // Bind the archive directly to the file output stream
         archive(header);
@@ -251,6 +252,16 @@ namespace Nebula::Shader
         if (m_GlslSource.has_value())
         {
             archive(m_GlslSource.value());
+        }
+
+        if (!out.good())
+        {
+            return {false, 0}; // Check for any errors
+        }
+
+        if (m_MslSource.has_value())
+        {
+            archive(m_MslSource.value());
         }
 
         if (!out.good())

@@ -13,6 +13,7 @@ namespace Nebula
     public:
         friend class Renderer;
         friend class OpenGLRenderer;
+        friend class MetalRenderer;
 
         explicit RenderableObject(std::shared_ptr<BaseMesh> mesh) : m_Mesh(std::move(mesh)) {}
 

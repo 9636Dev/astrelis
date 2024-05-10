@@ -1,6 +1,8 @@
 #include "Input.hpp"
 
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 namespace CLI
 {
@@ -10,8 +12,11 @@ namespace CLI
         {
             std::cout << "Input stage: " << config.InputStage << '\n';
             std::cout << "Output file: " << config.OutputFile << '\n';
-            std::cout << "Output type: " << static_cast<int>(config.Output) << '\n';
-            std::cout << "Output version: " << config.OutputVersion << '\n';
+            std::cout << "Outputs:\n";
+            for (const auto& [output, version] : config.OutputFormats)
+            {
+                std::cout << "\t" << static_cast<int>(output) << ": " << version << '\n';
+            }
         }
     }
 
@@ -28,7 +33,13 @@ namespace CLI
             }
             else
             {
-                switch (config.Output)
+                if (config.OutputFormats.size() != 1)
+                {
+                    std::cerr << "Output file can only be one type of output for stage 2\n";
+                    config.CorrectConfig = false;
+                    return;
+                }
+                switch (config.OutputFormats[0].first)
                 {
                 case OutputType::GLSL:
                     config.OutputFile += ".glsl";
@@ -49,64 +60,82 @@ namespace CLI
 
     inline static void ParseOutputVersion(Config& config, std::map<std::string, std::string>& options)
     {
-        // Format: [output]<_[version]> (version is optional)
+        // Format: [output]<_[version]> (version is optional) (comma separated list)
         auto output         = options.at("v");
-        std::size_t version = 0;
 
+        // Split by comma
+        std::stringstream sstream(output);
+        std::vector<std::string> outputVersions;
+        std::string temp;
+        while (std::getline(sstream, temp, ','))
         {
-            auto pos = output.find('_');
-            if (pos != std::string::npos)
-            {
-                try
-                {
-                    version = std::stoul(output.substr(pos + 1));
-                }
-                catch (const std::exception&)
-                {
-                    std::cerr << "Invalid version number: " << output.substr(pos + 1) << '\n';
-                    config.CorrectConfig = false;
-                    return;
-                }
-                output = output.substr(0, pos);
-            }
+            outputVersions.emplace_back(temp);
         }
 
-        if (output == "glsl")
+        if (outputVersions.empty())
         {
-            config.Output = OutputType::GLSL;
-            if (version == 0)
-            {
-                version = 450;
-            }
-        }
-        else if (output == "spirv")
-        {
-            config.Output = OutputType::SPIRV;
-        }
-        else if (output == "hlsl")
-        {
-            config.Output = OutputType::HLSL;
-            if (version == 0)
-            {
-                version = 11;
-            }
-        }
-        else if (output == "msl")
-        {
-            config.Output = OutputType::MSL;
-            if (version == 0)
-            {
-                version = 10'200;
-            }
-        }
-        else
-        {
-            std::cerr << "Invalid output type: -output=" << output << '\n';
+            std::cerr << "Invalid output version: -v=" << output << '\n';
             config.CorrectConfig = false;
             return;
         }
 
-        config.OutputVersion = version;
+        for (std::string outputVersion : outputVersions)
+        {
+            std::size_t version = 0;
+
+            {
+                auto pos = outputVersion.find('_');
+                if (pos != std::string::npos)
+                {
+                    try
+                    {
+                        version = std::stoul(outputVersion.substr(pos + 1));
+                    }
+                    catch (const std::exception&)
+                    {
+                        std::cerr << "Invalid version number: " << outputVersion.substr(pos + 1) << '\n';
+                        config.CorrectConfig = false;
+                        return;
+                    }
+                    outputVersion = outputVersion.substr(0, pos);
+                }
+            }
+
+            if (outputVersion == "glsl")
+            {
+                config.OutputFormats.emplace_back(OutputType::GLSL, version);
+                if (version == 0)
+                {
+                    version = 450;
+                }
+            }
+            else if (outputVersion == "spirv")
+            {
+                config.OutputFormats.emplace_back(OutputType::SPIRV, version);
+            }
+            else if (outputVersion == "hlsl")
+            {
+                config.OutputFormats.emplace_back(OutputType::HLSL, version);
+                if (version == 0)
+                {
+                    version = 11;
+                }
+            }
+            else if (outputVersion == "msl")
+            {
+                config.OutputFormats.emplace_back(OutputType::MSL, version);
+                if (version == 0)
+                {
+                    version = 10'200;
+                }
+            }
+            else
+            {
+                std::cerr << "Invalid output type: -v=" << outputVersion << '\n';
+                config.CorrectConfig = false;
+                return;
+            }
+        }
     }
 
     Config ToConfig(std::map<std::string, std::string>& options)
@@ -146,6 +175,15 @@ namespace CLI
             return config;
         }
 
+        if (options.contains("v"))
+        {
+            ParseOutputVersion(config, options);
+            options.erase("v");
+            if (!config.CorrectConfig)
+            {
+                return config;
+            }
+        }
         if (options.contains("o"))
         {
             ParseOutputFile(config, options);
@@ -160,20 +198,6 @@ namespace CLI
             std::cerr << "Output file not specified\n";
             config.CorrectConfig = false;
             return config;
-        }
-        if (options.contains("v"))
-        {
-            if (config.InputStage == 2)
-            {
-                std::cout << "Warning: Output version not supported for stage 2\n";
-            }
-
-            ParseOutputVersion(config, options);
-            options.erase("v");
-            if (!config.CorrectConfig)
-            {
-                return config;
-            }
         }
         if (options.contains("in"))
         {

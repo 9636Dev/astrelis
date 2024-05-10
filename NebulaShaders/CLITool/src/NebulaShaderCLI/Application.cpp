@@ -10,6 +10,7 @@
 #include "NebulaCore/Log.hpp"
 #include "NebulaShaderBuilder/FileFormat.hpp"
 #include "NebulaShaderBuilder/Glsl.hpp"
+#include "NebulaShaderBuilder/Msl.hpp"
 
 namespace CLI
 {
@@ -29,23 +30,50 @@ namespace CLI
 
         auto outputFile = Nebula::File::FromPathString(config.OutputFile);
 
-        switch (config.Output)
         {
-        case OutputType::GLSL: {
-            Nebula::ShaderConductor::GLSLOutput glslOutput;
-            glslOutput.Version = config.OutputVersion;
+            auto iter = std::find_if(config.OutputFormats.begin(), config.OutputFormats.end(),
+                                     [](const auto& pair) { return pair.first == OutputType::GLSL; });
 
-            auto res = output.GenerateGlsl(glslOutput);
-            if (!res.empty())
+            if (iter != config.OutputFormats.end())
             {
-                std::cerr << res << std::endl;
-                return 1;
+                Nebula::ShaderConductor::GLSLOutput glslOutput;
+                glslOutput.Version = iter->second;
+
+                auto res = output.GenerateGlsl(glslOutput);
+                if (!res.empty())
+                {
+                    std::cerr << res << std::endl;
+                    return 1;
+                }
             }
-            break;
         }
-        default:
-            std::cerr << "Output format " << static_cast<int>(config.Output) << "not supported yet\n";
-            return 1;
+
+        {
+            auto iter = std::find_if(config.OutputFormats.begin(), config.OutputFormats.end(),
+                                     [](const auto& pair) { return pair.first == OutputType::MSL; });
+
+            if (iter != config.OutputFormats.end())
+            {
+                Nebula::ShaderConductor::MSLOutput mslOutput;
+                mslOutput.MslVersion = iter->second;
+
+                auto res = output.GenerateMsl(mslOutput);
+                if (!res.empty())
+                {
+                    std::cerr << res << std::endl;
+                    return 1;
+                }
+            }
+        }
+
+        {
+            auto iter = std::find_if(config.OutputFormats.begin(), config.OutputFormats.end(),
+                                     [](const auto& pair) { return pair.first == OutputType::HLSL; });
+
+            if (iter != config.OutputFormats.end())
+            {
+                std::cout << "HLSL output not supported yet\n";
+            }
         }
 
         auto res = output.WriteToFile(outputFile);
@@ -64,23 +92,59 @@ namespace CLI
         return 0;
     }
 
-    int GenerateCode(Config& config, std::string input)
+    int GenerateCode(Config& config, const std::string& input)
     {
-        auto glsl = Nebula::Shader::Glsl::FromSource(std::move(input));
+        auto output = config.OutputFormats[0].first;
 
-        if (!glsl.has_value())
+        switch (output)
         {
-            std::cerr << "Failed to parse GLSL from compiled nsl\n";
+        case OutputType::GLSL: {
+            auto glsl = Nebula::Shader::Glsl::FromSource(input);
+
+            if (!glsl.has_value())
+            {
+                std::cerr << "Failed to parse GLSL from compiled nsl\n";
+                return 1;
+            }
+
+            if (config.Verbose)
+            {
+                std::cout << "Successfully parsed GLSL\n";
+            }
+
+            std::cout << "Vertex:\n" << glsl->VertexSource << '\n';
+            std::cout << "Pixel:\n" << glsl->PixelSource << '\n';
+
+            return 0;
+        }
+        case OutputType::SPIRV: {
+            std::cout << "SPIRV output not supported yet\n";
             return 1;
         }
+        case OutputType::HLSL: {
+            std::cout << "HLSL output not supported yet\n";
+            return 1;
+        }
+        case OutputType::MSL: {
+            auto msl = Nebula::Shader::Msl::FromSource(input);
 
-        if (config.Verbose)
-        {
-            std::cout << "Successfully parsed GLSL\n";
+            if (!msl.has_value())
+            {
+                std::cerr << "Failed to parse MSL from compiled nsl\n";
+                return 1;
+            }
+
+            if (config.Verbose)
+            {
+                std::cout << "Successfully parsed MSL\n";
+            }
+
+            std::cout << "Vertex:\n" << msl->VertexSource << '\n';
+            std::cout << "Fragment:\n" << msl->PixelSource << '\n';
+            return 1;
+        }
         }
 
-        std::cout << "Vertex:\n" << glsl->VertexSource << '\n';
-        std::cout << "Pixel:\n" << glsl->PixelSource << '\n';
 
         return 0;
     }
@@ -159,7 +223,7 @@ namespace CLI
         }
 
         return config.InputStage == 1 ? ToIntermediate(config, std::move(input))
-                                      : GenerateCode(config, std::move(input));
+                                      : GenerateCode(config, input);
     }
 } // namespace CLI
 
