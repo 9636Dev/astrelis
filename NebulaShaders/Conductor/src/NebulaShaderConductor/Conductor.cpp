@@ -1,12 +1,17 @@
 #include "Conductor.hpp"
 
 #include "NebulaCore/Log.hpp"
-#include "spirv_cross.hpp"
-#include "spirv_cross_error_handling.hpp"
+
+#include <dxc/Support/Global.h>
+#include <dxc/Support/Unicode.h>
+#include <dxc/Support/WinIncludes.h>
+#include <dxc/WinAdapter.h>
 
 #include <dxc/Support/dxcapi.use.h>
 #include <dxc/dxcapi.h>
 
+#include <spirv_cross.hpp>
+#include <spirv_cross_error_handling.hpp>
 #include <spirv_glsl.hpp>
 #include <spirv_hlsl.hpp>
 #include <spirv_msl.hpp>
