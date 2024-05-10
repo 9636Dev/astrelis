@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Core.hpp"
 #include "NebulaIO/File.hpp"
 #include "NebulaShaderBuilder/File.hpp"
 
 namespace Nebula::Shader
 {
-    struct IntermediateOutput
+    struct NEBULA_SHADER_BUILDER_API IntermediateOutput
     {
         FileHeader Header;
         std::optional<GLSLSource> GlslSource;

@@ -10,6 +10,9 @@ set(LLVM_BUILD_TESTS OFF CACHE BOOL "Build LLVM tests" FORCE)
 set(LLVM_INCLUDE_TESTS OFF CACHE BOOL "Include LLVM tests" FORCE)
 set(HLSL_INCLUDE_TESTS OFF CACHE BOOL "Include HLSL tests" FORCE)
 set(HLSL_COPY_GENERATED_SOURCES ON CACHE BOOL "Copy generated HLSL sources" FORCE)
+if (${NEBULA_BUILD_TYPE} STREQUAL "Debug")
+    set(HLSL_ENABLE_DEBUG_ITERATORS ON CACHE BOOL "Enable HLSL debug iterator" FORCE)
+endif()
 
 # We suppress the warnings for cmake
 # We cache the current value
@@ -31,7 +34,7 @@ option(SPIRV_CROSS_ENABLE_MSL "Enable MSL target support." ON)
 option(SPIRV_CROSS_ENABLE_CPP "Enable C++ target support." OFF)
 option(SPIRV_CROSS_ENABLE_REFLECT "Enable JSON reflection target support." OFF)
 option(SPIRV_CROSS_ENABLE_C_API "Enable C API wrapper support in static library." OFF)
-option(SPIRV_CROSS_ENABLE_UTIL "Enable util module support." OFF)
+option(SPIRV_CROSS_ENABLE_UTIL "Enable util module support." ON)
 
 add_subdirectory(vendor/SPIRV-Cross)
 
@@ -56,25 +59,35 @@ add_library(NebulaShaderConductor ${NEBULA_SHADER_CONDUCTOR_LIBRARY_TYPE_FINAL} 
 nebula_add_definitions(NebulaShaderConductor "NEBULA_SHADER_CONDUCTOR" ${NEBULA_SHADER_CONDUCTOR_LIBRARY_TYPE_FINAL})
 nebula_format_project(NebulaShaderConductor ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_SHADER_CONDUCTOR_SOURCES}")
 
-target_compile_options(NebulaShaderConductor PRIVATE
-    -fms-extensions
-    -Wno-language-extension-token
-    -Wambiguous-reversed-operator
-)
+if (MSVC)
+    #target_compile_options(NebulaShaderConductor PRIVATE)
+else()
+    target_compile_options(NebulaShaderConductor PRIVATE
+        -fms-extensions
+        -Wno-language-extension-token
+        -Wambiguous-reversed-operator
+    )
+endif()
 
 target_include_directories(NebulaShaderConductor PRIVATE
     vendor/DirectXShaderCompiler/include
     vendor/SPIRV-Cross
 )
 
-target_include_directories(NebulaShaderConductor PUBLIC
-    src
+target_include_directories(NebulaShaderConductor
+    PUBLIC
+        src
+
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/DirectXShaderCompiler/include
+        ${CMAKE_CURRENT_BINARY_DIR}/vendor/DirectXShaderCompiler/include
 )
 add_dependencies(NebulaShaderConductor
     NebulaCore
     NebulaShaderCommon
 
     # DXC
+    dxc-headers
     dxcompiler
     LLVMDxcSupport
     LLVMSupport

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core.hpp"
 #include "NebulaGraphicsCore/AssetLoader.hpp"
 #include "NebulaGraphicsCore/RenderPass.hpp"
 #include "NebulaGraphicsCore/RenderableObject.hpp"
@@ -9,7 +10,7 @@
 
 namespace Nebula
 {
-    class Renderer
+    class NEBULA_GRAPHICS_CORE_API Renderer
     {
     public:
         Renderer()                           = default;

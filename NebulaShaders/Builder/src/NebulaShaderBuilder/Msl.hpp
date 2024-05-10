@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core.hpp"
 #include "NebulaIO/File.hpp"
 #include "NebulaShaderCommon/Bindings.hpp"
 #include "NebulaShaderCommon/Inputs.hpp"
@@ -7,7 +8,7 @@
 
 namespace Nebula::Shader
 {
-    struct Msl
+    struct NEBULA_SHADER_BUILDER_API Msl
     {
         std::string Name;
         std::vector<Input> Inputs;

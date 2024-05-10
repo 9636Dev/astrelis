@@ -61,7 +61,7 @@ namespace CLI
     inline static void ParseOutputVersion(Config& config, std::map<std::string, std::string>& options)
     {
         // Format: [output]<_[version]> (version is optional) (comma separated list)
-        auto output         = options.at("v");
+        auto output = options.at("v");
 
         // Split by comma
         std::stringstream sstream(output);

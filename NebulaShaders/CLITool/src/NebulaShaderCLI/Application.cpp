@@ -222,8 +222,7 @@ namespace CLI
             std::cout << "Compiling to stage " << config.InputStage << '\n';
         }
 
-        return config.InputStage == 1 ? ToIntermediate(config, std::move(input))
-                                      : GenerateCode(config, input);
+        return config.InputStage == 1 ? ToIntermediate(config, std::move(input)) : GenerateCode(config, input);
     }
 } // namespace CLI
 

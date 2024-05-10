@@ -1,12 +1,10 @@
 #include "ShaderCompiler.hpp"
 
-#define COMPILER_EXPECT_INTERNAL(tokType, tokRef, ...)                                                     \
+#define COMPILER_EXPECT(tokType, tokRef)                                                                   \
     if (tokRef.Type != TokenType::tokType)                                                                 \
     {                                                                                                      \
         return Error {"Expected token " #tokType " got: " + Token::TypeString(tokRef.Type), tokRef.Index}; \
     }
-
-#define COMPILER_EXPECT(tokType, ...) COMPILER_EXPECT_INTERNAL(tokType __VA_OPT__(, ) __VA_ARGS__, token)
 
 namespace Nebula::Shader
 {
@@ -59,7 +57,7 @@ namespace Nebula::Shader
                 return Error {"Invalid token", token.Index};
             case TokenType::NameKeyword:
                 token = lexer.NextToken();
-                COMPILER_EXPECT(StringLiteral);
+                COMPILER_EXPECT(StringLiteral, token);
 
                 if (!m_Meta.Name.empty())
                 {
@@ -68,7 +66,7 @@ namespace Nebula::Shader
 
                 m_Meta.Name = token.Text;
                 token       = lexer.NextToken();
-                COMPILER_EXPECT(Semicolon);
+                COMPILER_EXPECT(Semicolon, token);
                 break;
             case TokenType::BindingsKeyword: {
                 auto res = ParseBindings(lexer, token);
@@ -82,7 +80,7 @@ namespace Nebula::Shader
             case TokenType::FragmentInputKeyword: {
                 auto& inputsVec = token.Type == TokenType::InputKeyword ? m_Meta.Inputs : m_Meta.FragmentInputs;
                 token           = lexer.NextToken();
-                COMPILER_EXPECT(LeftBrace);
+                COMPILER_EXPECT(LeftBrace, token);
 
                 auto inputs = LexScope(lexer);
                 if (inputs.empty())
@@ -99,22 +97,22 @@ namespace Nebula::Shader
                     // Type - Name - : -  Binding - Semicolon
                     Binding binding;
                     auto token = inputs[index];
-                    COMPILER_EXPECT(Symbol);
+                    COMPILER_EXPECT(Symbol, token);
                     binding.Type = token.Text;
 
                     token = inputs[++index];
-                    COMPILER_EXPECT(Symbol);
+                    COMPILER_EXPECT(Symbol, token);
                     binding.Name = token.Text;
 
                     token = inputs[++index];
-                    COMPILER_EXPECT(Colon);
+                    COMPILER_EXPECT(Colon, token);
 
                     token = inputs[++index];
-                    COMPILER_EXPECT(Symbol);
+                    COMPILER_EXPECT(Symbol, token);
                     binding.Binding = token.Text;
 
                     token = inputs[++index];
-                    COMPILER_EXPECT(Semicolon);
+                    COMPILER_EXPECT(Semicolon, token);
 
                     inputsVec.push_back(std::move(binding));
                     index++;
@@ -129,7 +127,7 @@ namespace Nebula::Shader
             }
             case TokenType::ShaderKeyword: {
                 token = lexer.NextToken();
-                COMPILER_EXPECT(LeftBrace);
+                COMPILER_EXPECT(LeftBrace, token);
 
                 for (token = lexer.NextToken();
                      token.Type != TokenType::RightBrace && token.Type != TokenType::EndOfFile;
@@ -143,7 +141,7 @@ namespace Nebula::Shader
                         }
 
                         token = lexer.NextToken();
-                        COMPILER_EXPECT(LeftBrace);
+                        COMPILER_EXPECT(LeftBrace, token);
 
                         // Bit of a hack
                         auto toks = LexScope(lexer);
@@ -171,7 +169,7 @@ namespace Nebula::Shader
 
                         // Left brace
                         token = lexer.NextToken();
-                        COMPILER_EXPECT(LeftBrace);
+                        COMPILER_EXPECT(LeftBrace, token);
 
                         auto toks = LexScope(lexer);
 
@@ -197,7 +195,7 @@ namespace Nebula::Shader
                         }
 
                         token = lexer.NextToken();
-                        COMPILER_EXPECT(LeftBrace);
+                        COMPILER_EXPECT(LeftBrace, token);
 
                         auto toks = LexScope(lexer);
 
@@ -218,7 +216,7 @@ namespace Nebula::Shader
                     else if (token.Type == TokenType::EntrypointKeyword)
                     {
                         token = lexer.NextToken();
-                        COMPILER_EXPECT(LeftBrace);
+                        COMPILER_EXPECT(LeftBrace, token);
 
                         auto entrypoints = LexScope(lexer);
                         if (entrypoints.empty())
@@ -235,7 +233,7 @@ namespace Nebula::Shader
                             if (entrypoints[i].Type == TokenType::VertexKeyword)
                             {
                                 auto token = entrypoints[++i];
-                                COMPILER_EXPECT(StringLiteral);
+                                COMPILER_EXPECT(StringLiteral, token);
 
                                 if (!m_Meta.VertexEntrypoint.empty())
                                 {
@@ -244,12 +242,12 @@ namespace Nebula::Shader
                                 m_Meta.VertexEntrypoint = token.Text;
 
                                 token = entrypoints[++i];
-                                COMPILER_EXPECT(Semicolon);
+                                COMPILER_EXPECT(Semicolon, token);
                             }
                             else if (entrypoints[i].Type == TokenType::FragmentKeyword)
                             {
                                 auto token = entrypoints[++i];
-                                COMPILER_EXPECT(StringLiteral);
+                                COMPILER_EXPECT(StringLiteral, token);
 
                                 if (!m_Meta.FragmentEntrypoint.empty())
                                 {
@@ -258,7 +256,7 @@ namespace Nebula::Shader
                                 m_Meta.FragmentEntrypoint = token.Text;
 
                                 token = entrypoints[++i];
-                                COMPILER_EXPECT(Semicolon);
+                                COMPILER_EXPECT(Semicolon, token);
                             }
                         }
                     }
@@ -267,7 +265,7 @@ namespace Nebula::Shader
                         return Error {"Unknown token inside scope 'Shader'", token.Index};
                     }
                 }
-                COMPILER_EXPECT(RightBrace);
+                COMPILER_EXPECT(RightBrace, token);
             }
             case TokenType::EndOfFile:
                 break;
@@ -283,7 +281,7 @@ namespace Nebula::Shader
         Compiler::ParseBindings(Lexer& lexer, Token& token) // NOLINT(readability-function-cognitive-complexity)
     {
         token = lexer.NextToken();
-        COMPILER_EXPECT(LeftBrace);
+        COMPILER_EXPECT(LeftBrace, token);
 
         auto bindings = LexScope(lexer);
         if (bindings.empty())
@@ -308,22 +306,22 @@ namespace Nebula::Shader
                     Binding binding;
 
                     auto token = bindings[i];
-                    COMPILER_EXPECT(Symbol);
+                    COMPILER_EXPECT(Symbol, token);
                     binding.Type = token.Text;
 
                     token = bindings[++i];
-                    COMPILER_EXPECT(Symbol);
+                    COMPILER_EXPECT(Symbol, token);
                     binding.Name = token.Text;
 
                     token = bindings[++i];
-                    COMPILER_EXPECT(Colon);
+                    COMPILER_EXPECT(Colon, token);
 
                     token = bindings[++i];
-                    COMPILER_EXPECT(Symbol);
+                    COMPILER_EXPECT(Symbol, token);
                     binding.Binding = token.Text;
 
                     token = bindings[++i];
-                    COMPILER_EXPECT(Semicolon);
+                    COMPILER_EXPECT(Semicolon, token);
 
                     bindingsVec.push_back(binding);
                 }

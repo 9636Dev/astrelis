@@ -38,8 +38,16 @@ if (LINUX)
     set(OpenGL_GL_PREFERENCE "GLVND")
 endif()
 
-find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
+option(NEBULA_BUILD_GLEW "Build GLEW from source" OFF)
+
+if (NEBULA_BUILD_GLEW)
+    add_subdirectory(vendor/glew/build/cmake)
+    # Alias glew target to GLEW::GLEW
+    add_library(GLEW::GLEW ALIAS glew)
+else()
+    find_package(OpenGL REQUIRED)
+    find_package(GLEW REQUIRED)
+endif()
 
 add_subdirectory(vendor/glm)
 
