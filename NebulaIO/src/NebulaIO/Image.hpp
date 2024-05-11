@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core.hpp"
 #include "File.hpp"
 
 #include <optional>
@@ -7,7 +8,7 @@
 
 namespace Nebula
 {
-    class InMemoryImage
+    class NEBULA_IO_API InMemoryImage
     {
     public:
         static std::optional<InMemoryImage> LoadFromFile(const File& file);

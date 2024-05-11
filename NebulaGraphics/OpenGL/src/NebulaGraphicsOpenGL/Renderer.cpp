@@ -178,7 +178,7 @@ namespace Nebula
                     break;
                 }
                 case Nebula::Shader::BindingTarget::ViewMatrix: {
-                    Matrix4f viewMatrix;
+                    Matrix4f viewMatrix = Matrix4f::Identity();
                     uniformBufferData.insert(uniformBufferData.end(),
                                              reinterpret_cast<std::byte*>(&viewMatrix),
                                              reinterpret_cast<std::byte*>(&viewMatrix) + sizeof(viewMatrix));
