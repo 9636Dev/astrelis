@@ -28,6 +28,8 @@ set(NEBULA_GRAPHICS_OPENGL_SOURCES
     src/NebulaGraphicsOpenGL/OpenGL/UniformBuffer.cpp
     src/NebulaGraphicsOpenGL/OpenGL/Shader.hpp
     src/NebulaGraphicsOpenGL/OpenGL/Shader.cpp
+    src/NebulaGraphicsOpenGL/OpenGL/Texture.hpp
+    src/NebulaGraphicsOpenGL/OpenGL/Texture.cpp
 )
 
 if(POLICY CMP0072)

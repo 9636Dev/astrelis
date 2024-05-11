@@ -21,34 +21,34 @@ namespace Nebula::Shader
         {
             auto programBindings = output.Header.Program.Meta.Bindings;
 
-            std::map<std::string, BindingType> bindingMap;
+            std::map<std::string, std::pair<BindingType, BindingTarget>> bindingMap;
             for (auto& binding : programBindings)
             {
-                bindingMap[binding.Name] = binding.Type;
+                bindingMap[binding.Name] = std::make_pair(binding.Type, binding.Target);
             }
 
             auto glslBindings = output.GlslSource->Meta.UniformBuffers;
             for (auto& glslBinding : glslBindings)
             {
                 auto type = bindingMap[glslBinding.first];
-                bindings.emplace_back(type, glslBinding.second.Name, glslBinding.second.Binding);
+                bindings.emplace_back(type.first, glslBinding.second.Name, type.second, glslBinding.second.Binding);
             }
         }
 
         {
             auto programTextures = output.Header.Program.Meta.Textures;
 
-            std::map<std::string, TextureType> textureMap;
+            std::map<std::string, std::pair<TextureType, TextureTarget>> textureMap;
             for (auto& texture : programTextures)
             {
-                textureMap[texture.Name] = texture.Type;
+                textureMap[texture.Name] = std::make_pair(texture.Type, texture.Target);
             }
 
             auto glslTextures = output.GlslSource->Meta.Samplers;
             for (auto& glslTexture : glslTextures)
             {
                 auto type = textureMap[glslTexture.first];
-                textures.emplace_back(type, glslTexture.second.Name, glslTexture.second.Binding);
+                textures.emplace_back(type.first, glslTexture.second.Name, type.second, glslTexture.second.Binding);
             }
         }
 

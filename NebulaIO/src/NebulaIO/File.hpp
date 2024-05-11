@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace Nebula
@@ -47,8 +48,8 @@ namespace Nebula
 
         [[nodiscard]] bool IsDirectory() const { return std::filesystem::is_directory(m_Path); }
 
-        [[nodiscard]] std::string ReadText() const;
-        [[nodiscard]] std::vector<std::byte> ReadBytes() const;
+        [[nodiscard]] std::pair<bool, std::string> ReadText() const;
+        [[nodiscard]] std::pair<bool, std::vector<std::byte>> ReadBytes() const;
 
         [[nodiscard]] static FileWriteResult WriteText(const std::filesystem::path& path, const std::string& text);
         [[nodiscard]] static FileWriteResult WriteBytes(const std::filesystem::path& path,

@@ -14,4 +14,12 @@ namespace Nebula
         m_Shaders[res->Name] = std::move(res.value());
         return true;
     }
+
+    bool GlAssetLoader::LoadTexture(const Texture& texture)
+    {
+        OpenGL::Texture tex;
+        tex.SetData(texture.Image);
+        m_Textures[texture.Name] = std::move(tex);
+        return true;
+    }
 } // namespace Nebula

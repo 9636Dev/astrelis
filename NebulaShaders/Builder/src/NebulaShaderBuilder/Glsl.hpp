@@ -16,11 +16,13 @@ namespace Nebula::Shader
         {
             BindingType Type;
             std::string Name;
+            BindingTarget Target;
             std::optional<std::uint32_t> Slot;
 
-            Binding(BindingType type, std::string name, std::optional<std::uint32_t> slot) :
+            Binding(BindingType type, std::string name, BindingTarget target, std::optional<std::uint32_t> slot) :
                 Type(type),
                 Name(std::move(name)),
+                Target(target),
                 Slot(slot)
             {
             }
@@ -30,11 +32,13 @@ namespace Nebula::Shader
         {
             TextureType Type;
             std::string Name;
+            TextureTarget Target;
             std::optional<std::uint32_t> Slot;
 
-            Texture(TextureType type, std::string name, std::optional<std::uint32_t> slot) :
+            Texture(TextureType type, std::string name, TextureTarget target, std::optional<std::uint32_t> slot) :
                 Type(type),
                 Name(std::move(name)),
+                Target(target),
                 Slot(slot)
             {
             }

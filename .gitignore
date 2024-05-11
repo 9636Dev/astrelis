@@ -23,3 +23,5 @@ DummyConfigureOutput
 *.pc
 # Compiled Object files
 *.o
+
+imgui.ini

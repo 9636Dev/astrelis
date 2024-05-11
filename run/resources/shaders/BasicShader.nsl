@@ -2,6 +2,7 @@ Name "BasicShader";
 
 Bindings {
     Uniforms {
+        float4x4 View : VIEW_MATRIX;
         float4x4 Model : MODEL_MATRIX;
     }
     Textures {}
@@ -20,6 +21,7 @@ Shader {
     Shared {
         cbuffer VertexBuffer : register(b0)
         {
+            float4x4 viewMatrix;
             float4x4 modelMatrix;
         };
 
@@ -38,7 +40,9 @@ Shader {
         PixelInput VertexShader(VertexInput input)
         {
             PixelInput output;
-            output.pos = mul(modelMatrix, float4(input.pos, 0.0, 1.0));
+            output.pos = float4(input.pos, 0.0, 1.0);
+            output.pos = mul(viewMatrix, output.pos);
+            output.pos = mul(modelMatrix, output.pos);
             return output;
         }
     }

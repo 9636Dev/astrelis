@@ -110,6 +110,13 @@ namespace CLI
             if (config.Verbose)
             {
                 std::cout << "Successfully parsed GLSL\n";
+
+                // We print the metadata as well
+                std::cout << "Metadata:\n";
+                for (const auto& binding : glsl->Bindings)
+                {
+                    std::cout << "Binding: " << binding.Name << " -> " << binding.Slot.value_or(-1) << '\n';
+                }
             }
 
             std::cout << "Vertex:\n" << glsl->VertexSource << '\n';

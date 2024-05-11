@@ -8,7 +8,12 @@ set(NEBULA_IO_SOURCES
     src/NebulaIO/Core.hpp
     src/NebulaIO/File.hpp
     src/NebulaIO/File.cpp
+    src/NebulaIO/Image.hpp
+    src/NebulaIO/Image.cpp
+    src/NebulaIO/STBImageImplementation.cpp
 )
+
+add_subdirectory(vendor) # We have a custom CMake for stb
 
 set(BUILD_DOCS OFF CACHE BOOL "Build documentation" FORCE)
 set(BUILD_SANDBOX OFF CACHE BOOL "Build sandbox" FORCE)
@@ -32,8 +37,12 @@ target_include_directories(NebulaIO PUBLIC
 add_dependencies(NebulaIO
     NebulaCore
     cereal
+    STBImage
 )
-target_link_libraries(NebulaIO PUBLIC
-    NebulaCore
-    cereal
+target_link_libraries(NebulaIO
+    PUBLIC
+        NebulaCore
+        cereal
+    PRIVATE
+        STBImage
 )

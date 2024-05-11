@@ -6,6 +6,7 @@
 #include "NebulaGraphicsCore/Window.hpp"
 #include "NebulaGraphicsRenderer/Renderer.hpp"
 #include "NebulaGraphicsRenderer/Window.hpp"
+#include "NebulaIO/Image.hpp"
 
 
 enum class GraphicsAPI
@@ -111,6 +112,29 @@ int main(int argc, char** argv)
         if (!res)
         {
             NEB_CORE_LOG_ERROR("Failed to load shader");
+            return -1;
+        }
+    }
+
+    {
+        auto file = Nebula::File::FromPathString("resources/assets/textures/DefaultTexture.png");
+        auto imageOpt = Nebula::InMemoryImage::LoadFromFile(file);
+
+        if (!imageOpt)
+        {
+            NEB_CORE_LOG_ERROR("Failed to load image");
+            return -1;
+        }
+
+        Nebula::Texture texture = {
+            "DefaultTexture",
+            std::move(imageOpt.value())
+        };
+        auto res = renderer->GetAssetLoader().LoadTexture(texture);
+
+        if (!res)
+        {
+            NEB_CORE_LOG_ERROR("Failed to load texture");
             return -1;
         }
     }
