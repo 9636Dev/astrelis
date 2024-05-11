@@ -1,7 +1,7 @@
 Name "BasicShader";
 
 Bindings {
-    Uniforms {
+    Uniforms "VertexBuffer" {
         float4x4 View : VIEW_MATRIX;
         float4x4 Model : MODEL_MATRIX;
     }
