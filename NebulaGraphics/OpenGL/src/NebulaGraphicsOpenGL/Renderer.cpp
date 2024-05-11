@@ -114,12 +114,12 @@ namespace Nebula
 
         glRenderPassObject.UniformBuffer.BindBase(uniform.Slot.value_or(0));
 
-        m_GLRenderPasses.insert(m_GLRenderPasses.begin() + insertionIndex, std::move(glRenderPassObject));
+        m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex), std::move(glRenderPassObject));
     }
 
     void OpenGLRenderer::InternalRemoveRenderPass(std::size_t index)
     {
-        m_GLRenderPasses.erase(m_GLRenderPasses.begin() + index);
+        m_GLRenderPasses.erase(m_GLRenderPasses.begin() + static_cast<std::int64_t>(index));
     }
 
     void OpenGLRenderer::InternalAddRenderableObject(RenderableObject renderableObject, std::size_t renderableIndex)
@@ -155,9 +155,11 @@ namespace Nebula
         // We are just using this function to test the renderer at the moment
         OpenGL::GL::Clear(OpenGL::ClearTarget::ColorBufferBit | OpenGL::ClearTarget::DepthBufferBit);
 
+        std::size_t index = 0;
         for (std::size_t i = 0; i < m_RenderPasses.size(); i++)
         {
-            for (std::size_t j = 0; j < m_RenderPassObjectCount[i]; j++)
+            std::size_t end = index + m_RenderPassObjectCount[i];
+            for (std::size_t j = index; j < end; j++)
             {
                 // TODO(9636D): Logid bug here, we are not using the correct index (Unless we are using the first render pass)
                 Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
@@ -172,6 +174,7 @@ namespace Nebula
                     static_cast<std::int32_t>(m_RenderableObjects[j].m_Mesh->GetIndexData().size()),
                     OpenGL::GL::GetGLType<std::uint32_t>(), nullptr);
             }
+            index += m_RenderPassObjectCount[i];
         }
 
         std::chrono::high_resolution_clock::time_point newTime = std::chrono::high_resolution_clock::now();
@@ -185,8 +188,8 @@ namespace Nebula
         ImGui::Begin("Render Statistics");
 
         ImGui::Text("Renderer: OpenGL");
-        ImGui::Text("Render Passes: %lu", m_RenderPasses.size());
-        ImGui::Text("Renderable Objects: %lu", m_RenderableObjects.size());
+        ImGui::Text("Render Passes: %zu", m_RenderPasses.size());
+        ImGui::Text("Renderable Objects: %zu", m_RenderableObjects.size());
         ImGui::Text("Frame Time: %f ms", static_cast<float>(elapsedTime) / 1000.0F);
 
         ImGui::End();

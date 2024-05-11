@@ -19,3 +19,4 @@ option(NEBULA_USE_PTHREADS "Use pthreads for threading" ON)
 option(NEBULA_BUILD_TESTS "Build tests" ON)
 
 option(NEBULA_ENABLE_CLANG_FORMAT "Enable clang-format" ON)
+option(NEBULA_ENABLE_PEDANTIC "Enable pedantic warnings" ON)

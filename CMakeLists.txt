@@ -27,6 +27,17 @@ include(cmake/UtilFunctions.cmake)
 include(cmake/DefaultConfig.cmake)
 include(cmake/VerifyConfig.cmake)
 
+set(NEBULA_CXX_FLAGS)
+if (NEBULA_ENABLE_PEDANTIC)
+    if (MSVC)
+        # set(NEBULA_CXX_FLAGS ${NEBULA_CXX_FLAGS} /W4)
+        # We need to disable warning 4251 for MSVC
+        set(NEBULA_CXX_FLAGS ${NEBULA_CXX_FLAGS} /wd4251)
+    else()
+        set(NEBULA_CXX_FLAGS ${NEBULA_CXX_FLAGS} -Wall -Wextra -Wpedantic)
+    endif()
+endif()
+
 # Find Clang format
 if (NEBULA_ENABLE_CLANG_FORMAT)
     find_program(CLANG_FORMAT "clang-format")

@@ -21,8 +21,8 @@ nebula_library_type(NEBULA_CORE_LIBRARY_TYPE NEBULA_CORE_LIBRARY_TYPE_FINAL)
 message(STATUS "NebulaEngine: NebulaCore built as: ${NEBULA_CORE_LIBRARY_TYPE_FINAL}")
 add_library(NebulaCore ${NEBULA_CORE_LIBRARY_TYPE_FINAL} ${NEBULA_CORE_SOURCES})
 nebula_add_definitions(NebulaCore "NEBULA_CORE" ${NEBULA_CORE_LIBRARY_TYPE_FINAL})
-# We need to make the sour
 nebula_format_project(NebulaCore ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_CORE_SOURCES}")
+target_compile_options(NebulaCore PRIVATE "${NEBULA_CXX_FLAGS}")
 
 target_include_directories(NebulaCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src

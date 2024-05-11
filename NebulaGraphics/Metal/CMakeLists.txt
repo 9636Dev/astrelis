@@ -18,6 +18,7 @@ set(NEBULA_GRAPHICS_METAL_SOURCES
 add_library(NebulaGraphicsMetal SHARED ${NEBULA_GRAPHICS_METAL_SOURCES})
 nebula_add_definitions(NebulaGraphicsMetal "NEBULA_GRAPHICS_METAL" SHARED)
 nebula_format_project(NebulaGraphicsMetal ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_GRAPHICS_METAL_SOURCES}")
+target_compile_options(NebulaGraphicsMetal PRIVATE "${NEBULA_CXX_FLAGS}")
 
 target_include_directories(NebulaGraphicsMetal PUBLIC src)
 

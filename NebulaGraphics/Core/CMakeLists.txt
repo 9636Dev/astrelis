@@ -44,6 +44,7 @@ message(STATUS "NebulaEngine: NebulaGraphicsCore built as: ${NEBULA_GRAPHICS_COR
 add_library(NebulaGraphicsCore ${NEBULA_GRAPHICS_CORE_LIBRARY_TYPE_FINAL} ${NEBULA_GRAPHICS_CORE_SOURCES})
 nebula_add_definitions(NebulaGraphicsCore "NEBULA_GRAPHICS_CORE" ${NEBULA_GRAPHICS_CORE_LIBRARY_TYPE_FINAL})
 nebula_format_project(NebulaGraphicsCore ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_GRAPHICS_CORE_SOURCES}")
+target_compile_definitions(NebulaGraphicsCore PRIVATE "${NEBULA_CXX_FLAGS}")
 
 target_include_directories(NebulaGraphicsCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
