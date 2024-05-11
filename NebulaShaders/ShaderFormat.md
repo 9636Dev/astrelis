@@ -17,7 +17,7 @@
 Name "ExampleShader";
 
 Bindings {
-    Uniforms {
+    Uniforms "VertexBuffer" {
         float4 Color : TEXTURE_DIFFUSE_COLOR;
     }
     Textures {

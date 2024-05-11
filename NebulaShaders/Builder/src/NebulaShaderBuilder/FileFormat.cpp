@@ -72,19 +72,25 @@ namespace Nebula::Shader
         {
             ProgramMeta programMeta;
             programMeta.Name     = compiler.GetMeta().Name;
-            const auto& bindings = compiler.GetBindings();
-            programMeta.Bindings.reserve(bindings.size());
-            for (const auto& binding : bindings)
+            const auto& ubos = compiler.GetUniformBuffers();
+            programMeta.UniformBuffers.reserve(ubos.size());
+            for (const auto& ubo : ubos)
             {
-                auto bindingRes = Binding::FromStringBinding(binding);
-                if (bindingRes.second != BindingError::None)
+                std::vector<Binding> bindings;
+                for (const auto& binding : ubo.Bindings)
                 {
-                    return std::make_pair(std::move(intermediateFormat),
-                                          "Failed to convert StringBinding to Binding: " +
-                                              BindingErrorToString(bindingRes.second));
+                    auto bindingRes = Binding::FromStringBinding(binding);
+                    if (bindingRes.second != BindingError::None)
+                    {
+                        return std::make_pair(std::move(intermediateFormat),
+                                              "Failed to convert StringBinding to Binding: " +
+                                                  BindingErrorToString(bindingRes.second));
+                    }
+
+                    bindings.push_back(std::move(bindingRes.first));
                 }
 
-                programMeta.Bindings.push_back(std::move(bindingRes.first));
+                programMeta.UniformBuffers.emplace_back(ubo.Name, bindings);
             }
 
             const auto& textures = compiler.GetTextures();

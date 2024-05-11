@@ -16,22 +16,21 @@ namespace Nebula::Shader
         auto inputs      = output.Header.Program.Vertex.Inputs;
         auto outputs     = output.Header.Program.Fragment.Inputs;
 
-        std::vector<Glsl::Binding> bindings;
+        std::vector<Glsl::UniformBuffer> uniformBuffers;
         std::vector<Glsl::Texture> textures;
         {
-            auto programBindings = output.Header.Program.Meta.Bindings;
+            auto programUniformBuffers = output.Header.Program.Meta.UniformBuffers;
 
-            std::map<std::string, std::pair<BindingType, BindingTarget>> bindingMap;
-            for (auto& binding : programBindings)
+            for (auto& ubo : programUniformBuffers)
             {
-                bindingMap[binding.Name] = std::make_pair(binding.Type, binding.Target);
-            }
+                std::vector<Glsl::Binding> uboBindings;
+                for (auto& binding : ubo.Bindings)
+                {
+                    uboBindings.emplace_back(binding.Type, binding.Name, binding.Target);
+                }
 
-            auto glslBindings = output.GlslSource->Meta.UniformBuffers;
-            for (auto& glslBinding : glslBindings)
-            {
-                auto type = bindingMap[glslBinding.first];
-                bindings.emplace_back(type.first, glslBinding.second.Name, type.second, glslBinding.second.Binding);
+                auto slot = output.GlslSource->Meta.UniformBuffers[ubo.Name].Binding;
+                uniformBuffers.emplace_back(ubo.Name, std::move(uboBindings), slot);
             }
         }
 
@@ -53,7 +52,7 @@ namespace Nebula::Shader
         }
 
         return Glsl(name, output.GlslSource->Version, output.GlslSource->Glsl420Pack, std::move(inputs),
-                    std::move(outputs), std::move(bindings), std::move(textures), output.GlslSource->VertexSource,
+                    std::move(outputs), std::move(uniformBuffers), std::move(textures), output.GlslSource->VertexSource,
                     output.GlslSource->PixelSource);
     }
 

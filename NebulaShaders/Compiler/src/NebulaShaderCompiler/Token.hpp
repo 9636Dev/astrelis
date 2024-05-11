@@ -17,7 +17,7 @@ namespace Nebula::Shader
         UniformsKeyword,
         TexturesKeyword,
         InputKeyword,
-        FragmentInputKeyword,
+        PixelInputKeyword,
         ShaderKeyword,
         SharedKeyword,
         VertexKeyword,

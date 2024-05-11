@@ -13,7 +13,7 @@ namespace Nebula::Shader
         std::string Name;
         std::vector<Input> Inputs;
         std::vector<Input> PixelInputs;
-        std::vector<Binding> Bindings;
+        std::vector<UniformBuffer> UniformBuffers;
         std::vector<TextureBinding> Textures;
         std::string VertexSource;
         std::string PixelSource;
@@ -26,14 +26,14 @@ namespace Nebula::Shader
         Msl(std::string name,
             std::vector<Input> inputs,
             std::vector<Input> pixelInputs,
-            std::vector<Binding> bindings,
+            std::vector<UniformBuffer> uniformBuffers,
             std::vector<TextureBinding> textures,
             std::string vertexSource,
             std::string pixelSource) :
             Name(std::move(name)),
             Inputs(std::move(inputs)),
             PixelInputs(std::move(pixelInputs)),
-            Bindings(std::move(bindings)),
+            UniformBuffers(std::move(uniformBuffers)),
             Textures(std::move(textures)),
             VertexSource(std::move(vertexSource)),
             PixelSource(std::move(pixelSource))

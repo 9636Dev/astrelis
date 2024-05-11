@@ -87,7 +87,7 @@ namespace Nebula
             throw std::runtime_error(glRenderPassObject.ShaderProgram.GetInfoLog());
         }
 
-        if (shader.Bindings.size() != 1)
+        if (shader.UniformBuffers.size() != 1)
         {
             NEB_CORE_LOG_WARN("Uniform buffer count is not 1 (More than one not supported yet)");
             m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex),
@@ -95,7 +95,7 @@ namespace Nebula
             return;
         }
 
-        auto& uniform = shader.Bindings[0];
+        auto& uniform = shader.UniformBuffers[0];
 
         glRenderPassObject.ShaderProgram.Use();
         glRenderPassObject.UniformBuffer.Bind();
@@ -163,9 +163,9 @@ namespace Nebula
             int modelMatrixOffset = -1;
 
             // We need to figure out the data for the Uniform Buffer
-            auto& bindings = m_AssetLoader.m_Shaders[m_RenderPasses[i].ShaderProgram].Bindings;
+            auto& uniformBuffer = m_AssetLoader.m_Shaders[m_RenderPasses[i].ShaderProgram].UniformBuffers[0];
             std::vector<std::byte> uniformBufferData;
-            for (const auto& binding : bindings)
+            for (const auto& binding : uniformBuffer.Bindings)
             {
                 switch (binding.Target)
                 {

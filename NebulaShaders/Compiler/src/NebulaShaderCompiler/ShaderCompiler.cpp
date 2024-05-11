@@ -1,4 +1,5 @@
 #include "ShaderCompiler.hpp"
+#include <sstream>
 
 #define COMPILER_EXPECT(tokType, tokRef)                                                                   \
     if (tokRef.Type != TokenType::tokType)                                                                 \
@@ -69,15 +70,50 @@ namespace Nebula::Shader
                 COMPILER_EXPECT(Semicolon, token);
                 break;
             case TokenType::BindingsKeyword: {
-                auto res = ParseBindings(lexer, token);
-                if (res.has_value())
+                token = lexer.NextToken();
+                COMPILER_EXPECT(LeftBrace, token);
+
+                token = lexer.NextToken();
+                while (token.Type != TokenType::RightBrace && token.Type != TokenType::EndOfFile)
                 {
-                    return res;
+                    switch (token.Type)
+                    {
+                    case TokenType::UniformsKeyword: {
+                        auto result = ParseUniformBuffer(lexer, token);
+                        if (result.has_value())
+                        {
+                            return result;
+                        }
+                        break;
+                    }
+
+                    case TokenType::TexturesKeyword: {
+                        auto result = ParseTexture(lexer, token);
+                        if (result.has_value())
+                        {
+                            return result;
+                        }
+                        break;
+                    }
+
+                    default:
+                        std::stringstream sstream;
+                        sstream << "Unknown token inside scope 'Bindings': " << Token::TypeString(token.Type);
+                        return Error {sstream.str(), token.Index};
+                    }
+
+                    token = lexer.NextToken();
                 }
+
+                if (token.Type == TokenType::EndOfFile)
+                {
+                    return Error {"Expected '}'", token.Index};
+                }
+
                 break;
             }
             case TokenType::InputKeyword:
-            case TokenType::FragmentInputKeyword: {
+            case TokenType::PixelInputKeyword: {
                 auto& inputsVec = token.Type == TokenType::InputKeyword ? m_Meta.Inputs : m_Meta.FragmentInputs;
                 token           = lexer.NextToken();
                 COMPILER_EXPECT(LeftBrace, token);
@@ -270,83 +306,164 @@ namespace Nebula::Shader
             case TokenType::EndOfFile:
                 break;
             default:
-                return Error {"Unknown token", token.Index};
+                std::stringstream sstream;
+                sstream << "Unknown token: " << Token::TypeString(token.Type);
+                return Error {sstream.str(), token.Index};
             }
         }
 
         return std::nullopt;
     }
 
-    std::optional<Compiler::Error>
-        Compiler::ParseBindings(Lexer& lexer, Token& token) // NOLINT(readability-function-cognitive-complexity)
+    std::optional<Compiler::Error> Compiler::ParseUniformBuffer(Lexer& lexer, Token& token)
+    {
+        token = lexer.NextToken();
+        COMPILER_EXPECT(StringLiteral, token);
+        std::string bufferName = std::string(token.Text);
+
+        token = lexer.NextToken();
+        COMPILER_EXPECT(LeftBrace, token);
+
+        auto scope = LexScope(lexer);
+
+        if (scope.empty())
+        {
+            return Error {"Expected scope", token.Index};
+        }
+
+        COMPILER_EXPECT(RightBrace, scope.back());
+        scope.pop_back();
+
+        std::size_t index = 0;
+        std::vector<Binding> bindings;
+
+        while (index < scope.size())
+        {
+            // Type Name : Binding ;
+            Binding binding;
+
+            token = scope[index++];
+            COMPILER_EXPECT(Symbol, token);
+            binding.Type = token.Text;
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected name", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Symbol, token);
+            binding.Name = token.Text;
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected colon", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Colon, token);
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected binding", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Symbol, token);
+            binding.Binding = token.Text;
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected semicolon", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Semicolon, token);
+
+            bindings.push_back(std::move(binding));
+        }
+
+        m_Meta.UniformBuffers.push_back({bufferName, std::move(bindings)});
+        return std::nullopt;
+    }
+
+    std::optional<Compiler::Error> Compiler::ParseTexture(Lexer& lexer, Token& token)
     {
         token = lexer.NextToken();
         COMPILER_EXPECT(LeftBrace, token);
 
-        auto bindings = LexScope(lexer);
-        if (bindings.empty())
+        auto scope = LexScope(lexer);
+
+        if (scope.empty())
         {
-            return Error {"Expected bindings", token.Index};
+            return Error {"Expected scope", token.Index};
         }
 
-        COMPILER_EXPECT(RightBrace, bindings.back());
-        bindings.pop_back();
+        COMPILER_EXPECT(RightBrace, scope.back());
+        scope.pop_back();
 
-        for (std::size_t i = 0; i < bindings.size(); i++)
+        std::size_t index = 0;
+
+        while (index < scope.size())
         {
-            if (bindings[i].Type == TokenType::UniformsKeyword || bindings[i].Type == TokenType::TexturesKeyword)
+            // Type Name : Binding ;
+            Binding binding;
+
+            token = scope[index++];
+            COMPILER_EXPECT(Symbol, token);
+            binding.Type = token.Text;
+
+            if (index >= scope.size())
             {
-                auto& bindingsVec =
-                    bindings[i++].Type == TokenType::UniformsKeyword ? m_Meta.Uniforms : m_Meta.Textures;
-                COMPILER_EXPECT(LeftBrace, bindings[i]);
-
-                while (bindings[++i].Type != TokenType::RightBrace && i < bindings.size())
-                {
-                    // Type Name : Binding ;
-                    Binding binding;
-
-                    auto token = bindings[i];
-                    COMPILER_EXPECT(Symbol, token);
-                    binding.Type = token.Text;
-
-                    token = bindings[++i];
-                    COMPILER_EXPECT(Symbol, token);
-                    binding.Name = token.Text;
-
-                    token = bindings[++i];
-                    COMPILER_EXPECT(Colon, token);
-
-                    token = bindings[++i];
-                    COMPILER_EXPECT(Symbol, token);
-                    binding.Binding = token.Text;
-
-                    token = bindings[++i];
-                    COMPILER_EXPECT(Semicolon, token);
-
-                    bindingsVec.push_back(binding);
-                }
-
-                if (i == bindings.size())
-                {
-                    return Error {"Expected closing brace for Bindings", bindings[i].Index};
-                }
+                return Error {"Expected name", token.Index};
             }
+            token = scope[index++];
+            COMPILER_EXPECT(Symbol, token);
+            binding.Name = token.Text;
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected colon", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Colon, token);
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected binding", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Symbol, token);
+            binding.Binding = token.Text;
+
+            if (index >= scope.size())
+            {
+                return Error {"Expected semicolon", token.Index};
+            }
+            token = scope[index++];
+            COMPILER_EXPECT(Semicolon, token);
+
+            m_Meta.Textures.push_back(std::move(binding));
         }
 
         return std::nullopt;
     }
 
-    std::vector<StringBinding> Compiler::GetBindings() const
+    std::vector<SUniformBuffer> Compiler::GetUniformBuffers() const
     {
         // We map the vector of bindings to a vector of StringBindings
-        std::vector<StringBinding> bindings;
-        bindings.reserve(m_Meta.Uniforms.size());
-        for (const auto& binding : m_Meta.Uniforms)
+        std::vector<SUniformBuffer> uniformBuffers;
+
+        uniformBuffers.reserve(m_Meta.UniformBuffers.size());
+        for (const auto& buffer : m_Meta.UniformBuffers)
         {
-            bindings.emplace_back(binding.Type, binding.Name, binding.Binding);
+            std::vector<StringBinding> bindings;
+            bindings.reserve(buffer.Bindings.size());
+            for (const auto& binding : buffer.Bindings)
+            {
+                bindings.emplace_back(binding.Type, binding.Name, binding.Binding);
+            }
+
+            uniformBuffers.emplace_back(buffer.Name, std::move(bindings));
         }
 
-        return bindings;
+        return uniformBuffers;
     }
 
     std::vector<StringBinding> Compiler::GetTextures() const
@@ -406,5 +523,4 @@ namespace Nebula::Shader
     }
 } // namespace Nebula::Shader
 
-#undef COMPILER_EXPECT_INTERNAL
 #undef COMPILER_EXPECT

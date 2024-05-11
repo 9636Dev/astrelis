@@ -18,13 +18,13 @@ namespace Nebula::Shader
     struct ProgramMeta
     {
         std::string Name;
-        std::vector<Binding> Bindings;
+        std::vector<UniformBuffer> UniformBuffers;
         std::vector<TextureBinding> Textures;
 
 
         ProgramMeta() = default;
 
-        template<typename Archive> void serialize(Archive& archive) { archive(Name, Bindings, Textures); }
+        template<typename Archive> void serialize(Archive& archive) { archive(Name, UniformBuffers, Textures); }
     };
 
     /**

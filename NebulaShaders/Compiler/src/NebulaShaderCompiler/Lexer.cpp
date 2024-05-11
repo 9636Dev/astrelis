@@ -14,7 +14,7 @@ namespace Nebula::Shader
             {"Uniforms",   TokenType::UniformsKeyword     },
             {"Textures",   TokenType::TexturesKeyword     },
             {"Input",      TokenType::InputKeyword        },
-            {"PixelInput", TokenType::FragmentInputKeyword},
+            {"PixelInput", TokenType::PixelInputKeyword},
             {"Shader",     TokenType::ShaderKeyword       },
             {"Shared",     TokenType::SharedKeyword       },
             {"Vertex",     TokenType::VertexKeyword       },

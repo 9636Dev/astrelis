@@ -102,7 +102,7 @@ TEST(NebulaShaderTests, ToIntermediate)
 
     ASSERT_TRUE(readResult.GlslSource.has_value());
     ASSERT_EQ(readResult.Header.Program.Meta.Name, "BasicShader");
-    ASSERT_GT(readResult.Header.Program.Meta.Bindings.size(), 0);
+    ASSERT_GT(readResult.Header.Program.Meta.UniformBuffers.size(), 0);
     ASSERT_EQ(readResult.Header.Program.Meta.Textures.size(), 0);
     ASSERT_GT(readResult.GlslSource->VertexSource.size(), 0);
     ASSERT_GT(readResult.GlslSource->PixelSource.size(), 0);

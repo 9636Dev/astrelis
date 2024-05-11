@@ -14,6 +14,12 @@
 
 namespace Nebula::Shader
 {
+    struct SUniformBuffer
+    {
+        std::string Name;
+        std::vector<StringBinding> Bindings;
+    };
+
     class NEBULA_SHADER_COMPILER_API Compiler
     {
     public:
@@ -30,10 +36,16 @@ namespace Nebula::Shader
             std::string Binding;
         };
 
+        struct UniformBuffer
+        {
+            std::string Name;
+            std::vector<Binding> Bindings;
+        };
+
         struct Meta
         {
             std::string Name;
-            std::vector<Binding> Uniforms;
+            std::vector<UniformBuffer> UniformBuffers;
             std::vector<Binding> Textures;
             std::vector<Binding> Inputs;
             std::vector<Binding> FragmentInputs;
@@ -58,7 +70,7 @@ namespace Nebula::Shader
 
         std::optional<Error> Compile();
 
-        [[nodiscard]] std::vector<StringBinding> GetBindings() const;
+        [[nodiscard]] std::vector<SUniformBuffer> GetUniformBuffers() const;
         [[nodiscard]] std::vector<StringBinding> GetTextures() const;
         [[nodiscard]] std::vector<StringInput> GetInputs() const;
         [[nodiscard]] std::vector<StringInput> GetPixelInputs() const;
@@ -73,7 +85,8 @@ namespace Nebula::Shader
 
         [[nodiscard]] const Sources& GetSources() const { return m_Sources; }
     private:
-        std::optional<Error> ParseBindings(Lexer& lexer, Token& token);
+        std::optional<Error> ParseUniformBuffer(Lexer& lexer, Token& token);
+        std::optional<Error> ParseTexture(Lexer& lexer, Token& token);
 
         Meta m_Meta;
         Sources m_Sources;

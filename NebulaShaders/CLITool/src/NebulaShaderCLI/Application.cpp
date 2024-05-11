@@ -113,9 +113,13 @@ namespace CLI
 
                 // We print the metadata as well
                 std::cout << "Metadata:\n";
-                for (const auto& binding : glsl->Bindings)
+                for (const auto& ubo : glsl->UniformBuffers)
                 {
-                    std::cout << "Binding: " << binding.Name << " -> " << binding.Slot.value_or(-1) << '\n';
+                    std::cout << "Uniform Buffer: " << ubo.Name << '\n';
+                    for (const auto& uniform : ubo.Bindings)
+                    {
+                        std::cout << "  " << uniform.Name << " (" << static_cast<std::uint32_t>(uniform.Type) << ")\n";
+                    }
                 }
             }
 

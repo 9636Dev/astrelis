@@ -17,12 +17,24 @@ namespace Nebula::Shader
             BindingType Type;
             std::string Name;
             BindingTarget Target;
-            std::optional<std::uint32_t> Slot;
 
-            Binding(BindingType type, std::string name, BindingTarget target, std::optional<std::uint32_t> slot) :
+            Binding(BindingType type, std::string name, BindingTarget target) :
                 Type(type),
                 Name(std::move(name)),
-                Target(target),
+                Target(target)
+            {
+            }
+        };
+
+        struct UniformBuffer
+        {
+            std::string Name;
+            std::vector<Binding> Bindings;
+            std::optional<std::uint32_t> Slot;
+
+            UniformBuffer(std::string name, std::vector<Binding> bindings, std::optional<std::uint32_t> slot) :
+                Name(std::move(name)),
+                Bindings(std::move(bindings)),
                 Slot(slot)
             {
             }
@@ -49,7 +61,7 @@ namespace Nebula::Shader
         bool Glsl420PackEnabled {};
         std::vector<Input> Inputs;
         std::vector<Input> PixelInputs;
-        std::vector<Binding> Bindings;
+        std::vector<UniformBuffer> UniformBuffers;
         std::vector<Texture> Textures;
         std::string VertexSource;
         std::string PixelSource;
@@ -62,7 +74,7 @@ namespace Nebula::Shader
              bool glsl420PackEnabled,
              std::vector<Input> inputs,
              std::vector<Input> pixelInputs,
-             std::vector<Binding> bindings,
+             std::vector<UniformBuffer> uniformBuffers,
              std::vector<Texture> textures,
              std::string vertexSource,
              std::string pixelSource) :
@@ -71,7 +83,7 @@ namespace Nebula::Shader
             Glsl420PackEnabled(glsl420PackEnabled),
             Inputs(std::move(inputs)),
             PixelInputs(std::move(pixelInputs)),
-            Bindings(std::move(bindings)),
+            UniformBuffers(std::move(uniformBuffers)),
             Textures(std::move(textures)),
             VertexSource(std::move(vertexSource)),
             PixelSource(std::move(pixelSource))

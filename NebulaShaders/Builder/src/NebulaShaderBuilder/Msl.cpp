@@ -13,17 +13,17 @@ namespace Nebula::Shader
         std::string name                     = output.Header.Program.Meta.Name;
         auto inputs                          = output.Header.Program.Vertex.Inputs;
         auto pixelInputs                     = output.Header.Program.Fragment.Inputs;
-        std::vector<Binding> bindings        = output.Header.Program.Meta.Bindings;
+        auto uniformBuffers                  = output.Header.Program.Meta.UniformBuffers;
         std::vector<TextureBinding> textures = output.Header.Program.Meta.Textures;
 
         Msl msl;
-        msl.Name         = name;
-        msl.Bindings     = bindings;
-        msl.Textures     = textures;
-        msl.Inputs       = inputs;
-        msl.PixelInputs  = pixelInputs;
-        msl.VertexSource = output.MslSource.value().VertexSource;
-        msl.PixelSource  = output.MslSource.value().PixelSource;
+        msl.Name           = name;
+        msl.UniformBuffers = uniformBuffers;
+        msl.Textures       = textures;
+        msl.Inputs         = inputs;
+        msl.PixelInputs    = pixelInputs;
+        msl.VertexSource   = output.MslSource.value().VertexSource;
+        msl.PixelSource    = output.MslSource.value().PixelSource;
 
         return msl;
     }

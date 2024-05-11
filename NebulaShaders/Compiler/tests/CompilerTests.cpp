@@ -10,7 +10,7 @@ TEST(Compiler, Compile)
     Compiler compiler(R"(
 Name "Test";
 Bindings {
-    Uniforms {
+    Uniforms "Uniforms" {
         float4x4 Model : MODEL_MATRIX;
         float4x4 View : VIEW_MATRIX;
         float4x4 Projection : PROJECTION_MATRIX;
@@ -29,7 +29,7 @@ Input {
     float2 TexCoord : TEXCOORD;
 }
 
-FragmentInput {
+PixelInput {
     float3 Position : POSITION;
     float3 Normal : NORMAL;
     float2 TexCoord : TEXCOORD;
@@ -96,9 +96,13 @@ Shader {
     ASSERT_FALSE(error.has_value());
 
     std::cout << "Name: " << compiler.GetMeta().Name << std::endl;
-    for (const auto& uniform : compiler.GetMeta().Uniforms)
+    for (const auto& uniform : compiler.GetMeta().UniformBuffers)
     {
-        std::cout << "Uniform: " << uniform.Type << " " << uniform.Name << " : " << uniform.Binding << std::endl;
+        std::cout << "Uniform Buffer: " << uniform.Name << std::endl;
+        for (const auto& field : uniform.Bindings)
+        {
+            std::cout << "Field: " << field.Type << " " << field.Name << " : " << field.Binding << std::endl;
+        }
     }
 
     for (const auto& texture : compiler.GetMeta().Textures)

@@ -212,4 +212,19 @@ namespace Nebula::Shader
 
         template<typename Archive> void serialize(Archive& archive) { archive(Type, Name, Target); }
     };
+
+    struct UniformBuffer
+    {
+        std::string Name;
+        std::vector<Binding> Bindings;
+
+        UniformBuffer() : Bindings({}) {}
+        UniformBuffer(std::string name, std::vector<Binding> bindings) :
+            Name(std::move(name)),
+            Bindings(std::move(bindings))
+        {
+        }
+
+        template<typename Archive> void serialize(Archive& archive) { archive(Name, Bindings); }
+    };
 } // namespace Nebula::Shader

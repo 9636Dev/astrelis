@@ -25,7 +25,7 @@ namespace Nebula::Shader
             return "TexturesKeyword";
         case TokenType::InputKeyword:
             return "InputKeyword";
-        case TokenType::FragmentInputKeyword:
+        case TokenType::PixelInputKeyword:
             return "PixelInputKeyword";
         case TokenType::ShaderKeyword:
             return "ShaderKeyword";
