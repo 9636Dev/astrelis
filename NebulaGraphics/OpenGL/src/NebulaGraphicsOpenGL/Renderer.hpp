@@ -23,7 +23,24 @@ namespace Nebula
     struct GLRenderPassObject
     {
         OpenGL::ShaderProgram ShaderProgram;
-        OpenGL::UniformBuffer UniformBuffer;
+        std::vector<OpenGL::UniformBuffer> UniformBuffers;
+        Shader::Glsl& Shader; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
+
+        explicit GLRenderPassObject(Shader::Glsl& shader) : Shader(shader) {}
+        GLRenderPassObject(GLRenderPassObject&&) noexcept = default;
+        GLRenderPassObject& operator=(GLRenderPassObject&& other) noexcept
+        {
+            if (this != &other)
+            {
+                ShaderProgram = std::move(other.ShaderProgram);
+                UniformBuffers = std::move(other.UniformBuffers);
+                other.Shader = Shader;
+            }
+            return *this;
+        }
+        ~GLRenderPassObject() = default;
+        GLRenderPassObject(const GLRenderPassObject&) = delete;
+        GLRenderPassObject& operator=(const GLRenderPassObject&) = delete;
     };
 
     class OpenGLRenderer : public Renderer

@@ -47,8 +47,12 @@ if (NEBULA_BUILD_GLEW)
     # Alias glew target to GLEW::GLEW
     add_library(GLEW::GLEW ALIAS glew)
 else()
+    # We make it quiet so we can handle the error message ourselves
+    find_package(GLEW QUIET)
+    if (NOT GLEW_FOUND)
+        message(FATAL_ERROR "GLEW not found. Please set NEBULA_BUILD_GLEW to ON to build GLEW from source.")
+    endif()
     find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
 endif()
 
 add_subdirectory(vendor/glm)

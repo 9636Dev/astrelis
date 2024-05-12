@@ -57,66 +57,71 @@ namespace Nebula
         NEB_ASSERT(m_AssetLoader.m_Shaders.contains(renderPass.ShaderProgram), "Shader program does not exist");
         auto& shader = m_AssetLoader.m_Shaders[renderPass.ShaderProgram];
 
-        GLRenderPassObject glRenderPassObject;
-
         {
-            OpenGL::Shader vertexShader(OpenGL::ShaderType::VertexShader);
-            vertexShader.ShaderSource(shader.VertexSource);
-            if (!vertexShader.Compile())
+            GLRenderPassObject glRenderPassObject(shader);
+
             {
-                throw std::runtime_error("GLSL Was not compiled: " + vertexShader.GetInfoLog());
+                OpenGL::Shader vertexShader(OpenGL::ShaderType::VertexShader);
+                vertexShader.ShaderSource(shader.VertexSource);
+                if (!vertexShader.Compile())
+                {
+                    throw std::runtime_error("GLSL Was not compiled: " + vertexShader.GetInfoLog());
+                }
+
+                glRenderPassObject.ShaderProgram.AttachShader(vertexShader);
             }
 
-            glRenderPassObject.ShaderProgram.AttachShader(vertexShader);
-        }
-
-        {
-            OpenGL::Shader fragmentShader(OpenGL::ShaderType::FragmentShader);
-            fragmentShader.ShaderSource(shader.PixelSource);
-
-            if (!fragmentShader.Compile())
             {
-                throw std::runtime_error("GLSL Was not compiled: " + fragmentShader.GetInfoLog());
+                OpenGL::Shader fragmentShader(OpenGL::ShaderType::FragmentShader);
+                fragmentShader.ShaderSource(shader.PixelSource);
+
+                if (!fragmentShader.Compile())
+                {
+                    throw std::runtime_error("GLSL Was not compiled: " + fragmentShader.GetInfoLog());
+                }
+
+                glRenderPassObject.ShaderProgram.AttachShader(fragmentShader);
             }
 
-            glRenderPassObject.ShaderProgram.AttachShader(fragmentShader);
-        }
+            if (!glRenderPassObject.ShaderProgram.Link())
+            {
+                throw std::runtime_error(glRenderPassObject.ShaderProgram.GetInfoLog());
+            }
 
-        if (!glRenderPassObject.ShaderProgram.Link())
-        {
-            throw std::runtime_error(glRenderPassObject.ShaderProgram.GetInfoLog());
-        }
-
-        if (shader.UniformBuffers.size() != 1)
-        {
-            NEB_CORE_LOG_WARN("Uniform buffer count is not 1 (More than one not supported yet)");
+            for (std::size_t i = 0; i < shader.UniformBuffers.size(); i++)
+            {
+                glRenderPassObject.UniformBuffers.emplace_back();
+            }
             m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex),
                                     std::move(glRenderPassObject));
-            return;
         }
 
-        auto& uniform = shader.UniformBuffers[0];
+        auto& glRenderPassObject = m_GLRenderPasses[insertionIndex];
 
         glRenderPassObject.ShaderProgram.Use();
-        glRenderPassObject.UniformBuffer.Bind();
-
-        if (shader.GlslVersion < 420 && !shader.Glsl420PackEnabled)
+        for (std::size_t i = 0; i < shader.UniformBuffers.size(); i++)
         {
-            std::uint32_t index = glRenderPassObject.ShaderProgram.GetUniformBlockIndex(uniform.Name);
-            if (index != OpenGL::GL::InvalidIndex)
+            auto& uniform         = shader.UniformBuffers[i];
+            auto& glUniformBuffer = glRenderPassObject.UniformBuffers[i];
+
+            glUniformBuffer.Bind();
+
+            // If the shader is using GLSL 4.20 or higher, we can use the new uniform block layout, otherwise we need to manually bind the uniform block
+            if (shader.GlslVersion < 420 && !shader.Glsl420PackEnabled)
             {
-                glRenderPassObject.ShaderProgram.UniformBlockBinding(index, 0);
+                std::uint32_t index = glRenderPassObject.ShaderProgram.GetUniformBlockIndex(uniform.Name);
+                if (index != OpenGL::GL::InvalidIndex)
+                {
+                    glRenderPassObject.ShaderProgram.UniformBlockBinding(index, i);
+                }
+                else
+                {
+                    NEB_CORE_LOG_WARN("Could not find uniform block index for {0}", uniform.Name);
+                }
             }
-            else
-            {
-                NEB_CORE_LOG_WARN("Could not find uniform block index for {0}", uniform.Name);
-            }
+
+            glUniformBuffer.BindBase(uniform.Slot.value_or(i));
         }
-
-        glRenderPassObject.UniformBuffer.BindBase(uniform.Slot.value_or(0));
-
-        m_GLRenderPasses.insert(m_GLRenderPasses.begin() + static_cast<std::int64_t>(insertionIndex),
-                                std::move(glRenderPassObject));
     }
 
     void OpenGLRenderer::InternalRemoveRenderPass(std::size_t index)
@@ -160,56 +165,65 @@ namespace Nebula
         std::size_t index = 0;
         for (std::size_t i = 0; i < m_RenderPasses.size(); i++)
         {
-            int modelMatrixOffset = -1;
+            std::vector<int> modelMatrixOffsets;
+            std::vector<std::vector<std::byte>> uniformBufferDatas;
 
             // We need to figure out the data for the Uniform Buffer
-            auto& uniformBuffer = m_AssetLoader.m_Shaders[m_RenderPasses[i].ShaderProgram].UniformBuffers[0];
-            std::vector<std::byte> uniformBufferData;
-            for (const auto& binding : uniformBuffer.Bindings)
+            for (std::size_t j = 0; j < m_GLRenderPasses[i].Shader.UniformBuffers.size(); j++)
             {
-                switch (binding.Target)
+                auto& uniformBuffer = m_GLRenderPasses[i].Shader.UniformBuffers[j];
+                modelMatrixOffsets.push_back(-1);
+
+                std::vector<std::byte> uniformBufferData;
+                for (const auto& binding : uniformBuffer.Bindings)
                 {
-                case Nebula::Shader::BindingTarget::ProjectionMatrix: {
-                    Matrix4f projectionMatrix;
-                    uniformBufferData.insert(uniformBufferData.end(),
-                                             reinterpret_cast<std::byte*>(&projectionMatrix), // NOLINT
-                                             reinterpret_cast<std::byte*>(&projectionMatrix) +
-                                                 sizeof(projectionMatrix));
-                    break;
+                    switch (binding.Target)
+                    {
+                    case Nebula::Shader::BindingTarget::ProjectionMatrix: {
+                        Matrix4f projectionMatrix = Matrix4f::Identity();
+                        uniformBufferData.insert(uniformBufferData.end(),
+                                                 reinterpret_cast<std::byte*>(&projectionMatrix), // NOLINT
+                                                 reinterpret_cast<std::byte*>(&projectionMatrix) +
+                                                     sizeof(projectionMatrix));
+                        break;
+                    }
+                    case Nebula::Shader::BindingTarget::ViewMatrix: {
+                        Matrix4f viewMatrix = Matrix4f::Identity();
+                        uniformBufferData.insert(uniformBufferData.end(), reinterpret_cast<std::byte*>(&viewMatrix),
+                                                 reinterpret_cast<std::byte*>(&viewMatrix) + sizeof(viewMatrix));
+                        break;
+                    }
+                    case Nebula::Shader::BindingTarget::ModelMatrix: {
+                        Matrix4f modelMatrix = Matrix4f::Identity();
+                        modelMatrixOffsets.back() = static_cast<int>(uniformBufferData.size());
+                        uniformBufferData.insert(uniformBufferData.end(), reinterpret_cast<std::byte*>(&modelMatrix),
+                                                 reinterpret_cast<std::byte*>(&modelMatrix) + sizeof(modelMatrix));
+                    }
+                    }
                 }
-                case Nebula::Shader::BindingTarget::ViewMatrix: {
-                    Matrix4f viewMatrix = Matrix4f::Identity();
-                    uniformBufferData.insert(uniformBufferData.end(),
-                                             reinterpret_cast<std::byte*>(&viewMatrix),
-                                             reinterpret_cast<std::byte*>(&viewMatrix) + sizeof(viewMatrix));
-                    break;
-                }
-                case Nebula::Shader::BindingTarget::ModelMatrix: {
-                    Matrix4f modelMatrix;
-                    modelMatrixOffset = static_cast<int>(uniformBufferData.size());
-                    uniformBufferData.insert(uniformBufferData.end(),
-                                             reinterpret_cast<std::byte*>(&modelMatrix),
-                                             reinterpret_cast<std::byte*>(&modelMatrix) +
-                                                 sizeof(modelMatrix));
-                }
-                }
+                m_GLRenderPasses[i].UniformBuffers[j].Bind();
+                m_GLRenderPasses[i].UniformBuffers[j].SetData(uniformBufferData.data(),
+                                                             static_cast<std::uint32_t>(uniformBufferData.size()));
+                uniformBufferDatas.push_back(std::move(uniformBufferData));
             }
-            m_GLRenderPasses[i].UniformBuffer.SetData(uniformBufferData.data(),
-                                                      static_cast<std::uint32_t>(uniformBufferData.size()));
 
             std::size_t end = index + m_RenderPassObjectCount[i];
             for (std::size_t j = index; j < end; j++)
             {
-                // TODO(9636D): Logid bug here, we are not using the correct index (Unless we are using the first render pass)
                 Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
 
-                if (modelMatrixOffset != -1)
+                for (std::size_t k = 0; k < modelMatrixOffsets.size(); k++)
                 {
-                    std::memcpy(uniformBufferData.data() + modelMatrixOffset,
-                                reinterpret_cast<std::byte*>(&modelMatrix), sizeof(modelMatrix)); // NOLINT
-                    // Set the data for the uniform buffer
-                    m_GLRenderPasses[i].UniformBuffer.SetData(uniformBufferData.data(),
-                                                              static_cast<std::uint32_t>(uniformBufferData.size()));
+                    if (modelMatrixOffsets[k] != -1)
+                    {
+                        std::vector<std::byte>& uniformBufferData = uniformBufferDatas[k];
+                        std::memcpy(uniformBufferData.data() + modelMatrixOffsets[k],
+                                    reinterpret_cast<std::byte*>(&modelMatrix), sizeof(modelMatrix)); // NOLINT
+                        // Set the data
+                        m_GLRenderPasses[i].UniformBuffers[k].Bind();
+                        m_GLRenderPasses[i].UniformBuffers[k].SetData(uniformBufferData.data(),
+                                                                     static_cast<std::uint32_t>(uniformBufferData.size()));
+                    }
                 }
                 m_GLRenderableObjects[j].VertexArray.Bind();
                 m_GLRenderableObjects[j].IndexBuffer.Bind();
@@ -245,7 +259,7 @@ namespace Nebula
 #endif
     }
 
-    void OpenGLRenderer::OnResize(std::uint32_t width, std::uint32_t height)
+    void OpenGLRenderer::OnResize([[maybe_unused]] std::uint32_t width, [[maybe_unused]] std::uint32_t height)
     {
         // We use the frame buffer for OpenGL viewport
     }

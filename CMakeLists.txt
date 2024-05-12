@@ -9,6 +9,14 @@ cmake_minimum_required(VERSION 3.27)
 if (LINUX)
     message(STATUS "NebulaEngine: Linux detected - Setting up to use Clang")
 
+    # Make sure clang is installed
+    find_program(CLANG "clang")
+    find_program(CLANGXX "clang++")
+
+    if (NOT CLANG OR NOT CLANGXX)
+        message(FATAL_ERROR "Clang not found")
+    endif()
+
     set(CMAKE_CXX_COMPILER "clang++")
     set(CMAKE_C_COMPILER "clang")
 
