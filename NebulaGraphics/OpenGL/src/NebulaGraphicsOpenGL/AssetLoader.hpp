@@ -18,6 +18,7 @@ namespace Nebula
         GlAssetLoader& operator=(const GlAssetLoader&) = default;
         GlAssetLoader& operator=(GlAssetLoader&&)      = default;
 
+        bool LoadDefaultAssets() override;
         bool LoadShader(const File& file) override;
         bool LoadTexture(const Texture& texture) override;
 

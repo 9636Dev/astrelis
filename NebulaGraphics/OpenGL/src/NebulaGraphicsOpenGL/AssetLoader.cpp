@@ -3,6 +3,11 @@
 
 namespace Nebula
 {
+    bool GlAssetLoader::LoadDefaultAssets()
+    {
+        return true;
+    }
+
     bool GlAssetLoader::LoadShader(const File& file)
     {
         auto res = Shader::Glsl::FromFile(file);

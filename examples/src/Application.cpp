@@ -104,6 +104,12 @@ int main(int argc, char** argv)
         }
     }
 
+    if (!renderer->GetAssetLoader().LoadDefaultAssets())
+    {
+        NEB_CORE_LOG_ERROR("Failed to load default assets");
+        return -1;
+    }
+
 
     {
         auto file = Nebula::File::FromPathString("resources/shaders/BasicShader.cnsl");
