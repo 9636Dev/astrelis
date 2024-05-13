@@ -3,7 +3,6 @@
 #include "NebulaCore/Log.hpp"
 #include "NebulaGraphicsOpenGL/Core.hpp"
 #include "NebulaGraphicsOpenGL/OpenGL/Enum.hpp"
-#include "NebulaShaderCommon/Bindings.hpp"
 #include "OpenGL/GL.hpp"
 #include "Window.hpp"
 #include <chrono>
@@ -99,7 +98,7 @@ namespace Nebula
         auto& glRenderPassObject = m_GLRenderPasses[insertionIndex];
 
         glRenderPassObject.ShaderProgram.Use();
-        for (std::size_t i = 0; i < shader.UniformBuffers.size(); i++)
+        /*for (std::size_t i = 0; i < shader.UniformBuffers.size(); i++)
         {
             auto& uniform         = shader.UniformBuffers[i];
             auto& glUniformBuffer = glRenderPassObject.UniformBuffers[i];
@@ -121,6 +120,17 @@ namespace Nebula
             }
 
             glUniformBuffer.BindBase(uniform.Slot.value_or(i));
+        }*/
+
+        std::uint32_t index = glRenderPassObject.ShaderProgram.GetUniformBlockIndex("Camera");
+        if (index != OpenGL::GL::InvalidIndex)
+        {
+            glRenderPassObject.ShaderProgram.UniformBlockBinding(index, 0);
+            glRenderPassObject.UniformBuffers[0].BindBase(0);
+        }
+        else
+        {
+            NEB_CORE_LOG_WARN("Could not find uniform block index for Camera");
         }
     }
 
@@ -156,75 +166,37 @@ namespace Nebula
         m_GLRenderableObjects.erase(m_GLRenderableObjects.begin() + static_cast<std::int64_t>(index));
     }
 
+    struct CameraUniform
+    {
+        glm::mat4 view;
+        glm::mat4 projection;
+
+        CameraUniform(glm::mat4 view, glm::mat4 projection) : view(view), projection(projection) {}
+    };
+
     void OpenGLRenderer::Render()
     {
         std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
         // We are just using this function to test the renderer at the moment
         OpenGL::GL::Clear(OpenGL::ClearTarget::ColorBufferBit | OpenGL::ClearTarget::DepthBufferBit);
 
+        CameraUniform cameraUniform(
+            glm::identity<glm::mat4>(),
+            glm::identity<glm::mat4>()
+        );
+
         std::size_t index = 0;
         for (std::size_t i = 0; i < m_RenderPasses.size(); i++)
         {
-            std::vector<int> modelMatrixOffsets;
-            std::vector<std::vector<std::byte>> uniformBufferDatas;
-
-            // We need to figure out the data for the Uniform Buffer
-            for (std::size_t j = 0; j < m_GLRenderPasses[i].Shader.UniformBuffers.size(); j++)
-            {
-                auto& uniformBuffer = m_GLRenderPasses[i].Shader.UniformBuffers[j];
-                modelMatrixOffsets.push_back(-1);
-
-                std::vector<std::byte> uniformBufferData;
-                for (const auto& binding : uniformBuffer.Bindings)
-                {
-                    switch (binding.Target)
-                    {
-                    case Nebula::Shader::BindingTarget::ProjectionMatrix: {
-                        Matrix4f projectionMatrix = Matrix4f::Identity();
-                        uniformBufferData.insert(uniformBufferData.end(),
-                                                 reinterpret_cast<std::byte*>(&projectionMatrix), // NOLINT
-                                                 reinterpret_cast<std::byte*>(&projectionMatrix) +
-                                                     sizeof(projectionMatrix));
-                        break;
-                    }
-                    case Nebula::Shader::BindingTarget::ViewMatrix: {
-                        Matrix4f viewMatrix = Matrix4f::Identity();
-                        uniformBufferData.insert(uniformBufferData.end(), reinterpret_cast<std::byte*>(&viewMatrix),
-                                                 reinterpret_cast<std::byte*>(&viewMatrix) + sizeof(viewMatrix));
-                        break;
-                    }
-                    case Nebula::Shader::BindingTarget::ModelMatrix: {
-                        Matrix4f modelMatrix = Matrix4f::Identity();
-                        modelMatrixOffsets.back() = static_cast<int>(uniformBufferData.size());
-                        uniformBufferData.insert(uniformBufferData.end(), reinterpret_cast<std::byte*>(&modelMatrix),
-                                                 reinterpret_cast<std::byte*>(&modelMatrix) + sizeof(modelMatrix));
-                    }
-                    }
-                }
-                m_GLRenderPasses[i].UniformBuffers[j].Bind();
-                m_GLRenderPasses[i].UniformBuffers[j].SetData(uniformBufferData.data(),
-                                                             static_cast<std::uint32_t>(uniformBufferData.size()));
-                uniformBufferDatas.push_back(std::move(uniformBufferData));
-            }
+            m_GLRenderPasses[i].ShaderProgram.Use();
+            m_GLRenderPasses[i].UniformBuffers[0].Bind();
+            m_GLRenderPasses[i].UniformBuffers[0].SetData(reinterpret_cast<std::byte*>(&cameraUniform), sizeof(cameraUniform));
 
             std::size_t end = index + m_RenderPassObjectCount[i];
             for (std::size_t j = index; j < end; j++)
             {
                 Matrix4f modelMatrix = m_RenderableObjects[j].m_Transform.GetModelMatrix();
 
-                for (std::size_t k = 0; k < modelMatrixOffsets.size(); k++)
-                {
-                    if (modelMatrixOffsets[k] != -1)
-                    {
-                        std::vector<std::byte>& uniformBufferData = uniformBufferDatas[k];
-                        std::memcpy(uniformBufferData.data() + modelMatrixOffsets[k],
-                                    reinterpret_cast<std::byte*>(&modelMatrix), sizeof(modelMatrix)); // NOLINT
-                        // Set the data
-                        m_GLRenderPasses[i].UniformBuffers[k].Bind();
-                        m_GLRenderPasses[i].UniformBuffers[k].SetData(uniformBufferData.data(),
-                                                                     static_cast<std::uint32_t>(uniformBufferData.size()));
-                    }
-                }
                 m_GLRenderableObjects[j].VertexArray.Bind();
                 m_GLRenderableObjects[j].IndexBuffer.Bind();
 

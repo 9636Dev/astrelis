@@ -1,10 +1,23 @@
 #include "AssetLoader.hpp"
 #include "NebulaShaderBuilder/Glsl.hpp"
 
+#include "DefaultShaders.hpp"
+
 namespace Nebula
 {
     bool GlAssetLoader::LoadDefaultAssets()
     {
+        std::string defaultVertexShader = OpenGLDefaults::DefaultVertexShader();
+        std::string defaultFragmentShader = OpenGLDefaults::DefaultFragmentShader();
+
+        Shader::Glsl defaultShader;
+        defaultShader.GlslVersion = 410;
+        defaultShader.VertexSource = defaultVertexShader;
+        defaultShader.PixelSource = defaultFragmentShader;
+        defaultShader.Name = "DefaultShader";
+
+        m_Shaders[defaultShader.Name] = std::move(defaultShader);
+
         return true;
     }
 

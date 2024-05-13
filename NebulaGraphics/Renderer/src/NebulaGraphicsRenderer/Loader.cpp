@@ -66,6 +66,11 @@ namespace Nebula
         InsertObject(std::move(libraryPath), std::move(renderer), s_Renderers);
     }
 
+    void Loader::InsertBasicRenderer(std::string libraryPath, std::shared_ptr<Basic::Renderer> renderer)
+    {
+        InsertObject(std::move(libraryPath), std::move(renderer), s_BasicRenderers);
+    }
+
     template<typename T>
     static inline std::pair<bool, std::string>
         RemoveObject(const std::shared_ptr<T>& window,
@@ -92,6 +97,11 @@ namespace Nebula
     std::pair<bool, std::string> Loader::RemoveRenderer(const std::shared_ptr<Renderer>& renderer)
     {
         return RemoveObject(renderer, s_Renderers);
+    }
+
+    std::pair<bool, std::string> Loader::RemoveBasicRenderer(const std::shared_ptr<Basic::Renderer>& renderer)
+    {
+        return RemoveObject(renderer, s_BasicRenderers);
     }
 
     bool Loader::ModuleRemoveIfEmpty(const std::string& libraryPath)

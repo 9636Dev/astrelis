@@ -34,6 +34,11 @@ set(NEBULA_GRAPHICS_CORE_SOURCES
     # Assets
     src/NebulaGraphicsCore/Texture.hpp
     src/NebulaGraphicsCore/AssetLoader.hpp
+
+    # Basic
+    src/NebulaGraphicsCore/Basic/Renderer.hpp
+    src/NebulaGraphicsCore/Basic/Mesh.hpp
+    src/NebulaGraphicsCore/Basic/VisualProps.hpp
 )
 
 add_subdirectory(vendor/Eigen)

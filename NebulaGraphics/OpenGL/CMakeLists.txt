@@ -9,10 +9,15 @@ set(NEBULA_GRAPHICS_OPENGL_SOURCES
     src/NebulaGraphicsOpenGL/Core.hpp
     src/NebulaGraphicsOpenGL/AssetLoader.hpp
     src/NebulaGraphicsOpenGL/AssetLoader.cpp
+    src/NebulaGraphicsOpenGL/DefaultShaders.hpp
     src/NebulaGraphicsOpenGL/Window.hpp
     src/NebulaGraphicsOpenGL/Window.cpp
     src/NebulaGraphicsOpenGL/Renderer.hpp
     src/NebulaGraphicsOpenGL/Renderer.cpp
+
+    # Basic
+    src/NebulaGraphicsOpenGL/BasicRenderer.hpp
+    src/NebulaGraphicsOpenGL/BasicRenderer.cpp
 
     # OpenGL Wrappers
     src/NebulaGraphicsOpenGL/OpenGL/Enum.hpp

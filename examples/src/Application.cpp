@@ -1,3 +1,7 @@
+#include "NebulaGraphicsCore/Basic/Renderer.hpp"
+#include "NebulaGraphicsCore/Basic/VisualProps.hpp"
+#include "NebulaGraphicsRenderer/BasicRenderer.hpp"
+#define NEBULA_USE_BASIC_RENDERER
 #include "NebulaCore/Log.hpp"
 #include "NebulaGraphicsCore/Event/Event.hpp"
 #include "NebulaGraphicsCore/Event/MouseEvent.hpp"
@@ -43,7 +47,11 @@ int main(int argc, char** argv)
     }
 
     std::shared_ptr<Nebula::Window> window;
+#ifdef NEBULA_USE_BASIC_RENDERER
+    std::shared_ptr<Nebula::Basic::Renderer> renderer;
+#else
     std::shared_ptr<Nebula::Renderer> renderer;
+#endif
 
     if (api == GraphicsAPI::OpenGL)
     {
@@ -63,7 +71,11 @@ int main(int argc, char** argv)
         }
 
         {
+            #ifdef NEBULA_USE_BASIC_RENDERER
+            auto result = Nebula::CreateBasicRenderer(libraryPath, window, props.Context);
+            #else
             auto result = Nebula::CreateRenderer(libraryPath, window, props.Context);
+            #endif
             if (result.Error != Nebula::RendererCreationResult::ErrorType::None)
             {
                 NEB_CORE_LOG_ERROR("Failed to create renderer");
@@ -71,7 +83,7 @@ int main(int argc, char** argv)
             }
 
             renderer = std::move(result.Renderer);
-            renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+            renderer->SetClearColor(0.0F, 0.0F, 0.0F, 1.0F);
         }
     }
     else if (api == GraphicsAPI::Metal)
@@ -92,7 +104,11 @@ int main(int argc, char** argv)
         }
 
         {
+            #ifdef NEBULA_USE_BASIC_RENDERER
+            auto result = Nebula::CreateBasicRenderer(libraryPath, window, props.Context);
+            #else
             auto result = Nebula::CreateRenderer(libraryPath, window, props.Context);
+            #endif
             if (result.Error != Nebula::RendererCreationResult::ErrorType::None)
             {
                 NEB_CORE_LOG_ERROR("Failed to create renderer");
@@ -100,10 +116,11 @@ int main(int argc, char** argv)
             }
 
             renderer = std::move(result.Renderer);
-            renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+            renderer->SetClearColor(0.0F, 0.0F, 0.0F, 1.0F);
         }
     }
 
+    #ifndef NEBULA_USE_BASIC_RENDERER
     if (!renderer->GetAssetLoader().LoadDefaultAssets())
     {
         NEB_CORE_LOG_ERROR("Failed to load default assets");
@@ -111,7 +128,7 @@ int main(int argc, char** argv)
     }
 
 
-    {
+    /*{
         auto file = Nebula::File::FromPathString("resources/shaders/BasicShader.cnsl");
         bool res  = renderer->GetAssetLoader().LoadShader(file);
 
@@ -120,7 +137,7 @@ int main(int argc, char** argv)
             NEB_CORE_LOG_ERROR("Failed to load shader");
             return -1;
         }
-    }
+    }*/
 
     {
         auto file = Nebula::File::FromPathString("resources/assets/textures/DefaultTexture.png");
@@ -188,6 +205,36 @@ int main(int argc, char** argv)
     Nebula::DestroyRenderer(renderer);
     NEB_CORE_LOG_TRACE("Destroying window");
     Nebula::DestroyWindow(window);
+    #else
+
+    auto mesh = std::make_shared<Nebula::Basic::Mesh>();
+    mesh->GetVertices() = {
+        {{-0.5F, -0.5F, 0.0F}, {0.0F, 0.0F}},
+        {{0.5F, -0.5F, 0.0F}, {1.0F, 0.0F}},
+        {{0.5F, 0.5F, 0.0F}, {1.0F, 1.0F}},
+        {{-0.5F, 0.5F, 0.0F}, {0.0F, 1.0F}},
+    };
+    mesh->GetIndices() = {0, 1, 2, 2, 3, 0};
+
+    Nebula::Basic::VisualProps props;
+    props.Color = {1.0F, 0.0F, 0.0F, 1.0F};
+    Nebula::Transform transform;
+
+    renderer->AddMesh(mesh, props, transform);
+
+    while (!window->ShouldClose())
+    {
+        renderer->Render();
+        window->PollEvents();
+        window->SwapBuffers();
+    }
+
+    NEB_CORE_LOG_TRACE("Destroying renderer");
+    Nebula::DestroyBasicRenderer(renderer);
+    NEB_CORE_LOG_TRACE("Destroying window");
+    Nebula::DestroyWindow(window);
+
+    #endif
 
     return 0;
 }

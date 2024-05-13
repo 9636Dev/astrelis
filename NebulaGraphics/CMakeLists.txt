@@ -19,6 +19,7 @@ option(NEBULA_GRAPHICS_VULKAN "Enable Vulkan implementation" OFF)
 
 add_subdirectory(Core)
 add_subdirectory(Renderer)
+add_subdirectory(Fonts)
 
 set(RENDERER_INCLUDED FALSE)
 set(NEBULA_GRAPHICS_FORMAT_DEPENDENCIES "")

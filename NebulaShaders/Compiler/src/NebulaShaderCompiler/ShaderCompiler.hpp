@@ -18,6 +18,8 @@ namespace Nebula::Shader
     {
         std::string Name;
         std::vector<StringBinding> Bindings;
+
+        SUniformBuffer(std::string name, std::vector<StringBinding> bindings) : Name(std::move(name)), Bindings(std::move(bindings)) {}
     };
 
     class NEBULA_SHADER_COMPILER_API Compiler

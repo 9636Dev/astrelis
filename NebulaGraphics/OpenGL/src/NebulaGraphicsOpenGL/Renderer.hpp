@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NebulaGraphicsOpenGL/AssetLoader.hpp"
+#include "NebulaGraphicsOpenGL/BasicRenderer.hpp"
 #include "OpenGL/IndexBuffer.hpp"
 #include "OpenGL/Shader.hpp"
 #include "OpenGL/UniformBuffer.hpp"
@@ -24,6 +25,7 @@ namespace Nebula
     {
         OpenGL::ShaderProgram ShaderProgram;
         std::vector<OpenGL::UniformBuffer> UniformBuffers;
+
         Shader::Glsl& Shader; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 
         explicit GLRenderPassObject(Shader::Glsl& shader) : Shader(shader) {}
@@ -46,6 +48,7 @@ namespace Nebula
     class OpenGLRenderer : public Renderer
     {
     public:
+        friend class Basic::GLRenderer;
         explicit OpenGLRenderer(std::shared_ptr<GLFWWindow> window);
         ~OpenGLRenderer() override;
         OpenGLRenderer(const OpenGLRenderer&)            = delete;

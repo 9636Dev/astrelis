@@ -12,8 +12,8 @@ namespace Nebula
         ~Transform()                           = default;
         Transform(const Transform& other)      = default;
         Transform& operator=(const Transform&) = default;
-        Transform(Transform&& other)           = delete;
-        Transform& operator=(Transform&&)      = delete;
+        Transform(Transform&& other)           = default;
+        Transform& operator=(Transform&&)      = default;
 
         void Translate(float transX, float transY, float transZ) noexcept;
         void Translate(const Vector3f& translation) noexcept;
