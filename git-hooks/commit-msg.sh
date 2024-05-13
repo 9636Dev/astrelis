@@ -13,18 +13,19 @@
 # - SUBMODULE: Updating the submodule
 # - CI: Changes to our CI configuration files and scripts (example CircleCI)
 # - CHORE: Other changes that don't modify src or test files
+# - REWRITE: Rewriting the codebase
 
 
 COMMIT_MSG_FILE="$1"
 COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 
 # Regular expression to check the prefix of the commit message
-PREFIX_REGEX='^\[(BUG|FEAT|DOC|STYLE|REFACTOR|TEST|WIP|UPDATE|SUBMODULE|CI|CHORE)\] '
+PREFIX_REGEX='^\[(BUG|FEAT|DOC|STYLE|REFACTOR|TEST|WIP|UPDATE|SUBMODULE|CI|CHORE|REWRITE)\] '
 
 # Check if the commit message starts with a valid prefix
 if [[ ! $COMMIT_MSG =~ $PREFIX_REGEX ]]; then
     echo "ERROR: Commit message does not start with a valid prefix."
-    echo "Valid prefixes include [BUG], [FEAT], [DOC], [STYLE], [REFACTOR], [TEST], [WIP], [UPDATE], [SUBMODULE], [CI], [CHORE]."
+    echo "Valid prefixes include [BUG], [FEAT], [DOC], [STYLE], [REFACTOR], [TEST], [WIP], [UPDATE], [SUBMODULE], [CI], [CHORE], [REWRITE]."
     exit 1
 fi
 
