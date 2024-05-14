@@ -1,0 +1,6 @@
+[submodule "NebulaCore/vendor/spdlog"]
+	path = NebulaCore/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "vendor/googletest"]
+	path = vendor/googletest
+	url = https://github.com/google/googletest

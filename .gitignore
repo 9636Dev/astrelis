@@ -1,0 +1,7 @@
+# GitIgnore for Nebula Engine
+
+# Build Directory
+/build/
+
+# Build Cache
+/.cache/

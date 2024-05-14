@@ -1,0 +1,25 @@
+# ClangTidy for NebulaEngine
+
+Checks: '*,
+-modernize-*,
+-llvmlibc-*,
+-fuchsia-*,
+-abseil-*,
+-hicpp-vararg,
+
+-cppcoreguidelines-pro-type-union-access,
+-cppcoreguidelines-pro-type-vararg,
+-cppcoreguidelines-avoid-magic-numbers,
+
+-bugprone-easily-swappable-parameters,
+-bugprone-lambda-function-name,
+
+-misc-non-private-member-variables-in-classes,
+-misc-use-anonymous-namespace,
+
+-readability-magic-numbers,
+
+-altera-struct-pack-align,
+-altera-unroll-loops,
+-altera-id-dependent-backward-branch
+'

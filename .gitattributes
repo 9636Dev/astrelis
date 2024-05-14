@@ -1,0 +1,5 @@
+# GitAttributes for NebulaEngine
+
+* text=auto eol=lf
+
+vendor/* linguist-vendored

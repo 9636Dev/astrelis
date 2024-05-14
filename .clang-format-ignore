@@ -1,0 +1,3 @@
+# ClangFormatIgnore for NebulaEngine
+
+/Core/vendor/spdlog
