@@ -1,1 +1,0 @@
-cloc . --exclude-dir=vendor,build,compile_commands.json
