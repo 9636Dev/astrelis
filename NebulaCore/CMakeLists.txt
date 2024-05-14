@@ -4,6 +4,8 @@ project(NebulaCore)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory(vendor/spdlog)
+
 set(NEBULA_CORE_SOURCES
     # Simplified linking
     src/NebulaCore/Linkage.hpp
@@ -11,15 +13,40 @@ set(NEBULA_CORE_SOURCES
     # Logging
     src/NebulaCore/Log/Log.hpp
     src/NebulaCore/Log/Log.cpp
+
+    # Utilities
+    src/NebulaCore/Util/Assert.hpp
+
+    # Profiling
+    src/NebulaCore/Profile/BaseInstrumentor.hpp
+    src/NebulaCore/Profile/TimerInstrumentor.hpp
+    src/NebulaCore/Profile/TimerInstrumentor.cpp
+    src/NebulaCore/Profile/Instrumentor.hpp
+    src/NebulaCore/Profile/Instrumentor.cpp
+    src/NebulaCore/Profile/Profile.hpp
 )
 
 add_library(NebulaCore STATIC ${NEBULA_CORE_SOURCES})
-target_include_directories(NebulaCore PUBLIC src)
+
+target_include_directories(NebulaCore
+PUBLIC
+    src
+    pch
+)
 
 target_compile_definitions(NebulaCore
 PUBLIC
-    SPDLOG_ACTIVE_LEVEL=${NEBULA_LOG_LEVEL}
-    $<$<NEBULA_PLATFORM:WINDOWS>:NEBULA_PLATFORM_WINDOWS>
-    $<$<NEBULA_PLATFORM:LINUX>:NEBULA_PLATFORM_LINUX>
-    $<$<NEBULA_PLATFORM:MACOS>:NEBULA_PLATFORM_MACOS>
+    SPDLOG_ACTIVE_LEVEL=${NEBULA_LOGLEVEL}
+    $<$<BOOL:NEBULA_ENABLE_PROFILING>:NEBULA_ENABLE_PROFILING>
+    $<$<STREQUAL:${NEBULA_PLATFORM},WINDOWS>:NEBULA_PLATFORM_WINDOWS>
+    $<$<STREQUAL:${NEBULA_PLATFORM},LINUX>:NEBULA_PLATFORM_LINUX>
+    $<$<STREQUAL:${NEBULA_PLATFORM},MACOS>:NEBULA_PLATFORM_MACOS>
+    $<$<STREQUAL:${NEBULA_BUILD_TYPE},Debug>:NEBULA_DEBUG>
+    $<$<STREQUAL:${NEBULA_BUILD_TYPE},Release>:NEBULA_RELEASE>
+    $<$<STREQUAL:${NEBULA_BUILD_TYPE},Dist>:NEBULA_RELWITHDEBINFO>
+)
+
+target_link_libraries(NebulaCore
+PUBLIC
+    spdlog
 )

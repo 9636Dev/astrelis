@@ -5,7 +5,7 @@
 if (LINUX)
     message(STATUS "NebulaEngine: Configuring for Linux")
     set(NEBULA_PLATFORM "LINUX")
-        
+
     find_program(CLANG "clang")
     find_program(CLANGXX "clang++")
 
@@ -13,8 +13,8 @@ if (LINUX)
         message(FATAL_ERROR "NebulaEngine: Clang not found")
     endif()
 
-    set(CMAKE_C_COMPILER ${CLANG})
-    set(CMAKE_CXX_COMPILER ${CLANGXX})
+    set(CMAKE_CXX_COMPILER "${CLANGXX}")
+    set(CMAKE_C_COMPILER "${CLANG}")
     message(STATUS "NebulaEngine: Using Clang as compiler")
 
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
