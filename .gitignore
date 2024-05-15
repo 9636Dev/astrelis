@@ -5,3 +5,6 @@
 
 # Build Cache
 /.cache/
+
+# MacOS .DS_Store
+.DS_Store
