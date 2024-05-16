@@ -3,6 +3,9 @@
 # Build Directory
 /build/
 
+# compile_commands.json
+/compile_commands.json
+
 # Build Cache
 /.cache/
 

@@ -67,6 +67,9 @@ Optional features have to always be 'opt-in' by the user, except for these excep
 - Use the `clang-tidy` tool to check for errors
 - Always build with `-Wall -Wextra -Werror -Wpedantic`
 
+## STL containers
+- All STL containers that allow a custom allocator must have a explicit allocator (`Nebula::Allocator`)
+
 ---
 
 By following these guidelines, we can ensure that the codebase is maintainable, and easy to work with. This will also help us avoid common pitfalls, and make the codebase more robust.
