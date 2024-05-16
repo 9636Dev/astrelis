@@ -75,3 +75,10 @@ set(NEBUlA_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "The root directory
 # =======================
 
 option(NEBULA_ENABLE_PROFILING "Enable profiling for NebulaEngine" OFF)
+
+# =======================
+# Warnings Configuration
+# =======================
+
+option(NEBULA_PEDANTIC_WARNINGS "Enable pedantic warnings for NebulaEngine" ON)
+

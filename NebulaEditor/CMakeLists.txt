@@ -9,6 +9,7 @@ set(NEBULA_EDITOR_SOURCES
 )
 
 add_executable(NebulaEditor ${NEBULA_EDITOR_SOURCES})
+nebula_target(NebulaEditor)
 
 add_dependencies(NebulaEditor
     NebulaCore

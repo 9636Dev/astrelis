@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <sstream>
+
+#include "BasicJson.hpp"
 
 namespace Nebula::Profiling
 {
@@ -18,7 +19,7 @@ namespace Nebula::Profiling
             Scoped& operator=(Scoped&&)      = delete;
             virtual ~Scoped()                 = default;
 
-            virtual void End(std::stringstream& sstream) = 0;
+            virtual void End(JsonObject& json) = 0;
         };
 
         BaseInstrumentor()                                   = default;

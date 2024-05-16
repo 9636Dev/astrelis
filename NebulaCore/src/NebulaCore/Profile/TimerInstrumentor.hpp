@@ -4,7 +4,6 @@
 
 #include <chrono>
 #include <memory>
-#include <sstream>
 
 namespace Nebula::Profiling
 {
@@ -16,7 +15,7 @@ namespace Nebula::Profiling
         public:
             Scoped();
 
-            void End(std::stringstream& sstream) override;
+            void End(JsonObject& json) override;
         private:
             std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
         };

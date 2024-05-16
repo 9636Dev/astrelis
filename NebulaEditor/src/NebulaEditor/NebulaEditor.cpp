@@ -51,11 +51,11 @@ int main(int argc, char** argv)
 {
     Nebula::Log::Init();
     NEBULA_PROFILE_ADD_INSTRUMENTORS();
+
     NEBULA_PROFILE_BEGIN_SESSION("Startup", "NebulaProfile-Startup.json");
-
     NEB_CORE_LOG_INFO("Nebula Editor Started");
-
     PrintHello();
+    NEBULA_PROFILE_END_SESSION();
 
     // Run Fibonacci calculation and log the result
     NEBULA_PROFILE_BEGIN_SESSION("Fibonacci", "NebulaProfile-Fibonacci.json");
@@ -79,6 +79,5 @@ int main(int argc, char** argv)
     NEBULA_PROFILE_END_SESSION();
 
     NEB_CORE_LOG_INFO("Nebula Editor Shutting Down");
-    NEBULA_PROFILE_END_SESSION();
     return 0;
 }

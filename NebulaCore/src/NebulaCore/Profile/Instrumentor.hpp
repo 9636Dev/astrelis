@@ -1,10 +1,12 @@
 #pragma once
 
 #include "BaseInstrumentor.hpp"
+#include "BasicJson.hpp"
 #include "TimerInstrumentor.hpp"
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 // TODO(9636Dev): Implement MemoryInstrumentor, make sure it is thread-safe
@@ -31,12 +33,15 @@ namespace Nebula::Profiling
             std::vector<std::unique_ptr<BaseInstrumentor::Scoped>> m_Scopes;
         };
 
-        inline void AddInstrumentor(std::unique_ptr<BaseInstrumentor>&& instrumentor) { m_Instrumentors.push_back(std::move(instrumentor)); }
+        inline void AddInstrumentor(std::unique_ptr<BaseInstrumentor>&& instrumentor)
+        {
+            m_Instrumentors.push_back(std::move(instrumentor));
+        }
 
         void BeginSession(const std::string& name, const std::string& filepath = "results.json");
         void EndSession();
 
-        Scoped Scope(const std::string& name);
+        Scoped Scope(std::string name);
 
         inline static Instrumentor& Get()
         {
@@ -55,6 +60,7 @@ namespace Nebula::Profiling
         std::string m_SessionName;
         std::string m_Filepath;
         std::vector<std::unique_ptr<BaseInstrumentor>> m_Instrumentors;
-        std::stringstream m_Sstream;
+        std::unordered_map<std::string, std::size_t> m_ScopeNames; // We want to automatically detect recursion
+        JsonObject m_Json;
     };
 } // namespace Nebula::Profiling

@@ -18,6 +18,7 @@ set(NEBULA_CORE_SOURCES
     src/NebulaCore/Util/Assert.hpp
 
     # Profiling
+    src/NebulaCore/Profile/BasicJson.hpp
     src/NebulaCore/Profile/BaseInstrumentor.hpp
     src/NebulaCore/Profile/TimerInstrumentor.hpp
     src/NebulaCore/Profile/TimerInstrumentor.cpp
@@ -27,6 +28,7 @@ set(NEBULA_CORE_SOURCES
 )
 
 add_library(NebulaCore STATIC ${NEBULA_CORE_SOURCES})
+nebula_target(NebulaCore)
 
 target_include_directories(NebulaCore
 PUBLIC
@@ -45,6 +47,7 @@ PUBLIC
     $<$<STREQUAL:${NEBULA_BUILD_TYPE},Release>:NEBULA_RELEASE>
     $<$<STREQUAL:${NEBULA_BUILD_TYPE},Dist>:NEBULA_RELWITHDEBINFO>
 )
+
 
 target_link_libraries(NebulaCore
 PUBLIC

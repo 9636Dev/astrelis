@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iostream>
 
 #include "Debug.hpp"
-#include <iostream>
 
 #ifdef NEBULA_DEBUG
     #define NEBULA_INTERNAL_BUILD_TYPE 0
@@ -10,7 +10,7 @@
         {                                                           \
             if (!(x))                                               \
             {                                                       \
-                NEBULA_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
+                NEB_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
                 NEBULA_DEBUG_BREAK();                               \
             }                                                       \
         }
@@ -18,7 +18,7 @@
         {                                                                \
             if (!(x))                                                    \
             {                                                            \
-                NEBULA_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
+                NEB_CORE_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
                 NEBULA_DEBUG_BREAK();                                    \
             }                                                            \
         }
@@ -45,7 +45,7 @@
         {                                                              \
             if (!(x))                                                  \
             {                                                          \
-                NEBULA_ERROR("Verification Failed: {0}", __VA_ARGS__); \
+                NEB_LOG_ERROR("Verification Failed: {0}", __VA_ARGS__); \
                 NEBULA_DEBUG_BREAK();                                  \
             }                                                          \
         }
@@ -53,7 +53,7 @@
         {                                                                   \
             if (!(x))                                                       \
             {                                                               \
-                NEBULA_CORE_ERROR("Verification Failed: {0}", __VA_ARGS__); \
+                NEB_CORE_LOG_ERROR("Verification Failed: {0}", __VA_ARGS__); \
                 NEBULA_DEBUG_BREAK();                                       \
             }                                                               \
         }
@@ -72,14 +72,14 @@
         {                                                             \
             if (!(x))                                                 \
             {                                                         \
-                NEBULA_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
+                NEB_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
             }                                                         \
         }
     #define NEBULA_CORE_REQUIRE(x, ...)                                    \
         {                                                                  \
             if (!(x))                                                      \
             {                                                              \
-                NEBULA_CORE_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
+                NEB_CORE_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
                 ;                                                          \
             }                                                              \
         }
