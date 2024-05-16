@@ -12,7 +12,7 @@
     }
 
     #define NEBULA_PROFILE_SCOPE(name)                   auto timer##__LINE__ = NEBULA_GET_INSTRUMENTOR().Scope(name)
-    #define NEBULA_PROFILE_FUNCTION()                    NEBULA_PROFILE_SCOPE(std::source_location::current().function_name())
+    #define NEBULA_PROFILE_FUNCTION()                    auto timer##__LINE__ = NEBULA_GET_INSTRUMENTOR().Function(std::source_location::current())
 #else
     #define NEBULA_PROFILE_BEGIN_SESSION(name, filepath)
     #define NEBULA_PROFILE_END_SESSION()

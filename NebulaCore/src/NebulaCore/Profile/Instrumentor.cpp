@@ -1,7 +1,6 @@
 #include "Instrumentor.hpp"
 
 #include "../Log/Log.hpp"
-#include "NebulaCore/Util/Assert.hpp"
 
 #include <fstream>
 
@@ -57,18 +56,13 @@ namespace Nebula::Profiling
         }
     }
 
-    Instrumentor::Scoped Instrumentor::Scope(std::string name) {
-        if (m_ScopeNames.find(name) != m_ScopeNames.end())
-        {
-            m_ScopeNames[name]++;
-            name += " - RD_" + std::to_string(m_ScopeNames[name]); // RD = Recursive Depth
-        }
-        else
-        {
-            m_ScopeNames[name] = 0;
-        }
-
+    Instrumentor::Scoped Instrumentor::Scope(const std::string& name) {
         return Scoped(*this, name);
+    }
+
+    Instrumentor::FunctionScoped Instrumentor::Function(std::source_location source)
+    {
+        return FunctionScoped(*this, source);
     }
 
     Instrumentor::Scoped::Scoped(Instrumentor& instrumentor, const std::string& name) :
@@ -82,7 +76,13 @@ namespace Nebula::Profiling
         }
     }
 
-    Instrumentor::Scoped::~Scoped()
+    Instrumentor::FunctionScoped::FunctionScoped(Instrumentor& instrumentor, const std::source_location& function) :
+        Scoped(instrumentor, function.function_name())
+    {
+        m_Instrumentor.m_Functions[function.function_name()]++;
+    }
+
+    void Instrumentor::Scoped::End()
     {
         JsonObject instruments;
         for (auto& scope : m_Scopes)
@@ -91,24 +91,27 @@ namespace Nebula::Profiling
         }
 
         m_Instrumentor.m_Json[m_Name] = JsonValue(instruments);
+    }
 
-        // find the part - RD_# and remove it
-        auto pos = m_Name.find(" - RD_");
-        if (pos != std::string::npos)
+    void Instrumentor::FunctionScoped::End()
+    {
+        auto iter = m_Instrumentor.m_Functions.find(m_Name);
+        if (iter == m_Instrumentor.m_Functions.end())
         {
-            m_Name = m_Name.substr(0, pos);
+            NEB_CORE_LOG_WARN("Function '{}' not found in m_Functions", m_Name);
+            return;
         }
 
-        auto iter = m_Instrumentor.m_ScopeNames.find(m_Name);
-        NEBULA_CORE_VERIFY(iter != m_Instrumentor.m_ScopeNames.end(), "Scope name not found in map");
-        if (iter->second == 0)
+        if (--iter->second == 0)
         {
-            m_Instrumentor.m_ScopeNames.erase(iter);
+            m_Instrumentor.m_Functions.erase(iter);
         }
         else
         {
-            iter->second--;
+            m_Name += " (recursive call: " + std::to_string(iter->second) + ")";
         }
+
+        Scoped::End();
     }
 
 } // namespace Nebula::Profiling

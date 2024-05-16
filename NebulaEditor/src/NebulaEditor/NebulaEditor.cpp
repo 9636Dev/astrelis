@@ -1,5 +1,6 @@
 #include "NebulaCore/Log/Log.hpp"
 #include "NebulaCore/Profile/Profile.hpp"
+#include <algorithm>
 
 // Sample function to print "Hello"
 void PrintHello()

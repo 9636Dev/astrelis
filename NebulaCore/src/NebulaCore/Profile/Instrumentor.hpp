@@ -5,6 +5,7 @@
 #include "TimerInstrumentor.hpp"
 
 #include <memory>
+#include <source_location>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -22,15 +23,31 @@ namespace Nebula::Profiling
         {
         public:
             explicit Scoped(Instrumentor& instrumentor, const std::string& name);
-            ~Scoped();
+            virtual ~Scoped() { End(); }
             Scoped(const Scoped&)            = delete;
             Scoped(Scoped&&)                 = delete;
             Scoped& operator=(const Scoped&) = delete;
             Scoped& operator=(Scoped&&)      = delete;
-        private:
-            Instrumentor& m_Instrumentor;
-            std::string m_Name;
-            std::vector<std::unique_ptr<BaseInstrumentor::Scoped>> m_Scopes;
+
+            virtual void End();
+        protected:
+            Instrumentor& m_Instrumentor; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
+            std::string m_Name;           // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
+            std::vector<std::unique_ptr<BaseInstrumentor::Scoped>>
+                m_Scopes;                 // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
+        };
+
+        class FunctionScoped : public Scoped
+        {
+        public:
+            explicit FunctionScoped(Instrumentor& instrumentor, const std::source_location& function);
+            ~FunctionScoped() override = default; // It already calls End() in the base class
+            FunctionScoped(const FunctionScoped&)            = delete;
+            FunctionScoped(FunctionScoped&&)                 = delete;
+            FunctionScoped& operator=(const FunctionScoped&) = delete;
+            FunctionScoped& operator=(FunctionScoped&&)      = delete;
+
+            void End() override;
         };
 
         inline void AddInstrumentor(std::unique_ptr<BaseInstrumentor>&& instrumentor)
@@ -41,7 +58,8 @@ namespace Nebula::Profiling
         void BeginSession(const std::string& name, const std::string& filepath = "results.json");
         void EndSession();
 
-        Scoped Scope(std::string name);
+        Scoped Scope(const std::string& name);
+        FunctionScoped Function(std::source_location source);
 
         inline static Instrumentor& Get()
         {
@@ -60,7 +78,7 @@ namespace Nebula::Profiling
         std::string m_SessionName;
         std::string m_Filepath;
         std::vector<std::unique_ptr<BaseInstrumentor>> m_Instrumentors;
-        std::unordered_map<std::string, std::size_t> m_ScopeNames; // We want to automatically detect recursion
+        std::unordered_map<std::string, std::size_t> m_Functions; // We want to automatically detect recursion
         JsonObject m_Json;
     };
 } // namespace Nebula::Profiling
