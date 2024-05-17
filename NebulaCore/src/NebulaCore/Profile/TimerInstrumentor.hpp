@@ -16,8 +16,10 @@ namespace Nebula::Profiling
             Scoped();
 
             void End(JsonObject& json) override;
+            void ActualEnd() override { m_EndTimepoint = std::chrono::high_resolution_clock::now(); }
         private:
             std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+            std::chrono::time_point<std::chrono::high_resolution_clock> m_EndTimepoint;
         };
 
         TimerInstrumentor()                                    = default;

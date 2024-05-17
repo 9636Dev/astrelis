@@ -3,22 +3,20 @@
 namespace Nebula::Profiling
 {
     TimerInstrumentor::Scoped::Scoped()
-        : m_StartTimepoint(std::chrono::high_resolution_clock::now())
+        : m_StartTimepoint(std::chrono::high_resolution_clock::now()), m_EndTimepoint(m_StartTimepoint)
     {
     }
 
     void TimerInstrumentor::Scoped::End(JsonObject& json)
     {
-        auto endTimepoint = std::chrono::high_resolution_clock::now();
-
-        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
-        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
-
-        auto duration = end - start;
-        auto milliseconds = static_cast<double>(duration) * 0.001;
+        if (m_EndTimepoint == m_StartTimepoint)
+        {
+            ActualEnd();
+        }
+        std::chrono::duration<double, std::micro> duration = m_EndTimepoint - m_StartTimepoint;
 
         JsonObject timer;
-        timer["duration"] = JsonValue(std::to_string(milliseconds));
+        timer["duration"] = JsonValue(std::to_string(duration.count()));
         json.AddValue("timer", timer);
     }
 

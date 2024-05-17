@@ -19,6 +19,7 @@ namespace Nebula::Profiling
             Scoped& operator=(Scoped&&)      = delete;
             virtual ~Scoped()                 = default;
 
+            virtual void ActualEnd() {}; // This is called before everything else, so that the actual end time is recorded
             virtual void End(JsonObject& json) = 0;
         };
 

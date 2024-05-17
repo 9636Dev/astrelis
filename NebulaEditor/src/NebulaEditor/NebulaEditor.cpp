@@ -10,12 +10,32 @@ void PrintHello()
 }
 
 // Sample function to calculate Fibonacci numbers
-int Fibonacci(int n)
+int FibonacciRecursive(int n)
 {
     NEBULA_PROFILE_FUNCTION();
     if (n <= 1)
         return n;
-    return Fibonacci(n - 1) + Fibonacci(n - 2);
+    return FibonacciRecursive(n - 1) + FibonacciRecursive(n - 2);
+}
+
+int FibonacciRecursiveNoProfile(int n)
+{
+    if (n <= 1)
+        return n;
+    return FibonacciRecursiveNoProfile(n - 1) + FibonacciRecursiveNoProfile(n - 2);
+}
+
+int Fibonacci(int n) {
+    NEBULA_PROFILE_FUNCTION();
+
+    if (n <= 1) return n;
+    int a = 0, b = 1;
+    for (int i = 2; i <= n; ++i) {
+        int temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return b;
 }
 
 // Sample function to perform a bubble sort
@@ -52,6 +72,7 @@ int main(int argc, char** argv)
 {
     Nebula::Log::Init();
     NEBULA_PROFILE_ADD_INSTRUMENTORS();
+    NEBULA_PROFILE_RECURSION_LIMIT(1);
 
     NEBULA_PROFILE_BEGIN_SESSION("Startup", "NebulaProfile-Startup.json");
     NEB_CORE_LOG_INFO("Nebula Editor Started");
@@ -60,6 +81,12 @@ int main(int argc, char** argv)
 
     // Run Fibonacci calculation and log the result
     NEBULA_PROFILE_BEGIN_SESSION("Fibonacci", "NebulaProfile-Fibonacci.json");
+    int fibResultRecursive = FibonacciRecursive(20);
+    NEB_CORE_LOG_INFO("FibonacciRecursive(20) = {0}", fibResultRecursive);
+    {
+        NEBULA_PROFILE_SCOPE("FibonacciRecursiveNoProfile");
+        int fibResultRecursiveNoProfile = FibonacciRecursiveNoProfile(20);
+    }
     int fibResult = Fibonacci(20);
     NEB_CORE_LOG_INFO("Fibonacci(20) = {0}", fibResult);
     NEBULA_PROFILE_END_SESSION();

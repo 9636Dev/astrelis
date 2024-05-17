@@ -10,20 +10,20 @@
 #include <unordered_map>
 #include <vector>
 
-// TODO(9636Dev): Implement MemoryInstrumentor, make sure it is thread-safe
-
 namespace Nebula::Profiling
 {
     class Instrumentor
     {
         friend class TimerInstrumentor;
-        friend class MemoryInstrumentor;
+        //friend class MemoryInstrumentor;
     public:
         class Scoped
         {
         public:
             explicit Scoped(Instrumentor& instrumentor, const std::string& name);
+
             virtual ~Scoped() { End(); }
+
             Scoped(const Scoped&)            = delete;
             Scoped(Scoped&&)                 = delete;
             Scoped& operator=(const Scoped&) = delete;
@@ -31,6 +31,7 @@ namespace Nebula::Profiling
 
             virtual void End();
         protected:
+            bool m_Ended = false;         // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
             Instrumentor& m_Instrumentor; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
             std::string m_Name;           // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
             std::vector<std::unique_ptr<BaseInstrumentor::Scoped>>
@@ -41,13 +42,15 @@ namespace Nebula::Profiling
         {
         public:
             explicit FunctionScoped(Instrumentor& instrumentor, const std::source_location& function);
-            ~FunctionScoped() override = default; // It already calls End() in the base class
+
+            ~FunctionScoped() override { PreDestroy(); }
+
             FunctionScoped(const FunctionScoped&)            = delete;
             FunctionScoped(FunctionScoped&&)                 = delete;
             FunctionScoped& operator=(const FunctionScoped&) = delete;
             FunctionScoped& operator=(FunctionScoped&&)      = delete;
 
-            void End() override;
+            void PreDestroy();
         };
 
         inline void AddInstrumentor(std::unique_ptr<BaseInstrumentor>&& instrumentor)
@@ -67,6 +70,8 @@ namespace Nebula::Profiling
             return instance;
         }
 
+        void SetRecursionLimit(std::size_t limit) { m_RecursionLimit = limit; }
+
         Instrumentor(const Instrumentor&)            = delete;
         Instrumentor(Instrumentor&&)                 = delete;
         Instrumentor& operator=(const Instrumentor&) = delete;
@@ -75,6 +80,7 @@ namespace Nebula::Profiling
         Instrumentor();
         ~Instrumentor();
 
+        std::size_t m_RecursionLimit = 100;
         std::string m_SessionName;
         std::string m_Filepath;
         std::vector<std::unique_ptr<BaseInstrumentor>> m_Instrumentors;

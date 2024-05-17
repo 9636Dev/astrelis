@@ -10,6 +10,7 @@
     #define NEBULA_PROFILE_ADD_INSTRUMENTORS() { \
         NEBULA_GET_INSTRUMENTOR().AddInstrumentor(std::make_unique<::Nebula::Profiling::TimerInstrumentor>()); \
     }
+    #define NEBULA_PROFILE_RECURSION_LIMIT(limit)        NEBULA_GET_INSTRUMENTOR().SetRecursionLimit(limit)
 
     #define NEBULA_PROFILE_SCOPE(name)                   auto timer##__LINE__ = NEBULA_GET_INSTRUMENTOR().Scope(name)
     #define NEBULA_PROFILE_FUNCTION()                    auto timer##__LINE__ = NEBULA_GET_INSTRUMENTOR().Function(std::source_location::current())
@@ -17,6 +18,7 @@
     #define NEBULA_PROFILE_BEGIN_SESSION(name, filepath)
     #define NEBULA_PROFILE_END_SESSION()
     #define NEBULA_PROFILE_ADD_INSTRUMENTORS()
+    #define NEBULA_PROFILE_RECURSION_LIMIT(limit)
 
     #define NEBULA_PROFILE_SCOPE(name)
     #define NEBULA_PROFILE_FUNCTION()

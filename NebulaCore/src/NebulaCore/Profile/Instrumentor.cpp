@@ -84,6 +84,10 @@ namespace Nebula::Profiling
 
     void Instrumentor::Scoped::End()
     {
+        if (m_Ended)
+        {
+            return;
+        }
         JsonObject instruments;
         for (auto& scope : m_Scopes)
         {
@@ -93,8 +97,13 @@ namespace Nebula::Profiling
         m_Instrumentor.m_Json[m_Name] = JsonValue(instruments);
     }
 
-    void Instrumentor::FunctionScoped::End()
+    void Instrumentor::FunctionScoped::PreDestroy()
     {
+        for (auto& scope : m_Scopes)
+        {
+            scope->ActualEnd();
+        }
+
         auto iter = m_Instrumentor.m_Functions.find(m_Name);
         if (iter == m_Instrumentor.m_Functions.end())
         {
@@ -102,7 +111,13 @@ namespace Nebula::Profiling
             return;
         }
 
-        if (--iter->second == 0)
+        if (iter->second-- > m_Instrumentor.m_RecursionLimit)
+        {
+            m_Ended = true;
+            return;
+        }
+
+        if (iter->second == 0)
         {
             m_Instrumentor.m_Functions.erase(iter);
         }
@@ -110,8 +125,6 @@ namespace Nebula::Profiling
         {
             m_Name += " (recursive call: " + std::to_string(iter->second) + ")";
         }
-
-        Scoped::End();
     }
 
 } // namespace Nebula::Profiling
