@@ -8,7 +8,6 @@ Checks: '*,
 -hicpp-vararg,
 
 -cppcoreguidelines-pro-type-union-access,
--cppcoreguidelines-pro-type-vararg,
 -cppcoreguidelines-avoid-magic-numbers,
 
 -bugprone-easily-swappable-parameters,

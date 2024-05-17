@@ -11,3 +11,6 @@
 
 # MacOS .DS_Store
 .DS_Store
+
+# For now, don't include the docs folder
+/docs/

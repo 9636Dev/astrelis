@@ -1,8 +1,49 @@
 #pragma once
 
+/**
+* @file Profile.hpp
+* @brief A file that contains macros for profiling
+*/
+
+/**
+* @def NEBULA_PROFILE_BEGIN_SESSION(name, filepath)
+* @brief Begins a profiling session
+* @param name The name of the session
+* @param filepath The filepath to save the results to
+*/
+
+/**
+* @def NEBULA_PROFILE_END_SESSION()
+* @brief Ends the current profiling session
+*/
+
+/**
+* @def NEBULA_PROFILE_ADD_INSTRUMENTORS()
+* @brief Adds the default instrumentors
+*/
+
+/**
+* @def NEBULA_PROFILE_RECURSION_LIMIT(limit)
+* @brief Sets the recursion limit (1 index based)
+* @param limit The recursion limit
+*/
+
+/**
+* @def NEBULA_PROFILE_SCOPE(name)
+* @brief Creates a scoped section of code
+* @param name The name of the section
+*/
+
+/**
+* @def NEBULA_PROFILE_FUNCTION()
+* @brief Creates a scoped function, used to profile a function
+*/
+
 #ifdef NEBULA_ENABLE_PROFILING
-    #include "Instrumentor.hpp"
-    #include <source_location>
+    #ifndef NEBULA_CORE_INTERNAL
+        #include "Instrumentor.hpp"
+        #include <source_location>
+    #endif
 
     #define NEBULA_GET_INSTRUMENTOR()                    ::Nebula::Profiling::Instrumentor::Get()
     #define NEBULA_PROFILE_BEGIN_SESSION(name, filepath) NEBULA_GET_INSTRUMENTOR().BeginSession(name, filepath)
