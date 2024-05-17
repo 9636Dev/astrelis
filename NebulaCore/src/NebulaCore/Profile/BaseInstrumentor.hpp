@@ -12,14 +12,15 @@ namespace Nebula::Profiling
         class Scoped
         {
         public:
-            Scoped() = default;
+            Scoped()                         = default;
             Scoped(const Scoped&)            = delete;
             Scoped(Scoped&&)                 = delete;
             Scoped& operator=(const Scoped&) = delete;
             Scoped& operator=(Scoped&&)      = delete;
-            virtual ~Scoped()                 = default;
+            virtual ~Scoped()                = default;
 
-            virtual void ActualEnd() {}; // This is called before everything else, so that the actual end time is recorded
+            virtual void ActualEnd() {
+            }; // This is called before everything else, so that the actual end time is recorded
             virtual void End(JsonObject& json) = 0;
         };
 

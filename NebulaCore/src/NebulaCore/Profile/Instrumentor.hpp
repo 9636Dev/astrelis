@@ -12,11 +12,17 @@
 
 namespace Nebula::Profiling
 {
+    /**
+     * @brief The Instrumentor class, used for profiling
+     */
     class Instrumentor
     {
         friend class TimerInstrumentor;
         //friend class MemoryInstrumentor;
     public:
+        /**
+         * @brief Represents a scoped section of code
+         */
         class Scoped
         {
         public:
@@ -38,11 +44,15 @@ namespace Nebula::Profiling
                 m_Scopes;                 // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes)
         };
 
+        /**
+         * @brief Represents a scoped function
+         */
         class FunctionScoped : public Scoped
         {
         public:
             explicit FunctionScoped(Instrumentor& instrumentor, const std::source_location& function);
 
+            // This is called before the base class destructor
             ~FunctionScoped() override { PreDestroy(); }
 
             FunctionScoped(const FunctionScoped&)            = delete;
@@ -58,10 +68,30 @@ namespace Nebula::Profiling
             m_Instrumentors.push_back(std::move(instrumentor));
         }
 
+        /**
+         * @brief Begins a session
+         * @param name The name of the session
+         * @param filepath The filepath to save the results to
+         */
         void BeginSession(const std::string& name, const std::string& filepath = "results.json");
+
+        /**
+         * @brief Ends the current session, and saves the results to the file
+         */
         void EndSession();
 
+        /**
+         * @brief Creates a scoped section of code
+         * @param name The name of the section
+         * @return The Scoped object
+         */
         Scoped Scope(const std::string& name);
+
+        /**
+         * @brief Creates a scoped function
+         * @param source The source location of the function
+         * @return The FunctionScoped object
+         */
         FunctionScoped Function(std::source_location source);
 
         inline static Instrumentor& Get()

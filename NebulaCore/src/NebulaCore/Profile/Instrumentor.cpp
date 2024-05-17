@@ -31,7 +31,7 @@ namespace Nebula::Profiling
 
         m_SessionName = name;
         m_Filepath    = filepath;
-        m_Json = JsonObject();
+        m_Json        = JsonObject();
     }
 
     void Instrumentor::EndSession()
@@ -56,9 +56,7 @@ namespace Nebula::Profiling
         }
     }
 
-    Instrumentor::Scoped Instrumentor::Scope(const std::string& name) {
-        return Scoped(*this, name);
-    }
+    Instrumentor::Scoped Instrumentor::Scope(const std::string& name) { return Scoped(*this, name); }
 
     Instrumentor::FunctionScoped Instrumentor::Function(std::source_location source)
     {

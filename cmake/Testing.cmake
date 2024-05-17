@@ -2,4 +2,9 @@
 # Testing Setup
 # ==============================================================================
 
-add_subdirectory(vendor/googletest)
+if (NEBULA_ENABLE_TESTING)
+    enable_testing()
+    add_subdirectory(vendor/googletest)
+else()
+    message(STATUS "NebulaEngine: Testing is disabled")
+endif()

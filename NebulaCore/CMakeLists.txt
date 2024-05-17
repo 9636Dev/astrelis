@@ -1,8 +1,4 @@
 cmake_minimum_required(VERSION 3.27)
-project(NebulaCore)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(vendor/spdlog)
 
@@ -29,6 +25,7 @@ set(NEBULA_CORE_SOURCES
 
 add_library(NebulaCore STATIC ${NEBULA_CORE_SOURCES})
 nebula_target(NebulaCore)
+nebula_format_project(NebulaCore ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_CORE_SOURCES}")
 
 target_include_directories(NebulaCore
 PUBLIC
@@ -39,7 +36,7 @@ PUBLIC
 target_compile_definitions(NebulaCore
 PUBLIC
     SPDLOG_ACTIVE_LEVEL=${NEBULA_LOGLEVEL}
-    $<$<BOOL:NEBULA_ENABLE_PROFILING>:NEBULA_ENABLE_PROFILING>
+    $<$<BOOL:${NEBULA_ENABLE_PROFILING}>:NEBULA_ENABLE_PROFILING>
     $<$<STREQUAL:${NEBULA_PLATFORM},WINDOWS>:NEBULA_PLATFORM_WINDOWS>
     $<$<STREQUAL:${NEBULA_PLATFORM},LINUX>:NEBULA_PLATFORM_LINUX>
     $<$<STREQUAL:${NEBULA_PLATFORM},MACOS>:NEBULA_PLATFORM_MACOS>
@@ -53,3 +50,7 @@ target_link_libraries(NebulaCore
 PUBLIC
     spdlog
 )
+
+if (NEBULA_ENABLE_TESTING)
+    add_subdirectory(tests)
+endif()

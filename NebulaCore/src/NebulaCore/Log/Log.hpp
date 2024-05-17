@@ -17,7 +17,8 @@ namespace Nebula
             return s_CoreLogger;
         }
 
-        inline static std::shared_ptr<spdlog::logger>& GetClientLogger() {
+        inline static std::shared_ptr<spdlog::logger>& GetClientLogger()
+        {
             NEBULA_INTERNAL_ASSERT(s_ClientLogger != nullptr, "Client logger is null!");
             return s_ClientLogger;
         }

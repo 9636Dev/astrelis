@@ -2,8 +2,9 @@
 
 namespace Nebula::Profiling
 {
-    TimerInstrumentor::Scoped::Scoped()
-        : m_StartTimepoint(std::chrono::high_resolution_clock::now()), m_EndTimepoint(m_StartTimepoint)
+    TimerInstrumentor::Scoped::Scoped() :
+        m_StartTimepoint(std::chrono::high_resolution_clock::now()),
+        m_EndTimepoint(m_StartTimepoint)
     {
     }
 
@@ -20,8 +21,5 @@ namespace Nebula::Profiling
         json.AddValue("timer", timer);
     }
 
-    std::unique_ptr<BaseInstrumentor::Scoped> TimerInstrumentor::Scope()
-    {
-        return std::make_unique<Scoped>();
-    }
-}  // namespace Nebula::Profiling
+    std::unique_ptr<BaseInstrumentor::Scoped> TimerInstrumentor::Scope() { return std::make_unique<Scoped>(); }
+} // namespace Nebula::Profiling

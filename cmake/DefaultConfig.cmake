@@ -50,10 +50,10 @@ elseif(NEBULA_BUILD_TYPE STREQUAL "Release")
 elseif(NEBULA_BUILD_TYPE STREQUAL "Dist")
     set(NEBULA_LOGLEVEL ${NEBULA_DIST_LOGLEVEL})
     if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Dist" CACHE STRING "The build type for NebulaEngine" FORCE)
-    elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
-        message(WARNING "CMAKE_BUILD_TYPE is set to ${CMAKE_BUILD_TYPE}, but NEBULA_BUILD_TYPE is set to Dist. This may cause unexpected behavior.")
-        set(CMAKE_BUILD_TYPE "Dist" CACHE STRING "The build type for NebulaEngine" FORCE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for NebulaEngine" FORCE)
+    elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+        message(WARNING "CMAKE_BUILD_TYPE is set to ${CMAKE_BUILD_TYPE}, but NEBULA_BUILD_TYPE is set to Dist. This may cause unexpected behavior (should be Release).")
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for NebulaEngine" FORCE)
     endif()
 endif()
 
@@ -62,7 +62,7 @@ endif()
 # Testing Configuration
 # =======================
 
-option(NEBULA_TESTING "Enable testing for NebulaEngine" OFF) # This disables tests globally, because this will stop googletest from being built
+option(NEBULA_ENABLE_TESTING "Enable testing for NebulaEngine" ON) # This disables tests globally, because this will stop googletest from being built
 
 # =======================
 # Project Configuration
@@ -82,3 +82,8 @@ option(NEBULA_ENABLE_PROFILING "Enable profiling for NebulaEngine" OFF)
 
 option(NEBULA_PEDANTIC_WARNINGS "Enable pedantic warnings for NebulaEngine" ON)
 
+# =======================
+# Clang Format Configuration
+# =======================
+
+option(NEBULA_ENABLE_CLANG_FORMAT "Enable clang format for NebulaEngine" ON)
