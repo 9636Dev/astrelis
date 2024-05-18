@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/intermediate)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 include(cmake/Compiler.cmake)
 include(cmake/RequireOutOfSourceBuild.cmake)
@@ -20,6 +20,7 @@ include(cmake/Util.cmake)
 include(cmake/ClangFormat.cmake)
 
 add_subdirectory(NebulaCore)
+add_subdirectory(NebulaWindowing)
 add_subdirectory(NebulaEditor)
 
 if (NEBULA_ENABLE_TESTING)

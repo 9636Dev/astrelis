@@ -13,6 +13,8 @@ Checks: '*,
 -bugprone-easily-swappable-parameters,
 -bugprone-lambda-function-name,
 
+-google-readability-casting,
+
 -misc-non-private-member-variables-in-classes,
 -misc-use-anonymous-namespace,
 

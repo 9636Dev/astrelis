@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 
 add_subdirectory(vendor/spdlog)
+add_subdirectory(vendor/gsl)
 
 set(NEBULA_CORE_SOURCES
     # Simplified linking
@@ -51,6 +52,7 @@ PRIVATE
 target_link_libraries(NebulaCore
 PUBLIC
     spdlog
+    Microsoft.GSL::GSL
 )
 
 if (NEBULA_ENABLE_TESTING)

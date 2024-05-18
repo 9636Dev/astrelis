@@ -1,8 +1,7 @@
 #pragma once
 
+#include <iostream>
 #include <spdlog/spdlog.h>
-
-#include "../Util/Assert.hpp"
 
 namespace Nebula
 {
@@ -13,13 +12,23 @@ namespace Nebula
 
         inline static std::shared_ptr<spdlog::logger>& GetCoreLogger()
         {
-            NEBULA_INTERNAL_ASSERT(s_CoreLogger != nullptr, "Core logger is null!");
+#ifdef NEBULA_DEBUG
+            if (s_CoreLogger == nullptr)
+            {
+                std::cerr << "Core logger is null!" << std::endl;
+            }
+#endif
             return s_CoreLogger;
         }
 
         inline static std::shared_ptr<spdlog::logger>& GetClientLogger()
         {
-            NEBULA_INTERNAL_ASSERT(s_ClientLogger != nullptr, "Client logger is null!");
+#ifdef NEBULA_DEBUG
+            if (s_ClientLogger == nullptr)
+            {
+                std::cerr << "Client logger is null!" << std::endl;
+            }
+#endif
             return s_ClientLogger;
         }
     private:

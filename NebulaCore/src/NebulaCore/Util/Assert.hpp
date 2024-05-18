@@ -1,8 +1,7 @@
 #pragma once
 
-#include <iostream>
-
 #include "Debug.hpp"
+#include "../Log/Log.hpp"
 
 #ifdef NEBULA_DEBUG
     #define NEBULA_INTERNAL_BUILD_TYPE 0
@@ -22,18 +21,9 @@
                 NEBULA_DEBUG_BREAK();                                     \
             }                                                             \
         }
-    #define NEBULA_INTERNAL_ASSERT(x, ...)                                     \
-        {                                                                      \
-            if (!(x))                                                          \
-            {                                                                  \
-                std::cerr << "Assertion Failed: " << __VA_ARGS__ << std::endl; \
-                NEBULA_DEBUG_BREAK();                                          \
-            }                                                                  \
-        }
 #else
     #define NEBULA_ASSERT(x, ...)
     #define NEBULA_CORE_ASSERT(x, ...)
-    #define NEBULA_INTERNAL_ASSERT(x, ...)
 #endif
 
 #if defined(NEBULA_RELEASE) || NEBULA_INTERNAL_BUILD_TYPE <= 1

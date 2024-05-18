@@ -14,6 +14,7 @@ add_dependencies(NebulaEditor
 
 target_link_libraries(NebulaEditor
     NebulaCore
+    NebulaWindowing
 )
 
 target_include_directories(NebulaEditor PUBLIC
