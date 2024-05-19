@@ -1,5 +1,6 @@
 #include "LinuxWindow.hpp"
 
+#include "NebulaCore/Log/Log.hpp"
 #include "NebulaCore/Util/Assert.hpp"
 
 namespace Nebula
@@ -9,6 +10,11 @@ namespace Nebula
         static bool s_GLFWInitialized = false;
         if (!s_GLFWInitialized)
         {
+            glfwSetErrorCallback([](int error, const char* description)
+            {
+                NEB_CORE_LOG_INFO("GLFW Error ({0}): {1}", error, description);
+            });
+
             int success = glfwInit();
             NEBULA_CORE_REQUIRE(success == GLFW_TRUE, "Could not initialize GLFW!");
             s_GLFWInitialized = true;
@@ -28,7 +34,10 @@ namespace Nebula
         if (m_Window == nullptr)
         {
             glfwTerminate();
+            return;
         }
+
+        glfwMakeContextCurrent(m_Window);
     }
 
     LinuxWindow::~LinuxWindow()

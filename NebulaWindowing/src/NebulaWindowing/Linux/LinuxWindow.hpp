@@ -3,6 +3,10 @@
 #include "../Window.hpp"
 #include <GLFW/glfw3.h>
 
+/**
+* @brief Linux implementation of the Window class, for now it is using OpenGL
+*/
+
 namespace Nebula
 {
     class LinuxWindow : public Window
