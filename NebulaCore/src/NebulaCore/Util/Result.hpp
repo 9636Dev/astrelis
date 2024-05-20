@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NebulaCore/Util/TypeTraits.hpp"
+#include <functional>
 #include <variant>
 
 namespace Nebula
@@ -33,11 +34,11 @@ namespace Nebula
         using EMoveConstructor = std::bool_constant<!EMoveConstructorNoexcept::value && ETypeProps::MoveConstructible &&
                                                     !IsSameType::value && !ETypeProps::TriviallyCopyable>;
         using SCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && IsSameType::value>;
-        using SCopyConstructor = std::bool_constant<!SCopyConstructorNoexcept::value && TTypeProps::CopyConstructible &&
-                                                    IsSameType::value>;
+        using SCopyConstructor =
+            std::bool_constant<!SCopyConstructorNoexcept::value && TTypeProps::CopyConstructible && IsSameType::value>;
         using SMoveConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowMoveConstructible && IsSameType::value>;
-        using SMoveConstructor = std::bool_constant<!SMoveConstructorNoexcept::value && TTypeProps::MoveConstructible &&
-                                                    IsSameType::value>;
+        using SMoveConstructor =
+            std::bool_constant<!SMoveConstructorNoexcept::value && TTypeProps::MoveConstructible && IsSameType::value>;
     public:
         using VariantType = std::variant<T, E>;
         using Type        = std::conditional_t<IsSameType::value, SameType, VariantType>;
@@ -94,25 +95,25 @@ namespace Nebula
 
         Result(T value, bool isOk = true) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
             requires SCopyConstructorNoexcept::value
-            : m_Value(SameType{value, isOk})
+            : m_Value(SameType {value, isOk})
         {
         }
 
         Result(T value, bool isOk = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
             requires SCopyConstructor::value
-            : m_Value(SameType{value, isOk})
+            : m_Value(SameType {value, isOk})
         {
         }
 
         Result(T&& value, bool isOk = true) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
             requires SMoveConstructorNoexcept::value
-            : m_Value(SameType{std::move(value), isOk})
+            : m_Value(SameType {std::move(value), isOk})
         {
         }
 
         Result(T&& value, bool isOk = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
             requires SMoveConstructor::value
-            : m_Value(SameType{std::move(value), isOk})
+            : m_Value(SameType {std::move(value), isOk})
         {
         }
 
@@ -151,7 +152,8 @@ namespace Nebula
 
         // === Operators ===
 
-        ResultType& operator=(const ResultType& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
+        ResultType&
+            operator=(const ResultType& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
             requires(TTypeProps::CopyConstructible && ETypeProps::CopyConstructible)
         {
             if (this == &other)
@@ -231,26 +233,55 @@ namespace Nebula
         /**
         * @see Unwrap()
         */
-        [[nodiscard]] const T& Unwrap() const noexcept
-        {
-            return std::get<T>(m_Value);
-        }
+        [[nodiscard]] const T& Unwrap() const noexcept { return std::get<T>(m_Value); }
 
         /**
         * @brief Unwraps the error value of the result
         * @note Without checks, this function can cause undefined behavior
         */
-        [[nodiscard]] E& UnwrapErr() noexcept
-        {
-            return std::get<E>(m_Value);
-        }
+        [[nodiscard]] E& UnwrapErr() noexcept { return std::get<E>(m_Value); }
 
         /**
         * @see UnwrapErr()
         */
-        [[nodiscard]] const E& UnwrapErr() const noexcept
+        [[nodiscard]] const E& UnwrapErr() const noexcept { return std::get<E>(m_Value); }
+
+        template<typename F>
+            requires(TTypeProps::MoveConstructible && ETypeProps::MoveConstructible)
+        auto MapMove(F func) -> Result<decltype(func(std::declval<T>())), E>
         {
-            return std::get<E>(m_Value);
+            if (IsOk())
+            {
+                if constexpr (std::is_same_v<decltype(func(std::declval<T>())), T>)
+                {
+                    return Result<decltype(func(std::move(Unwrap()))), E>(func(std::move(Unwrap())), true);
+                }
+                return Result<decltype(func(std::declval<T>())), E>(func(std::move(Unwrap())));
+            }
+            if constexpr (IsSameType::value)
+            {
+                return Result<decltype(func(std::declval<T>())), E>(std::move(UnwrapErr()), false);
+            }
+            return std::move(UnwrapErr());
+        }
+
+        template<typename F>
+            requires(TTypeProps::CopyConstructible && ETypeProps::CopyConstructible)
+        auto MapCopy(F func) -> Result<decltype(func(std::declval<T>())), E>
+        {
+            if (IsOk())
+            {
+                if constexpr (std::is_same_v<decltype(func(std::declval<T>())), T>)
+                {
+                    return Result<decltype(func(Unwrap())), E>(func(Unwrap()), true);
+                }
+                return Result<decltype(func(Unwrap())), E>(func(Unwrap()));
+            }
+            if constexpr (IsSameType::value)
+            {
+                return Result<decltype(func(std::declval<T>())), E>(UnwrapErr(), false);
+            }
+            return UnwrapErr();
         }
     private:
         Type m_Value;

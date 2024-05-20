@@ -12,11 +12,11 @@ namespace Nebula
     class LinuxWindow : public Window
     {
     public:
-        LinuxWindow();
-        LinuxWindow(const LinuxWindow&) = delete;
+        explicit LinuxWindow(GLFWwindow* window);
+        LinuxWindow(const LinuxWindow&)            = delete;
         LinuxWindow& operator=(const LinuxWindow&) = delete;
-        LinuxWindow(LinuxWindow&&) = delete;
-        LinuxWindow& operator=(LinuxWindow&&) = delete;
+        LinuxWindow(LinuxWindow&&)                 = delete;
+        LinuxWindow& operator=(LinuxWindow&&)      = delete;
         ~LinuxWindow() override;
 
         [[nodiscard]] bool ShouldClose() const noexcept override;
@@ -24,8 +24,7 @@ namespace Nebula
         void SwapBuffers() noexcept override;
 
         inline bool IsOk() const noexcept override { return m_Window != nullptr; }
-
     private:
         GLFWwindow* m_Window;
     };
-}  // namespace Nebula
+} // namespace Nebula

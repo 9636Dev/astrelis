@@ -99,6 +99,30 @@ namespace Nebula
          * @return The value of the pointer
          */
         T operator*() const noexcept { return *m_Ptr; }
+
+        operator bool() const noexcept { return m_Ptr != nullptr; } // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+
+        template<typename R> Ref<R> CastCopy() noexcept
+        {
+            auto ref = Ref<R>(static_cast<R*>(m_Ptr));
+        #ifdef NEBULA_DEBUG
+            ref.m_RefCount = m_RefCount;
+            (*m_RefCount)++;
+        #endif
+            return ref; // Return elides the copy
+        }
+
+        template<typename R> Ref<R> CastMove() noexcept
+        {
+            auto ref = Ref<R>(static_cast<R*>(m_Ptr));
+        #ifdef NEBULA_DEBUG
+            ref.m_RefCount = m_RefCount;
+            m_Ptr = nullptr;
+            m_RefCount = nullptr;
+        #endif
+            return ref;
+        }
+
     private:
         T* m_Ptr;
 #ifdef NEBULA_DEBUG
@@ -186,6 +210,8 @@ namespace Nebula
             m_Ptr = nullptr; // NOLINT(cppcoreguidelines-owning-memory)
             return ptr;
         }
+
+        operator bool() const noexcept { return m_Ptr != nullptr; } // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
     private:
         gsl::owner<T*> m_Ptr;
 #ifdef NEBULA_DEBUG

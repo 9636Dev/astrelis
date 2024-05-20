@@ -30,12 +30,9 @@ namespace Nebula
     Result<Ptr<Window>, WindowCreationError> CreateWindow(WindowProps& props)
     {
         auto res = WindowHelper::CreateWindow(props);
-        if (res.IsErr())
-        {
-            return res.UnwrapErr();
-        }
-
-        return MakePtr<MacOSWindow>(res.Unwrap()).Cast<Window>();
+        return res.MapMove([](GLFWwindow* window) {
+            return MakePtr<MacOSWindow>(window).Cast<Window>();
+        });
     }
 } // namespace Nebula
 

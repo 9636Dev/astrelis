@@ -8,7 +8,7 @@ namespace Nebula
     class WindowsWindow : public Window
     {
     public:
-        WindowsWindow();
+        explicit WindowsWindow(GLFWwindow* window);
         WindowsWindow(const WindowsWindow&) = delete;
         WindowsWindow& operator=(const WindowsWindow&) = delete;
         WindowsWindow(WindowsWindow&&) = delete;
