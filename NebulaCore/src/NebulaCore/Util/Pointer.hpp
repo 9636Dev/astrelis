@@ -1,5 +1,6 @@
 #pragma once
 
+#include <forward_list>
 #include <gsl/gsl>
 
 #include "../Log/Log.hpp"
@@ -112,7 +113,10 @@ namespace Nebula
     template<typename T> class Ptr
     {
     public:
+        template<typename R> friend class Ptr;
         explicit Ptr(gsl::owner<T*> ptr) noexcept : m_Ptr(ptr) {}
+
+        Ptr() noexcept : m_Ptr(nullptr) {}
 
         ~Ptr()
         {
@@ -172,10 +176,25 @@ namespace Nebula
         {
             return m_Ptr; // NOLINT(cppcoreguidelines-owning-memory)
         }
+
+        template<typename R> Ptr<R> Cast() noexcept
+        {
+            auto ptr = Ptr<R>(static_cast<R*>(m_Ptr));
+        #ifdef NEBULA_DEBUG
+            ptr.m_RefCount = m_RefCount;
+        #endif
+            m_Ptr = nullptr; // NOLINT(cppcoreguidelines-owning-memory)
+            return ptr;
+        }
     private:
         gsl::owner<T*> m_Ptr;
 #ifdef NEBULA_DEBUG
         std::size_t m_RefCount = 0;
 #endif
     };
+
+    template<typename T, typename... Args> Ptr<T> MakePtr(Args&&... args)
+    {
+        return Ptr<T>(new T(std::forward<Args>(args)...));
+    }
 } // namespace Nebula

@@ -2,6 +2,7 @@
 #include "NebulaCore/Profile/Profile.hpp"
 #include "NebulaCore/Util/Pointer.hpp"
 #include "NebulaWindowing/Window.hpp"
+#include "NebulaWindowing/WindowHelper.hpp"
 
 int main(int argc, char** argv)
 {
@@ -12,7 +13,17 @@ int main(int argc, char** argv)
     NEB_CORE_LOG_INFO("Nebula Editor Started");
 
     {
-        Nebula::Ptr<Nebula::Window> window(Nebula::CreateWindow());
+        Nebula::WindowProps props;
+        props.Title = "Nebula Editor";
+        props.Width = 1280;
+        props.Height = 720;
+        auto result = Nebula::CreateWindow(props);
+        if (result.IsErr())
+        {
+            NEB_CORE_LOG_ERROR("Failed to create window: {0}", static_cast<std::uint32_t>(result.UnwrapErr()));
+            return -1;
+        }
+        auto window = std::move(result.Unwrap());
 
         if (!window->IsOk())
         {

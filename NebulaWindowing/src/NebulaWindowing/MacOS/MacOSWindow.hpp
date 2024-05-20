@@ -8,7 +8,7 @@ namespace Nebula
     class MacOSWindow : public Window
     {
     public:
-        MacOSWindow();
+        explicit MacOSWindow(GLFWwindow* window);
         MacOSWindow(const MacOSWindow&) = delete;
         MacOSWindow& operator=(const MacOSWindow&) = delete;
         MacOSWindow(MacOSWindow&&) = delete;

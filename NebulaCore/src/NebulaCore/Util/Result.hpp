@@ -1,153 +1,261 @@
 #pragma once
 
-#include <functional>
+#include "NebulaCore/Util/TypeTraits.hpp"
 #include <variant>
 
 namespace Nebula
 {
-    /**
-    * @brief A Result type that can hold either a value or an error
-    * @tparam T The type of the value
-    * @tparam E The type of the error
-    */
     template<typename T, typename E> class Result
     {
     private:
-        explicit constexpr Result(const T& value, bool isOk)
-            requires(std::is_same_v<T, E>)
-            : m_Value({isOk, value})
+        struct SameType
         {
-        }
+            T value;
+            bool isOk;
+        };
+
+        using TTypeProps = TypeProperties<T>;
+        using ETypeProps = TypeProperties<E>;
+
+        using IsSameType               = std::bool_constant<std::is_same_v<T, E>>;
+        using TCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && !IsSameType::value>;
+        using ECopyConstructorNoexcept = std::bool_constant<ETypeProps::NoThrowCopyConstructible && !IsSameType::value>;
+        using TMoveConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowMoveConstructible &&
+                                                            !IsSameType::value && !TTypeProps::TriviallyCopyable>;
+        using EMoveConstructorNoexcept = std::bool_constant<ETypeProps::NoThrowMoveConstructible &&
+                                                            !IsSameType::value && !ETypeProps::TriviallyCopyable>;
+        using TCopyConstructor =
+            std::bool_constant<!TCopyConstructorNoexcept::value && TTypeProps::CopyConstructible && !IsSameType::value>;
+        using ECopyConstructor =
+            std::bool_constant<!ECopyConstructorNoexcept::value && ETypeProps::CopyConstructible && !IsSameType::value>;
+        using TMoveConstructor = std::bool_constant<!TMoveConstructorNoexcept::value && TTypeProps::MoveConstructible &&
+                                                    !IsSameType::value && !TTypeProps::TriviallyCopyable>;
+        using EMoveConstructor = std::bool_constant<!EMoveConstructorNoexcept::value && ETypeProps::MoveConstructible &&
+                                                    !IsSameType::value && !ETypeProps::TriviallyCopyable>;
+        using SCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && IsSameType::value>;
+        using SCopyConstructor = std::bool_constant<!SCopyConstructorNoexcept::value && TTypeProps::CopyConstructible &&
+                                                    IsSameType::value>;
+        using SMoveConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowMoveConstructible && IsSameType::value>;
+        using SMoveConstructor = std::bool_constant<!SMoveConstructorNoexcept::value && TTypeProps::MoveConstructible &&
+                                                    IsSameType::value>;
     public:
-        constexpr Result(const T& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires(!std::is_same_v<T, E>)
+        using VariantType = std::variant<T, E>;
+        using Type        = std::conditional_t<IsSameType::value, SameType, VariantType>;
+        using ResultType  = Result<T, E>;
+
+        // === Constructors ===
+        Result(T value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires TCopyConstructorNoexcept::value
             : m_Value(value)
         {
         }
 
-        constexpr Result(const E& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires(!std::is_same_v<T, E>)
+        Result(E value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires ECopyConstructorNoexcept::value
             : m_Value(value)
         {
         }
 
-        /**
-        * @brief Creates a new Result with a value
-        * @param value The value to store
-        * @return A new Result with the value
-        */
-        constexpr static Result<T, E> Ok(const T& value)
+        Result(T&& value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires TMoveConstructorNoexcept::value
+            : m_Value(std::move(value))
         {
-            if constexpr (std::is_same_v<T, E>)
-            {
-                return Result<T, E>(value, true);
-            }
-            return Result<T, E>(value);
         }
 
-        /**
-        * @brief Creates a new Result with an error
-        * @param value The error to store
-        * @return A new Result with the error
-        */
-        constexpr static Result<T, E> Err(const E& value)
+        Result(E&& value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires EMoveConstructorNoexcept::value
+            : m_Value(std::move(value))
         {
-            if constexpr (std::is_same_v<T, E>)
-            {
-                return Result<T, E>(value, false);
-            }
-            return Result<T, E>(value);
         }
 
-        /**
-        * @brief Checks if the Result is an ok value
-        * @return True if the Result is an ok value, false otherwise
-        */
-        constexpr bool IsOk() const
+        Result(T value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires TCopyConstructor::value
+            : m_Value(value)
         {
-            if constexpr (std::is_same_v<T, E>)
+        }
+
+        Result(E value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires ECopyConstructor::value
+            : m_Value(value)
+        {
+        }
+
+        Result(T&& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires TMoveConstructor::value
+            : m_Value(std::move(value))
+        {
+        }
+
+        Result(E&& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires EMoveConstructor::value
+            : m_Value(std::move(value))
+        {
+        }
+
+        Result(T value, bool isOk = true) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires SCopyConstructorNoexcept::value
+            : m_Value(SameType{value, isOk})
+        {
+        }
+
+        Result(T value, bool isOk = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires SCopyConstructor::value
+            : m_Value(SameType{value, isOk})
+        {
+        }
+
+        Result(T&& value, bool isOk = true) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires SMoveConstructorNoexcept::value
+            : m_Value(SameType{std::move(value), isOk})
+        {
+        }
+
+        Result(T&& value, bool isOk = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires SMoveConstructor::value
+            : m_Value(SameType{std::move(value), isOk})
+        {
+        }
+
+        // === Destructor ===
+
+        /**
+         * @note Because the destructor is trivial, so not handling a result type with a pointer might cause a memory leak
+         */
+        ~Result() = default;
+
+        // === Other Constructors ===
+
+        Result(const ResultType& other)
+            requires(TTypeProps::CopyConstructible && ETypeProps::CopyConstructible)
+            : m_Value(other.m_Value)
+        {
+        }
+
+        Result(const ResultType& other) noexcept
+            requires(TTypeProps::NoThrowCopyConstructible && ETypeProps::NoThrowCopyConstructible)
+            : m_Value(other.m_Value)
+        {
+        }
+
+        Result(ResultType&& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
+            requires(TTypeProps::MoveConstructible && ETypeProps::MoveConstructible)
+            : m_Value(std::move(other.m_Value))
+        {
+        }
+
+        Result(ResultType&& other) noexcept
+            requires(TTypeProps::NoThrowMoveConstructible && ETypeProps::NoThrowMoveConstructible)
+            : m_Value(std::move(other.m_Value))
+        {
+        }
+
+        // === Operators ===
+
+        ResultType& operator=(const ResultType& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
+            requires(TTypeProps::CopyConstructible && ETypeProps::CopyConstructible)
+        {
+            if (this == &other)
             {
-                return m_Value.m_IsOk;
+                return *this;
+            }
+            m_Value = other.m_Value;
+            return *this;
+        }
+
+        ResultType& operator=(ResultType&& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
+            requires(TTypeProps::MoveConstructible && ETypeProps::MoveConstructible)
+        {
+            if (this == &other)
+            {
+                return *this;
+            }
+            m_Value = std::move(other.m_Value);
+            return *this;
+        }
+
+        ResultType& operator=(const ResultType& other) noexcept
+            requires(TTypeProps::NoThrowCopyConstructible && ETypeProps::NoThrowCopyConstructible)
+        {
+            if (this == &other)
+            {
+                return *this;
+            }
+            m_Value = other.m_Value;
+            return *this;
+        }
+
+        ResultType& operator=(ResultType&& other) noexcept
+            requires(TTypeProps::NoThrowMoveConstructible && ETypeProps::NoThrowMoveConstructible)
+        {
+            if (this == &other)
+            {
+                return *this;
+            }
+            m_Value = std::move(other.m_Value);
+            return *this;
+        }
+
+        // === Methods ===
+
+        [[nodiscard]] bool IsOk() const noexcept
+        {
+            if constexpr (IsSameType::value)
+            {
+                return m_Value.isOk;
             }
             return std::holds_alternative<T>(m_Value);
         }
 
-        /**
-        * @brief Checks if the Result is an error
-        * @return True if the Result is an error, false otherwise
-        */
-        constexpr bool IsErr() const
+        [[nodiscard]] bool IsErr() const noexcept
         {
-            if constexpr (std::is_same_v<T, E>)
+            if constexpr (IsSameType::value)
             {
-                return !m_Value.m_IsOk;
+                return !m_Value.isOk;
             }
             return std::holds_alternative<E>(m_Value);
         }
 
         /**
-        * @brief Unwraps the value from the Result
-        * @return The value stored in the Result
-        * @throws std::runtime_error if the Result is an error
-        * @throws std::bad_variant_access if the Result is not an ok value
+        * @brief Unwraps the value of the result
+        * @note Without checks, this function can cause undefined behavior
         */
-        constexpr T Unwrap()
+        [[nodiscard]] T& Unwrap() noexcept
         {
-            if constexpr (std::is_same_v<T, E>)
+            if constexpr (IsSameType::value)
             {
-                if (!m_Value.m_IsOk)
-                {
-                    throw std::runtime_error("Cannot unwrap an error");
-                }
-                return m_Value.m_Value;
+                return m_Value.value;
             }
             return std::get<T>(m_Value);
         }
 
         /**
-         * @brief Unwraps the error from the Result
-         * @return The error stored in the Result
-         * @throws std::runtime_error if the Result is an ok value
-        * @throws std::bad_variant_access if the Result is not an error
+        * @see Unwrap()
         */
-        constexpr E UnwrapErr()
+        [[nodiscard]] const T& Unwrap() const noexcept
         {
-            if constexpr (std::is_same_v<T, E>)
-            {
-                if (m_Value.m_IsOk)
-                {
-                    throw std::runtime_error("Cannot unwrap an ok value");
-                }
-                return m_Value.m_Value;
-            }
+            return std::get<T>(m_Value);
+        }
+
+        /**
+        * @brief Unwraps the error value of the result
+        * @note Without checks, this function can cause undefined behavior
+        */
+        [[nodiscard]] E& UnwrapErr() noexcept
+        {
             return std::get<E>(m_Value);
         }
 
         /**
-        * @brief Maps the value of the Result to a new value
-        * @param func The function to apply to the value
-        * @return A new Result with the mapped value
-        * @note May throw exceptions, @see Unwrap
+        * @see UnwrapErr()
         */
-        template<typename R> Result<R, E> Map(std::function<R(T)> func)
+        [[nodiscard]] const E& UnwrapErr() const noexcept
         {
-            if (IsErr())
-            {
-                return Result<R, E>::Err(UnwrapErr());
-            }
-
-            R result = func(Unwrap());
-            return Result<R, E>::Ok(result);
+            return std::get<E>(m_Value);
         }
     private:
-        struct SameType
-        {
-            bool m_IsOk;
-            T m_Value;
-        };
-
-        using Type = std::conditional_t<std::is_same_v<T, E>, SameType, std::variant<T, E>>;
         Type m_Value;
-    };
 
+        static_assert(!TTypeProps::Abstract, "T cannot be an abstract class");
+        static_assert(!ETypeProps::Abstract, "E cannot be an abstract class");
+    };
 }; // namespace Nebula
