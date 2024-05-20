@@ -2,6 +2,8 @@
 
 #include <gsl/gsl>
 
+#include "NebulaCore/Util/Result.hpp"
+
 namespace Nebula
 {
     class Window

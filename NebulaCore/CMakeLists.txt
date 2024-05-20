@@ -13,6 +13,8 @@ set(NEBULA_CORE_SOURCES
 
     # Utilities
     src/NebulaCore/Util/Assert.hpp
+    src/NebulaCore/Util/Result.hpp
+    src/NebulaCore/Util/Pointer.hpp
 
     # Profiling
     src/NebulaCore/Profile/BasicJson.hpp

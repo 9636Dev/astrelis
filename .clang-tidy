@@ -5,7 +5,9 @@ Checks: '*,
 -llvmlibc-*,
 -fuchsia-*,
 -abseil-*,
+
 -hicpp-vararg,
+-hicpp-use-auto,
 
 -cppcoreguidelines-pro-type-union-access,
 -cppcoreguidelines-avoid-magic-numbers,

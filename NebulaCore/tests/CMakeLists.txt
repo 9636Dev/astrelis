@@ -1,5 +1,6 @@
 set(NEBULA_CORE_TEST_SOURCES
-    src/ProfilingTest.cpp
+    src/ResultTest.cpp
+    src/PointerTest.cpp
 )
 
 add_executable(NebulaCoreTests ${NEBULA_CORE_TEST_SOURCES})
