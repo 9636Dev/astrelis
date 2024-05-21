@@ -60,3 +60,7 @@ PUBLIC
 if (NEBULA_ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
+
+if (NEBULA_ENABLE_BENCHMARKING)
+    add_subdirectory(benchmarks)
+endif()

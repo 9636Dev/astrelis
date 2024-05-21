@@ -16,6 +16,7 @@ include(cmake/RequireOutOfSourceBuild.cmake)
 include(cmake/DefaultConfig.cmake)
 include(cmake/Pedantic.cmake)
 include(cmake/Testing.cmake)
+include(cmake/Benchmarking.cmake)
 include(cmake/Util.cmake)
 include(cmake/ClangFormat.cmake)
 

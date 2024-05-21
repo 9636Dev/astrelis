@@ -2,7 +2,6 @@
 
 #include "NebulaCore/Util/TypeTraits.hpp"
 #include <variant>
-#include <forward_list>
 
 namespace Nebula
 {
@@ -24,111 +23,25 @@ namespace Nebula
         using TTypeProps = TypeProperties<T>;
         using ETypeProps = TypeProperties<E>;
 
-        using OneIsNonCopyable = std::bool_constant<!TTypeProps::CopyConstructible || !ETypeProps::CopyConstructible>;
-        using OneIsNonMoveable = std::bool_constant<!TTypeProps::MoveConstructible || !ETypeProps::MoveConstructible>;
         using IsSameType       = std::bool_constant<std::is_same_v<T, E>>;
-        using TCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && !IsSameType::value>;
-        using ECopyConstructorNoexcept = std::bool_constant<ETypeProps::NoThrowCopyConstructible && !IsSameType::value>;
-        using TMoveConstructorNoexcept =
-            std::bool_constant<TTypeProps::NoThrowMoveConstructible && !IsSameType::value &&
-                               !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
-        using EMoveConstructorNoexcept =
-            std::bool_constant<ETypeProps::NoThrowMoveConstructible && !IsSameType::value &&
-                               !(ETypeProps::TriviallyCopyable && ETypeProps::CopyConstructible)>;
-        using TCopyConstructor =
-            std::bool_constant<!TCopyConstructorNoexcept::value && TTypeProps::CopyConstructible && !IsSameType::value>;
-        using ECopyConstructor =
-            std::bool_constant<!ECopyConstructorNoexcept::value && ETypeProps::CopyConstructible && !IsSameType::value>;
-        using TMoveConstructor =
-            std::bool_constant<!TMoveConstructorNoexcept::value && TTypeProps::MoveConstructible &&
-                               !IsSameType::value && !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
-        using EMoveConstructor =
-            std::bool_constant<!EMoveConstructorNoexcept::value && ETypeProps::MoveConstructible &&
-                               !IsSameType::value && !(ETypeProps::TriviallyCopyable && ETypeProps::CopyConstructible)>;
-        using SCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && IsSameType::value>;
-        using SCopyConstructor =
-            std::bool_constant<!SCopyConstructorNoexcept::value && TTypeProps::CopyConstructible && IsSameType::value>;
-        using SMoveConstructorNoexcept =
-            std::bool_constant<TTypeProps::NoThrowMoveConstructible && IsSameType::value &&
-                               !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
-        using SMoveConstructor =
-            std::bool_constant<!SMoveConstructorNoexcept::value && TTypeProps::MoveConstructible && IsSameType::value &&
-                               !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
     public:
         using VariantType = std::variant<T, E>;
         using Type        = std::conditional_t<IsSameType::value, SameType, VariantType>;
         using ResultType  = Result<T, E>;
 
         // === Constructors ===
-        Result(T value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires TCopyConstructorNoexcept::value
-            : m_Value(value)
+
+        template<typename U>
+        Result(U&& value, bool success = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires (std::is_same_v<T, E>)
+            : m_Value{std::forward<U>(value), success}
         {
         }
 
-        Result(E value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires ECopyConstructorNoexcept::value
-            : m_Value(value)
-        {
-        }
-
-        Result(T&& value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires TMoveConstructorNoexcept::value
-            : m_Value(std::move(value))
-        {
-        }
-
-        Result(E&& value) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires EMoveConstructorNoexcept::value
-            : m_Value(std::move(value))
-        {
-        }
-
-        Result(T value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires TCopyConstructor::value
-            : m_Value(value)
-        {
-        }
-
-        Result(E value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires ECopyConstructor::value
-            : m_Value(value)
-        {
-        }
-
-        Result(T&& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires TMoveConstructor::value
-            : m_Value(std::move(value))
-        {
-        }
-
-        Result(E&& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires EMoveConstructor::value
-            : m_Value(std::move(value))
-        {
-        }
-
-        Result(T value, bool isOk = true) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires SCopyConstructorNoexcept::value
-            : m_Value(SameType {value, isOk})
-        {
-        }
-
-        Result(T value, bool isOk = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires SCopyConstructor::value
-            : m_Value(SameType {value, isOk})
-        {
-        }
-
-        Result(T&& value, bool isOk = true) noexcept // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires SMoveConstructorNoexcept::value
-            : m_Value(SameType {std::move(value), isOk})
-        {
-        }
-
-        Result(T&& value, bool isOk = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires SMoveConstructor::value
-            : m_Value(SameType {std::move(value), isOk})
+        template<typename U>
+        Result(U&& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            requires (!std::is_same_v<T, E>)
+            : m_Value{std::forward<U>(value)}
         {
         }
 
@@ -379,12 +292,13 @@ namespace Nebula
 
         static_assert(!TTypeProps::Abstract, "T cannot be an abstract class");
         static_assert(!ETypeProps::Abstract, "E cannot be an abstract class");
-        static_assert(TTypeProps::CopyConstructible || TTypeProps::MoveConstructible, "T must be copy or move constructible");
-        static_assert(ETypeProps::CopyConstructible || ETypeProps::MoveConstructible, "E must be copy or move constructible");
+        static_assert(TTypeProps::CopyConstructible || TTypeProps::MoveConstructible,
+                      "T must be copy or move constructible");
+        static_assert(ETypeProps::CopyConstructible || ETypeProps::MoveConstructible,
+                      "E must be copy or move constructible");
     };
 
-    template<typename T, typename E, typename ...Args>
-    Result<T, E> MakeOkResult(Args&& ...args)
+    template<typename T, typename E, typename... Args> Result<T, E> MakeOkResult(Args&&... args)
     {
         if constexpr (std::is_same_v<T, E>)
         {
@@ -396,8 +310,7 @@ namespace Nebula
         }
     }
 
-    template<typename T, typename E, typename ...Args>
-    Result<T, E> MakeErrResult(Args&& ...args)
+    template<typename T, typename E, typename... Args> Result<T, E> MakeErrResult(Args&&... args)
     {
         if constexpr (std::is_same_v<T, E>)
         {

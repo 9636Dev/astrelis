@@ -26,7 +26,7 @@ TEST(PointerTest, PtrTest)
 
 TEST(PointerTest, RefTest)
 {
-    Nebula::Log::Init(); // TODO: Remove this line when the logger is removed from the Ref class
+    Nebula::Log::Init();
     Nebula::Ptr<int> value(new int(5));
     auto ref = value.GetRef();
     EXPECT_EQ(*ref, 5);

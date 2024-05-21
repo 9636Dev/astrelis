@@ -38,6 +38,7 @@ namespace Nebula
     {
     public:
         static Result<GLFWwindow*, WindowCreationError> CreateWindow(const WindowProps& props);
+        static void TerminateWindow(GLFWwindow* window);
 
         template<typename T> static T& GetUserData(GLFWwindow* window)
         {

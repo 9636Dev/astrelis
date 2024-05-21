@@ -10,8 +10,7 @@ namespace Nebula
 
     MacOSWindow::~MacOSWindow()
     {
-        glfwSetWindowUserPointer(m_Window, nullptr);
-        glfwDestroyWindow(m_Window);
+        WindowHelper::TerminateWindow(m_Window);
     }
 
     bool MacOSWindow::ShouldClose() const noexcept { return glfwWindowShouldClose(m_Window) != 0; }

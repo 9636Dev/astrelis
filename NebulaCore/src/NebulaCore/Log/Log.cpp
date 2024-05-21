@@ -9,6 +9,11 @@ namespace Nebula
 
     bool Log::Init()
     {
+        bool s_Initialized = false;
+        if (s_Initialized)
+        {
+            return true;
+        }
         try
         {
             s_CoreLogger = spdlog::stdout_color_mt("Nebula");

@@ -77,6 +77,12 @@ set(NEBUlA_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "The root directory
 option(NEBULA_ENABLE_PROFILING "Enable profiling for NebulaEngine" OFF)
 
 # =======================
+# Benchmarking Configuration
+# =======================
+
+option(NEBULA_ENABLE_BENCHMARKING "Enable benchmarking for NebulaEngine" OFF)
+
+# =======================
 # Warnings Configuration
 # =======================
 

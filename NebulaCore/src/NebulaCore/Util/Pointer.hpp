@@ -1,7 +1,9 @@
 #pragma once
 
-#include <forward_list>
 #include <gsl/gsl>
+#include <memory>
+#include <utility>
+#include <variant>
 
 #include "../Log/Log.hpp"
 
@@ -18,22 +20,25 @@ namespace Nebula
     private:
         explicit Ref(T* ptr) noexcept : m_Ptr(ptr) {}
     public:
-        friend class Ptr<T>;
+        template<typename U> friend class Ref;
+        template<typename U> friend class Ptr;
 
-        explicit Ref(T& value) noexcept : m_Ptr(&value) {}
+        explicit Ref(T& value) noexcept : m_Ptr(&value)
+        {
+#ifdef NEBULA_DEBUG
+            // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
+            m_IsValue = true;
+#endif
+        }
 
         ~Ref()
         {
 #ifdef NEBULA_DEBUG
-            if (m_RefCount != nullptr)
+            if (!m_IsValue)
             {
-                if (*m_RefCount == 0)
+                if (m_RefCount.expired())
                 {
-                    NEB_CORE_LOG_WARN("Deleting a reference with no references left");
-                }
-                else
-                {
-                    (*m_RefCount)--;
+                    NEB_CORE_LOG_WARN("Deleting a reference with no reference count");
                 }
             }
 #endif
@@ -44,7 +49,6 @@ namespace Nebula
 #ifdef NEBULA_DEBUG
             // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
             m_RefCount = other.m_RefCount;
-            (*m_RefCount)++;
 #endif
         }
 
@@ -54,11 +58,8 @@ namespace Nebula
             {
                 m_Ptr = other.m_Ptr;
 #ifdef NEBULA_DEBUG
-                if (m_RefCount != nullptr)
-                {
-                    m_RefCount = other.m_RefCount;
-                    (*m_RefCount)++;
-                }
+                m_RefCount = other.m_RefCount;
+                m_IsValue  = other.m_IsValue;
 #endif
             }
             return *this;
@@ -69,8 +70,9 @@ namespace Nebula
             other.m_Ptr = nullptr;
 #ifdef NEBULA_DEBUG
             // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-            m_RefCount       = other.m_RefCount;
-            other.m_RefCount = nullptr;
+            m_IsValue = other.m_IsValue;
+            // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
+            m_RefCount = std::move(other.m_RefCount);
 #endif
         }
 
@@ -81,8 +83,10 @@ namespace Nebula
                 m_Ptr       = other.m_Ptr;
                 other.m_Ptr = nullptr;
 #ifdef NEBULA_DEBUG
-                m_RefCount       = other.m_RefCount;
-                other.m_RefCount = nullptr;
+                // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
+                m_IsValue = other.m_IsValue;
+                // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
+                m_RefCount = std::move(other.m_RefCount);
 #endif
             }
             return *this;
@@ -92,41 +96,73 @@ namespace Nebula
          * @brief Access the pointer
          * @return The pointer
          */
-        T* operator->() const noexcept { return m_Ptr; }
+        T* operator->() const noexcept
+        {
+#ifdef NEBULA_DEBUG
+            if (m_Ptr == nullptr)
+            {
+                NEB_CORE_LOG_WARN("Accessing a null pointer");
+            }
+            if (!m_IsValue)
+            {
+                if (m_RefCount.expired())
+                {
+                    NEB_CORE_LOG_WARN("Accessing a pointer with no reference count");
+                }
+            }
+#endif
+            return m_Ptr;
+        }
 
         /**
          * @brief Dereference the pointer
          * @return The value of the pointer
          */
-        T operator*() const noexcept { return *m_Ptr; }
+        T operator*() const noexcept
+        {
+#ifdef NEBULA_DEBUG
+            if (m_Ptr == nullptr)
+            {
+                NEB_CORE_LOG_WARN("Dereferencing a null pointer");
+            }
+            if (!m_IsValue)
+            {
+                if (m_RefCount.expired())
+                {
+                    NEB_CORE_LOG_WARN("Dereferencing a pointer with no reference count");
+                }
+            }
+#endif
+            return *m_Ptr;
+        }
 
-        operator bool() const noexcept { return m_Ptr != nullptr; } // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        operator bool() const noexcept { return m_Ptr != nullptr; }
 
         template<typename R> Ref<R> CastCopy() noexcept
         {
             auto ref = Ref<R>(static_cast<R*>(m_Ptr));
-        #ifdef NEBULA_DEBUG
+#ifdef NEBULA_DEBUG
+            ref.m_IsValue = m_IsValue;
             ref.m_RefCount = m_RefCount;
-            (*m_RefCount)++;
-        #endif
+#endif
             return ref; // Return elides the copy
         }
 
         template<typename R> Ref<R> CastMove() noexcept
         {
             auto ref = Ref<R>(static_cast<R*>(m_Ptr));
-        #ifdef NEBULA_DEBUG
-            ref.m_RefCount = m_RefCount;
-            m_Ptr = nullptr;
-            m_RefCount = nullptr;
-        #endif
+#ifdef NEBULA_DEBUG
+            ref.m_IsValue = m_IsValue;
+            ref.m_RefCount = std::move(m_RefCount);
+#endif
             return ref;
         }
-
     private:
         T* m_Ptr;
 #ifdef NEBULA_DEBUG
-        std::size_t* m_RefCount = nullptr;
+        std::weak_ptr<std::monostate> m_RefCount;
+        bool m_IsValue = false; // Is a temporary value
 #endif
     };
 
@@ -138,18 +174,14 @@ namespace Nebula
     {
     public:
         template<typename R> friend class Ptr;
+
         explicit Ptr(gsl::owner<T*> ptr) noexcept : m_Ptr(ptr) {}
 
         Ptr() noexcept : m_Ptr(nullptr) {}
 
         ~Ptr()
         {
-#ifdef NEBULA_DEBUG
-            if (m_RefCount != 0)
-            {
-                NEB_CORE_LOG_WARN("Deleting a pointer with {0} references left", m_RefCount);
-            }
-#endif
+            // Check if the shared_ptr has references
             delete m_Ptr;
         }
 
@@ -177,8 +209,7 @@ namespace Nebula
         {
 #ifdef NEBULA_DEBUG
             auto ref       = Ref<T>(m_Ptr);
-            ref.m_RefCount = &m_RefCount;
-            m_RefCount++;
+            ref.m_RefCount = m_RefCount;
             return ref;
 #else
             return Ref<T>(m_Ptr);
@@ -204,18 +235,19 @@ namespace Nebula
         template<typename R> Ptr<R> Cast() noexcept
         {
             auto ptr = Ptr<R>(static_cast<R*>(m_Ptr));
-        #ifdef NEBULA_DEBUG
+#ifdef NEBULA_DEBUG
             ptr.m_RefCount = m_RefCount;
-        #endif
+#endif
             m_Ptr = nullptr; // NOLINT(cppcoreguidelines-owning-memory)
             return ptr;
         }
 
-        operator bool() const noexcept { return m_Ptr != nullptr; } // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        operator bool() const noexcept { return m_Ptr != nullptr; }
     private:
         gsl::owner<T*> m_Ptr;
 #ifdef NEBULA_DEBUG
-        std::size_t m_RefCount = 0;
+        std::shared_ptr<std::monostate> m_RefCount = std::make_shared<std::monostate>();
 #endif
     };
 
