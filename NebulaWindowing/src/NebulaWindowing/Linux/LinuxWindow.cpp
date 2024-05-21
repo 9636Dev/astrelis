@@ -1,41 +1,28 @@
 #include "LinuxWindow.hpp"
 
-#include "NebulaCore/Log/Log.hpp"
-#include "NebulaCore/Util/Assert.hpp"
-
 namespace Nebula
 {
-    LinuxWindow::LinuxWindow(GLFWwindow* window)
-    : m_Window(window)
+    LinuxWindow::LinuxWindow(GLFWwindow* window) : m_Window(window)
     {
+        m_Data.EventCallback = [](Event& event) {};
+        WindowHelper::SetEventCallback(m_Window, m_Data);
+
         glfwMakeContextCurrent(m_Window); // This is needed on Wayland to show the window
     }
 
-    LinuxWindow::~LinuxWindow()
-    {
-        glfwDestroyWindow(m_Window);
+    LinuxWindow::~LinuxWindow() {
+        WindowHelper::TerminateWindow(m_Window);
     }
 
-    bool LinuxWindow::ShouldClose() const noexcept
-    {
-        return glfwWindowShouldClose(m_Window) != 0;
-    }
+    bool LinuxWindow::ShouldClose() const noexcept { return glfwWindowShouldClose(m_Window) != 0; }
 
-    void LinuxWindow::PollEvents() noexcept
-    {
-        glfwPollEvents();
-    }
+    void LinuxWindow::PollEvents() noexcept { glfwPollEvents(); }
 
-    void LinuxWindow::SwapBuffers() noexcept
-    {
-        glfwSwapBuffers(m_Window);
-    }
+    void LinuxWindow::SwapBuffers() noexcept { glfwSwapBuffers(m_Window); }
 
     Result<Ptr<Window>, WindowCreationError> CreateWindow(WindowProps& props)
     {
-        auto res = WindowHelper::CreateWindow(props);
-        return res.MapMove([](GLFWwindow* window) {
-            return MakePtr<LinuxWindow>(window).Cast<Window>();
-        });
+        return WindowHelper::CreateWindow(props).MapMove(
+            [](GLFWwindow* window) { return MakePtr<LinuxWindow>(window).Cast<Window>(); });
     }
 } // namespace Nebula

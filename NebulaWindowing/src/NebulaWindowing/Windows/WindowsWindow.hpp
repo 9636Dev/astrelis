@@ -5,6 +5,11 @@
 
 namespace Nebula
 {
+    struct WindowsWindowData
+    {
+        std::function<void(Event&)> EventCallback;
+    };
+
     class WindowsWindow : public Window
     {
     public:
@@ -20,8 +25,10 @@ namespace Nebula
         void SwapBuffers() noexcept override;
 
         inline bool IsOk() const noexcept override { return m_Window != nullptr; }
+        inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { m_Data.EventCallback = callback; }
 
     private:
+        WindowsWindowData m_Data;
         GLFWwindow* m_Window;
     };
 }  // namespace Nebula
