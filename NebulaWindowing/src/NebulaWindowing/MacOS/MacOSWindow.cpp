@@ -2,37 +2,28 @@
 
 namespace Nebula
 {
-    MacOSWindow::MacOSWindow(GLFWwindow* window)
-    : m_Window(window)
+    MacOSWindow::MacOSWindow(GLFWwindow* window) : m_Window(window), m_Data()
     {
+        m_Data.EventCallback = [](Event&) {};
+        WindowHelper::SetEventCallback(m_Window, m_Data);
     }
 
     MacOSWindow::~MacOSWindow()
     {
+        glfwSetWindowUserPointer(m_Window, nullptr);
         glfwDestroyWindow(m_Window);
     }
 
-    bool MacOSWindow::ShouldClose() const noexcept
-    {
-        return glfwWindowShouldClose(m_Window) != 0;
-    }
+    bool MacOSWindow::ShouldClose() const noexcept { return glfwWindowShouldClose(m_Window) != 0; }
 
-    void MacOSWindow::PollEvents() noexcept
-    {
-        glfwPollEvents();
-    }
+    void MacOSWindow::PollEvents() noexcept { glfwPollEvents(); }
 
-    void MacOSWindow::SwapBuffers() noexcept
-    {
-        glfwSwapBuffers(m_Window);
-    }
+    void MacOSWindow::SwapBuffers() noexcept { glfwSwapBuffers(m_Window); }
 
     Result<Ptr<Window>, WindowCreationError> CreateWindow(WindowProps& props)
     {
-        auto res = WindowHelper::CreateWindow(props);
-        return res.MapMove([](GLFWwindow* window) {
-            return MakePtr<MacOSWindow>(window).Cast<Window>();
-        });
+        return WindowHelper::CreateWindow(props).MapMove(
+            [](GLFWwindow* window) { return MakePtr<MacOSWindow>(window).Cast<Window>(); });
     }
 } // namespace Nebula
 

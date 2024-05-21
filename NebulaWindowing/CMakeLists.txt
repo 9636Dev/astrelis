@@ -2,6 +2,13 @@ set(NEBULA_WINDOWING_SOURCES
     src/NebulaWindowing/Window.hpp
     src/NebulaWindowing/WindowHelper.hpp
     src/NebulaWindowing/WindowHelper.cpp
+
+    src/NebulaWindowing/Event/Event.hpp
+    src/NebulaWindowing/Event/KeyEvent.hpp
+    src/NebulaWindowing/Event/MouseEvent.hpp
+    src/NebulaWindowing/Event/WindowEvent.hpp
+    src/NebulaWindowing/Event/KeyCodes.hpp
+    src/NebulaWindowing/Event/MouseCodes.hpp
 )
 
 set(NEBULA_WINDOWING_PLATFORM_SOURCES

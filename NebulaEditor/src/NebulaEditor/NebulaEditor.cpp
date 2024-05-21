@@ -24,6 +24,9 @@ int main(int argc, char** argv)
             return -1;
         }
         auto window = std::move(result.Unwrap());
+        window->SetEventCallback([](Nebula::Event& event) {
+            NEB_CORE_LOG_TRACE("{0}", event.ToString());
+        });
 
         if (!window->IsOk())
         {

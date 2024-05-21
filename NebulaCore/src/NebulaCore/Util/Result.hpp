@@ -1,11 +1,17 @@
 #pragma once
 
 #include "NebulaCore/Util/TypeTraits.hpp"
-#include <functional>
 #include <variant>
+#include <forward_list>
 
 namespace Nebula
 {
+    /**
+     * @brief A result type that can hold either a value or an error
+     * @tparam T The value type
+     * @tparam E The error type
+     * @note The value and error types must be copy or move constructible
+     */
     template<typename T, typename E> class Result
     {
     private:
@@ -18,27 +24,36 @@ namespace Nebula
         using TTypeProps = TypeProperties<T>;
         using ETypeProps = TypeProperties<E>;
 
-        using IsSameType               = std::bool_constant<std::is_same_v<T, E>>;
+        using OneIsNonCopyable = std::bool_constant<!TTypeProps::CopyConstructible || !ETypeProps::CopyConstructible>;
+        using OneIsNonMoveable = std::bool_constant<!TTypeProps::MoveConstructible || !ETypeProps::MoveConstructible>;
+        using IsSameType       = std::bool_constant<std::is_same_v<T, E>>;
         using TCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && !IsSameType::value>;
         using ECopyConstructorNoexcept = std::bool_constant<ETypeProps::NoThrowCopyConstructible && !IsSameType::value>;
-        using TMoveConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowMoveConstructible &&
-                                                            !IsSameType::value && !TTypeProps::TriviallyCopyable>;
-        using EMoveConstructorNoexcept = std::bool_constant<ETypeProps::NoThrowMoveConstructible &&
-                                                            !IsSameType::value && !ETypeProps::TriviallyCopyable>;
+        using TMoveConstructorNoexcept =
+            std::bool_constant<TTypeProps::NoThrowMoveConstructible && !IsSameType::value &&
+                               !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
+        using EMoveConstructorNoexcept =
+            std::bool_constant<ETypeProps::NoThrowMoveConstructible && !IsSameType::value &&
+                               !(ETypeProps::TriviallyCopyable && ETypeProps::CopyConstructible)>;
         using TCopyConstructor =
             std::bool_constant<!TCopyConstructorNoexcept::value && TTypeProps::CopyConstructible && !IsSameType::value>;
         using ECopyConstructor =
             std::bool_constant<!ECopyConstructorNoexcept::value && ETypeProps::CopyConstructible && !IsSameType::value>;
-        using TMoveConstructor = std::bool_constant<!TMoveConstructorNoexcept::value && TTypeProps::MoveConstructible &&
-                                                    !IsSameType::value && !TTypeProps::TriviallyCopyable>;
-        using EMoveConstructor = std::bool_constant<!EMoveConstructorNoexcept::value && ETypeProps::MoveConstructible &&
-                                                    !IsSameType::value && !ETypeProps::TriviallyCopyable>;
+        using TMoveConstructor =
+            std::bool_constant<!TMoveConstructorNoexcept::value && TTypeProps::MoveConstructible &&
+                               !IsSameType::value && !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
+        using EMoveConstructor =
+            std::bool_constant<!EMoveConstructorNoexcept::value && ETypeProps::MoveConstructible &&
+                               !IsSameType::value && !(ETypeProps::TriviallyCopyable && ETypeProps::CopyConstructible)>;
         using SCopyConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowCopyConstructible && IsSameType::value>;
         using SCopyConstructor =
             std::bool_constant<!SCopyConstructorNoexcept::value && TTypeProps::CopyConstructible && IsSameType::value>;
-        using SMoveConstructorNoexcept = std::bool_constant<TTypeProps::NoThrowMoveConstructible && IsSameType::value>;
+        using SMoveConstructorNoexcept =
+            std::bool_constant<TTypeProps::NoThrowMoveConstructible && IsSameType::value &&
+                               !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
         using SMoveConstructor =
-            std::bool_constant<!SMoveConstructorNoexcept::value && TTypeProps::MoveConstructible && IsSameType::value>;
+            std::bool_constant<!SMoveConstructorNoexcept::value && TTypeProps::MoveConstructible && IsSameType::value &&
+                               !(TTypeProps::TriviallyCopyable && TTypeProps::CopyConstructible)>;
     public:
         using VariantType = std::variant<T, E>;
         using Type        = std::conditional_t<IsSameType::value, SameType, VariantType>;
@@ -199,22 +214,36 @@ namespace Nebula
 
         // === Methods ===
 
+        /**
+         * @brief Checks if the result is Ok
+         * @return True if the result is Ok, false otherwise
+         */
         [[nodiscard]] bool IsOk() const noexcept
         {
             if constexpr (IsSameType::value)
             {
                 return m_Value.isOk;
             }
-            return std::holds_alternative<T>(m_Value);
+            else
+            {
+                return std::holds_alternative<T>(m_Value);
+            }
         }
 
+        /**
+         * @brief Checks if the result is an error
+         * @return True if the result is an error, false otherwise
+         */
         [[nodiscard]] bool IsErr() const noexcept
         {
             if constexpr (IsSameType::value)
             {
                 return !m_Value.isOk;
             }
-            return std::holds_alternative<E>(m_Value);
+            else
+            {
+                return std::holds_alternative<E>(m_Value);
+            }
         }
 
         /**
@@ -227,66 +256,156 @@ namespace Nebula
             {
                 return m_Value.value;
             }
-            return std::get<T>(m_Value);
+            else
+            {
+                return std::get<T>(m_Value);
+            }
         }
 
         /**
         * @see Unwrap()
         */
-        [[nodiscard]] const T& Unwrap() const noexcept { return std::get<T>(m_Value); }
+        [[nodiscard]] const T& Unwrap() const noexcept
+        {
+            if constexpr (IsSameType::value)
+            {
+                return m_Value.value;
+            }
+            else
+            {
+                return std::get<T>(m_Value);
+            }
+        }
 
         /**
         * @brief Unwraps the error value of the result
         * @note Without checks, this function can cause undefined behavior
         */
-        [[nodiscard]] E& UnwrapErr() noexcept { return std::get<E>(m_Value); }
+        [[nodiscard]] E& UnwrapErr() noexcept
+        {
+            if constexpr (IsSameType::value)
+            {
+                return m_Value.value;
+            }
+            else
+            {
+                return std::get<E>(m_Value);
+            }
+        }
 
         /**
         * @see UnwrapErr()
         */
-        [[nodiscard]] const E& UnwrapErr() const noexcept { return std::get<E>(m_Value); }
+        [[nodiscard]] const E& UnwrapErr() const noexcept
+        {
+            if constexpr (IsSameType::value)
+            {
+                return m_Value.value;
+            }
+            else
+            {
+                return std::get<E>(m_Value);
+            }
+        }
 
+        /**
+        * @brief Maps the value of the result
+        * @tparam F The function type
+        * @param func The function to map the value
+        * @return The result of the function
+        * @note This function is only available if the type is move constructible
+        */
         template<typename F>
             requires(TTypeProps::MoveConstructible && ETypeProps::MoveConstructible)
         auto MapMove(F func) -> Result<decltype(func(std::declval<T>())), E>
         {
+            using type = decltype(func(std::move(std::declval<T>())));
             if (IsOk())
             {
-                if constexpr (std::is_same_v<decltype(func(std::declval<T>())), T>)
+                if constexpr (std::is_same_v<type, E>)
                 {
-                    return Result<decltype(func(std::move(Unwrap()))), E>(func(std::move(Unwrap())), true);
+                    return Result<type, E>(func(std::move(Unwrap())), true);
                 }
-                return Result<decltype(func(std::declval<T>())), E>(func(std::move(Unwrap())));
+                else
+                {
+                    return Result<type, E>(func(std::move(Unwrap())));
+                }
             }
             if constexpr (IsSameType::value)
             {
-                return Result<decltype(func(std::declval<T>())), E>(std::move(UnwrapErr()), false);
+                return Result<type, E>(std::move(UnwrapErr()), false);
             }
-            return std::move(UnwrapErr());
+            else
+            {
+                return std::move(UnwrapErr());
+            }
         }
 
+        /**
+        * @brief Maps the value of the result
+        * @tparam F The function type
+        * @param func The function to map the value
+        * @return The result of the function
+        * @note This function is only available if the type is copy constructible
+        */
         template<typename F>
             requires(TTypeProps::CopyConstructible && ETypeProps::CopyConstructible)
-        auto MapCopy(F func) -> Result<decltype(func(std::declval<T>())), E>
+        auto MapCopy(F func) -> Result<decltype(func(static_cast<const T&>(std::declval<T>()))), E>
         {
+            // This is tricky to implement, because we need to prevent return optimization
+            using type = decltype(func(static_cast<const T&>(std::declval<T>())));
             if (IsOk())
             {
-                if constexpr (std::is_same_v<decltype(func(std::declval<T>())), T>)
+                if constexpr (std::is_same_v<type, E>)
                 {
-                    return Result<decltype(func(Unwrap())), E>(func(Unwrap()), true);
+                    return Result<type, E>(func(Unwrap()), true);
                 }
-                return Result<decltype(func(Unwrap())), E>(func(Unwrap()));
+                else
+                {
+                    return Result<type, E>(func(Unwrap()));
+                }
             }
             if constexpr (IsSameType::value)
             {
-                return Result<decltype(func(std::declval<T>())), E>(UnwrapErr(), false);
+                return Result<type, E>(UnwrapErr(), false);
             }
-            return UnwrapErr();
+            else
+            {
+                return UnwrapErr();
+            }
         }
     private:
         Type m_Value;
 
         static_assert(!TTypeProps::Abstract, "T cannot be an abstract class");
         static_assert(!ETypeProps::Abstract, "E cannot be an abstract class");
+        static_assert(TTypeProps::CopyConstructible || TTypeProps::MoveConstructible, "T must be copy or move constructible");
+        static_assert(ETypeProps::CopyConstructible || ETypeProps::MoveConstructible, "E must be copy or move constructible");
     };
+
+    template<typename T, typename E, typename ...Args>
+    Result<T, E> MakeOkResult(Args&& ...args)
+    {
+        if constexpr (std::is_same_v<T, E>)
+        {
+            return Result<T, E>(T(std::forward<Args>(args)...), true);
+        }
+        else
+        {
+            return Result<T, E>(T(std::forward<Args>(args)...));
+        }
+    }
+
+    template<typename T, typename E, typename ...Args>
+    Result<T, E> MakeErrResult(Args&& ...args)
+    {
+        if constexpr (std::is_same_v<T, E>)
+        {
+            return Result<T, E>(T(std::forward<Args>(args)...), false);
+        }
+        else
+        {
+            return Result<T, E>(E(std::forward<Args>(args)...));
+        }
+    }
 }; // namespace Nebula

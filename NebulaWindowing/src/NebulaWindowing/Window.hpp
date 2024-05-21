@@ -11,6 +11,7 @@ namespace Nebula
     class Window
     {
     public:
+        using EventCallbackFn = std::function<void(Event&)>;
         Window()                         = default;
         Window(const Window&)            = delete;
         Window& operator=(const Window&) = delete;
@@ -23,6 +24,7 @@ namespace Nebula
         virtual void SwapBuffers() noexcept                     = 0;
 
         virtual bool IsOk() const noexcept = 0;
+        virtual void SetEventCallback(const EventCallbackFn& callback) noexcept = 0;
     };
 
     extern Result<Ptr<Window>, WindowCreationError> CreateWindow(WindowProps& props);

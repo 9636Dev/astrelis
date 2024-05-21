@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 /**
+* @file LinuxWindow.hpp
 * @brief Linux implementation of the Window class, for now it is using OpenGL
 */
 
