@@ -1,5 +1,4 @@
 # Doxyfile 1.10.0
-    return Result<T, E>(E(std::forward<Args>(args)...));
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.

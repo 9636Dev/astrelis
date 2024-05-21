@@ -1,7 +1,7 @@
 # Design Specifications
 
 ## Optional Features
-Optional features have to always be 'opt-in' by the user, except for these exceptions:
+Optional features have to always be 'opt-in' by the user, unless it matches these specifications:
 - The feature does not change overall functionality of the program
 - The feature is a quality of life improvement
 - The feature does not introduce additional security risks
