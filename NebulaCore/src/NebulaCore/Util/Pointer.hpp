@@ -139,25 +139,26 @@ namespace Nebula
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
         operator bool() const noexcept { return m_Ptr != nullptr; }
 
-        template<typename R> Ref<R> CastCopy() noexcept
+        template<typename R> Ref<R> StaticCast() noexcept
         {
             auto ref = Ref<R>(static_cast<R*>(m_Ptr));
 #ifdef NEBULA_DEBUG
             ref.m_IsValue  = m_IsValue;
             ref.m_RefCount = m_RefCount;
 #endif
-            return ref; // Return elides the copy
+            return ref;
         }
 
-        template<typename R> Ref<R> CastMove() noexcept
+        template<typename R> Ref<R> DynamicCast() noexcept
         {
-            auto ref = Ref<R>(static_cast<R*>(m_Ptr));
+            auto ref = Ref<R>(dynamic_cast<R*>(m_Ptr));
 #ifdef NEBULA_DEBUG
             ref.m_IsValue  = m_IsValue;
-            ref.m_RefCount = std::move(m_RefCount);
+            ref.m_RefCount = m_RefCount;
 #endif
             return ref;
         }
+
     private:
         T* m_Ptr;
 #ifdef NEBULA_DEBUG

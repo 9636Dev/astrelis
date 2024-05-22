@@ -2,9 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include <cstdint>
 #include <functional>
-#include <string>
 
 #include "Event/Event.hpp"
 #include "Event/KeyEvent.hpp"
@@ -12,22 +10,10 @@
 #include "Event/WindowEvent.hpp"
 #include "NebulaCore/Util/Assert.hpp"
 #include "NebulaCore/Util/Result.hpp"
+#include "WindowProps.hpp"
 
 namespace Nebula
 {
-    struct WindowProps
-    {
-        std::string Title;
-        std::int32_t Width;
-        std::int32_t Height;
-    };
-
-    enum class WindowCreationError
-    {
-        GLFWInitFailed,
-        WindowCreationFailed
-    };
-
     // A ceoncept to check a type have a 'EventCallback' variable of type 'std::function<void(Event&)>'
     template<typename T>
     concept HasEventCallback = requires(T type) {

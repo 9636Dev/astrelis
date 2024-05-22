@@ -26,7 +26,7 @@ namespace Nebula
 
         inline bool IsOk() const noexcept override { return m_Window != nullptr; }
         inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { m_Data.EventCallback = callback; }
-
+        inline void* GetNativeWindow() const noexcept override { return m_Window; }
     private:
         WindowsWindowData m_Data;
         GLFWwindow* m_Window;

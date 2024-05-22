@@ -1,5 +1,6 @@
 set(NEBULA_WINDOWING_SOURCES
     src/NebulaWindowing/Window.hpp
+    src/NebulaWindowing/WindowProps.hpp
     src/NebulaWindowing/WindowHelper.hpp
     src/NebulaWindowing/WindowHelper.cpp
 
@@ -36,6 +37,10 @@ nebula_format_project(NebulaWindowing ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_WIND
 
 target_include_directories(NebulaWindowing PUBLIC
     src
+)
+
+add_dependencies(NebulaWindowing
+    NebulaCore
 )
 
 target_link_libraries(NebulaWindowing

@@ -30,6 +30,8 @@ namespace Nebula
         {
             m_Data.EventCallback = callback;
         }
+
+        inline void* GetNativeWindow() const noexcept override { return m_Window; }
     private:
         GLFWwindow* m_Window;
         MacOSWindowData m_Data;

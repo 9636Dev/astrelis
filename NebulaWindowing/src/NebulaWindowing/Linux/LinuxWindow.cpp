@@ -1,5 +1,7 @@
 #include "LinuxWindow.hpp"
 
+#include "../WindowHelper.hpp"
+
 namespace Nebula
 {
     LinuxWindow::LinuxWindow(GLFWwindow* window) : m_Window(window)

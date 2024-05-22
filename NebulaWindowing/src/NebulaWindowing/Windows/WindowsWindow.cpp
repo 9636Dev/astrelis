@@ -1,6 +1,6 @@
 #include "WindowsWindow.hpp"
 
-#include "NebulaCore/Util/Assert.hpp"
+#include "../WindowHelper.hpp"
 
 namespace Nebula
 {

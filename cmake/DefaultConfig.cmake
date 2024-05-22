@@ -93,3 +93,9 @@ option(NEBULA_PEDANTIC_WARNINGS "Enable pedantic warnings for NebulaEngine" ON)
 # =======================
 
 option(NEBULA_ENABLE_CLANG_FORMAT "Enable clang format for NebulaEngine" ON)
+
+# =======================
+# External Libraries
+# =======================
+
+option(NEBULA_BUILD_GLEW "Build GLEW for NebulaEngine" OFF) # Use system GLEW by default

@@ -22,6 +22,7 @@ include(cmake/ClangFormat.cmake)
 
 add_subdirectory(NebulaCore)
 add_subdirectory(NebulaWindowing)
+add_subdirectory(NebulaRenderer)
 add_subdirectory(NebulaEditor)
 
 if (NEBULA_ENABLE_TESTING)
@@ -37,5 +38,6 @@ if (NEBULA_ENABLE_CLANG_FORMAT)
         NebulaCore_Format
         NebulaEditor_Format
         NebulaWindowing_Format
+        NebulaRenderer_Format
     )
 endif()

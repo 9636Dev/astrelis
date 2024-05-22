@@ -2,9 +2,10 @@
 
 #include <gsl/gsl>
 
+#include "Event/Event.hpp"
 #include "NebulaCore/Util/Pointer.hpp"
 #include "NebulaCore/Util/Result.hpp"
-#include "NebulaWindowing/WindowHelper.hpp"
+#include "WindowProps.hpp"
 
 namespace Nebula
 {
@@ -25,6 +26,8 @@ namespace Nebula
 
         virtual bool IsOk() const noexcept                                      = 0;
         virtual void SetEventCallback(const EventCallbackFn& callback) noexcept = 0;
+
+        virtual void* GetNativeWindow() const noexcept = 0;
     };
 
     extern Result<Ptr<Window>, WindowCreationError> CreateWindow(WindowProps& props);

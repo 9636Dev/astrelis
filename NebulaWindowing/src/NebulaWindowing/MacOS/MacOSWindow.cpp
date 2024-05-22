@@ -1,5 +1,7 @@
 #include "MacOSWindow.hpp"
 
+#include "../WindowHelper.hpp"
+
 namespace Nebula
 {
     MacOSWindow::MacOSWindow(GLFWwindow* window) : m_Window(window), m_Data()
