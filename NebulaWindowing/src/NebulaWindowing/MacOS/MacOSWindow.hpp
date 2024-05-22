@@ -14,10 +14,10 @@ namespace Nebula
     {
     public:
         explicit MacOSWindow(GLFWwindow* window);
-        MacOSWindow(const MacOSWindow&) = delete;
+        MacOSWindow(const MacOSWindow&)            = delete;
         MacOSWindow& operator=(const MacOSWindow&) = delete;
-        MacOSWindow(MacOSWindow&&) = delete;
-        MacOSWindow& operator=(MacOSWindow&&) = delete;
+        MacOSWindow(MacOSWindow&&)                 = delete;
+        MacOSWindow& operator=(MacOSWindow&&)      = delete;
         ~MacOSWindow() override;
 
         [[nodiscard]] bool ShouldClose() const noexcept override;
@@ -25,11 +25,14 @@ namespace Nebula
         void SwapBuffers() noexcept override;
 
         inline bool IsOk() const noexcept override { return m_Window != nullptr; }
-        inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { m_Data.EventCallback = callback; }
 
+        inline void SetEventCallback(const EventCallbackFn& callback) noexcept override
+        {
+            m_Data.EventCallback = callback;
+        }
     private:
         GLFWwindow* m_Window;
         MacOSWindowData m_Data;
     };
-}  // namespace Nebula
+} // namespace Nebula
 

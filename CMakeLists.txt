@@ -36,5 +36,6 @@ if (NEBULA_ENABLE_CLANG_FORMAT)
     add_dependencies(NebulaEngineFormat
         NebulaCore_Format
         NebulaEditor_Format
+        NebulaWindowing_Format
     )
 endif()

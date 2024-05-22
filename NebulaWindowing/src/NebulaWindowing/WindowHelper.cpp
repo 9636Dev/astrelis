@@ -33,7 +33,8 @@ namespace Nebula
         return window;
     }
 
-    void WindowHelper::TerminateWindow(GLFWwindow* window) {
+    void WindowHelper::TerminateWindow(GLFWwindow* window)
+    {
         glfwSetWindowUserPointer(window, nullptr);
         glfwDestroyWindow(window);
 
@@ -43,4 +44,4 @@ namespace Nebula
             NEB_CORE_LOG_DEBUG("Windowing: GLFW terminated");
         }
     }
-}  // namespace Nebula
+} // namespace Nebula

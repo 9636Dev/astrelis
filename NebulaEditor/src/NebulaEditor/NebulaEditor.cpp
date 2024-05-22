@@ -14,19 +14,17 @@ int main(int argc, char** argv)
 
     {
         Nebula::WindowProps props;
-        props.Title = "Nebula Editor";
-        props.Width = 1280;
+        props.Title  = "Nebula Editor";
+        props.Width  = 1'280;
         props.Height = 720;
-        auto result = Nebula::CreateWindow(props);
+        auto result  = Nebula::CreateWindow(props);
         if (result.IsErr())
         {
             NEB_CORE_LOG_ERROR("Failed to create window: {0}", static_cast<std::uint32_t>(result.UnwrapErr()));
             return -1;
         }
         auto window = std::move(result.Unwrap());
-        window->SetEventCallback([](Nebula::Event& event) {
-            NEB_CORE_LOG_TRACE("{0}", event.ToString());
-        });
+        window->SetEventCallback([](Nebula::Event& event) { NEB_CORE_LOG_TRACE("{0}", event.ToString()); });
 
         if (!window->IsOk())
         {

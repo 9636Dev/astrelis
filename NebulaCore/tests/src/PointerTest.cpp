@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "NebulaCore/Util/Pointer.hpp"
 #include "NebulaCore/Log/Log.hpp"
+#include "NebulaCore/Util/Pointer.hpp"
 
 // NOLINTNEXTLINE
 std::size_t num = 0;
@@ -45,7 +45,7 @@ TEST(PointerTest, RefTest)
 TEST(PointerTest, RefFromValueTest)
 {
     int value = 5;
-    auto ref = Nebula::Ref<int>(value);
+    auto ref  = Nebula::Ref<int>(value);
 
     EXPECT_EQ(*ref, 5);
 

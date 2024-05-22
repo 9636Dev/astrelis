@@ -23,7 +23,7 @@ namespace Nebula
         using TTypeProps = TypeProperties<T>;
         using ETypeProps = TypeProperties<E>;
 
-        using IsSameType       = std::bool_constant<std::is_same_v<T, E>>;
+        using IsSameType = std::bool_constant<std::is_same_v<T, E>>;
     public:
         using VariantType = std::variant<T, E>;
         using Type        = std::conditional_t<IsSameType::value, SameType, VariantType>;
@@ -33,15 +33,15 @@ namespace Nebula
 
         template<typename U>
         Result(U&& value, bool success = true) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires (std::is_same_v<T, E>)
-            : m_Value{std::forward<U>(value), success}
+            requires(std::is_same_v<T, E>)
+            : m_Value {std::forward<U>(value), success}
         {
         }
 
         template<typename U>
         Result(U&& value) // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
-            requires (!std::is_same_v<T, E>)
-            : m_Value{std::forward<U>(value)}
+            requires(!std::is_same_v<T, E>)
+            : m_Value {std::forward<U>(value)}
         {
         }
 

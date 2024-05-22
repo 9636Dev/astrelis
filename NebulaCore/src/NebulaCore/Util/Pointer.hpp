@@ -143,7 +143,7 @@ namespace Nebula
         {
             auto ref = Ref<R>(static_cast<R*>(m_Ptr));
 #ifdef NEBULA_DEBUG
-            ref.m_IsValue = m_IsValue;
+            ref.m_IsValue  = m_IsValue;
             ref.m_RefCount = m_RefCount;
 #endif
             return ref; // Return elides the copy
@@ -153,7 +153,7 @@ namespace Nebula
         {
             auto ref = Ref<R>(static_cast<R*>(m_Ptr));
 #ifdef NEBULA_DEBUG
-            ref.m_IsValue = m_IsValue;
+            ref.m_IsValue  = m_IsValue;
             ref.m_RefCount = std::move(m_RefCount);
 #endif
             return ref;
@@ -179,11 +179,7 @@ namespace Nebula
 
         Ptr() noexcept : m_Ptr(nullptr) {}
 
-        ~Ptr()
-        {
-            // Check if the shared_ptr has references
-            delete m_Ptr;
-        }
+        ~Ptr() { delete m_Ptr; }
 
         Ptr(const Ptr&)            = delete;
         Ptr& operator=(const Ptr&) = delete;

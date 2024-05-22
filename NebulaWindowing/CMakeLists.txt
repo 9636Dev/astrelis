@@ -31,6 +31,8 @@ add_library(NebulaWindowing STATIC
     ${NEBULA_WINDOWING_SOURCES}
     ${NEBULA_WINDOWING_PLATFORM_SOURCES}
 )
+nebula_target(NebulaWindowing)
+nebula_format_project(NebulaWindowing ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_WINDOWING_SOURCES};${NEBULA_WINDOWING_PLATFORM_SOURCES}")
 
 target_include_directories(NebulaWindowing PUBLIC
     src

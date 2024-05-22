@@ -8,10 +8,7 @@ namespace Nebula
         WindowHelper::SetEventCallback(m_Window, m_Data);
     }
 
-    MacOSWindow::~MacOSWindow()
-    {
-        WindowHelper::TerminateWindow(m_Window);
-    }
+    MacOSWindow::~MacOSWindow() { WindowHelper::TerminateWindow(m_Window); }
 
     bool MacOSWindow::ShouldClose() const noexcept { return glfwWindowShouldClose(m_Window) != 0; }
 
