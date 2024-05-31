@@ -13,5 +13,5 @@
 .DS_Store
 
 # For now, don't include the docs folder
-/docs/
+/docs/*
 !/docs/doxygen-awesome.css
