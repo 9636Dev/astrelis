@@ -1,15 +1,6 @@
-[submodule "NebulaCore/vendor/spdlog"]
-	path = NebulaCore/vendor/spdlog
-	url = https://github.com/gabime/spdlog
 [submodule "vendor/googletest"]
 	path = vendor/googletest
 	url = https://github.com/google/googletest
-[submodule "NebulaWindowing/vendor/glfw"]
-	path = NebulaWindowing/vendor/glfw
-	url = https://github.com/glfw/glfw
-[submodule "NebulaCore/vendor/gsl"]
-	path = NebulaCore/vendor/gsl
-	url = https://github.com/microsoft/GSL
 [submodule "vendor/benchmark"]
 	path = vendor/benchmark
 	url = https://github.com/google/benchmark
