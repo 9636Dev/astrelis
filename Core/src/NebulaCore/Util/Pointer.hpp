@@ -1,8 +1,8 @@
 #pragma once
 
 #include <gsl/gsl>
-#include <utility>
 #include <memory>
+#include <utility>
 #include <variant>
 
 #include "../Log.hpp"
@@ -36,7 +36,7 @@ namespace Nebula
 #ifdef NEBULA_DEBUG
             if (!m_IsValue)
             {
-                if (m_RefCount.expired())
+                if (m_Ptr != nullptr && m_RefCount.expired())
                 {
                     NEBULA_CORE_LOG_WARN("Deleting a reference with no reference count");
                 }
@@ -139,6 +139,14 @@ namespace Nebula
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
         operator bool() const noexcept { return m_Ptr != nullptr; }
 
+        bool operator==(const Ref<T>& other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const Ref<T>& other) const noexcept { return m_Ptr != other.m_Ptr; }
+
+        bool operator==(T* other) const noexcept { return m_Ptr == other; }
+
+        bool operator!=(T* other) const noexcept { return m_Ptr != other; }
+
         template<typename R> Ref<R> StaticCast() noexcept
         {
             auto ref = Ref<R>(static_cast<R*>(m_Ptr));
@@ -158,7 +166,6 @@ namespace Nebula
 #endif
             return ref;
         }
-
     private:
         T* m_Ptr;
 #ifdef NEBULA_DEBUG
@@ -229,6 +236,14 @@ namespace Nebula
             return m_Ptr; // NOLINT(cppcoreguidelines-owning-memory)
         }
 
+        bool operator==(const Ref<T>& other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const Ref<T>& other) const noexcept { return m_Ptr != other.m_Ptr; }
+
+        bool operator==(T* other) const noexcept { return m_Ptr == other; }
+
+        bool operator!=(T* other) const noexcept { return m_Ptr != other; }
+
         template<typename R> Ptr<R> Cast() noexcept
         {
             auto ptr = Ptr<R>(static_cast<R*>(m_Ptr));
@@ -238,6 +253,8 @@ namespace Nebula
             m_Ptr = nullptr; // NOLINT(cppcoreguidelines-owning-memory)
             return ptr;
         }
+
+        // No dynamic cast, because it might fail, and we don't want to delete the pointer
 
         void Reset() noexcept
         {

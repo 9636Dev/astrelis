@@ -16,3 +16,6 @@
 [submodule "Renderer/vendor/glfw"]
 	path = Renderer/vendor/glfw
 	url = https://github.com/glfw/glfw
+[submodule "Renderer/vendor/imgui"]
+	path = Renderer/vendor/imgui
+	url = https://github.com/ocornut/imgui

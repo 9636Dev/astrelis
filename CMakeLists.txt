@@ -14,7 +14,18 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 include(cmake/OutOfSourceBuild.cmake)
 include(cmake/Config.cmake)
 include(cmake/Compiler.cmake)
+include(cmake/Pedantic.cmake)
+include(cmake/ClangFormat.cmake)
 
 add_subdirectory(Core)
 add_subdirectory(Renderer)
 add_subdirectory(Editor)
+
+if (NEBULA_ENABLE_CLANG_FORMAT)
+    add_custom_target(NebulaEngineFormat)
+    add_dependencies(NebulaEngineFormat
+        NebulaCore_Format
+        NebulaEditor_Format
+        NebulaRenderer_Format
+    )
+endif()

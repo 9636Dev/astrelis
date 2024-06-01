@@ -11,10 +11,11 @@ namespace Nebula
 {
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     static std::size_t s_WindowCount = 0;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+    static bool s_GLFWInitialized = false;
 
     Result<GLFWwindow*, WindowCreationError> WindowHelper::CreateWindow(const WindowProps& props)
     {
-        static bool s_GLFWInitialized = false;
         if (!s_GLFWInitialized)
         {
             if (glfwInit() != GLFW_TRUE)
@@ -29,7 +30,6 @@ namespace Nebula
         GLFWwindow* window = glfwCreateWindow(props.Width, props.Height, props.Title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
-            glfwTerminate();
             return WindowCreationError::WindowCreationFailed;
         }
 
@@ -45,6 +45,7 @@ namespace Nebula
         if (--s_WindowCount == 0)
         {
             glfwTerminate();
+            s_GLFWInitialized = false;
             NEBULA_CORE_LOG_DEBUG("Windowing: GLFW terminated");
         }
     }

@@ -4,6 +4,8 @@ set(NEBULA_EDITOR_SOURCES
 )
 
 add_executable(NebulaEditor ${NEBULA_EDITOR_SOURCES})
+nebula_target(NebulaEditor)
+nebula_format_project(NebulaEditor ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_EDITOR_SOURCES}")
 
 target_include_directories(NebulaEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

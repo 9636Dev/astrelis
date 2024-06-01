@@ -12,9 +12,7 @@ namespace Nebula
         glfwMakeContextCurrent(m_Window); // This is needed on Wayland to show the window
     }
 
-    LinuxWindow::~LinuxWindow() {
-        WindowHelper::TerminateWindow(m_Window);
-    }
+    LinuxWindow::~LinuxWindow() { WindowHelper::TerminateWindow(m_Window); }
 
     bool LinuxWindow::ShouldClose() const noexcept { return glfwWindowShouldClose(m_Window) != 0; }
 

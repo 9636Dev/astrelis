@@ -11,6 +11,8 @@ set(NEBULA_CORE_SOURCES
 )
 
 add_library(NebulaCore STATIC ${NEBULA_CORE_SOURCES})
+nebula_target(NebulaCore)
+nebula_format_project(NebulaCore ${CMAKE_CURRENT_SOURCE_DIR} "${NEBULA_CORE_SOURCES}")
 
 target_include_directories(NebulaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(NebulaCore PUBLIC

@@ -42,8 +42,8 @@ namespace Nebula
         // === Destructor ===
 
         /**
-     * @note Because the destructor is trivial, so not handling a result type with a pointer might cause a memory leak
-     */
+         * @note Because the destructor is trivial, so not handling a result type with a pointer might cause a memory leak
+         */
         ~Result() = default;
 
         // === Other Constructors ===
@@ -122,9 +122,9 @@ namespace Nebula
         // === Methods ===
 
         /**
-     * @brief Checks if the result is Ok
-     * @return True if the result is Ok, false otherwise
-     */
+         * @brief Checks if the result is Ok
+         * @return True if the result is Ok, false otherwise
+         */
         [[nodiscard]] bool IsOk() const noexcept
         {
             if constexpr (IsSameType::value)
@@ -138,9 +138,9 @@ namespace Nebula
         }
 
         /**
-     * @brief Checks if the result is an error
-     * @return True if the result is an error, false otherwise
-     */
+         * @brief Checks if the result is an error
+         * @return True if the result is an error, false otherwise
+         */
         [[nodiscard]] bool IsErr() const noexcept
         {
             if constexpr (IsSameType::value)
@@ -154,9 +154,9 @@ namespace Nebula
         }
 
         /**
-    * @brief Unwraps the value of the result
-    * @note Without checks, this function can cause undefined behavior
-    */
+        * @brief Unwraps the value of the result
+        * @note Without checks, this function can cause undefined behavior
+        */
         [[nodiscard]] T& Unwrap() noexcept
         {
             if constexpr (IsSameType::value)
@@ -170,8 +170,8 @@ namespace Nebula
         }
 
         /**
-    * @see Unwrap()
-    */
+        * @see Unwrap()
+        */
         [[nodiscard]] const T& Unwrap() const noexcept
         {
             if constexpr (IsSameType::value)
@@ -185,9 +185,9 @@ namespace Nebula
         }
 
         /**
-    * @brief Unwraps the error value of the result
-    * @note Without checks, this function can cause undefined behavior
-    */
+        * @brief Unwraps the error value of the result
+        * @note Without checks, this function can cause undefined behavior
+        */
         [[nodiscard]] E& UnwrapErr() noexcept
         {
             if constexpr (IsSameType::value)
@@ -201,8 +201,8 @@ namespace Nebula
         }
 
         /**
-    * @see UnwrapErr()
-    */
+        * @see UnwrapErr()
+        */
         [[nodiscard]] const E& UnwrapErr() const noexcept
         {
             if constexpr (IsSameType::value)
@@ -216,12 +216,12 @@ namespace Nebula
         }
 
         /**
-    * @brief Maps the value of the result
-    * @tparam F The function type
-    * @param func The function to map the value
-    * @return The result of the function
-    * @note This function is only available if the type is move constructible
-    */
+        * @brief Maps the value of the result
+        * @tparam F The function type
+        * @param func The function to map the value
+        * @return The result of the function
+        * @note This function is only available if the type is move constructible
+        */
         template<typename F>
             requires(std::is_move_constructible_v<T> && std::is_move_constructible_v<E>)
         auto MapMove(F func) -> Result<decltype(func(std::declval<T>())), E>
@@ -249,12 +249,12 @@ namespace Nebula
         }
 
         /**
-    * @brief Maps the value of the result
-    * @tparam F The function type
-    * @param func The function to map the value
-    * @return The result of the function
-    * @note This function is only available if the type is copy constructible
-    */
+        * @brief Maps the value of the result
+        * @tparam F The function type
+        * @param func The function to map the value
+        * @return The result of the function
+        * @note This function is only available if the type is copy constructible
+        */
         template<typename F>
             requires(std::is_copy_constructible_v<T> && std::is_copy_constructible_v<E>)
         auto MapCopy(F func) -> Result<decltype(func(static_cast<const T&>(std::declval<T>()))), E>
