@@ -4,6 +4,7 @@
 #include "NebulaRenderer/Windowing/Window.hpp"
 
 #include <imgui.h>
+#include <imgui_internal.h> // For Docking
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
@@ -34,27 +35,47 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     auto renderer = std::move(rendererResult.Unwrap());
     renderer->SetClearColor(0.1F, 0.1F, 0.1F, 1.0F);
 
+
     while (!window->ShouldClose())
     {
         window->SwapBuffers();
 
         renderer->NewFrame();
         Nebula::UI::BeginFrame();
-        ImGui::DockSpaceOverViewport();
 
-        // When we render, we set the FBO
+        auto dockspace_id = ImGui::DockSpaceOverViewport();
+        static bool dockspaceSetup = false;
+        if (!dockspaceSetup)
+        {
+            ImGui::DockBuilderRemoveNode(dockspace_id);
+            ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+            auto propertiesId = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 3.0F, nullptr, &dockspace_id);
+            auto assetsId     = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 3.0F, nullptr, &dockspace_id);
+            auto objectListId = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 2.0F, nullptr, &dockspace_id);
+            ImGui::DockBuilderDockWindow("Assets", assetsId);
+            ImGui::DockBuilderDockWindow("Object List", objectListId);
+            ImGui::DockBuilderDockWindow("Properties", propertiesId);
+            ImGui::DockBuilderDockWindow("Rendered Preview", dockspace_id);
+            ImGui::DockBuilderFinish(dockspace_id);
+
+            dockspaceSetup = true;
+        }
+
+        ImGui::Begin("Rendered Preview");
+
         renderer->Render();
-
-        ImGui::Begin("Hello, world!");
-
-        ImGui::Text("This is some useful text.");
-
         ImGui::End();
 
-        ImGui::Begin("Another window");
+        ImGui::Begin("Object List");
+        ImGui::Text("Object 1");
+        ImGui::End();
 
-        ImGui::Text("Hello, world!");
+        ImGui::Begin("Assets");
+        ImGui::Text("Asset 1");
+        ImGui::End();
 
+        ImGui::Begin("Properties");
+        ImGui::Text("Properties 1");
         ImGui::End();
 
 

@@ -35,7 +35,7 @@ namespace Nebula
             out vec4 FragColor;
             void main()
             {
-                FragColor = vec4(1.0, 0.5, 0.2, 1.0);
+                FragColor = vec4(1.0, 1.0, 1.0, 1.0);
             }
         )";
 
@@ -57,14 +57,14 @@ namespace Nebula
 
         glGenTextures(1, &m_Texture);
         glBindTexture(GL_TEXTURE_2D, m_Texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1'280 / 2, 720 / 2, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, static_cast<int>(m_Dimensions.Width), static_cast<int>(m_Dimensions.Height), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture, 0);
 
         glGenRenderbuffers(1, &m_RenderBuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1'280 / 2, 720 / 2);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<int>(m_Dimensions.Width), static_cast<int>(m_Dimensions.Height));
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer);
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -125,14 +125,12 @@ namespace Nebula
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Create ImGui window and render into it
-        ImGui::Begin("Renderer Preview");
         static ImVec2 size = ImGui::GetWindowSize();
         if (ImGui::GetWindowSize().x != size.x || ImGui::GetWindowSize().y != size.y) {
             size = ImGui::GetWindowSize();
             Resize({ static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y) });
         }
         ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_Texture)), ImVec2(static_cast<float>(m_Dimensions.Width), static_cast<float>(m_Dimensions.Height)));
-        ImGui::End();
     }
     Result<Ptr<Renderer>, RendererCreationError> CreateRenderer(const RenderingContext& context)
     {
