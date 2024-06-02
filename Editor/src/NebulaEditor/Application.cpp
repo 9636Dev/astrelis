@@ -18,8 +18,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         return -1;
     }
 
-    auto window         = std::move(creationResult.Unwrap());
-    auto rendererResult = Nebula::CreateRenderer(std::move(window.GetRef()));
+    auto window = std::move(creationResult.Unwrap());
+    window->SetEventCallback([](Nebula::Event& event) { NEBULA_CORE_LOG_TRACE("{0}", event.ToString()); });
+
+    auto rendererResult = Nebula::CreateRenderer({
+        window.GetRef(), {720, 480}
+    });
     if (rendererResult.IsErr())
     {
         NEBULA_CORE_LOG_ERROR("Failed to create renderer: {0}", static_cast<std::uint32_t>(rendererResult.UnwrapErr()));

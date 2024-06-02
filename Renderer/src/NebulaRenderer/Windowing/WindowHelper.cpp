@@ -1,11 +1,12 @@
 #include "WindowHelper.hpp"
-#include "GLFW/glfw3.h"
 
 #include "Event/KeyEvent.hpp"
 #include "Event/MouseEvent.hpp"
 #include "Event/WindowEvent.hpp"
 #include "NebulaCore/Log.hpp"
 #include "NebulaCore/Util/Assert.hpp"
+
+#include <GLFW/glfw3.h>
 
 namespace Nebula
 {

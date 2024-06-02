@@ -3,6 +3,7 @@
 #include "NebulaCore/Util/Pointer.hpp"
 #include "NebulaCore/Util/Result.hpp"
 #include "Windowing/Window.hpp"
+#include "Geometry/Dimension.hpp"
 
 namespace Nebula
 {
@@ -16,6 +17,8 @@ namespace Nebula
         Renderer& operator=(Renderer&&)      = delete;
         virtual ~Renderer()                  = default;
 
+        virtual void Resize(Dimension dimensions)                                  = 0;
+
         virtual void SetClearColor(float red, float green, float blue, float alpha) = 0;
         virtual void NewFrame()                                                     = 0;
         virtual void Render()                                                       = 0;
@@ -26,5 +29,11 @@ namespace Nebula
         RendererCreationFailed
     };
 
-    extern Result<Ptr<Renderer>, RendererCreationError> CreateRenderer(Ref<Window> window);
+    struct RenderingContext
+    {
+        Ref<Window> Window;
+        Dimension   Dimensions;
+    };
+
+    extern Result<Ptr<Renderer>, RendererCreationError> CreateRenderer(const RenderingContext& context);
 } // namespace Nebula

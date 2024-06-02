@@ -1,12 +1,13 @@
 #include "GLRenderer.hpp"
 
+#include "NebulaRenderer/Renderer.hpp"
 #include "OpenGL/GL.hpp"
 #include "imgui.h"
 #include <GL/glew.h>
 
 namespace Nebula
 {
-    GLRenderer::GLRenderer(Ref<Window> window) noexcept : m_Window(std::move(window))
+    GLRenderer::GLRenderer(const RenderingContext& context) noexcept : m_Window(context.Window), m_Dimensions(context.Dimensions)
     {
         OpenGL::GL::Init();
 
@@ -71,6 +72,36 @@ namespace Nebula
         }
     }
 
+    void GLRenderer::Resize(Dimension dimensions)
+    {
+        m_Dimensions = dimensions;
+        glDeleteFramebuffers(1, &m_FrameBuffer);
+        glDeleteTextures(1, &m_Texture);
+        glDeleteRenderbuffers(1, &m_RenderBuffer);
+
+        glGenTextures(1, &m_Texture);
+        glBindTexture(GL_TEXTURE_2D, m_Texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, static_cast<int>(m_Dimensions.Width), static_cast<int>(m_Dimensions.Height), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glGenRenderbuffers(1, &m_RenderBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<int>(m_Dimensions.Width), static_cast<int>(m_Dimensions.Height));
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glGenFramebuffers(1, &m_FrameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            NEBULA_CORE_LOG_ERROR("Framebuffer is not complete!");
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
     GLRenderer::~GLRenderer() { OpenGL::GL::Shutdown(); }
 
     void GLRenderer::SetClearColor(float red, float green, float blue, float alpha)
@@ -83,10 +114,9 @@ namespace Nebula
         OpenGL::GL::Clear(OpenGL::ClearBufferMask::ColorBufferBit | OpenGL::ClearBufferMask::DepthBufferBit);
     }
 
-    void GLRenderer::Render()
-    {
+    void GLRenderer::Render() {
         glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
-        glViewport(0, 0, 1'280 / 2, 720 / 2);
+        glViewport(0, 0, static_cast<int>(m_Dimensions.Width), static_cast<int>(m_Dimensions.Height));
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(m_ShaderProgram);
         glBindVertexArray(m_VertexArray);
@@ -96,13 +126,17 @@ namespace Nebula
 
         // Create ImGui window and render into it
         ImGui::Begin("Renderer Preview");
-        ImGui::Image(reinterpret_cast<void*>(m_Texture), ImVec2(1'280 / 2, 720 / 2));
+        static ImVec2 size = ImGui::GetWindowSize();
+        if (ImGui::GetWindowSize().x != size.x || ImGui::GetWindowSize().y != size.y) {
+            size = ImGui::GetWindowSize();
+            Resize({ static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y) });
+        }
+        ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_Texture)), ImVec2(static_cast<float>(m_Dimensions.Width), static_cast<float>(m_Dimensions.Height)));
         ImGui::End();
     }
-
-    Result<Ptr<Renderer>, RendererCreationError> CreateRenderer(Ref<Window> window)
+    Result<Ptr<Renderer>, RendererCreationError> CreateRenderer(const RenderingContext& context)
     {
         // Check if the Window is compatible with the Renderer
-        return MakePtr<GLRenderer>(window).Cast<Renderer>();
+        return MakePtr<GLRenderer>(context).Cast<Renderer>();
     }
 } // namespace Nebula
