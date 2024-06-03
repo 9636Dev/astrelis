@@ -30,6 +30,8 @@ set(NEBULA_RENDERER_SOURCES
 set(NEBULA_RENDERER_PLATFORM_SOURCES
     $<$<PLATFORM_ID:Linux>:src/NebulaRenderer/Windowing/Linux/LinuxWindow.hpp>
     $<$<PLATFORM_ID:Linux>:src/NebulaRenderer/Windowing/Linux/LinuxWindow.cpp>
+    $<$<PLATFORM_ID:Darwin>:src/NebulaRenderer/Windowing/Apple/AppleWindow.hpp>
+    $<$<PLATFORM_ID:Darwin>:src/NebulaRenderer/Windowing/Apple/AppleWindow.cpp>
 )
 
 # Find GLEW and OpenGL
