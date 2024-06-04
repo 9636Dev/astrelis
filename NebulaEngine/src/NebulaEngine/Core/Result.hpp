@@ -11,14 +11,15 @@ namespace Nebula
 
     template<typename T, typename E> class Result
     {
-    public:
+    private:
         struct SameType
         {
             T value;
             bool isOk;
         };
 
-        using IsSameType  = std::bool_constant<std::is_same_v<T, E>>;
+        using IsSameType = std::bool_constant<std::is_same_v<T, E>>;
+    public:
         using VariantType = std::variant<T, E>;
         using Type        = std::conditional_t<IsSameType::value, SameType, VariantType>;
         using ResultType  = Result<T, E>;

@@ -5,6 +5,8 @@
 
 namespace Nebula
 {
+    Application* Application::s_Instance = nullptr;
+
     Application::Application(ApplicationSpecification specification)
         : m_Specification(std::move(specification))
     {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PlatformDetection.hpp"
+
 #ifdef NEBULA_DEBUG
     #ifdef NEBULA_PLATFORM_WINDOWS
         #define NEBULA_DEBUG_BREAK() __debugbreak()
