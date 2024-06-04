@@ -11,7 +11,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Nebula::Log::Init();
     NEBULA_CORE_LOG_INFO("Starting Nebula Application");
 
-    Nebula::WindowProps props("Nebula", 1'280, 720);
+    constexpr static std::uint32_t width  = 1'280;
+    constexpr static std::uint32_t height = 720;
+    Nebula::WindowProps props("Nebula", width, height);
     auto creationResult = Nebula::CreateWindow(props);
     if (creationResult.IsErr())
     {
@@ -49,9 +51,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         {
             ImGui::DockBuilderRemoveNode(dockspace_id);
             ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-            auto propertiesId = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 3.0F, nullptr, &dockspace_id);
-            auto assetsId     = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 3.0F, nullptr, &dockspace_id);
-            auto objectListId = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 2.0F, nullptr, &dockspace_id);
+
+            auto propertiesId = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 12.0F, nullptr, &dockspace_id);
+            auto assetsId     = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 16.0F, nullptr, &dockspace_id);
+            auto objectListId = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 16.0F, nullptr, &dockspace_id);
             ImGui::DockBuilderDockWindow("Assets", assetsId);
             ImGui::DockBuilderDockWindow("Object List", objectListId);
             ImGui::DockBuilderDockWindow("Properties", propertiesId);
