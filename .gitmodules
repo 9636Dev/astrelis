@@ -5,17 +5,17 @@
 	path = vendor/benchmark
 	url = https://github.com/google/benchmark
 [submodule "Core/vendor/spdlog"]
-	path = Core/vendor/spdlog
+	path = NebulaEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "Core/vendor/gsl"]
-	path = Core/vendor/gsl
+	path = NebulaEngine/vendor/gsl
 	url = https://github.com/microsoft/GSL
 [submodule "glfw"]
 	path = glfw
 	url = https://github.com/glfw/glfw
 [submodule "Renderer/vendor/glfw"]
-	path = Renderer/vendor/glfw
+	path = NebulaEngine/vendor/glfw
 	url = https://github.com/glfw/glfw
 [submodule "Renderer/vendor/imgui"]
-	path = Renderer/vendor/imgui
+	path = NebulaEngine/vendor/imgui
 	url = https://github.com/ocornut/imgui
