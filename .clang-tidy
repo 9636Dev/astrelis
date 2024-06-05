@@ -14,6 +14,7 @@ Checks: '*,
 -cppcoreguidelines-pro-type-vararg,
 -cppcoreguidelines-pro-type-reinterpret-cast,
 -cppcoreguidelines-avoid-magic-numbers,
+-cppcoreguidelines-non-private-member-variables-in-classes,
 
 -bugprone-easily-swappable-parameters,
 -bugprone-lambda-function-name,

@@ -63,6 +63,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(vendor)
 
 set(NEBULA_ENGINE_SOURCES
+    # Core
     src/NebulaEngine/Core/PlatformDetection.hpp
     src/NebulaEngine/Core/Log.hpp
     src/NebulaEngine/Core/Log.cpp
@@ -73,11 +74,31 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Application.hpp
     src/NebulaEngine/Core/Application.cpp
     src/NebulaEngine/Core/Entrypoint.hpp
+    src/NebulaEngine/Core/Window.hpp
+    src/NebulaEngine/Core/Utils/Function.hpp
+    src/NebulaEngine/Core/Layer.hpp
+    src/NebulaEngine/Core/Layer.cpp
+    src/NebulaEngine/Core/LayerStack.hpp
+    src/NebulaEngine/Core/LayerStack.cpp
+
+    # Renderer
+    src/NebulaEngine/Renderer/RenderContext.hpp
+    src/NebulaEngine/Renderer/RenderContext.cpp
+
+    # UI
+    src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
+    src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp
+
+    # Platform
+    src/NebulaEngine/Platform/Linux/LinuxWindow.hpp
+    src/NebulaEngine/Platform/Linux/LinuxWindow.cpp
+    src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.hpp
+    src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.cpp
+    src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.hpp
+    src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.cpp
 )
 
 set(NEBULA_ENGINE_PCH_SOURCES
-    pch/Nebulapch.hpp
-    pch/Nebulapch.cpp
 )
 
 
@@ -89,16 +110,14 @@ add_library(NebulaEngine_Engine SHARED
 target_include_directories(NebulaEngine_Engine
 PUBLIC
     src/
-    pch/
-)
-
-target_precompile_headers(NebulaEngine_Engine PUBLIC
-    pch/Nebulapch.hpp
 )
 
 target_link_libraries(NebulaEngine_Engine PUBLIC
     spdlog::spdlog
     Microsoft.GSL::GSL
+    glfw
+    glad
+    ImGui
 )
 
 target_compile_definitions(NebulaEngine_Engine

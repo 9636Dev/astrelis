@@ -282,6 +282,30 @@ namespace Nebula
                 return UnwrapErr();
             }
         }
+
+        template<typename... Args> static Result<T, E> Ok(Args&&... args)
+        {
+            if constexpr (std::is_same_v<T, E>)
+            {
+                return ResultType(T(std::forward<Args>(args)...), true);
+            }
+            else
+            {
+                return ResultType(T(std::forward<Args>(args)...));
+            }
+        }
+
+        template<typename... Args> static Result<T, E> Err(Args&&... args)
+        {
+            if constexpr (std::is_same_v<T, E>)
+            {
+                return ResultType(T(std::forward<Args>(args)...), false);
+            }
+            else
+            {
+                return ResultType(E(std::forward<Args>(args)...));
+            }
+        }
     private:
         Type m_Value;
 
@@ -293,27 +317,4 @@ namespace Nebula
                       "E must be copy or move constructible");
     };
 
-    template<typename T, typename E, typename... Args> Result<T, E> MakeOkResult(Args&&... args)
-    {
-        if constexpr (std::is_same_v<T, E>)
-        {
-            return Result<T, E>(T(std::forward<Args>(args)...), true);
-        }
-        else
-        {
-            return Result<T, E>(T(std::forward<Args>(args)...));
-        }
-    }
-
-    template<typename T, typename E, typename... Args> Result<T, E> MakeErrResult(Args&&... args)
-    {
-        if constexpr (std::is_same_v<T, E>)
-        {
-            return Result<T, E>(T(std::forward<Args>(args)...), false);
-        }
-        else
-        {
-            return Result<T, E>(E(std::forward<Args>(args)...));
-        }
-    }
 } // namespace Nebula

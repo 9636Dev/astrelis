@@ -65,8 +65,12 @@ namespace Nebula
         [[nodiscard]] virtual std::uint32_t GetCategoryFlags() const noexcept = 0;
         [[nodiscard]] virtual std::string GetName() const                     = 0;
         [[nodiscard]] virtual std::string ToString() const                    = 0;
-    private:
-        bool m_Handled = false;
+
+        bool Handled = false;
+        bool IsInCategory(const EventCategory& category) const noexcept
+        {
+            return (GetCategoryFlags() & static_cast<std::uint32_t>(category)) != 0U;
+        }
     };
 
     class EventDispatcher
@@ -75,18 +79,18 @@ namespace Nebula
         explicit EventDispatcher(Event& p_Event) noexcept : m_Event(p_Event) {}
 
         // F is derived by the compiler
-        template<typename T, typename F> bool Dispatch(const F& func)
+        template<typename T, typename F> void Dispatch(const F& func)
         {
             if (m_Event.GetEventType() == T::GetStaticType())
             {
-                m_Event.m_Handled |= func(static_cast<T&>(m_Event));
-                return true;
+                func(static_cast<T&>(m_Event));
             }
-            return false;
         }
-
-        [[nodiscard]] bool IsHandled() const noexcept { return m_Event.m_Handled; }
     private:
         Event& m_Event; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
     };
+
+    // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+    #define NEBULA_BIND_EVENT_FN(func) [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
+
 } // namespace Nebula
