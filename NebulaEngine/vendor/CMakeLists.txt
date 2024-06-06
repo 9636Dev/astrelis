@@ -19,4 +19,5 @@ set(IMGUI_SRC
 )
 
 add_library(ImGui STATIC ${IMGUI_SRC})
+target_link_libraries(ImGui glad glfw)
 target_include_directories(ImGui PUBLIC imgui)

@@ -90,8 +90,14 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp
 
     # Platform
-    src/NebulaEngine/Platform/Linux/LinuxWindow.hpp
-    src/NebulaEngine/Platform/Linux/LinuxWindow.cpp
+    $<$<STREQUAL:${NEBULA_PLATFORM},Linux>:
+        src/NebulaEngine/Platform/Linux/LinuxWindow.hpp
+        src/NebulaEngine/Platform/Linux/LinuxWindow.cpp
+    >
+    $<$<STREQUAL:${NEBULA_PLATFORM},MacOS>:
+        src/NebulaEngine/Platform/MacOS/MacOSWindow.hpp
+        src/NebulaEngine/Platform/MacOS/MacOSWindow.cpp
+    >
     src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.hpp
     src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.cpp
     src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.hpp

@@ -10,6 +10,8 @@ namespace Nebula
     {
     public:
         static Result<GLFWwindow*, std::string> CreateWindow(const WindowProps &props);
+        // This creates 4.1 for MacOS
+        static Result<GLFWwindow*, std::string> CreateLegacyWindow(const WindowProps &props);
         static void DestroyWindow(GLFWwindow *window);
 
         static void SetEventCallbacks(GLFWwindow* window, BaseWindowData& data);

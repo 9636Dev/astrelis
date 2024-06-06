@@ -41,6 +41,40 @@ namespace Nebula
         return Result<GLFWwindow*, std::string>::Ok(window);
     }
 
+    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateLegacyWindow(const WindowProps &props)
+    {
+        if (!InitGLFW())
+        {
+            return Result<GLFWwindow*, std::string>::Err("Failed to initialize GLFW");
+        }
+
+        // Set the window hints
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+
+        // Create the window
+        if (props.Width > std::numeric_limits<int>::max() || props.Height > std::numeric_limits<int>::max())
+        {
+            TerminateGLFW();
+            return Result<GLFWwindow*, std::string>::Err("Window width and height must be less than or equal to " +
+                                                         std::to_string(std::numeric_limits<int>::max()));
+        }
+
+        GLFWwindow* window =
+            glfwCreateWindow(static_cast<std::int32_t>(props.Width), static_cast<std::int32_t>(props.Height),
+                             props.Title.c_str(), nullptr, nullptr);
+        if (window == nullptr)
+        {
+            TerminateGLFW();
+            return Result<GLFWwindow*, std::string>::Err("Failed to create GLFW window");
+        }
+
+        s_WindowCount++;
+        return Result<GLFWwindow*, std::string>::Ok(window);
+    }
+
     void GLFWWindowHelper::DestroyWindow(GLFWwindow* window)
     {
         glfwDestroyWindow(window);

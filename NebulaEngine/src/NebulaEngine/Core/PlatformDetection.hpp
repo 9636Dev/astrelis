@@ -3,6 +3,7 @@
 #ifdef _WIN32
     #define NEBULA_PLATFORM_WINDOWS
 #elif defined(__APPLE__) || defined(__MACH__)
+    #include <TargetConditionals.h>
     #if TARGET_IPHONE_SIMULATOR == 1
         #error "IOS simulator is not supported!"
     #elif TARGET_OS_IPHONE == 1
