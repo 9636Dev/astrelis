@@ -25,12 +25,13 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::OnUpdate()
 {
-    NEBULA_LOG_INFO("Sandbox Layer Updated");
 }
 
 void SandboxLayer::OnUIRender()
 {
     ImGui::Begin("Sandbox Layer");
+
+    ImGui::Text("Hello, World!");
     ImGui::End();
 }
 

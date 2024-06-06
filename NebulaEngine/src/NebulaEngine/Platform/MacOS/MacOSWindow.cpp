@@ -24,7 +24,7 @@ namespace Nebula
     void MacOSWindow::OnUpdate()
     {
         glfwPollEvents();
-        // Metal doesn't need to swap buffers
+        m_RenderContext->SwapBuffers();
     }
 
     Result<Ptr<Window>, std::string> CreateWindow(const WindowProps &props)
