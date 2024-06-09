@@ -23,11 +23,11 @@ namespace Nebula
         m_RenderContext->SwapBuffers();
     }
 
-    Result<Ptr<Window>, std::string> CreateWindow(const WindowProps &props)
+    Result<Ptr<LinuxWindow>, std::string> LinuxWindow::Create(const WindowProps &props)
     {
         auto res = GLFWWindowHelper::CreateWindow(props);
         return res.MapMove([props](GLFWwindow* window) {
-            return MakePtr<LinuxWindow>(window, LinuxWindowData(props.Title, props.Width, props.Height)).Cast<Window>();
+            return MakePtr<LinuxWindow>(window, LinuxWindowData(props.Title, props.Width, props.Height));
         });
     }
 } // namespace Nebula

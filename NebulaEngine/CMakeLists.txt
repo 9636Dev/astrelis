@@ -71,10 +71,12 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Base.hpp
     src/NebulaEngine/Core/Result.hpp
     src/NebulaEngine/Core/Pointer.hpp
+    src/NebulaEngine/Core/Bounds.hpp
     src/NebulaEngine/Core/Application.hpp
     src/NebulaEngine/Core/Application.cpp
     src/NebulaEngine/Core/Entrypoint.hpp
     src/NebulaEngine/Core/Window.hpp
+    src/NebulaEngine/Core/Window.cpp
     src/NebulaEngine/Core/Utils/Function.hpp
     src/NebulaEngine/Core/Layer.hpp
     src/NebulaEngine/Core/Layer.cpp
@@ -84,6 +86,8 @@ set(NEBULA_ENGINE_SOURCES
     # Renderer
     src/NebulaEngine/Renderer/RenderContext.hpp
     src/NebulaEngine/Renderer/RenderContext.cpp
+    src/NebulaEngine/Renderer/Renderer.hpp
+    src/NebulaEngine/Renderer/Renderer.cpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -102,6 +106,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.cpp
     src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.hpp
     src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.cpp
+    src/NebulaEngine/Platform/OpenGL/OpenGLRenderer.hpp
+    src/NebulaEngine/Platform/OpenGL/OpenGLRenderer.cpp
 )
 
 set(NEBULA_ENGINE_PCH_SOURCES

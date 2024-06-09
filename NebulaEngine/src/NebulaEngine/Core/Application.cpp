@@ -18,7 +18,7 @@ namespace Nebula
         NEBULA_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
 
-        auto res = CreateWindow();
+        auto res = Window::Create();
         if (res.IsErr())
         {
             NEBULA_LOG_ERROR("Failed to create window: {0}", res.UnwrapErr());
@@ -30,6 +30,18 @@ namespace Nebula
         gsl::owner<ImGuiLayer*> imguiLayer = new ImGuiLayer();
         PushOverlay(imguiLayer); // Ownership transferred to LayerStack
         m_ImGuiLayer = imguiLayer;
+
+        auto rendererRes =
+            Nebula::Renderer::Create(m_Window.GetRef(), Nebula::Bounds(0, 0, static_cast<int32_t>(m_Window->GetWidth()),
+                                                                       static_cast<int32_t>(m_Window->GetHeight())));
+        if (res.IsOk())
+        {
+            m_Renderer = std::move(rendererRes.Unwrap());
+        }
+        else
+        {
+            NEBULA_LOG_ERROR("Failed to create renderer: {0}", rendererRes.UnwrapErr());
+        }
     }
 
     Application::~Application() = default;
@@ -38,6 +50,8 @@ namespace Nebula
     {
         while (m_Running)
         {
+            m_Renderer->Clear();
+
             for (auto* layer : m_LayerStack)
             {
                 layer->OnUpdate();

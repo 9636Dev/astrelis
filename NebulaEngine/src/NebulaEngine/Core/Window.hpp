@@ -60,7 +60,8 @@ namespace Nebula
         virtual void* GetNativeWindow() const = 0;
         virtual std::uint32_t GetWidth() const = 0;
         virtual std::uint32_t GetHeight() const = 0;
+
+        static Result<Ptr<Window>, std::string> Create(const WindowProps& props = WindowProps());
     };
 
-    extern Result<Ptr<Window>, std::string> CreateWindow(const WindowProps& props = WindowProps());
 } // namespace Nebula

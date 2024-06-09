@@ -3,8 +3,7 @@
 
 #include <utility>
 
-SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec)
-    : Nebula::Application(std::move(spec))
+SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec) : Nebula::Application(std::move(spec))
 {
     NEBULA_LOG_INFO("Sandbox Application Initializing");
 
@@ -13,7 +12,4 @@ SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec)
     layer = nullptr;
 }
 
-SandboxApplication::~SandboxApplication()
-{
-    NEBULA_LOG_INFO("Sandbox Application Destroyed");
-}
+SandboxApplication::~SandboxApplication() { NEBULA_LOG_INFO("Sandbox Application Destroyed"); }
