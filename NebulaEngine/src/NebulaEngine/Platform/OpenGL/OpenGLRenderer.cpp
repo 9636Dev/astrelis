@@ -9,10 +9,31 @@
 
 namespace Nebula
 {
+    [[maybe_unused]] static void APIENTRY OpenGLMessageCallback(GLenum source,
+                                                                GLenum type,
+                                                                GLuint errorId,
+                                                                GLenum severity,
+                                                                GLsizei length,
+                                                                const GLchar* message,
+                                                                const void* userParam)
+    {
+        NEBULA_UNUSED(source);
+        NEBULA_UNUSED(type);
+        NEBULA_UNUSED(severity);
+        NEBULA_UNUSED(length);
+        NEBULA_UNUSED(userParam);
+        NEBULA_CORE_LOG_ERROR("OpenGL Error: {0} ({1})", message, errorId);
+    }
+
     OpenGLRenderer::OpenGLRenderer(Ref<Window> window, Bounds bounds) : m_Shader(glCreateProgram()), m_Bounds(bounds)
     {
         // To suppres the warning about using a const reference, in the future we need to store window for changing the context
         auto windowMoved = std::move(window);
+
+        // TODO(9636D): Write this properly by abstracting OpenGL calls
+        //glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+        //glEnable(GL_DEBUG_OUTPUT);
+        //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         NEBULA_UNUSED(windowMoved);
 
         glViewport(m_Bounds.X, m_Bounds.Y, m_Bounds.Width, m_Bounds.Height);
@@ -24,9 +45,11 @@ namespace Nebula
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, Position)));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              reinterpret_cast<void*>(offsetof(Vertex, Position)));
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, Color)));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              reinterpret_cast<void*>(offsetof(Vertex, Color)));
 
         glGenBuffers(1, &m_IBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
@@ -61,35 +84,64 @@ namespace Nebula
             }
         )";
 
+        GLint success       = 0;
         GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
         glCompileShader(vertexShader);
 
-        GLint success;
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            GLchar infoLog[512];
-            glGetShaderInfoLog(vertexShader, sizeof(infoLog), nullptr, infoLog);
-            NEBULA_CORE_LOG_ERROR("Vertex Shader Compilation Error: {0}", infoLog);
+        if (success == GL_FALSE)
+        {
+            GLint maxLength = 0;
+            glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+            std::vector<GLchar> infoLog(maxLength);
+            glGetShaderInfoLog(vertexShader, maxLength, &maxLength, infoLog.data());
+
+            glDeleteShader(vertexShader);
+
+            NEBULA_CORE_LOG_ERROR("Failed to compile vertex shader: {0}", infoLog.data());
+            throw std::runtime_error("Failed to compile vertex shader");
         }
 
         GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
         glCompileShader(fragmentShader);
-        glLinkProgram(m_Shader);
 
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            GLchar infoLog[512];
-            glGetShaderInfoLog(fragmentShader, sizeof(infoLog), nullptr, infoLog);
-            NEBULA_CORE_LOG_ERROR("Fragment Shader Compilation Error: {0}", infoLog);
+        if (success == GL_FALSE)
+        {
+            GLint maxLength = 0;
+            glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+            std::vector<GLchar> infoLog(maxLength);
+            glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, infoLog.data());
+
+            glDeleteShader(vertexShader);
+            glDeleteShader(fragmentShader);
+
+            NEBULA_CORE_LOG_ERROR("Failed to compile fragment shader: {0}", infoLog.data());
+            throw std::runtime_error("Failed to compile fragment shader");
         }
 
-        GLenum error = glGetError();
-        while (error != GL_NO_ERROR)
+        glAttachShader(m_Shader, vertexShader);
+        glAttachShader(m_Shader, fragmentShader);
+        glLinkProgram(m_Shader);
+
+        glGetProgramiv(m_Shader, GL_LINK_STATUS, &success);
+        if (success == GL_FALSE)
         {
-            NEBULA_CORE_LOG_ERROR("OpenGL Error: {0}", error);
-            error = glGetError();
+            GLint maxLength = 0;
+            glGetProgramiv(m_Shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+            std::vector<GLchar> infoLog(maxLength);
+            glGetProgramInfoLog(m_Shader, maxLength, &maxLength, infoLog.data());
+
+            glDeleteProgram(m_Shader);
+            glDeleteShader(vertexShader);
+            glDeleteShader(fragmentShader);
+
+            NEBULA_CORE_LOG_ERROR("Failed to link shader program: {0}", infoLog.data());
+            throw std::runtime_error("Failed to link shader program");
         }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -103,10 +155,7 @@ namespace Nebula
 
     void OpenGLRenderer::BeginFrame() { Clear(); }
 
-    void OpenGLRenderer::EndFrame()
-    {
-        DrawBatch();
-    }
+    void OpenGLRenderer::EndFrame() { DrawBatch(); }
 
     void OpenGLRenderer::DrawMesh(const StaticMesh& mesh, const Transform& transform)
     {
@@ -120,9 +169,17 @@ namespace Nebula
             m_Vertices.push_back(vertex);
         };
 
-        m_Indices.insert(m_Indices.end(), mesh.Indices.begin(), mesh.Indices.end());
+        // We need to copy the indices
+        for (std::size_t i = 0; i < mesh.Indices.size(); i++)
+        {
+            m_Indices.push_back(mesh.Indices[i] + m_Vertices.size() - mesh.Vertices.size());
+        }
 
-        DrawBatch();
+        if (m_Vertices.size() >= 1'000)
+        {
+            // Arbitrary number
+            DrawBatch();
+        }
     }
 
     void OpenGLRenderer::DrawBatch()
@@ -133,63 +190,14 @@ namespace Nebula
         }
 
         glBindVertexArray(m_VAO);
-        glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(Vertex), m_Vertices.data(), GL_DYNAMIC_DRAW);
-
-        GLuint error = glGetError();
-        while (error != GL_NO_ERROR)
-        {
-            NEBULA_CORE_LOG_ERROR("OpenGL Error: {0}", error);
-            error = glGetError();
-        }
-
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Indices.size() * sizeof(std::uint32_t), m_Indices.data(), GL_DYNAMIC_DRAW);
-
-        error = glGetError();
-        while (error != GL_NO_ERROR)
-        {
-            NEBULA_CORE_LOG_ERROR("OpenGL Error: {0}", error);
-            error = glGetError();
-        }
-
         glUseProgram(m_Shader);
 
-        GLint shader;
-        glGetIntegerv(GL_CURRENT_PROGRAM, &shader);
-        if (shader != (int)m_Shader)
-        {
-            NEBULA_CORE_LOG_ERROR("Shader not loaded correctly");
-        }
+        glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(Vertex), m_Vertices.data(), GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Indices.size() * sizeof(uint32_t), m_Indices.data(), GL_STREAM_DRAW);
 
-        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &shader);
-        if (shader != (int)m_VAO)
-        {
-            NEBULA_CORE_LOG_ERROR("VAO not loaded correctly");
-        }
-
-        glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_BINDING, &shader);
-        if (shader != (int)m_VBO)
-        {
-            NEBULA_CORE_LOG_ERROR("VBO not loaded correctly");
-        }
-
-        glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_BINDING, &shader);
-        if (shader != (int)m_IBO)
-        {
-            NEBULA_CORE_LOG_ERROR("IBO not loaded correctly");
-        }
-
-
+        NEBULA_CORE_LOG_INFO("Drawing {0} vertices and {1} indices", m_Vertices.size(), m_Indices.size());
         glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, nullptr);
-
-        error = glGetError();
-        while (error != GL_NO_ERROR)
-        {
-            NEBULA_CORE_LOG_ERROR("OpenGL Error: {0}", error);
-            error = glGetError();
-        }
-
 
         m_Vertices.clear();
         m_Indices.clear();

@@ -22,5 +22,6 @@ public:
 
 private:
     Nebula::StaticMesh m_Mesh;
-    Nebula::Transform m_Transform;
+    Nebula::Transform m_Transform1;
+    Nebula::Transform m_Transform2;
 };
