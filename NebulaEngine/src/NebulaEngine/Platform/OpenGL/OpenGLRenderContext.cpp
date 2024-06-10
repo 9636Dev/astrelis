@@ -6,6 +6,8 @@
 
 #include "NebulaEngine/Core/Base.hpp"
 
+#include "API/GL.hpp"
+
 namespace Nebula
 {
     OpenGLRenderContext::OpenGLRenderContext(GLFWwindow* windowHandle)
@@ -16,8 +18,10 @@ namespace Nebula
     void OpenGLRenderContext::Init()
     {
         glfwMakeContextCurrent(m_WindowHandle);
-        int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-        NEBULA_CORE_ASSERT(status, "Failed to initialize Glad!");
+        auto res = Nebula::OpenGL::GL::Init();
+        NEBULA_CORE_VERIFY(res.Version.Major != 0, "Failed to initialize OpenGL");
+        NEBULA_CORE_LOG_INFO("OpenGL Version: {0}.{1}", res.Version.Major, res.Version.Minor);
+        NEBULA_CORE_LOG_INFO("OpenGL Debug Callback: {0}", res.DebugCallback);
     }
 
     void OpenGLRenderContext::SwapBuffers()

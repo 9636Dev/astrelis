@@ -9,6 +9,7 @@ namespace Nebula
     {
         GLFWWindowHelper::SetEventCallbacks(m_Window, m_Data);
         m_RenderContext = RenderContext::Create(m_Window);
+        m_RenderContext->Init();
         glfwMakeContextCurrent(m_Window);
     }
 

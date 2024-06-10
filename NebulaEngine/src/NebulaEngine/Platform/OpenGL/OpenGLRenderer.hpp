@@ -1,7 +1,13 @@
 #pragma once
 
+#include "NebulaEngine/Platform/OpenGL/API/Shader.hpp"
+#include "NebulaEngine/Platform/OpenGL/API/VertexBuffer.hpp"
 #include "NebulaEngine/Renderer/Renderer.hpp"
 #include "NebulaEngine/Renderer/Vertex.hpp"
+
+#include "API/VertexArray.hpp"
+#include "API/IndexBuffer.hpp"
+
 #include <vector>
 
 namespace Nebula
@@ -25,10 +31,10 @@ namespace Nebula
         static Result<Ptr<OpenGLRenderer>, std::string> Create(Ref<Window> window, Bounds bounds);
 
     private:
-        std::uint32_t m_VAO;
-        std::uint32_t m_VBO;
-        std::uint32_t m_IBO;
-        std::uint32_t m_Shader;
+        OpenGL::VertexArray m_VertexArray;
+        OpenGL::VertexBuffer m_VertexBuffer;
+        OpenGL::Program m_Program;
+        OpenGL::IndexBuffer m_IndexBuffer;
 
         void DrawBatch();
 

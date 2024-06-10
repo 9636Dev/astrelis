@@ -112,6 +112,18 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.cpp
     src/NebulaEngine/Platform/OpenGL/OpenGLRenderer.hpp
     src/NebulaEngine/Platform/OpenGL/OpenGLRenderer.cpp
+    src/NebulaEngine/Platform/OpenGL/API/GL.hpp
+    src/NebulaEngine/Platform/OpenGL/API/GL.cpp
+    src/NebulaEngine/Platform/OpenGL/API/Enum.hpp
+    src/NebulaEngine/Platform/OpenGL/API/Enum.cpp
+    src/NebulaEngine/Platform/OpenGL/API/IndexBuffer.hpp
+    src/NebulaEngine/Platform/OpenGL/API/IndexBuffer.cpp
+    src/NebulaEngine/Platform/OpenGL/API/VertexArray.hpp
+    src/NebulaEngine/Platform/OpenGL/API/VertexArray.cpp
+    src/NebulaEngine/Platform/OpenGL/API/VertexBuffer.hpp
+    src/NebulaEngine/Platform/OpenGL/API/VertexBuffer.cpp
+    src/NebulaEngine/Platform/OpenGL/API/Shader.hpp
+    src/NebulaEngine/Platform/OpenGL/API/Shader.cpp
 )
 
 set(NEBULA_ENGINE_PCH_SOURCES
