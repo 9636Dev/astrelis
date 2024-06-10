@@ -52,6 +52,7 @@ namespace Nebula
         static Application& Get() { return *s_Instance; }
 
         Window& GetWindow() { return *m_Window.Get(); }
+        Renderer& GetRenderer() { return *m_Renderer.Get(); }
     protected:
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* overlay);

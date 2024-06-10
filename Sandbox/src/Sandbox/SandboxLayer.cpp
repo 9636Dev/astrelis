@@ -1,10 +1,17 @@
 #include "SandboxLayer.hpp"
 
+#include "NebulaEngine/Core/Application.hpp"
 #include "NebulaEngine/Core/Base.hpp"
 #include "imgui.h"
 
 SandboxLayer::SandboxLayer()
 {
+    m_Mesh.Vertices = {
+        { { -0.5F, -0.5F, 0.0F }, { 1.0F, 0.0F, 0.0F } },
+        { { 0.5F, -0.5F, 0.0F }, { 0.0F, 1.0F, 0.0F } },
+        { { 0.0F, 0.5F, 0.0F }, { 0.0F, 0.0F, 1.0F } },
+    };
+    m_Mesh.Indices = { 0, 1, 2 };
     NEBULA_LOG_INFO("Sandbox Layer Initializing");
 }
 
@@ -25,6 +32,7 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::OnUpdate()
 {
+    Nebula::Application::Get().GetRenderer().DrawMesh(m_Mesh, m_Transform);
 }
 
 void SandboxLayer::OnUIRender()

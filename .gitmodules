@@ -19,3 +19,6 @@
 [submodule "Renderer/vendor/imgui"]
 	path = NebulaEngine/vendor/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "NebulaEngine/vendor/Eigen"]
+	path = NebulaEngine/vendor/Eigen
+	url = https://gitlab.com/libeigen/eigen.git

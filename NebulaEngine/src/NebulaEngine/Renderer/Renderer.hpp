@@ -5,6 +5,9 @@
 #include "NebulaEngine/Core/Result.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 
+#include "Mesh.hpp"
+#include "Transform.hpp"
+
 #include <string>
 
 namespace Nebula
@@ -26,8 +29,13 @@ namespace Nebula
         Renderer& operator=(Renderer&&)      = delete;
 
         virtual void Clear() = 0;
+        virtual void DrawMesh(const StaticMesh& mesh, const Transform& transform) = 0;
+        // This should clear the screen
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
 
         static Result<Ptr<Renderer>, std::string> Create(Ref<Window> window, Bounds bounds);
+
     private:
         static RendererAPI s_RendererAPI;
     };

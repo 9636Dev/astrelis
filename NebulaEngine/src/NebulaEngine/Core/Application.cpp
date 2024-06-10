@@ -50,7 +50,7 @@ namespace Nebula
     {
         while (m_Running)
         {
-            m_Renderer->Clear();
+            m_Renderer->BeginFrame();
 
             for (auto* layer : m_LayerStack)
             {
@@ -66,6 +66,7 @@ namespace Nebula
 
             m_ImGuiLayer->End();
 
+            m_Renderer->EndFrame();
             m_Window->OnUpdate();
         }
     }

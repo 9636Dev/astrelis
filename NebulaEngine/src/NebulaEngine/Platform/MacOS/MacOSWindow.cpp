@@ -27,11 +27,11 @@ namespace Nebula
         m_RenderContext->SwapBuffers();
     }
 
-    Result<Ptr<Window>, std::string> CreateWindow(const WindowProps &props)
+    Result<Ptr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps &props)
     {
         auto res = GLFWWindowHelper::CreateLegacyWindow(props);
         return res.MapMove([props](GLFWwindow* window) {
-            return MakePtr<MacOSWindow>(window, MacOSWindowData(props.Title, props.Width, props.Height)).Cast<Window>();
+            return MakePtr<MacOSWindow>(window, MacOSWindowData(props.Title, props.Width, props.Height));
         });
     }
 } // namespace Nebula

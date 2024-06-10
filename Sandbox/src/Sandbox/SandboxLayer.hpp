@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NebulaEngine/Core/Layer.hpp"
+#include "NebulaEngine/Renderer/Mesh.hpp"
+#include "NebulaEngine/Renderer/Transform.hpp"
 
 class SandboxLayer : public Nebula::Layer
 {
@@ -17,4 +19,8 @@ public:
     void OnUpdate() override;
     void OnUIRender() override;
     void OnEvent(Nebula::Event& event) override;
+
+private:
+    Nebula::StaticMesh m_Mesh;
+    Nebula::Transform m_Transform;
 };

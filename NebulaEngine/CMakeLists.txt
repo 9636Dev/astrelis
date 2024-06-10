@@ -82,12 +82,16 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Layer.cpp
     src/NebulaEngine/Core/LayerStack.hpp
     src/NebulaEngine/Core/LayerStack.cpp
+    src/NebulaEngine/Core/Math.hpp
 
     # Renderer
     src/NebulaEngine/Renderer/RenderContext.hpp
     src/NebulaEngine/Renderer/RenderContext.cpp
     src/NebulaEngine/Renderer/Renderer.hpp
     src/NebulaEngine/Renderer/Renderer.cpp
+    src/NebulaEngine/Renderer/Mesh.hpp
+    src/NebulaEngine/Renderer/Transform.hpp
+    src/NebulaEngine/Renderer/Transform.cpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -130,6 +134,7 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
     glfw
     glad
     ImGui
+    Eigen3::Eigen
 )
 
 target_compile_definitions(NebulaEngine_Engine
