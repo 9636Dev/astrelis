@@ -31,6 +31,7 @@ namespace Nebula
             m_InstanceVertexArray.AddVertexBuffer(m_InstanceVertexBuffer, format);
 
             OpenGL::VertexBufferFormat instanceFormat;
+            instanceFormat.SetStartIndex(2);
             instanceFormat.PushInstanced<float>(4, 1);
             instanceFormat.PushInstanced<float>(4, 1);
             instanceFormat.PushInstanced<float>(4, 1);
@@ -102,14 +103,16 @@ namespace Nebula
 
                 layout(location = 0) in vec3 a_Position;
                 layout(location = 1) in vec4 a_Color;
-                // This will take the locations 2, 3, 4, 5
-                layout(location = 2) in vec4 a_ModelMatrix[4];
+                layout(location = 2) in vec4 a_ModelMatrix_0;
+                layout(location = 3) in vec4 a_ModelMatrix_1;
+                layout(location = 4) in vec4 a_ModelMatrix_2;
+                layout(location = 5) in vec4 a_ModelMatrix_3;
 
                 out vec4 v_Color;
 
                 void main()
                 {
-                    mat4 modelMatrix = mat4(a_ModelMatrix[0], a_ModelMatrix[1], a_ModelMatrix[2], a_ModelMatrix[3]);
+                    mat4 modelMatrix = mat4(a_ModelMatrix_0, a_ModelMatrix_1, a_ModelMatrix_2, a_ModelMatrix_3);
                     gl_Position = modelMatrix * vec4(a_Position, 1.0);
                     v_Color = a_Color;
                 }
@@ -197,6 +200,7 @@ namespace Nebula
     void OpenGLRenderer::InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms)
     {
         m_InstanceVertexArray.Bind();
+        m_InstanceVertexBuffer.Bind();
         m_InstanceVertexBuffer.SetData(mesh.Vertices.data(), mesh.Vertices.size() * sizeof(Vertex),
                                        OpenGL::BufferUsage::StreamDraw);
         m_InstanceIndexBuffer.SetData(mesh.Indices.data(), mesh.Indices.size(), OpenGL::BufferUsage::StreamDraw);
@@ -209,7 +213,7 @@ namespace Nebula
         }
 
         m_InstanceInstanceBuffer.Bind();
-        m_InstanceInstanceBuffer.SetData(instanceData.data(), instanceData.size() * sizeof(float),
+        m_InstanceInstanceBuffer.SetData(instanceData.data(), instanceData.size() * sizeof(Matrix4f),
                                          OpenGL::BufferUsage::StreamDraw);
 
         m_InstanceIndexBuffer.Bind();

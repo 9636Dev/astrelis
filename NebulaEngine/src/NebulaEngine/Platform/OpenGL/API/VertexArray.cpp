@@ -32,16 +32,17 @@ namespace Nebula::OpenGL
 
         const auto& attributes = format.m_Attributes;
         std::size_t offset     = 0;
-        for (std::size_t i = format.m_StartIndex; i < attributes.size() + format.m_StartIndex; ++i)
+        for (std::size_t i = 0; i < attributes.size(); ++i)
         {
+            std::size_t index = i + format.m_StartIndex;
             const auto& attribute = attributes[i];
             // NOLINTNEXTLINE(performance-no-int-to-ptr)
             const void* ptr       = reinterpret_cast<const void*>(offset);
-            GL::EnableVertexAttribArray(i);
-            GL::VertexAttribPointer(i, attribute.size, attribute.type, attribute.normalized, format.m_Stride, ptr);
+            GL::EnableVertexAttribArray(index);
+            GL::VertexAttribPointer(index, attribute.size, attribute.type, attribute.normalized, format.m_Stride, ptr);
             if (attribute.instanced)
             {
-                GL::VertexAttribDivisor(i, attribute.divisor);
+                GL::VertexAttribDivisor(index, attribute.divisor);
             }
             offset += static_cast<std::size_t>(attribute.size * GetGLTypeSize(attribute.type));
         }
