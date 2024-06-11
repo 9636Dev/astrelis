@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <gsl/gsl>
 #include <memory>
 #include <utility>
@@ -22,6 +23,9 @@ namespace Nebula
     public:
         template<typename U> friend class Ref;
         template<typename U> friend class Ptr;
+
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        Ref(std::nullptr_t) noexcept : m_Ptr(nullptr) {}
 
         explicit Ref(T& value) noexcept : m_Ptr(&value)
         {

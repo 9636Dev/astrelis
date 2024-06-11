@@ -28,4 +28,9 @@ namespace Nebula
     {
         glfwSwapBuffers(m_WindowHandle);
     }
+
+    Ptr<OpenGLRenderContext> OpenGLRenderContext::Create(GLFWwindow* window)
+    {
+        return MakePtr<OpenGLRenderContext>(window);
+    }
 }  // namespace Nebula

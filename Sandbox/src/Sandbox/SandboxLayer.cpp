@@ -12,8 +12,14 @@ SandboxLayer::SandboxLayer()
         { { 0.0F, 0.5F, 0.0F }, { 0.0F, 0.0F, 1.0F } },
     };
     m_Mesh.Indices = { 0, 1, 2 };
-    m_Transform1.Translate({ 0.5F, 0.0F, 0.0F });
-    m_Transform2.Translate({ -0.5F, 0.0F, 0.0F });
+    m_Transform1.Translate({ 0.5F, -0.5F, 0.0F });
+    m_Transform2.Translate({ -0.5F, -0.5F, 0.0F });
+
+    m_Transforms.emplace_back();
+    m_Transforms.back().Translate({0.5F, 0.5F, 0.0F});
+    m_Transforms.emplace_back();
+    m_Transforms.back().Translate({-0.5F, 0.5F, 0.0F});
+
     NEBULA_LOG_INFO("Sandbox Layer Initializing");
 }
 
@@ -37,6 +43,8 @@ void SandboxLayer::OnUpdate()
     auto& renderer = Nebula::Application::Get().GetRenderer();
     renderer.DrawMesh(m_Mesh, m_Transform1);
     renderer.DrawMesh(m_Mesh, m_Transform2);
+
+    renderer.InstanceMesh(m_Mesh, m_Transforms);
 }
 
 void SandboxLayer::OnUIRender()

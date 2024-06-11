@@ -36,12 +36,14 @@ namespace Nebula::OpenGL
         static void Viewport(int posX, int posY, int width, int height);
 
         static void DrawElements(DrawMode mode, std::size_t count, GLType type, const void* indices);
+        static void DrawElementsInstanced(DrawMode mode, std::size_t count, GLType type, const void* indices, std::uint32_t primcount);
 
         static void GenVertexArrays(std::uint32_t n, std::uint32_t* arrays);
         static void BindVertexArray(std::uint32_t array);
         static void DeleteVertexArrays(std::uint32_t n, const std::uint32_t* arrays);
         static void EnableVertexAttribArray(std::uint32_t index);
         static void VertexAttribPointer(std::uint32_t index, std::uint32_t size, GLType type, bool normalized, std::uint32_t stride, const void* pointer);
+        static void VertexAttribDivisor(std::uint32_t index, std::uint32_t divisor);
 
         static void GenBuffers(std::uint32_t n, std::uint32_t* buffers);
         static void BindBuffer(BufferTarget target, std::uint32_t buffer);

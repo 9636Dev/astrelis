@@ -61,6 +61,11 @@ namespace Nebula::OpenGL
         GLCall(glDrawElements(static_cast<std::uint32_t>(mode), count, static_cast<std::uint32_t>(type), indices));
     }
 
+    void GL::DrawElementsInstanced(DrawMode mode, std::size_t count, GLType type, const void* indices, std::uint32_t primcount)
+    {
+        GLCall(glDrawElementsInstanced(static_cast<std::uint32_t>(mode), count, static_cast<std::uint32_t>(type), indices, primcount));
+    }
+
     void GL::GenVertexArrays(std::uint32_t n, std::uint32_t* arrays)
     {
         GLCall(glGenVertexArrays(n, arrays));
@@ -84,6 +89,11 @@ namespace Nebula::OpenGL
     void GL::VertexAttribPointer(std::uint32_t index, std::uint32_t size, GLType type, bool normalized, std::uint32_t stride, const void* pointer)
     {
         GLCall(glVertexAttribPointer(index, size, static_cast<std::uint32_t>(type), normalized, stride, pointer));
+    }
+
+    void GL::VertexAttribDivisor(std::uint32_t index, std::uint32_t divisor)
+    {
+        GLCall(glVertexAttribDivisor(index, divisor));
     }
 
     void GL::GenBuffers(std::uint32_t n, std::uint32_t* buffers)

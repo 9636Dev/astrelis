@@ -5,8 +5,8 @@
 #include "NebulaEngine/Renderer/Renderer.hpp"
 #include "NebulaEngine/Renderer/Vertex.hpp"
 
-#include "API/VertexArray.hpp"
 #include "API/IndexBuffer.hpp"
+#include "API/VertexArray.hpp"
 
 #include <vector>
 
@@ -28,14 +28,20 @@ namespace Nebula
         void BeginFrame() override;
         void EndFrame() override;
         void DrawMesh(const StaticMesh& mesh, const Transform& transform) override;
+        void InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms) override;
 
         static Result<Ptr<OpenGLRenderer>, std::string> Create(Ref<Window> window, Bounds bounds);
-
     private:
-        OpenGL::VertexArray m_VertexArray;
-        OpenGL::VertexBuffer m_VertexBuffer;
-        OpenGL::Program m_Program;
-        OpenGL::IndexBuffer m_IndexBuffer;
+        OpenGL::VertexArray m_BatchVertexArray;
+        OpenGL::VertexBuffer m_BatchVertexBuffer;
+        OpenGL::IndexBuffer m_BatchIndexBuffer;
+        OpenGL::Program m_BatchProgram;
+
+        OpenGL::VertexArray m_InstanceVertexArray;
+        OpenGL::VertexBuffer m_InstanceVertexBuffer;
+        OpenGL::IndexBuffer m_InstanceIndexBuffer;
+        OpenGL::VertexBuffer m_InstanceInstanceBuffer;
+        OpenGL::Program m_InstanceProgram;
 
         void DrawBatch();
 

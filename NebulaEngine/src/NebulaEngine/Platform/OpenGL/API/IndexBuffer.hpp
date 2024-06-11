@@ -17,7 +17,7 @@ namespace Nebula::OpenGL
         void Bind() const;
         void Unbind() const;
 
-        void SetData(std::uint32_t* data, std::uint32_t count, BufferUsage usage);
+        void SetData(const std::uint32_t* data, std::uint32_t count, BufferUsage usage);
     private:
         std::uint32_t m_Id;
     };

@@ -9,6 +9,7 @@
 #include "Transform.hpp"
 
 #include <string>
+#include <vector>
 
 namespace Nebula
 {
@@ -29,14 +30,45 @@ namespace Nebula
         Renderer& operator=(Renderer&&)      = delete;
 
         virtual void Viewport(const Bounds& bounds) = 0;
+        /**
+         * @brief Clear the screen
+         * @note Do not need to call Clear() if BeginFrame() is called
+         * @see BeginFrame()
+         */
         virtual void Clear() = 0;
+
+        /**
+         * @brief Adds a mesh to the batch renderer
+         * @param mesh The mesh to render
+         * @param transform The transform of the mesh
+         * @notee EndFrame needs to be called to flush the batch renderer
+         */
         virtual void DrawMesh(const StaticMesh& mesh, const Transform& transform) = 0;
-        // This should clear the screen
+
+        virtual void InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms) = 0;
+        /**
+         * @brief Begin the frame
+         * @note This function should be called before any rendering is done, as it will clear the screen
+         * @see Clear()
+         */
         virtual void BeginFrame() = 0;
+
+        /**
+         * @brief End the frame
+         * @note This function should be called after all rendering is done, as it flushes the batch renderer
+         */
         virtual void EndFrame() = 0;
 
+        /**
+        * @brief Create a new Renderer
+        * @param window The window to render to
+        * @param bounds The bounds of the window
+        * @return A Result containing either a Renderer or an error message
+        * @note The RendererAPI is currently hardcoded to OpenGL
+        */
         static Result<Ptr<Renderer>, std::string> Create(Ref<Window> window, Bounds bounds);
 
+        static RendererAPI GetAPI() { return s_RendererAPI; }
     private:
         static RendererAPI s_RendererAPI;
     };

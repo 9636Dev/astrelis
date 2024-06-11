@@ -40,7 +40,7 @@ namespace Nebula::OpenGL
     }
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-const, readability-make-member-function-const)
-    void IndexBuffer::SetData(std::uint32_t* data, std::uint32_t count, BufferUsage usage)
+    void IndexBuffer::SetData(const std::uint32_t* data, std::uint32_t count, BufferUsage usage)
     {
         Bind();
         GL::BufferData(BufferTarget::ElementArrayBuffer, count * sizeof(std::uint32_t), data, usage);
