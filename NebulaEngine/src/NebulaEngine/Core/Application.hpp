@@ -61,6 +61,7 @@ namespace Nebula
 
         void OnEvent(Event& event);
         bool OnWindowClose(WindowClosedEvent& event);
+        bool OnViewportResize(ViewportResizedEvent& event);
 
         void Run();
 

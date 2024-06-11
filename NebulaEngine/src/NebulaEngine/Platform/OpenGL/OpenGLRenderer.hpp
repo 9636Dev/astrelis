@@ -22,6 +22,7 @@ namespace Nebula
         OpenGLRenderer(OpenGLRenderer&&)                 = delete;
         OpenGLRenderer& operator=(OpenGLRenderer&&)      = delete;
 
+        void Viewport(const Bounds& bounds) override;
         void Clear() override;
 
         void BeginFrame() override;

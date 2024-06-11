@@ -28,6 +28,7 @@ namespace Nebula
         Renderer(Renderer&&)                 = delete;
         Renderer& operator=(Renderer&&)      = delete;
 
+        virtual void Viewport(const Bounds& bounds) = 0;
         virtual void Clear() = 0;
         virtual void DrawMesh(const StaticMesh& mesh, const Transform& transform) = 0;
         // This should clear the screen

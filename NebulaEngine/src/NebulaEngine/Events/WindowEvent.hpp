@@ -68,6 +68,37 @@ namespace Nebula
         std::uint32_t m_Height;
     };
 
+    class ViewportResizedEvent : public Event
+    {
+    public:
+        ViewportResizedEvent(std::uint32_t width, std::uint32_t height) : m_Width(width), m_Height(height) {}
+
+        [[nodiscard]] std::uint32_t GetWidth() const noexcept { return m_Width; }
+
+        [[nodiscard]] std::uint32_t GetHeight() const noexcept { return m_Height; }
+
+        [[nodiscard]] std::string ToString() const override
+        {
+            std::stringstream stream;
+            stream << "ViewportResizeEvent (" << m_Width << ", " << m_Height << ")";
+            return stream.str();
+        }
+
+        static constexpr EventType GetStaticType() noexcept { return EventType ::ViewportResized; }
+
+        [[nodiscard]] EventType GetEventType() const noexcept override { return GetStaticType(); }
+
+        [[nodiscard]] std ::string GetName() const override { return "ViewportResize"; }
+
+        [[nodiscard]] std::uint32_t GetCategoryFlags() const noexcept override
+        {
+            return static_cast<std::uint32_t>(EventCategory::Application);
+        }
+    private:
+        std::uint32_t m_Width;
+        std::uint32_t m_Height;
+    };
+
     class WindowFocusedEvent : public Event
     {
     public:

@@ -15,7 +15,6 @@ namespace Nebula
         auto windowMoved = std::move(window);
 
         NEBULA_UNUSED(windowMoved);
-        OpenGL::GL::Viewport(m_Bounds.X, m_Bounds.Y, m_Bounds.Width, m_Bounds.Height);
 
         {
             OpenGL::VertexBufferFormat format;
@@ -82,9 +81,17 @@ namespace Nebula
 
     OpenGLRenderer::~OpenGLRenderer() = default;
 
+    void OpenGLRenderer::Viewport(const Bounds& bounds)
+    {
+        m_Bounds = bounds;
+    }
+
     void OpenGLRenderer::Clear() { OpenGL::GL::Clear(OpenGL::ClearTarget::Color | OpenGL::ClearTarget::Depth); }
 
-    void OpenGLRenderer::BeginFrame() { Clear(); }
+    void OpenGLRenderer::BeginFrame() {
+        Clear();
+        OpenGL::GL::Viewport(m_Bounds.X, m_Bounds.Y, m_Bounds.Width, m_Bounds.Height);
+    }
 
     void OpenGLRenderer::EndFrame() { DrawBatch(); }
 

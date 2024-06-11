@@ -12,7 +12,7 @@ namespace Nebula
     {
         GLFWWindowHelper::SetEventCallbacks(m_Window, m_Data);
         m_RenderContext = RenderContext::Create(m_Window);
-        m_RenderContext.Init();
+        m_RenderContext->Init();
         glfwMakeContextCurrent(m_Window);
     }
 
@@ -26,6 +26,15 @@ namespace Nebula
     {
         glfwPollEvents();
         m_RenderContext->SwapBuffers();
+    }
+
+    Bounds MacOSWindow::GetViewportBounds() const
+    {
+        // Frame buffer size
+        int width = 0;
+        int height = 0;
+        glfwGetFramebufferSize(m_Window, &width, &height);
+        return { 0, 0, width, height };
     }
 
     Result<Ptr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps &props)

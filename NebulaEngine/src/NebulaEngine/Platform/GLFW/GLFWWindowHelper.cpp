@@ -121,7 +121,7 @@ namespace Nebula
         glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
             auto& data = GLFWWindowHelper::GetUserData<BaseWindowData>(window);
             NEBULA_CORE_ASSERT(data.EventCallback, "EventCallback is not set");
-            WindowResizedEvent event(width, height);
+            ViewportResizedEvent event(width, height);
             data.EventCallback(event);
         });
 

@@ -10,6 +10,7 @@ namespace Nebula
         None = 0,
         WindowClosed,
         WindowResized,
+        ViewportResized,
         WindowFocused,
         WindowLostFocus,
         WindowMoved,

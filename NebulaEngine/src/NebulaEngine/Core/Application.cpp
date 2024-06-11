@@ -2,6 +2,7 @@
 
 #include "Base.hpp"
 #include "NebulaEngine/Core/Window.hpp"
+#include "NebulaEngine/Events/WindowEvent.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
 
 #include <utility>
@@ -32,8 +33,7 @@ namespace Nebula
         m_ImGuiLayer = imguiLayer;
 
         auto rendererRes =
-            Nebula::Renderer::Create(m_Window.GetRef(), Nebula::Bounds(0, 0, static_cast<int32_t>(m_Window->GetWidth()),
-                                                                       static_cast<int32_t>(m_Window->GetHeight())));
+            Nebula::Renderer::Create(m_Window.GetRef(), m_Window->GetViewportBounds());
         if (res.IsOk())
         {
             m_Renderer = std::move(rendererRes.Unwrap());
@@ -57,6 +57,8 @@ namespace Nebula
                 layer->OnUpdate();
             }
 
+            m_Renderer->EndFrame();
+
             m_ImGuiLayer->Begin();
 
             for (auto* layer : m_LayerStack)
@@ -66,7 +68,6 @@ namespace Nebula
 
             m_ImGuiLayer->End();
 
-            m_Renderer->EndFrame();
             m_Window->OnUpdate();
         }
     }
@@ -75,6 +76,7 @@ namespace Nebula
     {
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<WindowClosedEvent>(NEBULA_BIND_EVENT_FN(Application::OnWindowClose));
+        dispatcher.Dispatch<ViewportResizedEvent>(NEBULA_BIND_EVENT_FN(Application::OnViewportResize));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
         {
@@ -91,6 +93,19 @@ namespace Nebula
     {
         m_Running = false;
         return true;
+    }
+
+    bool Application::OnViewportResize(ViewportResizedEvent& event)
+    {
+        if (event.GetWidth() == 0 || event.GetHeight() == 0)
+        {
+            return false;
+        }
+
+        NEBULA_CORE_LOG_DEBUG("Resizing to {0}x{1}", event.GetWidth(), event.GetHeight());
+        m_Renderer->Viewport(
+            {0, 0, static_cast<std::int32_t>(event.GetWidth()), static_cast<std::int32_t>(event.GetHeight())});
+        return false;
     }
 
     void Application::PushLayer(Layer* layer)

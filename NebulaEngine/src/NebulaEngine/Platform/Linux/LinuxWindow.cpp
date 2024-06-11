@@ -24,6 +24,15 @@ namespace Nebula
         m_RenderContext->SwapBuffers();
     }
 
+    Bounds LinuxWindow::GetViewportBounds() const
+    {
+        // Frame buffer size
+        int width = 0;
+        int height = 0;
+        glfwGetFramebufferSize(m_Window, &width, &height);
+        return { 0, 0, width, height };
+    }
+
     Result<Ptr<LinuxWindow>, std::string> LinuxWindow::Create(const WindowProps &props)
     {
         auto res = GLFWWindowHelper::CreateWindow(props);

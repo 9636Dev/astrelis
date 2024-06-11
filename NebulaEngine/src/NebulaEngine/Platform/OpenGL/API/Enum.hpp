@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "NebulaEngine/Core/Assert.hpp"
+
 namespace Nebula::OpenGL
 {
     enum class ClearTarget : std::uint32_t
@@ -91,7 +93,7 @@ namespace Nebula::OpenGL
         }
         else
         {
-            static_assert(false, "Unsupported type");
+            NEBULA_CORE_ASSERT(false, "Unsupported type");
         }
     }
 

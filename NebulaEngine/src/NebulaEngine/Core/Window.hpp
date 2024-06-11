@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 
+#include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Events/Event.hpp"
 #include "Pointer.hpp"
 #include "Result.hpp"
@@ -60,6 +61,7 @@ namespace Nebula
         virtual void* GetNativeWindow() const = 0;
         virtual std::uint32_t GetWidth() const = 0;
         virtual std::uint32_t GetHeight() const = 0;
+        virtual Bounds GetViewportBounds() const = 0;
 
         static Result<Ptr<Window>, std::string> Create(const WindowProps& props = WindowProps());
     };

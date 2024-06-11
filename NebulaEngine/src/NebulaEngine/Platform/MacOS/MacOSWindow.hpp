@@ -38,6 +38,8 @@ namespace Nebula
         std::uint32_t GetHeight() const override { return m_Data.Height; }
 
         static Result<Ptr<MacOSWindow>, std::string> Create(const WindowProps& props);
+
+        Bounds GetViewportBounds() const override;
     private:
         GLFWwindow* m_Window;
         MacOSWindowData m_Data;
