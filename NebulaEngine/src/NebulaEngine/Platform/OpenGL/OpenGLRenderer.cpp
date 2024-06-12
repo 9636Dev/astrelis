@@ -200,7 +200,6 @@ namespace Nebula
     void OpenGLRenderer::InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms)
     {
         m_InstanceVertexArray.Bind();
-        m_InstanceVertexBuffer.Bind();
         m_InstanceVertexBuffer.SetData(mesh.Vertices.data(), mesh.Vertices.size() * sizeof(Vertex),
                                        OpenGL::BufferUsage::StreamDraw);
         m_InstanceIndexBuffer.SetData(mesh.Indices.data(), mesh.Indices.size(), OpenGL::BufferUsage::StreamDraw);
@@ -212,11 +211,9 @@ namespace Nebula
             instanceData.push_back(transform.ToMatrix());
         }
 
-        m_InstanceInstanceBuffer.Bind();
         m_InstanceInstanceBuffer.SetData(instanceData.data(), instanceData.size() * sizeof(Matrix4f),
                                          OpenGL::BufferUsage::StreamDraw);
 
-        m_InstanceIndexBuffer.Bind();
         m_InstanceProgram.Use();
         OpenGL::GL::DrawElementsInstanced(OpenGL::DrawMode::Triangles, mesh.Indices.size(), OpenGL::GLType::UnsignedInt,
                                           nullptr, transforms.size());
