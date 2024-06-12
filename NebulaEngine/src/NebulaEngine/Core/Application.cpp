@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include "Base.hpp"
+#include "Time.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
@@ -48,8 +49,13 @@ namespace Nebula
 
     void Application::Run()
     {
+        TimePoint lastFrameTime = Time::Now();
         while (m_Running)
         {
+            TimePoint currentFrameTime = Time::Now();
+            Time::s_DeltaTime = Time::ElapsedTime<Milliseconds>(lastFrameTime, currentFrameTime);
+            lastFrameTime = currentFrameTime;
+
             m_Renderer->BeginFrame();
 
             for (auto* layer : m_LayerStack)

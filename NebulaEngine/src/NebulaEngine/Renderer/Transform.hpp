@@ -19,6 +19,7 @@ namespace Nebula
         const Vector3f& GetScale() const { return m_Scale; }
 
     private:
+        mutable bool m_Dirty;
         Vector3f m_Position;
         Quaternionf m_Rotation;
         Vector3f m_Scale;

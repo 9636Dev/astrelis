@@ -9,7 +9,7 @@ echo "Setting up hooks in $git_hooks_dir"
 
 for file in $files; do
     chmod +x "$file"
-    newname=$(basename $file
+    newname=$(basename $file)
     if [[ $newname == *.sh ]]; then
         newname=${newname%.sh}
     fi

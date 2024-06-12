@@ -41,7 +41,7 @@ namespace Nebula
          * @brief Adds a mesh to the batch renderer
          * @param mesh The mesh to render
          * @param transform The transform of the mesh
-         * @notee EndFrame needs to be called to flush the batch renderer
+         * @note EndFrame needs to be called to flush the batch renderer
          */
         virtual void DrawMesh(const StaticMesh& mesh, const Transform& transform) = 0;
 

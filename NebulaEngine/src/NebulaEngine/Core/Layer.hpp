@@ -24,7 +24,6 @@ namespace Nebula
         /**
         * @brief Called when an event is dispatched to the layer.
         * @param event The event that was dispatched.
-        * @return True if the event was handled, false otherwise.
         */
         virtual void OnEvent(Event& event) {
             NEBULA_UNUSED(event);

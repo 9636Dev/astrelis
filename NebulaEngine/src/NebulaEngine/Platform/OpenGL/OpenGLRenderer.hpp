@@ -47,6 +47,7 @@ namespace Nebula
 
         constexpr static std::size_t s_BatchSize = 64;
         std::vector<Vertex> m_Vertices;
+        std::vector<Matrix4f> m_InstanceData;
         std::vector<std::uint32_t> m_Indices;
 
         Bounds m_Bounds;

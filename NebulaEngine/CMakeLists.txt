@@ -83,6 +83,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/LayerStack.hpp
     src/NebulaEngine/Core/LayerStack.cpp
     src/NebulaEngine/Core/Math.hpp
+    src/NebulaEngine/Core/Time.hpp
+    src/NebulaEngine/Core/Time.cpp
 
     # Renderer
     src/NebulaEngine/Renderer/RenderContext.hpp

@@ -204,14 +204,13 @@ namespace Nebula
                                        OpenGL::BufferUsage::StreamDraw);
         m_InstanceIndexBuffer.SetData(mesh.Indices.data(), mesh.Indices.size(), OpenGL::BufferUsage::StreamDraw);
 
-        std::vector<Matrix4f> instanceData;
-        instanceData.reserve(transforms.size());
+        m_InstanceData.reserve(transforms.size());
         for (const auto& transform : transforms)
         {
-            instanceData.push_back(transform.ToMatrix());
+            m_InstanceData.push_back(transform.ToMatrix());
         }
 
-        m_InstanceInstanceBuffer.SetData(instanceData.data(), instanceData.size() * sizeof(Matrix4f),
+        m_InstanceInstanceBuffer.SetData(m_InstanceData.data(), m_InstanceData.size() * sizeof(Matrix4f),
                                          OpenGL::BufferUsage::StreamDraw);
 
         m_InstanceProgram.Use();

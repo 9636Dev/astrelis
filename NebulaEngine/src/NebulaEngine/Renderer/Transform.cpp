@@ -2,27 +2,19 @@
 
 namespace Nebula
 {
-    Transform::Transform()
-        : m_Position(Vector3f::Zero())
-        , m_Rotation(Quaternionf::Identity())
-        , m_Scale(Vector3f::Ones())
+    Transform::Transform() :
+        m_Dirty(true),
+        m_Position(Vector3f::Zero()),
+        m_Rotation(Quaternionf::Identity()),
+        m_Scale(Vector3f::Ones())
     {
     }
 
-    void Transform::Translate(const Vector3f& translation)
-    {
-        m_Position += translation;
-    }
+    void Transform::Translate(const Vector3f& translation) { m_Position += translation; }
 
-    void Transform::Rotate(const Quaternionf& rotation)
-    {
-        m_Rotation = rotation * m_Rotation;
-    }
+    void Transform::Rotate(const Quaternionf& rotation) { m_Rotation = rotation * m_Rotation; }
 
-    void Transform::Rotate(const Vector3f& axis, float angle)
-    {
-        Rotate(Quaternionf(Eigen::AngleAxisf(angle, axis)));
-    }
+    void Transform::Rotate(const Vector3f& axis, float angle) { Rotate(Quaternionf(Eigen::AngleAxisf(angle, axis))); }
 
     void Transform::Scale(const Vector3f& scale)
     {
@@ -33,6 +25,14 @@ namespace Nebula
 
     Matrix4f Transform::ToMatrix() const
     {
-        return (Eigen::Translation3f(m_Position) * Eigen::Quaternionf(m_Rotation) * Eigen::Scaling(m_Scale)).matrix();
+        static Matrix4f mat;
+        if (m_Dirty)
+        {
+            mat =
+                (Eigen::Translation3f(m_Position) * Eigen::Quaternionf(m_Rotation) *Eigen::Scaling(m_Scale)).matrix();
+            m_Dirty = false;
+        }
+
+        return mat;
     }
-}  // namespace Nebula
+} // namespace Nebula
