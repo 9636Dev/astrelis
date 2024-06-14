@@ -27,8 +27,8 @@ namespace Nebula
 
         void BeginFrame() override;
         void EndFrame() override;
-        void DrawMesh(const StaticMesh& mesh, const Transform& transform) override;
-        void InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms) override;
+        void DrawMesh(const StaticMesh& mesh, const Transform& transform, const Material& material) override;
+        void InstanceMesh(const StaticMesh& mesh, const std::vector<Transform>& transforms, const std::vector<Material>& materials) override;
 
         static Result<Ptr<OpenGLRenderer>, std::string> Create(Ref<Window> window, Bounds bounds);
     private:
@@ -45,11 +45,19 @@ namespace Nebula
 
         void DrawBatch();
 
+        struct InstanceData
+        {
+            Vector4f DiffuseColor;
+            Matrix4f ModelMatrix;
+        };
+
         constexpr static std::size_t s_BatchSize = 64;
         std::vector<Vertex> m_Vertices;
-        std::vector<Matrix4f> m_InstanceData;
+        std::vector<InstanceData> m_InstanceData;
         std::vector<std::uint32_t> m_Indices;
 
+
         Bounds m_Bounds;
+        Material m_CurrentMaterial;
     };
 } // namespace Nebula

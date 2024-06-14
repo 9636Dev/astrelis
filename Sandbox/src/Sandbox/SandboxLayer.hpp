@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NebulaEngine/Core/Layer.hpp"
+#include "NebulaEngine/Renderer/Material.hpp"
 #include "NebulaEngine/Renderer/Mesh.hpp"
 #include "NebulaEngine/Renderer/Transform.hpp"
 
@@ -23,5 +24,7 @@ public:
 private:
     Nebula::StaticMesh m_Mesh;
     std::vector<Nebula::Transform> m_BatchTransforms;
+    std::vector<Nebula::Material> m_BatchMaterials;
     std::vector<Nebula::Transform> m_Transforms;
+    std::vector<Nebula::Material> m_Materials;
 };

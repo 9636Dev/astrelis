@@ -7,6 +7,7 @@
 
 #include "Mesh.hpp"
 #include "Transform.hpp"
+#include "Material.hpp"
 
 #include <string>
 #include <vector>
@@ -43,9 +44,9 @@ namespace Nebula
          * @param transform The transform of the mesh
          * @note EndFrame needs to be called to flush the batch renderer
          */
-        virtual void DrawMesh(const StaticMesh& mesh, const Transform& transform) = 0;
+        virtual void DrawMesh(const StaticMesh& mesh, const Transform& transform, const Material& material) = 0;
 
-        virtual void InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms) = 0;
+        virtual void InstanceMesh(const StaticMesh& mesh, const std::vector<Transform>& transforms, const std::vector<Material>& materials) = 0;
         /**
          * @brief Begin the frame
          * @note This function should be called before any rendering is done, as it will clear the screen

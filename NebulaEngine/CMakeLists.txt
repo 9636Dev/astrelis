@@ -95,6 +95,10 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/Transform.hpp
     src/NebulaEngine/Renderer/Transform.cpp
 
+    # Scene
+    src/NebulaEngine/Scene/Scene.hpp
+    src/NebulaEngine/Scene/Scene.cpp
+
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
     src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp

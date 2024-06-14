@@ -20,18 +20,17 @@ namespace Nebula
         {
             OpenGL::VertexBufferFormat format;
             format.Push<float>(3);
-            format.Push<float>(4);
             m_BatchVertexArray.AddVertexBuffer(m_BatchVertexBuffer, format);
         }
 
         {
             OpenGL::VertexBufferFormat format;
             format.Push<float>(3);
-            format.Push<float>(4);
             m_InstanceVertexArray.AddVertexBuffer(m_InstanceVertexBuffer, format);
 
             OpenGL::VertexBufferFormat instanceFormat;
-            instanceFormat.SetStartIndex(2);
+            instanceFormat.SetStartIndex(1);
+            instanceFormat.PushInstanced<float>(4, 1);
             instanceFormat.PushInstanced<float>(4, 1);
             instanceFormat.PushInstanced<float>(4, 1);
             instanceFormat.PushInstanced<float>(4, 1);
@@ -43,26 +42,25 @@ namespace Nebula
 
         {
             std::string vertexShaderSource = R"(
-            #version 330 core
+            #version 410
 
             layout(location = 0) in vec3 a_Position;
-            layout(location = 1) in vec4 a_Color;
+            uniform vec4 u_Color;
 
-            out vec4 v_Color;
+            layout(location = 0) out vec4 v_Color;
 
             void main()
             {
+                v_Color = u_Color;
                 gl_Position = vec4(a_Position, 1.0);
-                v_Color = a_Color;
             }
         )";
 
             std::string fragmentShaderSource = R"(
-            #version 330 core
+            #version 410
 
-            in vec4 v_Color;
-
-            out vec4 o_Color;
+            layout(location = 0) in vec4 v_Color;
+            layout(location = 0) out vec4 o_Color;
 
             void main()
             {
@@ -172,7 +170,7 @@ namespace Nebula
 
     void OpenGLRenderer::EndFrame() { DrawBatch(); }
 
-    void OpenGLRenderer::DrawMesh(const StaticMesh& mesh, const Transform& transform)
+    void OpenGLRenderer::DrawMesh(const StaticMesh& mesh, const Transform& transform, const Material& material)
     {
         for (std::size_t i = 0; i < mesh.Vertices.size(); i++)
         {
@@ -190,27 +188,37 @@ namespace Nebula
             m_Indices.push_back(mesh.Indices[i] + m_Vertices.size() - mesh.Vertices.size());
         }
 
-        if (m_Vertices.size() >= 1'000)
+        if (m_CurrentMaterial != material)
+        {
+            m_BatchProgram.Use();
+            m_BatchProgram.SetUniform("u_Color", material.DiffuseColor);
+            m_CurrentMaterial = material;
+            DrawBatch();
+        }
+        else if (m_Vertices.size() >= 1'000)
         {
             // Arbitrary number
             DrawBatch();
         }
     }
 
-    void OpenGLRenderer::InstanceMesh(const StaticMesh& mesh, std::vector<Transform> transforms)
+    void OpenGLRenderer::InstanceMesh(const StaticMesh& mesh,
+                                      const std::vector<Transform>& transforms,
+                                      const std::vector<Material>& materials)
     {
+        NEBULA_CORE_ASSERT(transforms.size() == materials.size(), "Transforms and materials must have the same size");
         m_InstanceVertexArray.Bind();
         m_InstanceVertexBuffer.SetData(mesh.Vertices.data(), mesh.Vertices.size() * sizeof(Vertex),
                                        OpenGL::BufferUsage::StreamDraw);
         m_InstanceIndexBuffer.SetData(mesh.Indices.data(), mesh.Indices.size(), OpenGL::BufferUsage::StreamDraw);
 
         m_InstanceData.reserve(transforms.size());
-        for (const auto& transform : transforms)
+        for (std::size_t i = 0; i < transforms.size(); i++)
         {
-            m_InstanceData.push_back(transform.ToMatrix());
+            m_InstanceData.push_back({materials[i].DiffuseColor, transforms[i].ToMatrix()});
         }
 
-        m_InstanceInstanceBuffer.SetData(m_InstanceData.data(), m_InstanceData.size() * sizeof(Matrix4f),
+        m_InstanceInstanceBuffer.SetData(m_InstanceData.data(), m_InstanceData.size() * sizeof(InstanceData),
                                          OpenGL::BufferUsage::StreamDraw);
 
         m_InstanceProgram.Use();

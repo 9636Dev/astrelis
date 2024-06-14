@@ -181,6 +181,16 @@ namespace Nebula::OpenGL
         GLCall(glDeleteProgram(program));
     }
 
+    std::int32_t GL::GetUniformLocation(std::uint32_t program, const char* name)
+    {
+        return GLCallR(glGetUniformLocation(program, name));
+    }
+
+    void GL::Uniform4f(std::int32_t location, float val0, float val1, float val2, float val3)
+    {
+        GLCall(glUniform4f(location, val0, val1, val2, val3));
+    }
+
     GLVersion GL::GetVersion()
     {
         static GLVersion version(0, 0);

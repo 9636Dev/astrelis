@@ -120,4 +120,23 @@ namespace Nebula::OpenGL
     {
         GL::UseProgram(0);
     }
+
+    std::int32_t Program::GetUniformLocation(std::string_view name)
+    {
+        auto iter = m_UniformLocations.find(name);
+        if (iter != m_UniformLocations.end())
+        {
+            return iter->second;
+        }
+
+        int location = GL::GetUniformLocation(m_Id, name.data());
+        m_UniformLocations[name] = location;
+        return location;
+    }
+
+    // NOLINTNEXTLINE(readability-make-member-function-const)
+    void Program::SetUniform(std::string_view name, Vector4f value)
+    {
+        GL::Uniform4f(GetUniformLocation(name), value.x(), value.y(), value.z(), value.w());
+    }
 } // namespace Nebula::OpenGL

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Platform/OpenGL/API/Enum.hpp"
 #include <cstdint>
 #include <string>
@@ -42,7 +43,13 @@ namespace Nebula::OpenGL
 
         void Use() const;
         void Unuse() const;
+
+        void SetUniform(std::string_view name, Vector4f value);
+
     private:
+        std::int32_t GetUniformLocation(std::string_view name);
+
         std::uint32_t m_Id;
+        std::unordered_map<std::string_view, int> m_UniformLocations;
     };
 } // namespace Nebula::OpenGL

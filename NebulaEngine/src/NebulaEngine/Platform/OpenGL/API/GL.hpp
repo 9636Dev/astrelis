@@ -5,6 +5,8 @@
 
 #include "Enum.hpp"
 
+#include "NebulaEngine/Core/Math.hpp"
+
 namespace Nebula::OpenGL
 {
     struct GLVersion
@@ -64,6 +66,10 @@ namespace Nebula::OpenGL
         static void GetProgramInfoLog(std::uint32_t program, int maxLength, int* length, char* infoLog);
         static void UseProgram(std::uint32_t program);
         static void DeleteProgram(std::uint32_t program);
+
+        static std::int32_t GetUniformLocation(std::uint32_t program, const char* name);
+        static void Uniform4f(std::int32_t location, float val0, float val1, float val2, float val3);
+        static void Uniform4f(std::int32_t location, const Vector4f& vec) { Uniform4f(location, vec.x(), vec.y(), vec.z(), vec.w()); }
     private:
         struct CallLocation
         {

@@ -9,9 +9,9 @@
 SandboxLayer::SandboxLayer()
 {
     m_Mesh.Vertices = {
-        { { -0.5F, -0.5F, 0.0F }, { 1.0F, 0.0F, 0.0F } },
-        { { 0.5F, -0.5F, 0.0F }, { 0.0F, 1.0F, 0.0F } },
-        { { 0.0F, 0.5F, 0.0F }, { 0.0F, 0.0F, 1.0F } },
+        { { -0.5F, -0.5F, 0.0F } },
+        { { 0.5F, -0.5F, 0.0F } },
+        { { 0.0F, 0.5F, 0.0F } },
     };
     m_Mesh.Indices = { 0, 1, 2 };
 
@@ -20,10 +20,20 @@ SandboxLayer::SandboxLayer()
     m_BatchTransforms.emplace_back();
     m_BatchTransforms.back().Translate({ 0.5F, 0.5F, 0.0F });
 
+    m_BatchMaterials.emplace_back();
+    m_BatchMaterials.back().DiffuseColor = { 1.0F, 0.0F, 0.0F, 1.0F };
+    m_BatchMaterials.emplace_back();
+    m_BatchMaterials.back().DiffuseColor = { 0.0F, 1.0F, 0.0F, 1.0F };
+
     m_Transforms.emplace_back();
     m_Transforms.back().Translate({ -0.5F, -0.5F, 0.0F });
     m_Transforms.emplace_back();
     m_Transforms.back().Translate({ 0.5F, -0.5F, 0.0F });
+
+    m_Materials.emplace_back();
+    m_Materials.back().DiffuseColor = { 0.0F, 0.0F, 1.0F, 1.0F };
+    m_Materials.emplace_back();
+    m_Materials.back().DiffuseColor = { 1.0F, 1.0F, 0.0F, 1.0F };
 
     NEBULA_LOG_INFO("Sandbox Layer Initializing");
 }
@@ -46,19 +56,19 @@ void SandboxLayer::OnDetach()
 void SandboxLayer::OnUpdate()
 {
     auto& renderer = Nebula::Application::Get().GetRenderer();
-    for (const auto& transform : m_BatchTransforms)
+    for (std::size_t i = 0; i < m_BatchTransforms.size(); ++i)
     {
-        renderer.DrawMesh(m_Mesh, transform);
+        renderer.DrawMesh(m_Mesh, m_BatchTransforms[i], m_BatchMaterials[i]);
     }
 
-    renderer.InstanceMesh(m_Mesh, m_Transforms);
+    renderer.InstanceMesh(m_Mesh, m_Transforms, m_Materials);
 }
 
 void SandboxLayer::OnUIRender()
 {
     ImGui::Begin("Sandbox Layer");
 
-    ImGui::Text("FPS: %lf", 1.0 / Nebula::Time::DeltaTime());
+    ImGui::Text("FPS: %lf (Imgui: %.1f)", 1.0 / Nebula::Time::DeltaTime(), ImGui::GetIO().Framerate);
     ImGui::Text("Batch Instances: %zu", m_BatchTransforms.size());
     ImGui::Text("Instances: %zu", m_Transforms.size());
 
@@ -66,12 +76,16 @@ void SandboxLayer::OnUIRender()
     ImGui::InputScalar("Number of Instances", ImGuiDataType_U32, &numInstances);
     if (ImGui::Button("Add Instance"))
     {
+        std::random_device random;
+        std::uniform_real_distribution<float> dist(-1.0F, 1.0F);
+        std::uniform_real_distribution<float> distColor(0.0F, 1.0F);
+
         for (std::uint32_t i = 0; i < numInstances; ++i)
         {
-            std::random_device random;
-            std::uniform_real_distribution<float> dist(-1.0F, 1.0F);
-            m_BatchTransforms.emplace_back();
-            m_BatchTransforms.back().Translate({ dist(random), dist(random), 0.0F });
+            m_Transforms.emplace_back();
+            m_Transforms.back().Translate({ 0.0F, 0.0F, 0.0F });
+            m_Materials.emplace_back();
+            m_Materials.back().DiffuseColor = { distColor(random), distColor(random), distColor(random), 1.0F };
         }
     }
     ImGui::End();
