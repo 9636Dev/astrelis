@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
+#include "NebulaEngine/Renderer/VertexArray.hpp"
 namespace Nebula
 {
     class RendererAPI
@@ -17,6 +18,7 @@ public:
     virtual void SetClearColor(const Vector4f &color) = 0;
     virtual void Clear() = 0;
     virtual void SetViewport(std::int32_t posX, std::int32_t posY, std::int32_t width, std::int32_t height) = 0;
+    virtual void DrawIndexed(const Ptr<VertexArray> &vertexArray) = 0;
 
     enum class API
     {

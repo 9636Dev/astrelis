@@ -18,5 +18,6 @@ public:
         void SetClearColor(const Vector4f &color) override;
         void Clear() override;
         void SetViewport(std::int32_t posX, std::int32_t posY, std::int32_t width, std::int32_t height) override;
+        void DrawIndexed(const Ptr<VertexArray> &vertexArray) override;
     };
 } // namespace Nebula

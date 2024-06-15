@@ -6,6 +6,9 @@
 # compile_commands.json
 /compile_commands.json
 
+# Profiling results
+/profiles/*
+
 # Build Cache
 /.cache/
 

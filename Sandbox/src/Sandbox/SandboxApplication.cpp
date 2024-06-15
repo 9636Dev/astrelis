@@ -1,14 +1,15 @@
 #include "SandboxApplication.hpp"
 #include "SandboxLayer.hpp"
 
+#include "NebulaEngine/Core/Profiler.hpp"
+
 #include <utility>
 
 SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec) : Nebula::Application(std::move(spec))
 {
-    NEBULA_LOG_INFO("Sandbox Application Initializing");
-
+    QPROFILE_SCOPE("SandboxApplication::SandboxApplication");
     gsl::owner<Nebula::Layer*> layer = new SandboxLayer();
-    PushOverlay(layer);
+    PushLayer(layer);
     layer = nullptr;
 }
 

@@ -30,14 +30,18 @@ namespace Nebula
 
         m_Window = std::move(res.Unwrap());
         m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
-        // TODO(9636D): Move into Renderer
-        RenderCommand::Init();
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer); // Ownership transferred to LayerStack
     }
 
-    Application::~Application() = default;
+    Application::~Application()
+    {
+        for (auto* layer : m_LayerStack)
+        {
+            layer->OnDetach();
+        }
+    };
 
     void Application::Run()
     {

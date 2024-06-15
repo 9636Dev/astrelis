@@ -1,6 +1,7 @@
 #include "OpenGLRendererAPI.hpp"
 
-#include "API/GL.hpp"
+#include "GLAPI.hpp"
+#include "Platform/OpenGL/GLEnum.hpp"
 
 namespace Nebula
 {
@@ -23,5 +24,11 @@ namespace Nebula
     void OpenGLRendererAPI::SetViewport(std::int32_t posX, std::int32_t posY, std::int32_t width, std::int32_t height)
     {
         OpenGL::GL::Viewport(posX, posY, width, height);
+    }
+
+    void OpenGLRendererAPI::DrawIndexed(const Ptr<VertexArray> &vertexArray)
+    {
+        vertexArray->Bind();
+        OpenGL::GL::DrawElements(OpenGL::DrawMode::Triangles, vertexArray->GetIndexBuffer()->GetCount(), OpenGL::GLType::UnsignedInt, nullptr);
     }
 } // namespace Nebula

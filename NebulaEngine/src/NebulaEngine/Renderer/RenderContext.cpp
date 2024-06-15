@@ -1,6 +1,6 @@
 #include "RenderContext.hpp"
 
-#include "Renderer.hpp"
+#include "RendererAPI.hpp"
 
 #include "NebulaEngine/Core/Assert.hpp"
 
@@ -10,7 +10,7 @@ namespace Nebula
 {
     Ptr<RenderContext> RenderContext::Create(void* window)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:
             NEBULA_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");

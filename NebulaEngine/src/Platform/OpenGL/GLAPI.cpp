@@ -1,4 +1,4 @@
-#include "GL.hpp"
+#include "GLAPI.hpp"
 
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE

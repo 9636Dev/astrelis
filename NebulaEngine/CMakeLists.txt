@@ -102,8 +102,14 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/RenderCommand.cpp
     src/NebulaEngine/Renderer/RendererAPI.hpp
     src/NebulaEngine/Renderer/RendererAPI.cpp
-    src/NebulaEngine/Renderer/Renderer.hpp
-    src/NebulaEngine/Renderer/Renderer.cpp
+    src/NebulaEngine/Renderer/VertexBuffer.hpp
+    src/NebulaEngine/Renderer/VertexBuffer.cpp
+    src/NebulaEngine/Renderer/IndexBuffer.hpp
+    src/NebulaEngine/Renderer/IndexBuffer.cpp
+    src/NebulaEngine/Renderer/VertexArray.hpp
+    src/NebulaEngine/Renderer/VertexArray.cpp
+    src/NebulaEngine/Renderer/Renderer2D.hpp
+    src/NebulaEngine/Renderer/Renderer2D.cpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -126,10 +132,16 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/OpenGL/OpenGLContext.cpp
         src/Platform/OpenGL/OpenGLRendererAPI.hpp
         src/Platform/OpenGL/OpenGLRendererAPI.cpp
-        src/Platform/OpenGL/API/GL.hpp
-        src/Platform/OpenGL/API/GL.cpp
-        src/Platform/OpenGL/API/Enum.hpp
-        src/Platform/OpenGL/API/Enum.cpp
+        src/Platform/OpenGL/GLAPI.hpp
+        src/Platform/OpenGL/GLAPI.cpp
+        src/Platform/OpenGL/GLEnum.hpp
+        src/Platform/OpenGL/GLEnum.cpp
+        src/Platform/OpenGL/GLVertexBuffer.hpp
+        src/Platform/OpenGL/GLVertexBuffer.cpp
+        src/Platform/OpenGL/GLIndexBuffer.hpp
+        src/Platform/OpenGL/GLIndexBuffer.cpp
+        src/Platform/OpenGL/GLVertexArray.hpp
+        src/Platform/OpenGL/GLVertexArray.cpp
     >
 )
 

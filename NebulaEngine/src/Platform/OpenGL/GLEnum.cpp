@@ -1,4 +1,4 @@
-#include "Enum.hpp"
+#include "GLEnum.hpp"
 #include <type_traits>
 
 namespace Nebula::OpenGL

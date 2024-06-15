@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string_view>
 
-#include "Enum.hpp"
+#include "GLEnum.hpp"
 
 #include "NebulaEngine/Core/Math.hpp"
 

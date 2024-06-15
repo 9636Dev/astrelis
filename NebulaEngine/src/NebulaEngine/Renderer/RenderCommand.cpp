@@ -24,4 +24,9 @@ namespace Nebula
     {
         s_RendererAPI->SetViewport(posX, posY, width, height);
     }
+
+    void RenderCommand::DrawIndexed(const Ptr<VertexArray> &vertexArray)
+    {
+        s_RendererAPI->DrawIndexed(vertexArray);
+    }
 } // namespace Nebula
