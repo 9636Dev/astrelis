@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "NebulaEngine/Core/Utils/Function.hpp"
-#include "NebulaEngine/Platform/OpenGL/API/Enum.hpp"
+#include "Platform/OpenGL/API/Enum.hpp"
 
 namespace Nebula::OpenGL
 {

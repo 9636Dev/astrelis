@@ -22,3 +22,9 @@
 [submodule "NebulaEngine/vendor/Eigen"]
 	path = NebulaEngine/vendor/Eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "NebulaEngine/vendor/qprofile"]
+	path = NebulaEngine/vendor/qprofile
+	url = https://github.com/HW9636/qprofilecpp
+[submodule "NebulaEngine/vendor/entt"]
+	path = NebulaEngine/vendor/entt
+	url = https://github.com/skypjack/entt

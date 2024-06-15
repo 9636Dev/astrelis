@@ -3,38 +3,11 @@
 #include "NebulaEngine/Core/Application.hpp"
 #include "NebulaEngine/Core/Base.hpp"
 #include "NebulaEngine/Core/Time.hpp"
+#include "NebulaEngine/Renderer/RenderCommand.hpp"
 #include "imgui.h"
-#include <random>
 
 SandboxLayer::SandboxLayer()
 {
-    m_Mesh.Vertices = {
-        { { -0.5F, -0.5F, 0.0F } },
-        { { 0.5F, -0.5F, 0.0F } },
-        { { 0.0F, 0.5F, 0.0F } },
-    };
-    m_Mesh.Indices = { 0, 1, 2 };
-
-    m_BatchTransforms.emplace_back();
-    m_BatchTransforms.back().Translate({ -0.5F, 0.5F, 0.0F });
-    m_BatchTransforms.emplace_back();
-    m_BatchTransforms.back().Translate({ 0.5F, 0.5F, 0.0F });
-
-    m_BatchMaterials.emplace_back();
-    m_BatchMaterials.back().DiffuseColor = { 1.0F, 0.0F, 0.0F, 1.0F };
-    m_BatchMaterials.emplace_back();
-    m_BatchMaterials.back().DiffuseColor = { 0.0F, 1.0F, 0.0F, 1.0F };
-
-    m_Transforms.emplace_back();
-    m_Transforms.back().Translate({ -0.5F, -0.5F, 0.0F });
-    m_Transforms.emplace_back();
-    m_Transforms.back().Translate({ 0.5F, -0.5F, 0.0F });
-
-    m_Materials.emplace_back();
-    m_Materials.back().DiffuseColor = { 0.0F, 0.0F, 1.0F, 1.0F };
-    m_Materials.emplace_back();
-    m_Materials.back().DiffuseColor = { 1.0F, 1.0F, 0.0F, 1.0F };
-
     NEBULA_LOG_INFO("Sandbox Layer Initializing");
 }
 
@@ -55,13 +28,8 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::OnUpdate()
 {
-    auto& renderer = Nebula::Application::Get().GetRenderer();
-    for (std::size_t i = 0; i < m_BatchTransforms.size(); ++i)
-    {
-        renderer.DrawMesh(m_Mesh, m_BatchTransforms[i], m_BatchMaterials[i]);
-    }
-
-    renderer.InstanceMesh(m_Mesh, m_Transforms, m_Materials);
+    Nebula::RenderCommand::SetClearColor({0.6F, 0.2F, 0.6F, 1.0F});
+    Nebula::RenderCommand::Clear();
 }
 
 void SandboxLayer::OnUIRender()
@@ -69,29 +37,10 @@ void SandboxLayer::OnUIRender()
     ImGui::Begin("Sandbox Layer");
 
     ImGui::Text("FPS: %lf (Imgui: %.1f)", 1.0 / Nebula::Time::DeltaTime(), ImGui::GetIO().Framerate);
-    ImGui::Text("Batch Instances: %zu", m_BatchTransforms.size());
-    ImGui::Text("Instances: %zu", m_Transforms.size());
 
-    static std::uint32_t numInstances = 1;
-    ImGui::InputScalar("Number of Instances", ImGuiDataType_U32, &numInstances);
-    if (ImGui::Button("Add Instance"))
-    {
-        std::random_device random;
-        std::uniform_real_distribution<float> dist(-1.0F, 1.0F);
-        std::uniform_real_distribution<float> distColor(0.0F, 1.0F);
-
-        for (std::uint32_t i = 0; i < numInstances; ++i)
-        {
-            m_Transforms.emplace_back();
-            m_Transforms.back().Translate({ 0.0F, 0.0F, 0.0F });
-            m_Materials.emplace_back();
-            m_Materials.back().DiffuseColor = { distColor(random), distColor(random), distColor(random), 1.0F };
-        }
-    }
     ImGui::End();
 }
 
 void SandboxLayer::OnEvent(Nebula::Event& event)
 {
-    NEBULA_LOG_INFO("Sandbox Layer Event: {0}", event.ToString());
 }

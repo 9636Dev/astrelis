@@ -1,7 +1,8 @@
 #include "ImGuiLayer.hpp"
 
-#include "NebulaEngine/Core/Base.hpp"
 #include "NebulaEngine/Core/Application.hpp"
+#include "NebulaEngine/Core/Base.hpp"
+#include "NebulaEngine/Core/PlatformDetection.hpp"
 #include "NebulaEngine/Events/Event.hpp"
 
 #include <GLFW/glfw3.h>
@@ -19,14 +20,18 @@ namespace Nebula
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& imguiIO = ImGui::GetIO();
-        (void)imguiIO;
         imguiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         imguiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+        imguiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+#ifdef NEBULA_PLATFORM_LINUX
+        NEBULA_CORE_LOG_DEBUG("ImGui Multi-Viewport not supported on Linux (Wayland)");
+#else
+        imguiIO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+#endif
 
-        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-        ImGuiStyle& style = ImGui::GetStyle();
         if ((imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0)
         {
+            ImGuiStyle& style                 = ImGui::GetStyle();
             style.WindowRounding              = 0.0F;
             style.Colors[ImGuiCol_WindowBg].w = 1.0F;
         }
@@ -35,6 +40,9 @@ namespace Nebula
         auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 410");
+
+        // Set Dark Theme Colors
+        SetDarkThemeColors();
     }
 
     void ImGuiLayer::OnDetach()
@@ -83,4 +91,7 @@ namespace Nebula
             glfwMakeContextCurrent(backup_current);
         }
     }
+
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+    void ImGuiLayer::SetDarkThemeColors() { ImGui::StyleColorsDark(); }
 } // namespace Nebula

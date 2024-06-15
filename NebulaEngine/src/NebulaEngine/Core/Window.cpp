@@ -3,9 +3,9 @@
 #include "PlatformDetection.hpp"
 
 #ifdef NEBULA_PLATFORM_LINUX
-    #include "NebulaEngine/Platform/Linux/LinuxWindow.hpp"
+    #include "Platform/Linux/LinuxWindow.hpp"
 #elif defined(NEBULA_PLATFORM_MACOS)
-    #include "NebulaEngine/Platform/MacOS/MacOSWindow.hpp"
+    #include "Platform/MacOS/MacOSWindow.hpp"
 #endif
 
 namespace Nebula

@@ -35,6 +35,7 @@ namespace Nebula::OpenGL
         static GLVersion GetVersion();
 
         static void Clear(ClearTarget target);
+        static void ClearColor(float colorR, float colorG, float colorB, float colorA);
         static void Viewport(int posX, int posY, int width, int height);
 
         static void DrawElements(DrawMode mode, std::size_t count, GLType type, const void* indices);

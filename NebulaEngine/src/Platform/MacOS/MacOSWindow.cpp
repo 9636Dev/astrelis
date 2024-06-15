@@ -1,8 +1,6 @@
 #include "MacOSWindow.hpp"
 
-#include "NebulaEngine/Platform/GLFW/GLFWWindowHelper.hpp"
-#include "NebulaEngine/Platform/OpenGL/OpenGLRenderContext.hpp"
-#include "NebulaEngine/Renderer/RenderContext.hpp"
+#include "../GLFW/GLFWWindowHelper.hpp"
 
 namespace Nebula
 {

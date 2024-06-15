@@ -46,47 +46,44 @@ namespace Nebula::OpenGL
         return {version, false};
     }
 
-    void GL::Clear(ClearTarget target)
+    void GL::Clear(ClearTarget target) { GLCall(glClear(static_cast<std::uint32_t>(target))); }
+
+    void GL::ClearColor(float colorR, float colorG, float colorB, float colorA)
     {
-        GLCall(glClear(static_cast<std::uint32_t>(target)));
+        GLCall(glClearColor(colorR, colorG, colorB, colorA));
     }
 
-    void GL::Viewport(int posX, int posY, int width, int height)
-    {
-        GLCall(glViewport(posX, posY, width, height));
-    }
+    void GL::Viewport(int posX, int posY, int width, int height) { GLCall(glViewport(posX, posY, width, height)); }
 
     void GL::DrawElements(DrawMode mode, std::size_t count, GLType type, const void* indices)
     {
         GLCall(glDrawElements(static_cast<std::uint32_t>(mode), count, static_cast<std::uint32_t>(type), indices));
     }
 
-    void GL::DrawElementsInstanced(DrawMode mode, std::size_t count, GLType type, const void* indices, std::uint32_t primcount)
+    void GL::DrawElementsInstanced(
+        DrawMode mode, std::size_t count, GLType type, const void* indices, std::uint32_t primcount)
     {
-        GLCall(glDrawElementsInstanced(static_cast<std::uint32_t>(mode), count, static_cast<std::uint32_t>(type), indices, primcount));
+        GLCall(glDrawElementsInstanced(static_cast<std::uint32_t>(mode), count, static_cast<std::uint32_t>(type),
+                                       indices, primcount));
     }
 
-    void GL::GenVertexArrays(std::uint32_t n, std::uint32_t* arrays)
-    {
-        GLCall(glGenVertexArrays(n, arrays));
-    }
+    void GL::GenVertexArrays(std::uint32_t n, std::uint32_t* arrays) { GLCall(glGenVertexArrays(n, arrays)); }
 
-    void GL::BindVertexArray(std::uint32_t array)
-    {
-        GLCall(glBindVertexArray(array));
-    }
+    void GL::BindVertexArray(std::uint32_t array) { GLCall(glBindVertexArray(array)); }
 
     void GL::DeleteVertexArrays(std::uint32_t n, const std::uint32_t* arrays)
     {
         GLCall(glDeleteVertexArrays(n, arrays));
     }
 
-    void GL::EnableVertexAttribArray(std::uint32_t index)
-    {
-        GLCall(glEnableVertexAttribArray(index));
-    }
+    void GL::EnableVertexAttribArray(std::uint32_t index) { GLCall(glEnableVertexAttribArray(index)); }
 
-    void GL::VertexAttribPointer(std::uint32_t index, std::uint32_t size, GLType type, bool normalized, std::uint32_t stride, const void* pointer)
+    void GL::VertexAttribPointer(std::uint32_t index,
+                                 std::uint32_t size,
+                                 GLType type,
+                                 bool normalized,
+                                 std::uint32_t stride,
+                                 const void* pointer)
     {
         GLCall(glVertexAttribPointer(index, size, static_cast<std::uint32_t>(type), normalized, stride, pointer));
     }
@@ -96,10 +93,7 @@ namespace Nebula::OpenGL
         GLCall(glVertexAttribDivisor(index, divisor));
     }
 
-    void GL::GenBuffers(std::uint32_t n, std::uint32_t* buffers)
-    {
-        GLCall(glGenBuffers(n, buffers));
-    }
+    void GL::GenBuffers(std::uint32_t n, std::uint32_t* buffers) { GLCall(glGenBuffers(n, buffers)); }
 
     void GL::BindBuffer(BufferTarget target, std::uint32_t buffer)
     {
@@ -111,10 +105,7 @@ namespace Nebula::OpenGL
         GLCall(glBufferData(static_cast<std::uint32_t>(target), size, data, static_cast<std::uint32_t>(usage)));
     }
 
-    void GL::DeleteBuffers(std::uint32_t n, const std::uint32_t* buffers)
-    {
-        GLCall(glDeleteBuffers(n, buffers));
-    }
+    void GL::DeleteBuffers(std::uint32_t n, const std::uint32_t* buffers) { GLCall(glDeleteBuffers(n, buffers)); }
 
     std::uint32_t GL::CreateShader(ShaderType type)
     {
@@ -126,10 +117,7 @@ namespace Nebula::OpenGL
         GLCall(glShaderSource(shader, count, string, length));
     }
 
-    void GL::CompileShader(std::uint32_t shader)
-    {
-        GLCall(glCompileShader(shader));
-    }
+    void GL::CompileShader(std::uint32_t shader) { GLCall(glCompileShader(shader)); }
 
     void GL::GetShaderiv(std::uint32_t shader, ShaderParameter pname, int* params)
     {
@@ -141,25 +129,13 @@ namespace Nebula::OpenGL
         GLCall(glGetShaderInfoLog(shader, maxLength, length, infoLog));
     }
 
-    void GL::DeleteShader(std::uint32_t shader)
-    {
-        GLCall(glDeleteShader(shader));
-    }
+    void GL::DeleteShader(std::uint32_t shader) { GLCall(glDeleteShader(shader)); }
 
-    std::uint32_t GL::CreateProgram()
-    {
-        return GLCallR(glCreateProgram());
-    }
+    std::uint32_t GL::CreateProgram() { return GLCallR(glCreateProgram()); }
 
-    void GL::AttachShader(std::uint32_t program, std::uint32_t shader)
-    {
-        GLCall(glAttachShader(program, shader));
-    }
+    void GL::AttachShader(std::uint32_t program, std::uint32_t shader) { GLCall(glAttachShader(program, shader)); }
 
-    void GL::LinkProgram(std::uint32_t program)
-    {
-        GLCall(glLinkProgram(program));
-    }
+    void GL::LinkProgram(std::uint32_t program) { GLCall(glLinkProgram(program)); }
 
     void GL::GetProgramiv(std::uint32_t program, ProgramParameter pname, int* params)
     {
@@ -171,15 +147,9 @@ namespace Nebula::OpenGL
         GLCall(glGetProgramInfoLog(program, maxLength, length, infoLog));
     }
 
-    void GL::UseProgram(std::uint32_t program)
-    {
-        GLCall(glUseProgram(program));
-    }
+    void GL::UseProgram(std::uint32_t program) { GLCall(glUseProgram(program)); }
 
-    void GL::DeleteProgram(std::uint32_t program)
-    {
-        GLCall(glDeleteProgram(program));
-    }
+    void GL::DeleteProgram(std::uint32_t program) { GLCall(glDeleteProgram(program)); }
 
     std::int32_t GL::GetUniformLocation(std::uint32_t program, const char* name)
     {
@@ -253,7 +223,8 @@ namespace Nebula::OpenGL
                 break;
             }
 
-            NEBULA_CORE_LOG_ERROR("OpenGL Error: {0} in {1} at line {2} in function {3}", errorString, file, line, function);
+            NEBULA_CORE_LOG_ERROR("OpenGL Error: {0} in {1} at line {2} in function {3}", errorString, file, line,
+                                  function);
         }
     }
 
@@ -331,21 +302,32 @@ namespace Nebula::OpenGL
         switch (severity)
         {
         case GL_DEBUG_SEVERITY_HIGH:
-            NEBULA_CORE_LOG_FATAL("[OpenGL High Severity Error] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId, s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString, typeString);
+            NEBULA_CORE_LOG_FATAL("[OpenGL High Severity Error] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId,
+                                  s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString,
+                                  typeString);
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            NEBULA_CORE_LOG_ERROR("[OpenGL Medium Severity Error] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId, s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString, typeString);
+            NEBULA_CORE_LOG_ERROR("[OpenGL Medium Severity Error] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId,
+                                  s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString,
+                                  typeString);
             break;
         case GL_DEBUG_SEVERITY_LOW:
-            NEBULA_CORE_LOG_WARN("[OpenGL Low Severity Error] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId, s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString, typeString);
+            NEBULA_CORE_LOG_WARN("[OpenGL Low Severity Error] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId,
+                                 s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString,
+                                 typeString);
             break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
+#ifdef NEBULA_GL_VERBOSE
             if (type == GL_DEBUG_TYPE_PERFORMANCE)
             {
                 NEBULA_CORE_LOG_TRACE("[OpenGL Performance Notification] {0}", message);
                 break;
             }
-            NEBULA_CORE_LOG_INFO("[OpenGL Notification] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId, s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString, typeString);
+            NEBULA_CORE_LOG_INFO("[OpenGL Notification] {0} ({1}) at {2}:{3} ({4}) [{5} {6}]", message, errId,
+                                 s_CallLocation.File, s_CallLocation.Line, s_CallLocation.Function, sourceString,
+                                 typeString);
+#endif
+            (void)message;
             break;
         default:
             break;

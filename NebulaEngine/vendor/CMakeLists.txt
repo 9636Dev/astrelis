@@ -2,6 +2,8 @@ add_subdirectory(gsl)
 add_subdirectory(spdlog)
 add_subdirectory(glfw)
 add_subdirectory(Eigen)
+add_subdirectory(qprofile)
+add_subdirectory(entt)
 
 # GLAD
 add_library(glad STATIC glad/src/glad.c)

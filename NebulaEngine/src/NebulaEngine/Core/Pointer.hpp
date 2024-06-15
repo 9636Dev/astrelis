@@ -25,7 +25,7 @@ namespace Nebula
         template<typename U> friend class Ptr;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        Ref(std::nullptr_t) noexcept : m_Ptr(nullptr) {}
+        Ref([[maybe_unused]] std::nullptr_t value) noexcept : m_Ptr(nullptr) {}
 
         explicit Ref(T& value) noexcept : m_Ptr(&value)
         {
@@ -187,6 +187,8 @@ namespace Nebula
     public:
         template<typename R> friend class Ptr;
 
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        Ptr(std::nullptr_t) noexcept : m_Ptr(nullptr) {}
         explicit Ptr(gsl::owner<T*> ptr) noexcept : m_Ptr(ptr) {}
 
         Ptr() noexcept : m_Ptr(nullptr) {}

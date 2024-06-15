@@ -1,5 +1,5 @@
 #include "LinuxWindow.hpp"
-#include "NebulaEngine/Platform/GLFW/GLFWWindowHelper.hpp"
+#include "../GLFW/GLFWWindowHelper.hpp"
 
 namespace Nebula
 {

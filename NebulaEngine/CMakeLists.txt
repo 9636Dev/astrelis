@@ -62,6 +62,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(vendor)
 
+if (NEBULA_PLATFORM STREQUAL "Linux")
+    set(NEBULA_RENDERER_OPENGL ON)
+elseif (NEBULA_PLATFORM STREQUAL "MacOS")
+    set(NEBULA_RENDERER_OPENGL OFF)
+else()
+    message(FATAL_ERROR "Unknown platform: ${NEBULA_PLATFORM}")
+endif()
+
+
 set(NEBULA_ENGINE_SOURCES
     # Core
     src/NebulaEngine/Core/PlatformDetection.hpp
@@ -89,15 +98,12 @@ set(NEBULA_ENGINE_SOURCES
     # Renderer
     src/NebulaEngine/Renderer/RenderContext.hpp
     src/NebulaEngine/Renderer/RenderContext.cpp
+    src/NebulaEngine/Renderer/RenderCommand.hpp
+    src/NebulaEngine/Renderer/RenderCommand.cpp
+    src/NebulaEngine/Renderer/RendererAPI.hpp
+    src/NebulaEngine/Renderer/RendererAPI.cpp
     src/NebulaEngine/Renderer/Renderer.hpp
     src/NebulaEngine/Renderer/Renderer.cpp
-    src/NebulaEngine/Renderer/Mesh.hpp
-    src/NebulaEngine/Renderer/Transform.hpp
-    src/NebulaEngine/Renderer/Transform.cpp
-
-    # Scene
-    src/NebulaEngine/Scene/Scene.hpp
-    src/NebulaEngine/Scene/Scene.cpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -105,38 +111,33 @@ set(NEBULA_ENGINE_SOURCES
 
     # Platform
     $<$<STREQUAL:${NEBULA_PLATFORM},Linux>:
-        src/NebulaEngine/Platform/Linux/LinuxWindow.hpp
-        src/NebulaEngine/Platform/Linux/LinuxWindow.cpp
+        src/Platform/Linux/LinuxWindow.hpp
+        src/Platform/Linux/LinuxWindow.cpp
     >
     $<$<STREQUAL:${NEBULA_PLATFORM},MacOS>:
-        src/NebulaEngine/Platform/MacOS/MacOSWindow.hpp
-        src/NebulaEngine/Platform/MacOS/MacOSWindow.cpp
+        src/Platform/MacOS/MacOSWindow.hpp
+        src/Platform/MacOS/MacOSWindow.cpp
     >
-    src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.hpp
-    src/NebulaEngine/Platform/GLFW/GLFWWindowHelper.cpp
-    src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.hpp
-    src/NebulaEngine/Platform/OpenGL/OpenGLRenderContext.cpp
-    src/NebulaEngine/Platform/OpenGL/OpenGLRenderer.hpp
-    src/NebulaEngine/Platform/OpenGL/OpenGLRenderer.cpp
-    src/NebulaEngine/Platform/OpenGL/API/GL.hpp
-    src/NebulaEngine/Platform/OpenGL/API/GL.cpp
-    src/NebulaEngine/Platform/OpenGL/API/Enum.hpp
-    src/NebulaEngine/Platform/OpenGL/API/Enum.cpp
-    src/NebulaEngine/Platform/OpenGL/API/IndexBuffer.hpp
-    src/NebulaEngine/Platform/OpenGL/API/IndexBuffer.cpp
-    src/NebulaEngine/Platform/OpenGL/API/VertexArray.hpp
-    src/NebulaEngine/Platform/OpenGL/API/VertexArray.cpp
-    src/NebulaEngine/Platform/OpenGL/API/VertexBuffer.hpp
-    src/NebulaEngine/Platform/OpenGL/API/VertexBuffer.cpp
-    src/NebulaEngine/Platform/OpenGL/API/Shader.hpp
-    src/NebulaEngine/Platform/OpenGL/API/Shader.cpp
+    src/Platform/GLFW/GLFWWindowHelper.hpp
+    src/Platform/GLFW/GLFWWindowHelper.cpp
+
+    $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:
+        src/Platform/OpenGL/OpenGLContext.hpp
+        src/Platform/OpenGL/OpenGLContext.cpp
+        src/Platform/OpenGL/OpenGLRendererAPI.hpp
+        src/Platform/OpenGL/OpenGLRendererAPI.cpp
+        src/Platform/OpenGL/API/GL.hpp
+        src/Platform/OpenGL/API/GL.cpp
+        src/Platform/OpenGL/API/Enum.hpp
+        src/Platform/OpenGL/API/Enum.cpp
+    >
 )
 
 set(NEBULA_ENGINE_PCH_SOURCES
 )
 
 
-add_library(NebulaEngine_Engine SHARED
+add_library(NebulaEngine_Engine STATIC
     ${NEBULA_ENGINE_SOURCES}
     ${NEBULA_ENGINE_PCH_SOURCES}
 )
@@ -153,6 +154,8 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
     glad
     ImGui
     Eigen3::Eigen
+    QProfile
+    EnTT::EnTT
 )
 
 target_compile_definitions(NebulaEngine_Engine
@@ -162,8 +165,10 @@ PUBLIC
     $<$<STREQUAL:${NEBULA_BUILD_TYPE},Release>:NEBULA_RELEASE>
     $<$<STREQUAL:${NEBULA_BUILD_TYPE},Dist>:NEBULA_DIST>
     $<$<BOOL:${NEBULA_PROFILE}>:NEBULA_PROFILE>
+    $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:NEBULA_RENDERER_OPENGL>
 )
 
+# Module Definition
 if (NEBULA_PEDANTIC_WARNINGS)
     if (NEBULA_COMPILER STREQUAL "CLANG" OR NEBULA_COMPILE STREQUAL "GCC")
         target_compile_options(NebulaEngine_Engine PRIVATE -Wall -Wextra -Wpedantic -Werror)

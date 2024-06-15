@@ -1,10 +1,11 @@
 #include "Application.hpp"
 
 #include "Base.hpp"
-#include "Time.hpp"
-#include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
+#include "NebulaEngine/Renderer/RenderCommand.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
+#include "Time.hpp"
+#include "Window.hpp"
 
 #include <utility>
 
@@ -29,20 +30,11 @@ namespace Nebula
 
         m_Window = std::move(res.Unwrap());
         m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
-        gsl::owner<ImGuiLayer*> imguiLayer = new ImGuiLayer();
-        PushOverlay(imguiLayer); // Ownership transferred to LayerStack
-        m_ImGuiLayer = imguiLayer;
-
-        auto rendererRes =
-            Nebula::Renderer::Create(m_Window.GetRef(), m_Window->GetViewportBounds());
-        if (res.IsOk())
-        {
-            m_Renderer = std::move(rendererRes.Unwrap());
-        }
-        else
-        {
-            NEBULA_LOG_ERROR("Failed to create renderer: {0}", rendererRes.UnwrapErr());
-        }
+        // TODO(9636D): Move into Renderer
+        RenderCommand::Init();
+        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+        m_ImGuiLayer = new ImGuiLayer();
+        PushOverlay(m_ImGuiLayer); // Ownership transferred to LayerStack
     }
 
     Application::~Application() = default;
@@ -53,17 +45,17 @@ namespace Nebula
         while (m_Running)
         {
             TimePoint currentFrameTime = Time::Now();
-            Time::s_DeltaTime = Time::ElapsedTime<Milliseconds>(lastFrameTime, currentFrameTime);
-            lastFrameTime = currentFrameTime;
+            Time::s_DeltaTime          = Time::ElapsedTime<Milliseconds>(lastFrameTime, currentFrameTime);
+            lastFrameTime              = currentFrameTime;
 
-            m_Renderer->BeginFrame();
+            //m_Renderer->BeginFrame();
 
             for (auto* layer : m_LayerStack)
             {
                 layer->OnUpdate();
             }
 
-            m_Renderer->EndFrame();
+            //m_Renderer->EndFrame();
 
             m_ImGuiLayer->Begin();
 
@@ -109,8 +101,8 @@ namespace Nebula
         }
 
         NEBULA_CORE_LOG_DEBUG("Resizing to {0}x{1}", event.GetWidth(), event.GetHeight());
-        m_Renderer->Viewport(
-            {0, 0, static_cast<std::int32_t>(event.GetWidth()), static_cast<std::int32_t>(event.GetHeight())});
+        RenderCommand::SetViewport(0, 0, static_cast<std::int32_t>(event.GetWidth()),
+                                   static_cast<std::int32_t>(event.GetHeight()));
         return false;
     }
 

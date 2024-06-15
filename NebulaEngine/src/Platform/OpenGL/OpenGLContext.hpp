@@ -1,17 +1,16 @@
 #pragma once
 
-#include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Renderer/RenderContext.hpp"
 
-struct GLFWwindow;
+#include <GLFW/glfw3.h>
 
 namespace Nebula
 {
     class OpenGLRenderContext : public RenderContext
     {
     public:
-        explicit OpenGLRenderContext(GLFWwindow* windowHandle);
-        ~OpenGLRenderContext() override = default;
+        explicit OpenGLRenderContext(GLFWwindow* window);
+        ~OpenGLRenderContext() override;
         OpenGLRenderContext(const OpenGLRenderContext&) = delete;
         OpenGLRenderContext& operator=(const OpenGLRenderContext&) = delete;
         OpenGLRenderContext(OpenGLRenderContext&&) = delete;
@@ -20,8 +19,8 @@ namespace Nebula
         void Init() override;
         void SwapBuffers() override;
 
-        static Ptr<OpenGLRenderContext> Create(GLFWwindow* window);
+        static Ptr<OpenGLRenderContext> Create(void* window);
     private:
-        GLFWwindow* m_WindowHandle;
+        GLFWwindow* m_Window;
     };
 } // namespace Nebula

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <vector>
-#include "Entity.hpp"
+#include <entt/entt.hpp>
 
 namespace Nebula
 {
@@ -10,13 +9,12 @@ namespace Nebula
     public:
         Scene();
         ~Scene();
-        Scene(const Scene &) = delete;
-        Scene &operator=(const Scene &) = delete;
-        Scene(Scene &&) = delete;
-        Scene &operator=(Scene &&) = delete;
-
+        Scene(const Scene &other) = delete;
+        Scene &operator=(const Scene &other) = delete;
+        Scene(Scene &&other) = delete;
+        Scene &operator=(Scene &&other) = delete;
 
     private:
-        std::vector<Entity> m_Entities;
+        entt::registry m_Registry;
     };
 } // namespace Nebula

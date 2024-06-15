@@ -2,8 +2,9 @@
 
 #include "Renderer.hpp"
 
-#include "NebulaEngine/Core/Base.hpp"
-#include "NebulaEngine/Platform/OpenGL/OpenGLRenderContext.hpp"
+#include "NebulaEngine/Core/Assert.hpp"
+
+#include "Platform/OpenGL/OpenGLContext.hpp"
 
 namespace Nebula
 {
@@ -11,14 +12,20 @@ namespace Nebula
     {
         switch (Renderer::GetAPI())
         {
-        case RendererAPI::None:
+        case RendererAPI::API::None:
             NEBULA_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
-            return Ptr<RenderContext>(nullptr);
-        case RendererAPI::OpenGL:
-            return OpenGLRenderContext::Create(static_cast<GLFWwindow*>(window)).Cast<RenderContext>();
+            return nullptr;
+        case RendererAPI::API::OpenGL:
+#ifdef NEBULA_RENDERER_OPENGL
+            return OpenGLRenderContext::Create(window).Cast<RenderContext>();
+#else
+            NEBULA_CORE_ASSERT(false, "RendererAPI::API::OpenGL is currently not supported!");
+            return nullptr;
+
+#endif
         default:
             NEBULA_CORE_ASSERT(false, "Unknown RendererAPI!");
-            return Ptr<RenderContext>(nullptr);
+            return nullptr;
         }
     }
 } // namespace Nebula
