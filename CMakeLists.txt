@@ -66,4 +66,5 @@ add_subdirectory(NebulaEngine)
 add_library(NebulaEngine::Engine ALIAS NebulaEngine_Engine)
 #add_library(NebulaEngine::Format ALIAS NebulaEngine_Format)
 add_subdirectory(Sandbox)
+add_subdirectory(PulsarEditor) # Editor
 
