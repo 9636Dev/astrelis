@@ -1,5 +1,6 @@
 #include "Renderer2D.hpp"
 
+#include "NebulaEngine/Renderer/Shader.hpp"
 #include "NebulaEngine/Renderer/VertexArray.hpp"
 #include "RenderCommand.hpp"
 
@@ -26,8 +27,7 @@ namespace Nebula
         Ptr<IndexBuffer> QuadIndexBuffer;
         std::vector<QuadVertex> QuadVertexBufferBase;
         std::vector<std::uint32_t> QuadIndexBufferBase;
-
-        GLuint program = 0;
+        Ptr<Shader> QuadShader;
     };
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
@@ -48,9 +48,8 @@ namespace Nebula
         s_Data.QuadIndexBuffer = IndexBuffer::Create(Renderer2DData::MaxIndices);
         s_Data.QuadVertexArray->SetIndexBuffer(s_Data.QuadIndexBuffer.GetRef());
 
-        s_Data.program = glCreateProgram();
         {
-            const char* vertexShaderSource = R"(
+            const char* vertexShaderSource   = R"(
                 #version 330 core
 
                 layout(location = 0) in vec2 a_Position;
@@ -64,25 +63,6 @@ namespace Nebula
                     gl_Position = vec4(a_Position, 0.0, 1.0);
                 }
             )";
-            GLuint vertexShader            = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-            GLint success = 0;
-            glCompileShader(vertexShader);
-            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-            if (success == GL_FALSE)
-            {
-                GLint maxLength = 0;
-                glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-                std::vector<GLchar> infoLog(maxLength);
-                glGetShaderInfoLog(vertexShader, maxLength, &maxLength, infoLog.data());
-
-                glDeleteShader(vertexShader);
-
-                NEBULA_CORE_LOG_ERROR("Vertex shader compilation failed: {0}", infoLog.data());
-            }
-            glAttachShader(s_Data.program, vertexShader);
-
             const char* fragmentShaderSource = R"(
                 #version 330 core
 
@@ -95,44 +75,10 @@ namespace Nebula
                     color = v_Color;
                 }
             )";
-            GLuint fragmentShader            = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-            glCompileShader(fragmentShader);
-            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-            if (success == GL_FALSE)
-            {
-                GLint maxLength = 0;
-                glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
 
-                std::vector<GLchar> infoLog(maxLength);
-                glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, infoLog.data());
-
-                glDeleteShader(fragmentShader);
-
-                NEBULA_CORE_LOG_ERROR("Fragment shader compilation failed: {0}", infoLog.data());
-            }
-            glAttachShader(s_Data.program, fragmentShader);
-
-            glLinkProgram(s_Data.program);
-            glGetProgramiv(s_Data.program, GL_LINK_STATUS, &success);
-            if (success == GL_FALSE)
-            {
-                GLint maxLength = 0;
-                glGetProgramiv(s_Data.program, GL_INFO_LOG_LENGTH, &maxLength);
-
-                std::vector<GLchar> infoLog(maxLength);
-                glGetProgramInfoLog(s_Data.program, maxLength, &maxLength, infoLog.data());
-
-                glDeleteProgram(s_Data.program);
-
-                NEBULA_CORE_LOG_ERROR("Shader program linking failed: {0}", infoLog.data());
-            }
-
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
+            s_Data.QuadShader = Shader::Create("BasicQuad", vertexShaderSource, fragmentShaderSource);
+            NEBULA_CORE_ASSERT(s_Data.QuadShader, "Failed to create QuadShader");
         }
-
-        // TODO: Shaders
     }
 
     void Renderer2D::Shutdown()
@@ -140,9 +86,13 @@ namespace Nebula
         s_Data.QuadVertexArray.Reset();
         s_Data.QuadVertexBuffer.Reset();
         s_Data.QuadIndexBuffer.Reset();
+        s_Data.QuadShader.Reset();
     }
 
-    void Renderer2D::SetViewport(const Bounds& bounds) { RenderCommand::SetViewport(bounds.X, bounds.Y, bounds.Width, bounds.Height); }
+    void Renderer2D::SetViewport(const Bounds& bounds)
+    {
+        RenderCommand::SetViewport(bounds.X, bounds.Y, bounds.Width, bounds.Height);
+    }
 
     void Renderer2D::BeginScene() { StartBatch(); }
 
@@ -157,6 +107,8 @@ namespace Nebula
 
         float posX = position.x() - size.x() / 2.0F;
         float posY = position.y() - size.y() / 2.0F;
+
+        s_Data.QuadVertexBufferBase.reserve(4);
         s_Data.QuadVertexBufferBase.push_back({
             {posX, posY},
             {color.x(), color.y(), color.z(), color.w()}
@@ -174,12 +126,14 @@ namespace Nebula
             {color.x(), color.y(), color.z(), color.w()}
         });
 
-        s_Data.QuadIndexBufferBase.push_back(s_Data.QuadVertexBufferBase.size() - 4);
-        s_Data.QuadIndexBufferBase.push_back(s_Data.QuadVertexBufferBase.size() - 3);
-        s_Data.QuadIndexBufferBase.push_back(s_Data.QuadVertexBufferBase.size() - 2);
-        s_Data.QuadIndexBufferBase.push_back(s_Data.QuadVertexBufferBase.size() - 2);
-        s_Data.QuadIndexBufferBase.push_back(s_Data.QuadVertexBufferBase.size() - 1);
-        s_Data.QuadIndexBufferBase.push_back(s_Data.QuadVertexBufferBase.size() - 4);
+        std::uint32_t curSize = s_Data.QuadVertexBufferBase.size();
+        s_Data.QuadIndexBufferBase.reserve(6);
+        s_Data.QuadIndexBufferBase.push_back(curSize - 4); // 0
+        s_Data.QuadIndexBufferBase.push_back(curSize - 3); // 1
+        s_Data.QuadIndexBufferBase.push_back(curSize - 2); // 2
+        s_Data.QuadIndexBufferBase.push_back(curSize - 2); // 2
+        s_Data.QuadIndexBufferBase.push_back(curSize - 1); // 3
+        s_Data.QuadIndexBufferBase.push_back(curSize - 4); // 0
     }
 
     void Renderer2D::Flush() { EndBatch(); }
@@ -195,7 +149,7 @@ namespace Nebula
         s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase.data(),
                                          s_Data.QuadVertexBufferBase.size() * sizeof(Renderer2DData::QuadVertex));
         s_Data.QuadIndexBuffer->SetData(s_Data.QuadIndexBufferBase.data(), s_Data.QuadIndexBufferBase.size());
-        glUseProgram(s_Data.program);
+        s_Data.QuadShader->Bind();
         RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
     }
 

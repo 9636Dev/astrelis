@@ -71,6 +71,7 @@ namespace Nebula::OpenGL
         static std::int32_t GetUniformLocation(std::uint32_t program, const char* name);
         static void Uniform4f(std::int32_t location, float val0, float val1, float val2, float val3);
         static void Uniform4f(std::int32_t location, const Vector4f& vec) { Uniform4f(location, vec.x(), vec.y(), vec.z(), vec.w()); }
+        static void UniformMatrix4fv(std::int32_t location, std::size_t count, bool transpose, const float* value);
     private:
         struct CallLocation
         {

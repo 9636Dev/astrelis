@@ -161,6 +161,11 @@ namespace Nebula::OpenGL
         GLCall(glUniform4f(location, val0, val1, val2, val3));
     }
 
+    void GL::UniformMatrix4fv(std::int32_t location, std::size_t count, bool transpose, const float* value)
+    {
+        GLCall(glUniformMatrix4fv(location, count, transpose, value));
+    }
+
     GLVersion GL::GetVersion()
     {
         static GLVersion version(0, 0);

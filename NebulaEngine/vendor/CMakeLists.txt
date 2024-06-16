@@ -1,5 +1,6 @@
 add_subdirectory(gsl)
 add_subdirectory(spdlog)
+add_subdirectory(glm)
 add_subdirectory(glfw)
 add_subdirectory(Eigen)
 add_subdirectory(qprofile)

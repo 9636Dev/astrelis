@@ -5,3 +5,8 @@
 #endif
 
 #include <QProfile/Macros.hpp>
+
+#define NEBULA_PROFILE_START_SESSION(name, filepath) QPROFILE_START_SESSION(name, filepath)
+#define NEBULA_PROFILE_END_SESSION() QPROFILE_END_SESSION()
+#define NEBULA_PROFILE_SCOPE(name) QPROFILE_SCOPE(name)
+

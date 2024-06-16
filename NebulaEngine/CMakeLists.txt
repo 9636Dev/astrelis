@@ -108,6 +108,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/IndexBuffer.cpp
     src/NebulaEngine/Renderer/VertexArray.hpp
     src/NebulaEngine/Renderer/VertexArray.cpp
+    src/NebulaEngine/Renderer/Shader.hpp
+    src/NebulaEngine/Renderer/Shader.cpp
     src/NebulaEngine/Renderer/Renderer2D.hpp
     src/NebulaEngine/Renderer/Renderer2D.cpp
 
@@ -142,6 +144,8 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/OpenGL/GLIndexBuffer.cpp
         src/Platform/OpenGL/GLVertexArray.hpp
         src/Platform/OpenGL/GLVertexArray.cpp
+        src/Platform/OpenGL/GLShader.hpp
+        src/Platform/OpenGL/GLShader.cpp
     >
 )
 
@@ -164,6 +168,7 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
     Microsoft.GSL::GSL
     glfw
     glad
+    glm
     ImGui
     Eigen3::Eigen
     QProfile

@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
-#include "Base.hpp"
+#include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
 #include "NebulaEngine/Renderer/RenderCommand.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
@@ -17,6 +17,7 @@ namespace Nebula
         m_Specification(std::move(specification)),
         m_Window(nullptr)
     {
+        NEBULA_PROFILE_SCOPE("Application::Application");
         Nebula::Log::Init();
         NEBULA_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
@@ -37,6 +38,7 @@ namespace Nebula
 
     Application::~Application()
     {
+        NEBULA_PROFILE_SCOPE("Application::~Application");
         for (auto* layer : m_LayerStack)
         {
             layer->OnDetach();

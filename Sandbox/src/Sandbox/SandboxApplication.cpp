@@ -7,7 +7,7 @@
 
 SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec) : Nebula::Application(std::move(spec))
 {
-    QPROFILE_SCOPE("SandboxApplication::SandboxApplication");
+    NEBULA_PROFILE_SCOPE("SandboxApplication::SandboxApplication");
     gsl::owner<Nebula::Layer*> layer = new SandboxLayer();
     PushLayer(layer);
     layer = nullptr;

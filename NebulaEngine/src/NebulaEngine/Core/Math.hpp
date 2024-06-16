@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Eigen/Core"
 #include <Eigen/Dense>
 
 namespace Nebula
 {
     template<typename T, int N>
-    using Vector = Eigen::Matrix<T, N, 1>;
+    using Vector = Eigen::Vector<T, N>;
 
     template<typename T, int R, int C>
     using Matrix = Eigen::Matrix<T, R, C>;

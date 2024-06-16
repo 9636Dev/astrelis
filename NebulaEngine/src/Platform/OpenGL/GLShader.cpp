@@ -1,24 +1,24 @@
-#include "Shader.hpp"
+#include "GLShader.hpp"
 
-#include "GL.hpp"
+#include "GLAPI.hpp"
 
 namespace Nebula::OpenGL
 {
-    Shader::Shader(ShaderType type)
+    GLShader::GLShader(ShaderType type)
         : m_Id(GL::CreateShader(type)) {}
 
-    Shader::~Shader()
+    GLShader::~GLShader()
     {
         GL::DeleteShader(m_Id);
     }
 
-    Shader::Shader(Shader&& other) noexcept
+    GLShader::GLShader(GLShader&& other) noexcept
         : m_Id(other.m_Id)
     {
         other.m_Id = 0;
     }
 
-    Shader& Shader::operator=(Shader&& other) noexcept
+    GLShader& GLShader::operator=(GLShader&& other) noexcept
     {
         if (this != &other)
         {
@@ -30,14 +30,14 @@ namespace Nebula::OpenGL
     }
 
     // NOLINTNEXTLINE(readability-make-member-function-const)
-    void Shader::SetSource(std::string_view source)
+    void GLShader::SetSource(std::string_view source)
     {
         const char* src = source.data();
         GL::ShaderSource(m_Id, 1, &src, nullptr);
     }
 
     // NOLINTNEXTLINE(readability-make-member-function-const)
-    bool Shader::Compile()
+    bool GLShader::Compile()
     {
         GL::CompileShader(m_Id);
 
@@ -47,7 +47,7 @@ namespace Nebula::OpenGL
         return status != 0;
     }
 
-    std::string Shader::GetInfoLog() const
+    std::string GLShader::GetInfoLog() const
     {
         int length = 0;
         GL::GetShaderiv(m_Id, ShaderParameter::InfoLogLength, &length);
@@ -58,21 +58,21 @@ namespace Nebula::OpenGL
         return infoLog;
     }
 
-    Program::Program()
+    GLShaderProgram::GLShaderProgram()
         : m_Id(GL::CreateProgram()) {}
 
-    Program::~Program()
+    GLShaderProgram::~GLShaderProgram()
     {
         GL::DeleteProgram(m_Id);
     }
 
-    Program::Program(Program&& other) noexcept
+    GLShaderProgram::GLShaderProgram(GLShaderProgram&& other) noexcept
         : m_Id(other.m_Id)
     {
         other.m_Id = 0;
     }
 
-    Program& Program::operator=(Program&& other) noexcept
+    GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) noexcept
     {
         if (this != &other)
         {
@@ -84,13 +84,13 @@ namespace Nebula::OpenGL
     }
 
     // NOLINTNEXTLINE(readability-make-member-function-const)
-    void Program::AttachShader(const Shader& shader)
+    void GLShaderProgram::AttachShader(const GLShader& shader)
     {
         GL::AttachShader(m_Id, shader.m_Id);
     }
 
     // NOLINTNEXTLINE(readability-make-member-function-const)
-    bool Program::Link()
+    bool GLShaderProgram::Link()
     {
         GL::LinkProgram(m_Id);
 
@@ -99,7 +99,7 @@ namespace Nebula::OpenGL
         return status != 0;
     }
 
-    std::string Program::GetInfoLog() const
+    std::string GLShaderProgram::GetInfoLog() const
     {
         int length = 0;
         GL::GetProgramiv(m_Id, ProgramParameter::InfoLogLength, &length);
@@ -110,18 +110,23 @@ namespace Nebula::OpenGL
         return infoLog;
     }
 
-    void Program::Use() const
+    void GLShaderProgram::Bind() const
     {
         GL::UseProgram(m_Id);
     }
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-    void Program::Unuse() const
+    void GLShaderProgram::Unbind() const
     {
         GL::UseProgram(0);
     }
 
-    std::int32_t Program::GetUniformLocation(std::string_view name)
+    void GLShaderProgram::SetMat4(std::string_view name, Matrix4f value)
+    {
+        GL::UniformMatrix4fv(GetUniformLocation(name), 1, false, value.data());
+    }
+
+    std::int32_t GLShaderProgram::GetUniformLocation(std::string_view name)
     {
         auto iter = m_UniformLocations.find(name);
         if (iter != m_UniformLocations.end())
@@ -134,9 +139,34 @@ namespace Nebula::OpenGL
         return location;
     }
 
-    // NOLINTNEXTLINE(readability-make-member-function-const)
-    void Program::SetUniform(std::string_view name, Vector4f value)
+    Ptr<GLShaderProgram> GLShaderProgram::Create(std::string name, std::string_view vertexSource, std::string_view fragmentSource)
     {
-        GL::Uniform4f(GetUniformLocation(name), value.x(), value.y(), value.z(), value.w());
+        auto program = MakePtr<GLShaderProgram>();
+        GLShader vertexShader(ShaderType::Vertex);
+        vertexShader.SetSource(vertexSource);
+        if (!vertexShader.Compile())
+        {
+            NEBULA_LOG_ERROR("Vertex shader compilation failed: {0}", vertexShader.GetInfoLog());
+            return nullptr;
+        }
+        program->AttachShader(vertexShader);
+
+        GLShader fragmentShader(ShaderType::Fragment);
+        fragmentShader.SetSource(fragmentSource);
+        if (!fragmentShader.Compile())
+        {
+            NEBULA_LOG_ERROR("Fragment shader compilation failed: {0}", fragmentShader.GetInfoLog());
+            return nullptr;
+        }
+        program->AttachShader(fragmentShader);
+
+        if (!program->Link())
+        {
+            NEBULA_LOG_ERROR("Shader program linking failed: {0}", program->GetInfoLog());
+            return nullptr;
+        }
+
+        program->m_Name = std::move(name);
+        return program;
     }
 } // namespace Nebula::OpenGL
