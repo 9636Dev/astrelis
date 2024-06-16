@@ -62,10 +62,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(vendor)
 
+
 if (NEBULA_PLATFORM STREQUAL "Linux")
     set(NEBULA_RENDERER_OPENGL ON)
+    set(NEBULA_RENDERER_METAL OFF)
 elseif (NEBULA_PLATFORM STREQUAL "MacOS")
-    set(NEBULA_RENDERER_OPENGL OFF)
+    # TODO: Add Metal renderer, and disable OpenGL
+    set(NEBULA_RENDERER_OPENGL ON)
+    set(NEBULA_RENDERER_METAL ON)
 else()
     message(FATAL_ERROR "Unknown platform: ${NEBULA_PLATFORM}")
 endif()
@@ -147,6 +151,13 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/OpenGL/GLShader.hpp
         src/Platform/OpenGL/GLShader.cpp
     >
+
+    $<$<BOOL:${NEBULA_RENDERER_METAL}>:
+        src/Platform/Metal/MetalContext.hpp
+        src/Platform/Metal/MetalContext.mm
+        src/Platform/Metal/MetalRendererAPI.hpp
+        src/Platform/Metal/MetalRendererAPI.mm
+    >
 )
 
 set(NEBULA_ENGINE_PCH_SOURCES
@@ -167,7 +178,14 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
     spdlog::spdlog
     Microsoft.GSL::GSL
     glfw
-    glad
+    $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:
+        glad
+    >
+    $<$<BOOL:${NEBULA_RENDERER_METAL}>:
+        "-framework Metal"
+        "-framework Cocoa"
+        "-framework QuartzCore"
+    >
     glm
     ImGui
     Eigen3::Eigen
