@@ -21,6 +21,8 @@ void EditorLayer::OnAttach()
 
 void EditorLayer::OnDetach()
 {
+    // Similarly, we have to shutdown the renderer
+    Nebula::Renderer2D::Shutdown();
 }
 
 void EditorLayer::OnUpdate()
