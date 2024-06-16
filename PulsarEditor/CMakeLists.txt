@@ -1,2 +1,16 @@
 cmake_minimum_required(VERSION 3.27)
 # Pulsar Editor is a editor for NebulaEngine, which uses NebulaEngine to render the editor.
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(PULSAR_EDITOR_SOURCES
+    src/Pulsar/Application.cpp
+    src/Pulsar/EditorLayer.hpp
+    src/Pulsar/EditorLayer.cpp
+)
+
+add_executable(PulsarEditor ${PULSAR_EDITOR_SOURCES})
+target_include_directories(PulsarEditor PRIVATE src)
+
+target_link_libraries(PulsarEditor NebulaEngine::Engine)
