@@ -4,7 +4,9 @@
 
 #include "NebulaEngine/Core/Assert.hpp"
 
+#ifdef NEBULA_RENDERER_OPENGL
 #include "Platform/OpenGL/OpenGLContext.hpp"
+#endif
 
 namespace Nebula
 {
