@@ -10,7 +10,7 @@ public:
         : Nebula::Application(spec)
     {
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-        PushOverlay(new EditorLayer());
+        PushOverlay(new EditorLayer(spec.WorkingDirectory));
     }
 };
 
@@ -18,7 +18,7 @@ Nebula::Ptr<Nebula::Application> Nebula::CreateApplication(Nebula::CommandLineAr
 {
     ApplicationSpecification spec;
     spec.Name = "Nebula Editor";
-    spec.WorkingDirectory = "../";
+    spec.WorkingDirectory = "./";
     spec.Arguments = std::move(args);
     return MakePtr<EditorApplication>(spec).Cast<Nebula::Application>();
 }
