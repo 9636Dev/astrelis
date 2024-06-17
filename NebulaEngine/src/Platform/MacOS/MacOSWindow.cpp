@@ -9,8 +9,6 @@ namespace Nebula
         m_Data(std::move(data))
     {
         GLFWWindowHelper::SetEventCallbacks(m_Window, m_Data);
-        m_RenderContext = RenderContext::Create(m_Window);
-        m_RenderContext->Init();
         glfwMakeContextCurrent(m_Window);
     }
 
@@ -23,23 +21,14 @@ namespace Nebula
     void MacOSWindow::OnUpdate()
     {
         glfwPollEvents();
-        m_RenderContext->SwapBuffers();
+        //m_RenderContext->SwapBuffers();
     }
 
-    Bounds MacOSWindow::GetViewportBounds() const
-    {
-        // Frame buffer size
-        int width = 0;
-        int height = 0;
-        glfwGetFramebufferSize(m_Window, &width, &height);
-        return { 0, 0, width, height };
-    }
-
-    Result<Ptr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps &props)
+    Result<RefPtr<Window>, std::string> MacOSWindow::Create(const WindowProps &props)
     {
         auto res = GLFWWindowHelper::CreateLegacyWindow(props);
         return res.MapMove([props](GLFWwindow* window) {
-            return MakePtr<MacOSWindow>(window, MacOSWindowData(props.Title, props.Width, props.Height));
+            return static_cast<RefPtr<Window>>(RefPtr<MacOSWindow>::Create(window, MacOSWindowData(props.Title, props.Width, props.Height)));
         });
     }
 } // namespace Nebula

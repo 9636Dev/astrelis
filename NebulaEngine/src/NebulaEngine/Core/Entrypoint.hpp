@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 {
     NEBULA_PROFILE_START_SESSION("Startup", "profiles/NebulaProfileStartup.json");
     Nebula::CommandLineArguments args    = Nebula::CommandLineArguments::Parse(argc, argv);
-    Nebula::Ptr<Nebula::Application> app = Nebula::CreateApplication(args);
+    Nebula::ScopedPtr<Nebula::Application> app = Nebula::CreateApplication(args);
     NEBULA_PROFILE_END_SESSION();
 
     NEBULA_PROFILE_START_SESSION("Runtime", "profiles/NebulaProfileRun.json");

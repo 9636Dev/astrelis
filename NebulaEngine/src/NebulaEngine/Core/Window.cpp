@@ -10,12 +10,12 @@
 
 namespace Nebula
 {
-    Result<Ptr<Window>, std::string> Window::Create(const WindowProps& props)
+    Result<RefPtr<Window>, std::string> Window::Create(const WindowProps& props)
     {
 #ifdef NEBULA_PLATFORM_LINUX
         return LinuxWindow::Create(props).MapMove([](Ptr<LinuxWindow>&& window) { return window.Cast<Window>(); });
 #elif defined(NEBULA_PLATFORM_MACOS)
-        return MacOSWindow::Create(props).MapMove([](Ptr<MacOSWindow>&& window) { return window.Cast<Window>(); });
+        return MacOSWindow::Create(props);
 #else
         return "Unsupported platform";
 #endif

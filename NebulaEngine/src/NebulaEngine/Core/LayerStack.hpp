@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Layer.hpp"
+#include "NebulaEngine/Core/Pointer.hpp"
 
 namespace Nebula
 {
@@ -16,16 +17,16 @@ namespace Nebula
         LayerStack(LayerStack&&) = delete;
         LayerStack& operator=(LayerStack&&) = delete;
 
-        void PushLayer(Layer* layer);
-        void PushOverlay(Layer* overlay);
-        void PopLayer(Layer* layer);
-        void PopOverlay(Layer* overlay);
+        void PushLayer(OwnedPtr<Layer*> layer);
+        void PushOverlay(OwnedPtr<Layer*> overlay);
+        OwnedPtr<Layer*> PopLayer(RawRef<Layer*> layer);
+        OwnedPtr<Layer*> PopOverlay(RawRef<Layer*> overlay);
 
-        std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
-        std::vector<Layer*>::iterator end() { return m_Layers.end(); }
+        std::vector<OwnedPtr<Layer*>>::iterator begin() { return m_Layers.begin(); }
+        std::vector<OwnedPtr<Layer*>>::iterator end() { return m_Layers.end(); }
 
     private:
         std::int64_t m_LayerInsertIndex = 0;
-        std::vector<Layer*> m_Layers;
+        std::vector<OwnedPtr<Layer*>> m_Layers;
     };
 } // namespace Nebula

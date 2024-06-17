@@ -100,22 +100,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Time.cpp
 
     # Renderer
-    src/NebulaEngine/Renderer/RenderContext.hpp
-    src/NebulaEngine/Renderer/RenderContext.cpp
-    src/NebulaEngine/Renderer/RenderCommand.hpp
-    src/NebulaEngine/Renderer/RenderCommand.cpp
-    src/NebulaEngine/Renderer/RendererAPI.hpp
-    src/NebulaEngine/Renderer/RendererAPI.cpp
-    src/NebulaEngine/Renderer/VertexBuffer.hpp
-    src/NebulaEngine/Renderer/VertexBuffer.cpp
-    src/NebulaEngine/Renderer/IndexBuffer.hpp
-    src/NebulaEngine/Renderer/IndexBuffer.cpp
-    src/NebulaEngine/Renderer/VertexArray.hpp
-    src/NebulaEngine/Renderer/VertexArray.cpp
-    src/NebulaEngine/Renderer/Shader.hpp
-    src/NebulaEngine/Renderer/Shader.cpp
-    src/NebulaEngine/Renderer/Renderer2D.hpp
-    src/NebulaEngine/Renderer/Renderer2D.cpp
+    src/NebulaEngine/Renderer/GraphicsContext.hpp
+    src/NebulaEngine/Renderer/GraphicsContext.cpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -134,29 +120,9 @@ set(NEBULA_ENGINE_SOURCES
     src/Platform/GLFW/GLFWWindowHelper.cpp
 
     $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:
-        src/Platform/OpenGL/OpenGLContext.hpp
-        src/Platform/OpenGL/OpenGLContext.cpp
-        src/Platform/OpenGL/OpenGLRendererAPI.hpp
-        src/Platform/OpenGL/OpenGLRendererAPI.cpp
-        src/Platform/OpenGL/GLAPI.hpp
-        src/Platform/OpenGL/GLAPI.cpp
-        src/Platform/OpenGL/GLEnum.hpp
-        src/Platform/OpenGL/GLEnum.cpp
-        src/Platform/OpenGL/GLVertexBuffer.hpp
-        src/Platform/OpenGL/GLVertexBuffer.cpp
-        src/Platform/OpenGL/GLIndexBuffer.hpp
-        src/Platform/OpenGL/GLIndexBuffer.cpp
-        src/Platform/OpenGL/GLVertexArray.hpp
-        src/Platform/OpenGL/GLVertexArray.cpp
-        src/Platform/OpenGL/GLShader.hpp
-        src/Platform/OpenGL/GLShader.cpp
     >
 
     $<$<BOOL:${NEBULA_RENDERER_METAL}>:
-        src/Platform/Metal/MetalContext.hpp
-        src/Platform/Metal/MetalContext.mm
-        src/Platform/Metal/MetalRendererAPI.hpp
-        src/Platform/Metal/MetalRendererAPI.mm
     >
 )
 

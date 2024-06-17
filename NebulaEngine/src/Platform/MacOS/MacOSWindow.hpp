@@ -2,7 +2,6 @@
 
 #include "NebulaEngine/Core/Result.hpp"
 #include "NebulaEngine/Core/Window.hpp"
-#include "NebulaEngine/Renderer/RenderContext.hpp"
 
 #include <GLFW/glfw3.h>
 #include <MacTypes.h>
@@ -31,19 +30,10 @@ namespace Nebula
 
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
-        void* GetNativeWindow() const override { return m_Window; }
-
-        std::uint32_t GetWidth() const override { return m_Data.Width; }
-
-        std::uint32_t GetHeight() const override { return m_Data.Height; }
-
-        static Result<Ptr<MacOSWindow>, std::string> Create(const WindowProps& props);
-
-        Bounds GetViewportBounds() const override;
+        static Result<RefPtr<Window>, std::string> Create(const WindowProps& props);
     private:
         GLFWwindow* m_Window;
         MacOSWindowData m_Data;
-        Ptr<RenderContext> m_RenderContext;
     };
 } // namespace Nebula
 

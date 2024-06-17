@@ -1,9 +1,9 @@
 #include "Application.hpp"
 
-#include "NebulaEngine/Core/Profiler.hpp"
+#include "Base.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
-#include "NebulaEngine/Renderer/RenderCommand.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
+#include "Profiler.hpp"
 #include "Time.hpp"
 #include "Window.hpp"
 
@@ -15,7 +15,8 @@ namespace Nebula
 
     Application::Application(ApplicationSpecification specification) :
         m_Specification(std::move(specification)),
-        m_Window(nullptr)
+        m_Window(nullptr),
+        m_ImGuiLayer(nullptr)
     {
         NEBULA_PROFILE_SCOPE("Application::Application");
         Nebula::Log::Init();
@@ -32,31 +33,27 @@ namespace Nebula
         m_Window = std::move(res.Unwrap());
         m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-        m_ImGuiLayer = new ImGuiLayer();
-        PushOverlay(m_ImGuiLayer); // Ownership transferred to LayerStack
+        OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer());
+        m_ImGuiLayer = imguiLayer.Raw();
+        PushOverlay(imguiLayer); // Ownership transferred to LayerStack
     }
 
     Application::~Application()
     {
         NEBULA_PROFILE_SCOPE("Application::~Application");
-        for (auto* layer : m_LayerStack)
+        for (auto& layer : m_LayerStack)
         {
             layer->OnDetach();
         }
-    };
+    }
 
     void Application::Run()
     {
-        TimePoint lastFrameTime = Time::Now();
         while (m_Running)
         {
-            TimePoint currentFrameTime = Time::Now();
-            Time::s_DeltaTime          = Time::ElapsedTime<Milliseconds>(lastFrameTime, currentFrameTime);
-            lastFrameTime              = currentFrameTime;
-
             //m_Renderer->BeginFrame();
 
-            for (auto* layer : m_LayerStack)
+            for (auto& layer : m_LayerStack)
             {
                 layer->OnUpdate();
             }
@@ -65,7 +62,7 @@ namespace Nebula
 
             m_ImGuiLayer->Begin();
 
-            for (auto* layer : m_LayerStack)
+            for (auto& layer : m_LayerStack)
             {
                 layer->OnUIRender();
             }
@@ -107,32 +104,30 @@ namespace Nebula
         }
 
         NEBULA_CORE_LOG_DEBUG("Resizing to {0}x{1}", event.GetWidth(), event.GetHeight());
-        RenderCommand::SetViewport(0, 0, static_cast<std::int32_t>(event.GetWidth()),
-                                   static_cast<std::int32_t>(event.GetHeight()));
         return false;
     }
 
-    void Application::PushLayer(Layer* layer)
+    void Application::PushLayer(OwnedPtr<Layer*> layer)
     {
-        m_LayerStack.PushLayer(layer);
         layer->OnAttach();
+        m_LayerStack.PushLayer(std::move(layer));
     }
 
-    void Application::PushOverlay(Layer* overlay)
+    void Application::PushOverlay(OwnedPtr<Layer*> overlay)
     {
-        m_LayerStack.PushOverlay(overlay);
         overlay->OnAttach();
+        m_LayerStack.PushOverlay(std::move(overlay));
     }
 
-    void Application::PopLayer(Layer* layer)
+    OwnedPtr<Layer*> Application::PopLayer(RawRef<Layer*> layer)
     {
-        m_LayerStack.PopLayer(layer);
         layer->OnDetach();
+        return m_LayerStack.PopLayer(std::move(layer));
     }
 
-    void Application::PopOverlay(Layer* overlay)
+    OwnedPtr<Layer*> Application::PopOverlay(RawRef<Layer*> overlay)
     {
-        m_LayerStack.PopOverlay(overlay);
         overlay->OnDetach();
+        return m_LayerStack.PopOverlay(std::move(overlay));
     }
 } // namespace Nebula

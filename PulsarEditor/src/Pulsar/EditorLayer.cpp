@@ -1,8 +1,6 @@
 #include "EditorLayer.hpp"
 
 #include "NebulaEngine/Core/Time.hpp"
-#include "NebulaEngine/Renderer/RenderCommand.hpp"
-#include "NebulaEngine/Renderer/Renderer2D.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -18,22 +16,16 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-    // We have to initialize a renderer, otherwise we will get a crash
-    Nebula::Renderer2D::Init();
-
     // Don't store imgui.ini settings
     ImGui::GetIO().IniFilename = nullptr;
 }
 
 void EditorLayer::OnDetach()
 {
-    // Similarly, we have to shutdown the renderer
-    Nebula::Renderer2D::Shutdown();
 }
 
 void EditorLayer::OnUpdate()
 {
-    Nebula::RenderCommand::Clear();
 }
 
 void EditorLayer::OnUIRender()

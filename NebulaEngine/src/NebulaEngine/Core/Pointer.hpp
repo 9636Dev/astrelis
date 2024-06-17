@@ -1,284 +1,295 @@
 #pragma once
 
 #include <cstddef>
-#include <gsl/gsl>
-#include <memory>
+#include <type_traits>
 #include <utility>
-#include <variant>
-
-#include "Log.hpp"
 
 namespace Nebula
 {
-    template<typename T> class Ptr;
+    // Forward declarations
+    template<typename T> class ScopedPtr;
+    template<typename T> class RefPtr;
+    template<typename T> class OwnedPtr;
+    template<typename T> class RawRef;
 
-    /**
-     * @brief A reference to a pointer, that does not own the pointer, and does not delete it when it goes out of scope
-     * @tparam T The type of the pointer
-     */
-    template<typename T> class Ref
+    template<typename T> class ScopedPtr
     {
-    private:
-        explicit Ref(T* ptr) noexcept : m_Ptr(ptr) {}
     public:
-        template<typename U> friend class Ref;
-        template<typename U> friend class Ptr;
+        static_assert(!std::is_array_v<T>, "ScopedPtr does not support arrays!");
+        static_assert(!std::is_reference_v<T>, "ScopedPtr does not support references!");
+        template<typename U> friend class ScopedPtr;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        Ref([[maybe_unused]] std::nullptr_t value) noexcept : m_Ptr(nullptr) {}
+        ScopedPtr(std::nullptr_t) : m_Ptr(nullptr) {}
 
-        explicit Ref(T& value) noexcept : m_Ptr(&value)
-        {
-#ifdef NEBULA_DEBUG
-            // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-            m_IsValue = true;
-#endif
-        }
+        explicit ScopedPtr(T* ptr) : m_Ptr(ptr) {}
 
-        ~Ref()
-        {
-#ifdef NEBULA_DEBUG
-            if (!m_IsValue)
-            {
-                if (m_Ptr != nullptr && m_RefCount.expired())
-                {
-                    NEBULA_CORE_LOG_WARN("Deleting a reference with no reference count");
-                }
-            }
-#endif
-        }
+        ~ScopedPtr() { delete m_Ptr; }
 
-        Ref(const Ref& other) : m_Ptr(other.m_Ptr)
-        {
-#ifdef NEBULA_DEBUG
-            // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-            m_RefCount = other.m_RefCount;
-#endif
-        }
+        ScopedPtr(const ScopedPtr&)            = delete;
+        ScopedPtr& operator=(const ScopedPtr&) = delete;
 
-        Ref& operator=(const Ref& other)
+        ScopedPtr(ScopedPtr&& other) noexcept : m_Ptr(other.m_Ptr) { other.m_Ptr = nullptr; }
+
+        ScopedPtr& operator=(ScopedPtr&& other) noexcept
         {
             if (this != &other)
             {
-                m_Ptr = other.m_Ptr;
-#ifdef NEBULA_DEBUG
-                m_RefCount = other.m_RefCount;
-                m_IsValue  = other.m_IsValue;
-#endif
+                delete m_Ptr;
+                m_Ptr       = other.m_Ptr;
+                other.m_Ptr = nullptr;
             }
             return *this;
         }
 
-        Ref(Ref&& other) noexcept : m_Ptr(other.m_Ptr)
+        T* operator->() const noexcept { return m_Ptr; }
+
+        T* Get() const noexcept { return m_Ptr; }
+
+        void Reset() { delete m_Ptr; m_Ptr = nullptr; }
+
+        template<typename U>
+            requires std::is_base_of_v<U, T>
+        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator ScopedPtr<U>() const
         {
-            other.m_Ptr = nullptr;
-#ifdef NEBULA_DEBUG
-            // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-            m_IsValue = other.m_IsValue;
-            // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-            m_RefCount = std::move(other.m_RefCount);
-#endif
+            return ScopedPtr<U>(static_cast<U*>(m_Ptr));
         }
 
-        Ref& operator=(Ref&& other) noexcept
+        template<typename... Args> static ScopedPtr<T> Create(Args&&... args)
+        {
+            return ScopedPtr<T>(new T(std::forward<Args>(args)...));
+        }
+    private:
+        T* m_Ptr;
+    };
+
+    using RefCountType = std::size_t;
+
+    template<typename T> class RefPtr
+    {
+    public:
+        static_assert(!std::is_array_v<T>, "RefPtr does not support arrays!");
+        static_assert(!std::is_reference_v<T>, "RefPtr does not support references!");
+        template<typename U> friend class RefPtr;
+
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        RefPtr(std::nullptr_t) : m_Ptr(nullptr), m_RefCount(nullptr) {}
+
+        explicit RefPtr(T* ptr) : m_Ptr(ptr), m_RefCount(new RefCountType(1)) {}
+
+        ~RefPtr()
+        {
+            if (m_RefCount != nullptr && --(*m_RefCount) == 0)
+            {
+                delete m_Ptr;
+                delete m_RefCount;
+            }
+        }
+
+        RefPtr(const RefPtr& other) : m_Ptr(other.m_Ptr), m_RefCount(other.m_RefCount)
+        {
+            if (m_RefCount != nullptr)
+            {
+                ++(*m_RefCount);
+            }
+        }
+
+        RefPtr& operator=(const RefPtr& other)
+        {
+            if (this != &other)
+            {
+                if (m_RefCount != nullptr && --(*m_RefCount) == 0)
+                {
+                    delete m_Ptr;
+                    delete m_RefCount;
+                }
+                m_Ptr      = other.m_Ptr;
+                m_RefCount = other.m_RefCount;
+                if (m_RefCount != nullptr)
+                {
+                    ++(*m_RefCount);
+                }
+            }
+            return *this;
+        }
+
+        RefPtr(RefPtr&& other) noexcept : m_Ptr(other.m_Ptr), m_RefCount(other.m_RefCount)
+        {
+            other.m_Ptr      = nullptr;
+            other.m_RefCount = nullptr;
+        }
+
+        RefPtr& operator=(RefPtr&& other) noexcept
+        {
+            if (this != &other)
+            {
+                if (m_RefCount != nullptr && --(*m_RefCount) == 0)
+                {
+                    delete m_Ptr;
+                    delete m_RefCount;
+                }
+                m_Ptr            = other.m_Ptr;
+                m_RefCount       = other.m_RefCount;
+                other.m_Ptr      = nullptr;
+                other.m_RefCount = nullptr;
+            }
+            return *this;
+        }
+
+        T* operator->() const noexcept { return m_Ptr; }
+
+        void Reset()
+        {
+            if (m_RefCount != nullptr && --(*m_RefCount) == 0)
+            {
+                delete m_Ptr;
+                delete m_RefCount;
+            }
+            m_Ptr      = nullptr;
+            m_RefCount = nullptr;
+        }
+
+        template<typename U>
+            requires std::is_base_of_v<U, T>
+        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator RefPtr<U>() const
+        {
+            return RefPtr<U>(static_cast<U*>(m_Ptr), m_RefCount);
+        }
+
+        static void Swap(RefPtr& ptrA, RefPtr& ptrB)
+        {
+            std::swap(ptrA.m_Ptr, ptrB.m_Ptr);
+            std::swap(ptrA.m_RefCount, ptrB.m_RefCount);
+        }
+
+        template<typename... Args> static RefPtr<T> Create(Args&&... args)
+        {
+            return RefPtr<T>(new T(std::forward<Args>(args)...));
+        }
+    private:
+        RefPtr(T* ptr, RefCountType* type) : m_Ptr(ptr), m_RefCount(type) {}
+
+        T* m_Ptr;
+        RefCountType* m_RefCount;
+    };
+
+    template<typename T> class RawRef
+    {
+    public:
+        friend class ScopedPtr<T>;
+        friend class RefPtr<T>;
+        friend class OwnedPtr<T>;
+        static_assert(std::is_pointer_v<T>, "RawRef only supports pointers!");
+        template<typename U> friend class RawRef;
+
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        RawRef(std::nullptr_t) : m_Ptr(nullptr) {}
+
+        explicit RawRef(T ptr) : m_Ptr(ptr) {}
+
+        ~RawRef()                        = default;
+        RawRef(const RawRef&)            = delete;
+        RawRef& operator=(const RawRef&) = delete;
+
+        RawRef(RawRef&& other) noexcept : m_Ptr(other.m_Ptr) { other.m_Ptr = nullptr; }
+
+        RawRef& operator=(RawRef&& other) noexcept
         {
             if (this != &other)
             {
                 m_Ptr       = other.m_Ptr;
                 other.m_Ptr = nullptr;
-#ifdef NEBULA_DEBUG
-                // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-                m_IsValue = other.m_IsValue;
-                // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-                m_RefCount = std::move(other.m_RefCount);
-#endif
             }
             return *this;
         }
 
-        /**
-         * @brief Access the pointer
-         * @return The pointer
-         */
-        T* operator->() const noexcept
+        explicit operator T*() const { return m_Ptr; }
+
+        T operator->() const noexcept { return m_Ptr; }
+
+        bool operator==(const T* const other) { return m_Ptr == other; }
+        template<typename U>
+            requires std::is_convertible_v<T, U>
+        bool operator==(const std::remove_pointer_t<U>* const other)
         {
-#ifdef NEBULA_DEBUG
-            if (m_Ptr == nullptr)
-            {
-                NEBULA_CORE_LOG_WARN("Accessing a null pointer");
-            }
-            if (!m_IsValue)
-            {
-                if (m_RefCount.expired())
-                {
-                    NEBULA_CORE_LOG_WARN("Accessing a pointer with no reference count");
-                }
-            }
-#endif
-            return m_Ptr;
+            return m_Ptr == static_cast<T>(other);
         }
 
-        /**
-         * @brief Dereference the pointer
-         * @return The value of the pointer
-         */
-        T& operator*() const noexcept
+        // Auto conversion for derived classes
+        template<typename U>
+            requires std::is_convertible_v<std::remove_pointer_t<T>, std::remove_pointer_t<U>>
+        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator RawRef<U>() const
         {
-#ifdef NEBULA_DEBUG
-            if (m_Ptr == nullptr)
-            {
-                NEBULA_CORE_LOG_WARN("Dereferencing a null pointer");
-            }
-            if (!m_IsValue)
-            {
-                if (m_RefCount.expired())
-                {
-                    NEBULA_CORE_LOG_WARN("Dereferencing a pointer with no reference count");
-                }
-            }
-#endif
-            return *m_Ptr;
+            return RawRef<U>(static_cast<U>(m_Ptr));
         }
 
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        operator bool() const noexcept { return m_Ptr != nullptr; }
-
-        bool operator==(const Ref<T>& other) const noexcept { return m_Ptr == other.m_Ptr; }
-
-        bool operator!=(const Ref<T>& other) const noexcept { return m_Ptr != other.m_Ptr; }
-
-        bool operator==(T* other) const noexcept { return m_Ptr == other; }
-
-        bool operator!=(T* other) const noexcept { return m_Ptr != other; }
-
-        template<typename R> Ref<R> StaticCast() noexcept
-        {
-            auto ref = Ref<R>(static_cast<R*>(m_Ptr));
-#ifdef NEBULA_DEBUG
-            ref.m_IsValue  = m_IsValue;
-            ref.m_RefCount = m_RefCount;
-#endif
-            return ref;
-        }
-
-        template<typename R> Ref<R> DynamicCast() noexcept
-        {
-            auto ref = Ref<R>(dynamic_cast<R*>(m_Ptr));
-#ifdef NEBULA_DEBUG
-            ref.m_IsValue  = m_IsValue;
-            ref.m_RefCount = m_RefCount;
-#endif
-            return ref;
-        }
+        explicit operator T() const noexcept { return m_Ptr; }
     private:
-        T* m_Ptr;
-#ifdef NEBULA_DEBUG
-        std::weak_ptr<std::monostate> m_RefCount;
-        bool m_IsValue = false; // Is a temporary value
-#endif
+        T m_Ptr;
     };
 
-    /**
-    * @brief A zero abstraction pointer, that shows clear ownership, and automatically deletes the pointer when it goes out of scope
-    * @tparam T The type of the pointer
-    */
-    template<typename T> class Ptr
+    template<typename T> class OwnedPtr
     {
     public:
-        template<typename R> friend class Ptr;
+        friend class ScopedPtr<T>;
+        friend class RefPtr<T>;
+        friend class RawRef<T>;
+        using WithoutPtr = std::remove_pointer_t<T>;
+        static_assert(std::is_pointer_v<T>, "OwnedPtr only supports pointers!");
+        template<typename U> friend class OwnedPtr;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        Ptr(std::nullptr_t) noexcept : m_Ptr(nullptr) {}
-        explicit Ptr(gsl::owner<T*> ptr) noexcept : m_Ptr(ptr) {}
+        OwnedPtr(std::nullptr_t) : m_Ptr(nullptr) {}
 
-        Ptr() noexcept : m_Ptr(nullptr) {}
+        explicit OwnedPtr(T ptr) : m_Ptr(ptr) {}
 
-        ~Ptr() { delete m_Ptr; }
+        ~OwnedPtr()                          = default;
+        OwnedPtr(const OwnedPtr&)            = delete;
+        OwnedPtr& operator=(const OwnedPtr&) = delete;
 
-        Ptr(const Ptr&)            = delete;
-        Ptr& operator=(const Ptr&) = delete;
+        OwnedPtr(OwnedPtr&& other) noexcept : m_Ptr(other.m_Ptr) { other.m_Ptr = nullptr; }
 
-        Ptr(Ptr&& other) noexcept : m_Ptr(other.m_Ptr) { other.m_Ptr = nullptr; }
-
-        Ptr& operator=(Ptr&& other) noexcept
+        OwnedPtr& operator=(OwnedPtr&& other) noexcept
         {
             if (this != &other)
             {
-                delete m_Ptr;
-                m_Ptr       = other.m_Ptr; // NOLINT(cppcoreguidelines-owning-memory)
+                m_Ptr       = other.m_Ptr;
                 other.m_Ptr = nullptr;
             }
             return *this;
         }
 
-        /**
-         * @brief Create a reference to the pointer
-         * @return The reference
-         */
-        Ref<T> GetRef() noexcept
+        explicit operator T*() const { return m_Ptr; }
+
+        T operator->() const noexcept { return m_Ptr; }
+
+        WithoutPtr& operator*() const noexcept { return *m_Ptr; }
+
+        T Get() const noexcept { return m_Ptr; }
+
+        void Reset() { delete m_Ptr; }
+
+        RawRef<T> Raw() const { return RawRef(m_Ptr); }
+
+        bool operator==(const T* const other) { return m_Ptr == other; }
+        bool operator==(const RawRef<T>& other) { return m_Ptr == other.m_Ptr; }
+
+
+        // Auto conversion for derived classes
+        template<typename U>
+            requires std::is_base_of_v<std::remove_pointer_t<U>, std::remove_pointer_t<T>>
+        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator OwnedPtr<U>() const
         {
-#ifdef NEBULA_DEBUG
-            auto ref       = Ref<T>(m_Ptr);
-            ref.m_RefCount = m_RefCount;
-            return ref;
-#else
-            return Ref<T>(m_Ptr);
-#endif
+            return OwnedPtr<U>(static_cast<U>(m_Ptr));
         }
 
-        T* operator->() const noexcept
+        explicit operator T() const noexcept { return m_Ptr; }
+
+        template<typename... Args> static OwnedPtr<T> Create(Args&&... args)
         {
-            return m_Ptr; // NOLINT(cppcoreguidelines-owning-memory)
+            return OwnedPtr<T>(new WithoutPtr(std::forward<Args>(args)...));
         }
-
-        /**
-        * @brief Dereference the pointer
-        * @return The value of the pointer
-        **/
-        T& operator*() const noexcept { return *m_Ptr; }
-
-        T* Get() const noexcept
-        {
-            return m_Ptr; // NOLINT(cppcoreguidelines-owning-memory)
-        }
-
-        bool operator==(const Ref<T>& other) const noexcept { return m_Ptr == other.m_Ptr; }
-
-        bool operator!=(const Ref<T>& other) const noexcept { return m_Ptr != other.m_Ptr; }
-
-        bool operator==(T* other) const noexcept { return m_Ptr == other; }
-
-        bool operator!=(T* other) const noexcept { return m_Ptr != other; }
-
-        template<typename R> Ptr<R> Cast() noexcept
-        {
-            auto ptr = Ptr<R>(static_cast<R*>(m_Ptr));
-#ifdef NEBULA_DEBUG
-            ptr.m_RefCount = m_RefCount;
-#endif
-            m_Ptr = nullptr; // NOLINT(cppcoreguidelines-owning-memory)
-            return ptr;
-        }
-
-        // No dynamic cast, because it might fail, and we don't want to delete the pointer
-
-        void Reset() noexcept
-        {
-            delete m_Ptr;
-            m_Ptr = nullptr; // NOLINT(cppcoreguidelines-owning-memory)
-        }
-
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        operator bool() const noexcept { return m_Ptr != nullptr; }
     private:
-        gsl::owner<T*> m_Ptr;
-#ifdef NEBULA_DEBUG
-        std::shared_ptr<std::monostate> m_RefCount = std::make_shared<std::monostate>();
-#endif
+        T m_Ptr;
     };
-
-    template<typename T, typename... Args> Ptr<T> MakePtr(Args&&... args)
-    {
-        return Ptr<T>(new T(std::forward<Args>(args)...));
-    }
 } // namespace Nebula

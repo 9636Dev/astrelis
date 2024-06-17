@@ -6,40 +6,45 @@ namespace Nebula
 {
     LayerStack::~LayerStack()
     {
-        for (Layer* layer : m_Layers)
+        for (auto& layer : m_Layers)
         {
-            // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-            delete layer;
+            layer.Reset();
         }
     }
 
-    void LayerStack::PushLayer(Layer* layer)
+    void LayerStack::PushLayer(OwnedPtr<Layer*> layer)
     {
-        m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
+        m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, std::move(layer));
         m_LayerInsertIndex++;
     }
 
-    void LayerStack::PushOverlay(Layer* overlay)
+    void LayerStack::PushOverlay(OwnedPtr<Layer*> overlay)
     {
-        m_Layers.emplace_back(overlay);
+        m_Layers.emplace_back(std::move(overlay));
     }
 
-    void LayerStack::PopLayer(Layer* layer)
+    OwnedPtr<Layer*> LayerStack::PopLayer(RawRef<Layer*> layer)
     {
         auto iter = std::find(m_Layers.begin(), m_Layers.end(), layer);
         if (iter != m_Layers.end())
         {
             m_Layers.erase(iter);
             m_LayerInsertIndex--;
+        return std::move(*iter);
         }
+
+        return nullptr;
     }
 
-    void LayerStack::PopOverlay(Layer* overlay)
+    OwnedPtr<Layer*> LayerStack::PopOverlay(RawRef<Layer*> overlay)
     {
         auto iter = std::find(m_Layers.begin(), m_Layers.end(), overlay);
         if (iter != m_Layers.end())
         {
             m_Layers.erase(iter);
+        return std::move(*iter);
         }
+
+        return nullptr;
     }
 } // namespace Nebula

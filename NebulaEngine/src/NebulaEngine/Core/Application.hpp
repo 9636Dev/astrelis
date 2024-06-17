@@ -49,13 +49,11 @@ namespace Nebula
         Application& operator=(Application&&)      = delete;
 
         static Application& Get() { return *s_Instance; }
-
-        Window& GetWindow() { return *m_Window.Get(); }
     protected:
-        void PushLayer(Layer* layer);
-        void PushOverlay(Layer* overlay);
-        void PopLayer(Layer* layer);
-        void PopOverlay(Layer* overlay);
+        void PushLayer(OwnedPtr<Layer*> layer);
+        void PushOverlay(OwnedPtr<Layer*> overlay);
+        [[nodiscard]] OwnedPtr<Layer*> PopLayer(RawRef<Layer*> layer);
+        [[nodiscard]] OwnedPtr<Layer*> PopOverlay(RawRef<Layer*> overlay);
 
         void OnEvent(Event& event);
         bool OnWindowClose(WindowClosedEvent& event);
@@ -66,10 +64,10 @@ namespace Nebula
         static Application* s_Instance;
         ApplicationSpecification m_Specification;
         bool m_Running = true;
-        Ptr<Window> m_Window;
+        RefPtr<Window> m_Window;
         LayerStack m_LayerStack;
-        ImGuiLayer* m_ImGuiLayer;
+        RawRef<ImGuiLayer*> m_ImGuiLayer;
     };
 
-    extern Ptr<Application> CreateApplication(CommandLineArguments args);
+    extern ScopedPtr<Application> CreateApplication(CommandLineArguments args);
 } // namespace Nebula
