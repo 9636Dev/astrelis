@@ -43,8 +43,11 @@ namespace Nebula
         }
 
         T* operator->() const noexcept { return m_Ptr; }
+        T& operator*() const noexcept { return *m_Ptr; }
 
         T* Get() const noexcept { return m_Ptr; }
+
+        bool operator==(const std::nullptr_t) const noexcept { return m_Ptr == nullptr; }
 
         void Reset()
         {
@@ -143,6 +146,11 @@ namespace Nebula
         }
 
         T* operator->() const noexcept { return m_Ptr; }
+        T& operator*() const noexcept { return *m_Ptr; }
+
+        T* Get() const noexcept { return m_Ptr; }
+
+        bool operator==(const std::nullptr_t) const noexcept { return m_Ptr == nullptr; }
 
         void Reset()
         {
@@ -164,6 +172,26 @@ namespace Nebula
                 ++(*m_RefCount);
             }
             return RefPtr<U>(static_cast<U*>(m_Ptr), m_RefCount);
+        }
+
+        template<typename U>
+        RefPtr<U> DynamicCast()
+        {
+            if (m_RefCount != nullptr)
+            {
+                ++(*m_RefCount);
+            }
+            return RefPtr<U>(dynamic_cast<U*>(m_Ptr), m_RefCount);
+        }
+
+        template<typename U>
+        RefPtr<U> As()
+        {
+            if (m_RefCount != nullptr)
+            {
+                ++(*m_RefCount);
+            }
+            return RefPtr<U>(reinterpret_cast<U*>(m_Ptr), m_RefCount);
         }
 
         static void Swap(RefPtr& ptrA, RefPtr& ptrB)
@@ -197,9 +225,21 @@ namespace Nebula
 
         explicit RawRef(T ptr) : m_Ptr(ptr) {}
 
+        explicit RawRef(std::remove_pointer_t<T>& obj) : m_Ptr(&obj) {}
+
         ~RawRef()                        = default;
-        RawRef(const RawRef&)            = delete;
-        RawRef& operator=(const RawRef&) = delete;
+        RawRef(const RawRef& other) : m_Ptr(other.m_Ptr)
+        {
+
+        }
+        RawRef& operator=(const RawRef& other)
+        {
+            if (this != other)
+            {
+                m_Ptr = other.m_Ptr;
+            }
+            return *this;
+        }
 
         RawRef(RawRef&& other) noexcept : m_Ptr(other.m_Ptr) { other.m_Ptr = nullptr; }
 
@@ -213,11 +253,12 @@ namespace Nebula
             return *this;
         }
 
-        explicit operator T*() const { return m_Ptr; }
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        operator T() const { return m_Ptr; }
 
         T operator->() const noexcept { return m_Ptr; }
 
-        bool operator==(const T* const other) { return m_Ptr == other; }
+        bool operator==(const std::remove_pointer_t<T>* const other) { return m_Ptr == other; }
 
         template<typename U>
             requires std::is_convertible_v<T, U>
@@ -233,8 +274,6 @@ namespace Nebula
         {
             return RawRef<U>(static_cast<U>(m_Ptr));
         }
-
-        explicit operator T() const noexcept { return m_Ptr; }
     private:
         T m_Ptr;
     };
@@ -282,7 +321,7 @@ namespace Nebula
 
         RawRef<T> Raw() const { return RawRef(m_Ptr); }
 
-        bool operator==(const T* const other) { return m_Ptr == other; }
+        bool operator==(const std::remove_pointer_t<T>* const other) { return m_Ptr == other; }
 
         bool operator==(const RawRef<T>& other) { return m_Ptr == other.m_Ptr; }
 
@@ -305,4 +344,8 @@ namespace Nebula
     private:
         T m_Ptr;
     };
+
+    template<typename T>
+    requires std::is_pointer_v<T>
+    using UnsafeRef = T;
 } // namespace Nebula

@@ -1,104 +1,70 @@
 #include "VulkanGraphicsContext.hpp"
 
 #include "NebulaEngine/Core/Log.hpp"
-#include "Platform/Vulkan/VK/VulkanExt.hpp"
+#include "VK/Utils.hpp"
+#include "VK/VulkanExt.hpp"
 
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
-#ifdef __APPLE__
-    #include <vulkan/vulkan_macos.h>
-#endif
-
 namespace Nebula
 {
-    static const std::vector<const char*>& GetValidationLayers()
-    {
-        static const std::vector<const char*> validationLayers = {
-            "VK_LAYER_KHRONOS_validation",
-        };
+    VulkanGraphicsContext::VulkanGraphicsContext(RawRef<GLFWwindow*> window) : m_Window(std::move(window)) {}
 
-        return validationLayers;
-    }
-
-    bool CheckValidationLayerSupport()
-    {
-        uint32_t layerCount = 0;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-        std::vector<VkLayerProperties> availableLayers(layerCount);
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-        for (const char* layerName : GetValidationLayers())
-        {
-            bool layerFound = false;
-
-            for (const auto& layerProperties : availableLayers)
-            {
-                if (std::strcmp(layerName, layerProperties.layerName) == 0)
-                {
-                    layerFound = true;
-                    break;
-                }
-            }
-
-            if (!layerFound)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers)
-    {
-        std::uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions      = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-        if (enableValidationLayers)
-        {
-            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        }
-#ifdef __APPLE__
-        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-        extensions.push_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
-#endif
-
-        return extensions;
-    }
-
-    VulkanGraphicsContext::VulkanGraphicsContext()  = default;
     VulkanGraphicsContext::~VulkanGraphicsContext() = default;
 
     bool VulkanGraphicsContext::Init()
     {
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define INIT_COMPONENT(...) \
+    if (!__VA_ARGS__)       \
+    return false
+
+        if (m_IsInitialized)
+        {
+            NEBULA_CORE_LOG_WARN("Vulkan Graphics Context already initialized!");
+            return false;
+        }
+
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
         if (m_Debug)
         {
-            if (!CheckValidationLayerSupport())
+            if (!Vulkan::CheckValidationLayerSupport())
             {
                 NEBULA_CORE_LOG_ERROR("Validation layers requested, but not available!");
                 return false;
             }
 
-            PopulateDebugMessengerCreateInfo(debugCreateInfo);
+            Vulkan::PopulateDebugMessengerCreateInfo(debugCreateInfo);
         }
 
-        m_Instance.Init("Nebula", "Nebula Engine", GetRequiredExtensions(m_Debug), GetValidationLayers(),&debugCreateInfo);
+        INIT_COMPONENT(m_Instance.Init("Nebula", "Nebula Engine", Vulkan::APIVersion(1, 0),
+                                       Vulkan::GetRequiredExtensions(m_Debug), Vulkan::GetValidationLayers(),
+                                       &debugCreateInfo));
+        m_PhysicalDevice.PickBestDevice(m_Instance);
+        INIT_COMPONENT(m_PhysicalDevice.IsFound());
+        INIT_COMPONENT(m_Surface.Init(m_Instance, m_Window));
+        INIT_COMPONENT(m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
+                                            m_Debug ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
+        INIT_COMPONENT(m_SwapChain.Init(m_PhysicalDevice, m_LogicalDevice, m_Surface));
+
+        NEBULA_CORE_LOG_INFO("Vulkan Graphics Context initialized!");
+        m_IsInitialized = true;
         return true;
+#undef INIT_COMPONENT
     }
 
     void VulkanGraphicsContext::Shutdown()
     {
+        m_SwapChain.Destroy(m_LogicalDevice);
+        m_LogicalDevice.Destroy();
+        m_Surface.Destroy(m_Instance);
+        // Physical device doesn't need to be destroyed
         m_Instance.Destroy();
     }
 
-    RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create()
+    RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window)
     {
-        return RefPtr<VulkanGraphicsContext>::Create();
+        return RefPtr<VulkanGraphicsContext>::Create(window);
     }
 } // namespace Nebula

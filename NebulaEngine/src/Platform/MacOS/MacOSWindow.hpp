@@ -31,9 +31,12 @@ namespace Nebula
 
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
+        RefPtr<GraphicsContext> GetGraphicsContext() const override { return m_Context; }
+        Bounds GetViewportBounds() const override;
+
         static Result<RefPtr<MacOSWindow>, std::string> Create(const WindowProps& props);
     private:
-        GLFWwindow* m_Window;
+        OwnedPtr<GLFWwindow*> m_Window;
         MacOSWindowData m_Data;
         RefPtr<GraphicsContext> m_Context;
     };

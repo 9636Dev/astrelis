@@ -4,7 +4,9 @@
 #include <string>
 #include <utility>
 
+#include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Events/Event.hpp"
+#include "NebulaEngine/Renderer/GraphicsContext.hpp"
 #include "Pointer.hpp"
 #include "Result.hpp"
 
@@ -56,6 +58,9 @@ namespace Nebula
 
         virtual void OnUpdate() = 0;
         virtual void SetEventCallback(const WindowEventCallback& callback) = 0;
+        virtual Bounds GetViewportBounds() const = 0;
+
+        virtual RefPtr<GraphicsContext> GetGraphicsContext() const = 0;
 
         static Result<RefPtr<Window>, std::string> Create(const WindowProps& props = WindowProps());
     };

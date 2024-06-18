@@ -1,7 +1,7 @@
 #include "VulkanExt.hpp"
 #include <iostream>
 
-namespace Nebula
+namespace Nebula::Vulkan
 {
     VkBool32 VKAPI_CALL DebugCallback([[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                       [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -52,4 +52,4 @@ namespace Nebula
         createInfo.pUserData       = nullptr;
     }
 
-} // namespace Nebula
+} // namespace Nebula::Vulkan

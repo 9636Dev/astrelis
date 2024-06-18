@@ -2,23 +2,26 @@
 
 #include <stdexcept>
 
+#include "NebulaEngine/Core/Log.hpp"
 #include "VulkanExt.hpp"
 
-namespace Nebula
+namespace Nebula::Vulkan
 {
-    DebugMessenger::DebugMessenger(VkInstance instance) : m_DebugMessenger(VK_NULL_HANDLE)
+    bool DebugMessenger::Init(Instance& instance)
     {
         VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
         PopulateDebugMessengerCreateInfo(createInfo);
 
-        if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
+        if (CreateDebugUtilsMessengerEXT(instance.GetHandle(), &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
         {
-            throw std::runtime_error("Failed to set up debug messenger");
+            NEBULA_CORE_LOG_ERROR("Failed to set up debug messenger");
+            return false;
         }
+        return true;
     }
 
-    void DebugMessenger::Destroy(VkInstance instance)
+    void DebugMessenger::Destroy(Instance& instance)
     {
-        DestroyDebugUtilsMessengerEXT(instance, m_DebugMessenger, nullptr);
+        DestroyDebugUtilsMessengerEXT(instance.GetHandle(), m_DebugMessenger, nullptr);
     }
-} // namespace Nebula
+} // namespace Nebula::Vulkan

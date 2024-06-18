@@ -9,16 +9,13 @@ namespace Nebula
     class GLFWWindowHelper
     {
     public:
-        static Result<GLFWwindow*, std::string> CreateWindow(const WindowProps &props);
-        // This creates 4.1 for MacOS
-        static Result<GLFWwindow*, std::string> CreateLegacyWindow(const WindowProps &props);
-        static void DestroyWindow(GLFWwindow *window);
+        static Result<GLFWwindow*, std::string> CreateGLWindow(const WindowProps& props);
+        static Result<GLFWwindow*, std::string> CreateNonAPIWindow(const WindowProps& props);
+        static void DestroyWindow(OwnedPtr<GLFWwindow*> window);
 
-        static void SetEventCallbacks(GLFWwindow* window, BaseWindowData& data);
-
+        static void SetEventCallbacks(RawRef<GLFWwindow*> window, BaseWindowData& data);
     private:
-        template<typename T>
-        static T& GetUserData(GLFWwindow* window)
+        template<typename T> static T& GetUserData(GLFWwindow* window)
         {
             return *static_cast<T*>(glfwGetWindowUserPointer(window));
         }

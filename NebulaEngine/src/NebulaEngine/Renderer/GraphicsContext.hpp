@@ -2,21 +2,27 @@
 
 #include "NebulaEngine/Core/Pointer.hpp"
 
+struct GLFWwindow;
+
 namespace Nebula
 {
+    /**
+    * @brief Per window graphics context, contains per window rendering state and resources.
+    */
     class GraphicsContext
     {
     public:
-        GraphicsContext() = default;
-        virtual ~GraphicsContext() = default;
-        GraphicsContext(const GraphicsContext &) = delete;
-        GraphicsContext &operator=(const GraphicsContext &) = delete;
-        GraphicsContext(GraphicsContext &&) = delete;
-        GraphicsContext &operator=(GraphicsContext &&) = delete;
+        GraphicsContext()                                  = default;
+        virtual ~GraphicsContext()                         = default;
+        GraphicsContext(const GraphicsContext&)            = delete;
+        GraphicsContext& operator=(const GraphicsContext&) = delete;
+        GraphicsContext(GraphicsContext&&)                 = delete;
+        GraphicsContext& operator=(GraphicsContext&&)      = delete;
 
-        virtual bool Init() = 0;
+        virtual bool Init()     = 0;
         virtual void Shutdown() = 0;
+        virtual bool IsInitialized() const = 0;
 
-        static RefPtr<GraphicsContext> Create();
+        static RefPtr<GraphicsContext> Create(RawRef<GLFWwindow*> window);
     };
 } // namespace Nebula

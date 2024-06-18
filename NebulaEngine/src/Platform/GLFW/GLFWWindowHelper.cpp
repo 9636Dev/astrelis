@@ -8,7 +8,7 @@
 
 namespace Nebula
 {
-    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateWindow(const WindowProps& props)
+    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateGLWindow(const WindowProps& props)
     {
         if (!InitGLFW())
         {
@@ -41,18 +41,14 @@ namespace Nebula
         return Result<GLFWwindow*, std::string>::Ok(window);
     }
 
-    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateLegacyWindow(const WindowProps &props)
+    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateNonAPIWindow(const WindowProps &props)
     {
         if (!InitGLFW())
         {
             return Result<GLFWwindow*, std::string>::Err("Failed to initialize GLFW");
         }
 
-        // Set the window hints
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         // Create the window
         if (props.Width > std::numeric_limits<int>::max() || props.Height > std::numeric_limits<int>::max())
@@ -75,9 +71,9 @@ namespace Nebula
         return Result<GLFWwindow*, std::string>::Ok(window);
     }
 
-    void GLFWWindowHelper::DestroyWindow(GLFWwindow* window)
+    void GLFWWindowHelper::DestroyWindow(OwnedPtr<GLFWwindow*> window)
     {
-        glfwDestroyWindow(window);
+        glfwDestroyWindow(window.Get());
         s_WindowCount--;
 
         if (s_WindowCount == 0)
@@ -114,7 +110,7 @@ namespace Nebula
     }
 
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
-    void GLFWWindowHelper::SetEventCallbacks(GLFWwindow* window, BaseWindowData& data)
+    void GLFWWindowHelper::SetEventCallbacks(RawRef<GLFWwindow*> window, BaseWindowData& data)
     {
         glfwSetWindowUserPointer(window, &data);
 

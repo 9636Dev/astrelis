@@ -4,23 +4,33 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace Nebula
+namespace Nebula::Vulkan
 {
-    class VulkanInstance
+    struct APIVersion
+    {
+        std::uint32_t major = 1;
+        std::uint32_t minor = 0;
+
+        APIVersion() = default;
+        APIVersion(std::uint32_t major, std::uint32_t minor) : major(major), minor(minor) {}
+    };
+
+    class Instance
     {
     public:
-        VulkanInstance()                                 = default;
-        ~VulkanInstance()                                = default;
-        VulkanInstance(const VulkanInstance&)            = delete;
-        VulkanInstance& operator=(const VulkanInstance&) = delete;
-        VulkanInstance(VulkanInstance&&)                 = delete;
-        VulkanInstance& operator=(VulkanInstance&&)      = delete;
+        Instance()                           = default;
+        ~Instance()                          = default;
+        Instance(const Instance&)            = delete;
+        Instance& operator=(const Instance&) = delete;
+        Instance(Instance&&)                 = delete;
+        Instance& operator=(Instance&&)      = delete;
 
-        void Init(std::string_view appName,
-                  std::string_view engineName,
-                  const std::vector<const char*>& extensions,
-                  const std::vector<const char*>& layers,
-                  VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo = nullptr);
+        [[nodiscard]] bool Init(std::string_view appName,
+                                std::string_view engineName,
+                                APIVersion apiVersion,
+                                const std::vector<const char*>& extensions,
+                                const std::vector<const char*>& layers,
+                                VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo = nullptr);
 
         void Destroy();
 
@@ -31,4 +41,4 @@ namespace Nebula
     private:
         VkInstance m_Instance = VK_NULL_HANDLE;
     };
-} // namespace Nebula
+} // namespace Nebula::Vulkan

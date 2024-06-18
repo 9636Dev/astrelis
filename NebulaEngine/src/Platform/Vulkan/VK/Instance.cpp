@@ -1,10 +1,10 @@
 #include "Instance.hpp"
-#include <stdexcept>
+#include "NebulaEngine/Core/Log.hpp"
 #include <vulkan/vulkan.h>
 
-namespace Nebula
+namespace Nebula::Vulkan
 {
-    void VulkanInstance::Destroy()
+    void Instance::Destroy()
     {
         if (m_Instance != VK_NULL_HANDLE)
         {
@@ -12,11 +12,12 @@ namespace Nebula
         }
     }
 
-    void VulkanInstance::Init(std::string_view appName,
-                              std::string_view engineName,
-                              const std::vector<const char*>& extensions,
-                              const std::vector<const char*>& layers,
-                              VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo)
+    bool Instance::Init(std::string_view appName,
+                        std::string_view engineName,
+                        APIVersion version,
+                        const std::vector<const char*>& extensions,
+                        const std::vector<const char*>& layers,
+                        VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo)
     {
         VkApplicationInfo appInfo {};
         appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -24,6 +25,7 @@ namespace Nebula
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName        = engineName.data();
         appInfo.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
+        appInfo.apiVersion         = VK_MAKE_VERSION(version.major, version.minor, 0);
 
         VkInstanceCreateInfo createInfo {};
         createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -40,7 +42,9 @@ namespace Nebula
 
         if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
         {
-            throw std::runtime_error("Failed to create Vulkan instance");
+            NEBULA_CORE_LOG_ERROR("Failed to create Vulkan instance!");
+            return false;
         }
+        return true;
     }
-} // namespace Nebula
+} // namespace Nebula::Vulkan

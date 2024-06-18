@@ -2,22 +2,24 @@
 
 #include <vulkan/vulkan.h>
 
-namespace Nebula
+#include "Instance.hpp"
+
+namespace Nebula::Vulkan
 {
-class DebugMessenger
-{
-public:
-    explicit DebugMessenger(VkInstance instance);
-    ~DebugMessenger() = default;
-    DebugMessenger(const DebugMessenger&) = delete;
-    DebugMessenger& operator=(const DebugMessenger&) = delete;
-    DebugMessenger(DebugMessenger&&) = delete;
-    DebugMessenger& operator=(DebugMessenger&&) = delete;
+    class DebugMessenger
+    {
+    public:
+        DebugMessenger() = default;
+        ~DebugMessenger()                                = default;
+        DebugMessenger(const DebugMessenger&)            = delete;
+        DebugMessenger& operator=(const DebugMessenger&) = delete;
+        DebugMessenger(DebugMessenger&&)                 = delete;
+        DebugMessenger& operator=(DebugMessenger&&)      = delete;
 
-    void Destroy(VkInstance instance);
+        [[nodiscard]] bool Init(Instance& instance);
+        void Destroy(Instance& instance);
+    private:
+        VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
+    };
 
-private:
-    VkDebugUtilsMessengerEXT m_DebugMessenger;
-};
-
-}  // namespace Nebula
+} // namespace Nebula::Vulkan

@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace Nebula
+namespace Nebula::Vulkan
 {
     VKAPI_ATTR VkBool32 VKAPI_CALL
         DebugCallback([[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -20,4 +20,4 @@ namespace Nebula
                                        const VkAllocationCallbacks* pAllocator);
     void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
-} // namespace Nebula
+} // namespace Nebula::Vulkan

@@ -88,7 +88,7 @@ namespace Nebula
         }
 
         ResultType& operator=(ResultType&& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
-            requires(std::is_move_constructible_v<T> && std::is_move_constructible_v<E>)
+            requires(std::is_move_constructible_v<T> && std::is_move_constructible_v<E> && !std::is_nothrow_move_constructible_v<T> && !std::is_nothrow_move_constructible_v<E>)
         {
             if (this == &other)
             {

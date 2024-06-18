@@ -106,6 +106,15 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/RendererAPI.cpp
     src/NebulaEngine/Renderer/GraphicsContext.hpp
     src/NebulaEngine/Renderer/GraphicsContext.cpp
+    src/NebulaEngine/Renderer/Renderer2D.hpp
+    src/NebulaEngine/Renderer/Renderer2D.cpp
+
+    src/NebulaEngine/Renderer/CommandBuffer.hpp
+    src/NebulaEngine/Renderer/CommandPool.hpp
+    src/NebulaEngine/Renderer/ImageViews.hpp
+    src/NebulaEngine/Renderer/RenderPass.hpp
+    src/NebulaEngine/Renderer/GraphicsPipeline.hpp
+    src/NebulaEngine/Renderer/SwapChainFramebuffers.hpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -130,15 +139,41 @@ set(NEBULA_ENGINE_SOURCES
     >
 
     $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:
+        src/Platform/Vulkan/VulkanRendererHelper.hpp
+        src/Platform/Vulkan/VulkanRendererHelper.cpp
         src/Platform/Vulkan/VulkanGraphicsContext.hpp
         src/Platform/Vulkan/VulkanGraphicsContext.cpp
+        src/Platform/Vulkan/Vulkan2DRendererAPI.hpp
+        src/Platform/Vulkan/Vulkan2DRendererAPI.cpp
 
+        src/Platform/Vulkan/VK/Utils.hpp
+        src/Platform/Vulkan/VK/Utils.cpp
         src/Platform/Vulkan/VK/VulkanExt.hpp
         src/Platform/Vulkan/VK/VulkanExt.cpp
         src/Platform/Vulkan/VK/DebugMessenger.hpp
         src/Platform/Vulkan/VK/DebugMessenger.cpp
         src/Platform/Vulkan/VK/Instance.hpp
         src/Platform/Vulkan/VK/Instance.cpp
+        src/Platform/Vulkan/VK/Surface.hpp
+        src/Platform/Vulkan/VK/Surface.cpp
+        src/Platform/Vulkan/VK/PhysicalDevice.hpp
+        src/Platform/Vulkan/VK/PhysicalDevice.cpp
+        src/Platform/Vulkan/VK/LogicalDevice.hpp
+        src/Platform/Vulkan/VK/LogicalDevice.cpp
+        src/Platform/Vulkan/VK/Swapchain.hpp
+        src/Platform/Vulkan/VK/Swapchain.cpp
+        src/Platform/Vulkan/VK/CommandBuffer.hpp
+        src/Platform/Vulkan/VK/CommandBuffer.cpp
+        src/Platform/Vulkan/VK/CommandPool.hpp
+        src/Platform/Vulkan/VK/CommandPool.cpp
+        src/Platform/Vulkan/VK/ImageViews.hpp
+        src/Platform/Vulkan/VK/ImageViews.cpp
+        src/Platform/Vulkan/VK/RenderPass.hpp
+        src/Platform/Vulkan/VK/RenderPass.cpp
+        src/Platform/Vulkan/VK/GraphicsPipeline.hpp
+        src/Platform/Vulkan/VK/GraphicsPipeline.cpp
+        src/Platform/Vulkan/VK/SwapChainFramebuffers.hpp
+        src/Platform/Vulkan/VK/SwapChainFramebuffers.cpp
     >
 )
 
@@ -190,6 +225,8 @@ PUBLIC
     $<$<STREQUAL:${NEBULA_BUILD_TYPE},Dist>:NEBULA_DIST>
     $<$<BOOL:${NEBULA_PROFILE}>:NEBULA_PROFILE>
     $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:NEBULA_RENDERER_OPENGL>
+    $<$<BOOL:${NEBULA_RENDERER_METAL}>:NEBULA_RENDERER_METAL>
+    $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:NEBULA_RENDERER_VULKAN>
 )
 
 # Module Definition
