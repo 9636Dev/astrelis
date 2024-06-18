@@ -62,7 +62,7 @@ namespace Nebula
         }
 
         Result(ResultType&& other) // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
-            requires(std::is_move_constructible_v<T> && std::is_move_constructible_v<E>)
+            requires(std::is_move_constructible_v<T> && std::is_move_constructible_v<E> && !std::is_nothrow_move_constructible_v<T> && !std::is_nothrow_move_constructible_v<E>)
             : m_Value(std::move(other.m_Value))
         {
         }

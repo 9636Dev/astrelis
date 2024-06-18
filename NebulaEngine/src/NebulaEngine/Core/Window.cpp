@@ -1,5 +1,6 @@
 #include "Window.hpp"
 
+#include "NebulaEngine/Core/Log.hpp"
 #include "PlatformDetection.hpp"
 
 #ifdef NEBULA_PLATFORM_LINUX
@@ -15,7 +16,8 @@ namespace Nebula
 #ifdef NEBULA_PLATFORM_LINUX
         return LinuxWindow::Create(props).MapMove([](Ptr<LinuxWindow>&& window) { return window.Cast<Window>(); });
 #elif defined(NEBULA_PLATFORM_MACOS)
-        return MacOSWindow::Create(props);
+        auto window = MacOSWindow::Create(props);
+        return window.MapMove([](RefPtr<MacOSWindow>&& window) { return static_cast<RefPtr<Window>>(window); });
 #else
         return "Unsupported platform";
 #endif

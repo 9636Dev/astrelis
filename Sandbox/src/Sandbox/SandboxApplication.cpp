@@ -10,7 +10,7 @@
 SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec) : Nebula::Application(std::move(spec))
 {
     NEBULA_PROFILE_SCOPE("SandboxApplication::SandboxApplication");
-    PushLayer(Nebula::OwnedPtr<SandboxLayer*>::Create());
+    PushLayer(static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(Nebula::OwnedPtr<SandboxLayer*>::Create()));
 }
 
 SandboxApplication::~SandboxApplication() { NEBULA_LOG_INFO("Sandbox Application Destroyed"); }

@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Result.hpp"
 #include "NebulaEngine/Core/Window.hpp"
+#include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
 #include <GLFW/glfw3.h>
 #include <MacTypes.h>
@@ -30,10 +31,11 @@ namespace Nebula
 
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
-        static Result<RefPtr<Window>, std::string> Create(const WindowProps& props);
+        static Result<RefPtr<MacOSWindow>, std::string> Create(const WindowProps& props);
     private:
         GLFWwindow* m_Window;
         MacOSWindowData m_Data;
+        RefPtr<GraphicsContext> m_Context;
     };
 } // namespace Nebula
 

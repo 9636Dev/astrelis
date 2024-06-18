@@ -4,17 +4,16 @@
 
 namespace Nebula
 {
-    MacOSWindow::MacOSWindow(GLFWwindow* window, MacOSWindowData data) :
-        m_Window(window),
-        m_Data(std::move(data))
+    MacOSWindow::MacOSWindow(GLFWwindow* window, MacOSWindowData data) : m_Window(window), m_Data(std::move(data)), m_Context(nullptr)
     {
         GLFWWindowHelper::SetEventCallbacks(m_Window, m_Data);
         glfwMakeContextCurrent(m_Window);
+        m_Context = GraphicsContext::Create();
+        m_Context->Init();
     }
 
-
-    MacOSWindow::~MacOSWindow()
-    {
+    MacOSWindow::~MacOSWindow() {
+        m_Context->Shutdown();
         GLFWWindowHelper::DestroyWindow(m_Window);
     }
 
@@ -24,11 +23,10 @@ namespace Nebula
         //m_RenderContext->SwapBuffers();
     }
 
-    Result<RefPtr<Window>, std::string> MacOSWindow::Create(const WindowProps &props)
+    Result<RefPtr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps& props)
     {
-        auto res = GLFWWindowHelper::CreateLegacyWindow(props);
-        return res.MapMove([props](GLFWwindow* window) {
-            return static_cast<RefPtr<Window>>(RefPtr<MacOSWindow>::Create(window, MacOSWindowData(props.Title, props.Width, props.Height)));
+        return GLFWWindowHelper::CreateLegacyWindow(props).MapMove([props](GLFWwindow* window) {
+            return RefPtr<MacOSWindow>::Create(window, MacOSWindowData(props.Title, props.Width, props.Height));
         });
     }
 } // namespace Nebula

@@ -64,12 +64,14 @@ add_subdirectory(vendor)
 
 
 if (NEBULA_PLATFORM STREQUAL "Linux")
-    set(NEBULA_RENDERER_OPENGL ON)
+    set(NEBULA_RENDERER_OPENGL OFF)
     set(NEBULA_RENDERER_METAL OFF)
+    set(NEBULA_RENDERER_VULKAN ON)
 elseif (NEBULA_PLATFORM STREQUAL "MacOS")
     # TODO: Add Metal renderer, and disable OpenGL
-    set(NEBULA_RENDERER_OPENGL ON)
-    set(NEBULA_RENDERER_METAL ON)
+    set(NEBULA_RENDERER_OPENGL OFF)
+    set(NEBULA_RENDERER_METAL OFF)
+    set(NEBULA_RENDERER_VULKAN ON)
 else()
     message(FATAL_ERROR "Unknown platform: ${NEBULA_PLATFORM}")
 endif()
@@ -100,6 +102,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Time.cpp
 
     # Renderer
+    src/NebulaEngine/Renderer/RendererAPI.hpp
+    src/NebulaEngine/Renderer/RendererAPI.cpp
     src/NebulaEngine/Renderer/GraphicsContext.hpp
     src/NebulaEngine/Renderer/GraphicsContext.cpp
 
@@ -124,7 +128,23 @@ set(NEBULA_ENGINE_SOURCES
 
     $<$<BOOL:${NEBULA_RENDERER_METAL}>:
     >
+
+    $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:
+        src/Platform/Vulkan/VulkanGraphicsContext.hpp
+        src/Platform/Vulkan/VulkanGraphicsContext.cpp
+
+        src/Platform/Vulkan/VK/VulkanExt.hpp
+        src/Platform/Vulkan/VK/VulkanExt.cpp
+        src/Platform/Vulkan/VK/DebugMessenger.hpp
+        src/Platform/Vulkan/VK/DebugMessenger.cpp
+        src/Platform/Vulkan/VK/Instance.hpp
+        src/Platform/Vulkan/VK/Instance.cpp
+    >
 )
+
+if (NEBULA_RENDERER_VULKAN)
+    find_package(Vulkan REQUIRED)
+endif()
 
 set(NEBULA_ENGINE_PCH_SOURCES
 )
@@ -151,6 +171,9 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
         "-framework Metal"
         "-framework Cocoa"
         "-framework QuartzCore"
+    >
+    $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:
+        Vulkan::Vulkan
     >
     glm
     ImGui

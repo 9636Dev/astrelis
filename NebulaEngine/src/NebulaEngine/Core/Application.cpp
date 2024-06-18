@@ -35,7 +35,7 @@ namespace Nebula
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
         OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer());
         m_ImGuiLayer = imguiLayer.Raw();
-        PushOverlay(imguiLayer); // Ownership transferred to LayerStack
+        PushOverlay(static_cast<OwnedPtr<Layer*>>(imguiLayer)); // Ownership transferred to LayerStack
     }
 
     Application::~Application()

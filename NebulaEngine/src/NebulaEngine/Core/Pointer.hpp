@@ -46,13 +46,19 @@ namespace Nebula
 
         T* Get() const noexcept { return m_Ptr; }
 
-        void Reset() { delete m_Ptr; m_Ptr = nullptr; }
+        void Reset()
+        {
+            delete m_Ptr;
+            m_Ptr = nullptr;
+        }
 
         template<typename U>
             requires std::is_base_of_v<U, T>
-        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator ScopedPtr<U>() const
+        explicit operator ScopedPtr<U>()
         {
-            return ScopedPtr<U>(static_cast<U*>(m_Ptr));
+            T* ptr = m_Ptr;
+            m_Ptr  = nullptr;
+            return ScopedPtr<U>(static_cast<U*>(ptr));
         }
 
         template<typename... Args> static ScopedPtr<T> Create(Args&&... args)
@@ -151,8 +157,12 @@ namespace Nebula
 
         template<typename U>
             requires std::is_base_of_v<U, T>
-        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator RefPtr<U>() const
+        explicit  operator RefPtr<U>() const
         {
+            if (m_RefCount != nullptr)
+            {
+                ++(*m_RefCount);
+            }
             return RefPtr<U>(static_cast<U*>(m_Ptr), m_RefCount);
         }
 
@@ -208,6 +218,7 @@ namespace Nebula
         T operator->() const noexcept { return m_Ptr; }
 
         bool operator==(const T* const other) { return m_Ptr == other; }
+
         template<typename U>
             requires std::is_convertible_v<T, U>
         bool operator==(const std::remove_pointer_t<U>* const other)
@@ -218,7 +229,7 @@ namespace Nebula
         // Auto conversion for derived classes
         template<typename U>
             requires std::is_convertible_v<std::remove_pointer_t<T>, std::remove_pointer_t<U>>
-        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator RawRef<U>() const
+        explicit operator RawRef<U>() const
         {
             return RawRef<U>(static_cast<U>(m_Ptr));
         }
@@ -272,15 +283,17 @@ namespace Nebula
         RawRef<T> Raw() const { return RawRef(m_Ptr); }
 
         bool operator==(const T* const other) { return m_Ptr == other; }
-        bool operator==(const RawRef<T>& other) { return m_Ptr == other.m_Ptr; }
 
+        bool operator==(const RawRef<T>& other) { return m_Ptr == other.m_Ptr; }
 
         // Auto conversion for derived classes
         template<typename U>
             requires std::is_base_of_v<std::remove_pointer_t<U>, std::remove_pointer_t<T>>
-        /* NOLINT(google-explicit-constructor, hicpp-explicit-conversions) */ operator OwnedPtr<U>() const
+        explicit operator OwnedPtr<U>()
         {
-            return OwnedPtr<U>(static_cast<U>(m_Ptr));
+            T ptr = m_Ptr;
+            m_Ptr = nullptr;
+            return OwnedPtr<U>(static_cast<U>(ptr));
         }
 
         explicit operator T() const noexcept { return m_Ptr; }
