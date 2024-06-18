@@ -60,8 +60,6 @@ option(NEBULA_PROFILE "Enable profiling" OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(vendor)
-
 
 if (NEBULA_PLATFORM STREQUAL "Linux")
     set(NEBULA_RENDERER_OPENGL OFF)
@@ -75,6 +73,8 @@ elseif (NEBULA_PLATFORM STREQUAL "MacOS")
 else()
     message(FATAL_ERROR "Unknown platform: ${NEBULA_PLATFORM}")
 endif()
+
+add_subdirectory(vendor)
 
 
 set(NEBULA_ENGINE_SOURCES
@@ -122,6 +122,8 @@ set(NEBULA_ENGINE_SOURCES
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
     src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp
+    src/NebulaEngine/UI/ImGui/ImGuiBackend.hpp
+    src/NebulaEngine/UI/ImGui/ImGuiBackend.cpp
 
     # Platform
     $<$<STREQUAL:${NEBULA_PLATFORM},Linux>:
@@ -148,6 +150,8 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VulkanGraphicsContext.cpp
         src/Platform/Vulkan/Vulkan2DRendererAPI.hpp
         src/Platform/Vulkan/Vulkan2DRendererAPI.cpp
+        src/Platform/Vulkan/VulkanImGuiBackend.hpp
+        src/Platform/Vulkan/VulkanImGuiBackend.cpp
 
         src/Platform/Vulkan/VK/Utils.hpp
         src/Platform/Vulkan/VK/Utils.cpp

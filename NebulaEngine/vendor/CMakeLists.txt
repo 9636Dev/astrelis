@@ -17,9 +17,13 @@ set(IMGUI_SRC
     imgui/imgui_widgets.cpp
     imgui/imgui_tables.cpp
 
-    # Customize later
     imgui/backends/imgui_impl_glfw.cpp
-    imgui/backends/imgui_impl_opengl3.cpp
+    $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:
+        imgui/backends/imgui_impl_opengl3.cpp
+    >
+    $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:
+        imgui/backends/imgui_impl_vulkan.cpp
+    >
 )
 
 add_library(ImGui STATIC ${IMGUI_SRC})

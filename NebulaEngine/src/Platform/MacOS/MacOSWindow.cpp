@@ -20,7 +20,11 @@ namespace Nebula
     void MacOSWindow::OnUpdate()
     {
         glfwPollEvents();
-        //m_RenderContext->SwapBuffers();
+    }
+
+    void MacOSWindow::WaitForEvents()
+    {
+        glfwWaitEvents();
     }
 
     Bounds MacOSWindow::GetViewportBounds() const

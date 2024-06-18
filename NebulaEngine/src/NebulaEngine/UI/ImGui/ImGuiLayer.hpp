@@ -2,6 +2,9 @@
 
 #include "NebulaEngine/Core/Layer.hpp"
 
+#include "ImGuiBackend.hpp"
+#include "NebulaEngine/Core/Pointer.hpp"
+
 #include <imgui.h>
 
 namespace Nebula
@@ -9,7 +12,7 @@ namespace Nebula
     class ImGuiLayer : public Layer
     {
     public:
-        ImGuiLayer();
+        explicit ImGuiLayer(RefPtr<ImGuiBackend> backend);
         ~ImGuiLayer() override = default;
         ImGuiLayer(const ImGuiLayer&) = delete;
         ImGuiLayer& operator=(const ImGuiLayer&) = delete;
@@ -28,5 +31,6 @@ namespace Nebula
         void BlockEvents(bool block) { m_BlockEvents = block; }
     private:
         bool m_BlockEvents = true;
+        RefPtr<ImGuiBackend> m_Backend;
     };
 } // namespace Nebula

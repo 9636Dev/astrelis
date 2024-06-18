@@ -25,12 +25,18 @@ namespace Nebula
         void BeginFrame();
         void EndFrame();
 
+        void ResizeViewport(Bounds& viewport);
+
     private:
         RefPtr<Window> m_Window;
         RefPtr<GraphicsContext> m_Context;
         RefPtr<RendererAPI> m_RendererAPI;
         Renderer2DStorage m_Storage;
         std::uint32_t m_ImageIndex = 0;
+        std::uint32_t m_CurrentFrame = 0;
+        bool m_SkipRender = false;
+
+        const std::uint32_t m_MaxFramesInFlight;
     };
 
 } // namespace Nebula

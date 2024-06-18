@@ -27,11 +27,15 @@ namespace Nebula
         MacOSWindow& operator=(MacOSWindow&&)      = delete;
 
         void OnUpdate() override;
+        void WaitForEvents() override;
 
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
         RefPtr<GraphicsContext> GetGraphicsContext() const override { return m_Context; }
         Bounds GetViewportBounds() const override;
+        std::uint32_t GetWidth() const override { return m_Data.Width; }
+        std::uint32_t GetHeight() const override { return m_Data.Height; }
+        void* GetNativeWindow() const override { return m_Window.Get(); }
 
         static Result<RefPtr<MacOSWindow>, std::string> Create(const WindowProps& props);
     private:

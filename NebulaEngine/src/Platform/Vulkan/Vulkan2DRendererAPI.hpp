@@ -19,7 +19,7 @@ namespace Nebula
         void Init() override;
         void Shutdown() override;
 
-        Renderer2DStorage CreateComponents() override;
+        Renderer2DStorage CreateComponents(CreateDetails& details) override;
         void DestroyComponents(Renderer2DStorage& storage) override;
 
         void SetViewport(RefPtr<CommandBuffer>& commandBuffer, Viewport& viewport) override;
@@ -30,9 +30,13 @@ namespace Nebula
         void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
         Bounds GetSurfaceSize() override;
 
+        void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) override;
+        bool NeedsResize() const override { return m_NeedsResize; }
+
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
     private:
         RefPtr<VulkanGraphicsContext> m_Context;
         Bounds m_Viewport;
+        bool m_NeedsResize = false;
     };
 } // namespace Nebula

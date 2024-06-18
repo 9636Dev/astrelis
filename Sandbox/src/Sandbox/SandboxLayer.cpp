@@ -38,4 +38,16 @@ void SandboxLayer::OnUIRender()
     // This is not an overlay
 }
 
-void SandboxLayer::OnEvent(Nebula::Event& event) {}
+void SandboxLayer::OnViewportResize(Nebula::WindowResizedEvent& event)
+{
+    NEBULA_CORE_LOG_INFO("SandboxLayer::OnViewportResize: {0}, {1}", event.GetWidth(), event.GetHeight());
+    auto viewport = Nebula::Application::Get().GetWindow()->GetViewportBounds();
+    m_Renderer2D->ResizeViewport(viewport);
+    event.Handled = true;
+}
+
+void SandboxLayer::OnEvent(Nebula::Event& event)
+{
+    Nebula::EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<Nebula::WindowResizedEvent>(NEBULA_BIND_EVENT_FN(SandboxLayer::OnViewportResize));
+}

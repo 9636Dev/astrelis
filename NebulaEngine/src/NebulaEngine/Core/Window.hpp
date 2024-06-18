@@ -57,10 +57,15 @@ namespace Nebula
         Window& operator=(Window&&)      = delete;
 
         virtual void OnUpdate() = 0;
+        virtual void WaitForEvents() = 0;
         virtual void SetEventCallback(const WindowEventCallback& callback) = 0;
         virtual Bounds GetViewportBounds() const = 0;
 
+        virtual std::uint32_t GetWidth() const = 0;
+        virtual std::uint32_t GetHeight() const = 0;
+
         virtual RefPtr<GraphicsContext> GetGraphicsContext() const = 0;
+        virtual void* GetNativeWindow() const = 0;
 
         static Result<RefPtr<Window>, std::string> Create(const WindowProps& props = WindowProps());
     };

@@ -36,7 +36,11 @@ namespace Nebula
         virtual void Init()     = 0;
         virtual void Shutdown() = 0;
 
-        virtual Renderer2DStorage CreateComponents() = 0;
+        struct CreateDetails
+        {
+            std::uint32_t MaxFramesInFlight = 2;
+        };
+        virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
         virtual void DestroyComponents(Renderer2DStorage& storage) = 0;
 
         virtual void SetViewport(RefPtr<CommandBuffer>& commandBuffer, Viewport& viewport) = 0;
@@ -46,6 +50,10 @@ namespace Nebula
         virtual void WaitDeviceIdle(RefPtr<GraphicsContext>& context) = 0;
         virtual void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) = 0;
         virtual Bounds GetSurfaceSize() = 0;
+
+        // Probably need to recreate a lot of things, so we need to pass in the storage
+        virtual void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) = 0;
+        virtual bool NeedsResize() const = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);

@@ -2,6 +2,7 @@
 
 #include "Base.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
+#include "NebulaEngine/UI/ImGui/ImGuiBackend.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
 #include "Profiler.hpp"
 #include "Time.hpp"
@@ -33,7 +34,7 @@ namespace Nebula
         m_Window = std::move(res.Unwrap());
         m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-        OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer());
+        OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
         m_ImGuiLayer = imguiLayer.Raw();
         PushOverlay(static_cast<OwnedPtr<Layer*>>(imguiLayer)); // Ownership transferred to LayerStack
     }

@@ -20,7 +20,11 @@ namespace Nebula
     void LinuxWindow::OnUpdate()
     {
         glfwPollEvents();
-        //m_RenderContext->SwapBuffers();
+    }
+
+    void LinuxWindow::WaitForEvents()
+    {
+        glfwWaitEvents();
     }
 
     Bounds LinuxWindow::GetViewportBounds() const
