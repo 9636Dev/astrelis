@@ -5,6 +5,7 @@
 #include "LogicalDevice.hpp"
 #include "RenderPass.hpp"
 #include "SwapChain.hpp"
+#include "CommandBuffer.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -22,6 +23,7 @@ namespace Nebula::Vulkan
 
         bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain);
         void Destroy(LogicalDevice& device);
+        void Bind(RefPtr<Nebula::CommandBuffer>& commandBuffer) override;
 
         VkPipeline m_Pipeline             = VK_NULL_HANDLE;
         VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;

@@ -12,6 +12,7 @@ namespace Nebula::Vulkan
                                      ImageViews& imageViews,
                                      SwapChain& chain)
     {
+        m_SwapChainFrameBuffers.resize(imageViews.GetImageViews().size());
         for (std::size_t i = 0; i < imageViews.GetImageViews().size(); i++)
         {
             VkImageView attachments[] = {imageViews.GetImageViews()[i]};

@@ -5,7 +5,6 @@
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
 #include <GLFW/glfw3.h>
-#include <MacTypes.h>
 
 namespace Nebula
 {

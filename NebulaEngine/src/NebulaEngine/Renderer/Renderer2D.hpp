@@ -12,7 +12,7 @@ namespace Nebula
     class Renderer2D
     {
     public:
-        explicit Renderer2D(const RefPtr<Window>& window, Bounds viewport);
+        explicit Renderer2D(RefPtr<Window> window, Bounds viewport);
         ~Renderer2D() = default;
         Renderer2D(const Renderer2D&)            = delete;
         Renderer2D& operator=(const Renderer2D&) = delete;
@@ -26,10 +26,11 @@ namespace Nebula
         void EndFrame();
 
     private:
+        RefPtr<Window> m_Window;
         RefPtr<GraphicsContext> m_Context;
         RefPtr<RendererAPI> m_RendererAPI;
         Renderer2DStorage m_Storage;
-        std::uint32_t m_FrameIndex = 0;
+        std::uint32_t m_ImageIndex = 0;
     };
 
 } // namespace Nebula

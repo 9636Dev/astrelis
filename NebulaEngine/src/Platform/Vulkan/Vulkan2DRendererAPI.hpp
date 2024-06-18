@@ -22,6 +22,14 @@ namespace Nebula
         Renderer2DStorage CreateComponents() override;
         void DestroyComponents(Renderer2DStorage& storage) override;
 
+        void SetViewport(RefPtr<CommandBuffer>& commandBuffer, Viewport& viewport) override;
+        void SetScissor(RefPtr<CommandBuffer>& commandBuffer, Bounds& scissor) override;
+        void AcquireNextImage(RefPtr<GraphicsContext>& context, RefPtr<Semaphore>& imageAvailableSemaphore, std::uint32_t& imageIndex) override;
+        void Present(std::uint32_t imageIndex, RefPtr<Semaphore>& renderingFinishedSemaphore) override;
+        void WaitDeviceIdle(RefPtr<GraphicsContext>& context) override;
+        void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
+        Bounds GetSurfaceSize() override;
+
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
     private:
         RefPtr<VulkanGraphicsContext> m_Context;

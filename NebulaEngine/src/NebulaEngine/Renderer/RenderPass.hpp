@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NebulaEngine/Core/Pointer.hpp"
+
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 #include "CommandBuffer.hpp"

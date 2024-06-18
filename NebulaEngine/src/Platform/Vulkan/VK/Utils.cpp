@@ -1,6 +1,8 @@
 #include "Utils.hpp"
 
 #include <GLFW/glfw3.h>
+#include <cstdint>
+#include <cstring>
 #ifdef NEBULA_PLATFORM_MACOS
     #include <vulkan/vulkan_macos.h>
 #endif
@@ -56,4 +58,4 @@ namespace Nebula::Vulkan
 
         return extensions;
     }
-} // namespace Nebula
+} // namespace Nebula::Vulkan

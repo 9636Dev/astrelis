@@ -4,7 +4,8 @@
 #include "NebulaEngine/Core/Pointer.hpp"
 
 #include "GraphicsContext.hpp"
-#include "NebulaEngine/Renderer/RendererStorage.hpp"
+#include "RendererStorage.hpp"
+#include "Viewport.hpp"
 
 namespace Nebula
 {
@@ -37,6 +38,14 @@ namespace Nebula
 
         virtual Renderer2DStorage CreateComponents() = 0;
         virtual void DestroyComponents(Renderer2DStorage& storage) = 0;
+
+        virtual void SetViewport(RefPtr<CommandBuffer>& commandBuffer, Viewport& viewport) = 0;
+        virtual void SetScissor(RefPtr<CommandBuffer>& commandBuffer, Bounds& scissor) = 0;
+        virtual void AcquireNextImage(RefPtr<GraphicsContext>& context, RefPtr<Semaphore>& imageAvailableSempahore, std::uint32_t& imageIndex) = 0;
+        virtual void Present(std::uint32_t imageIndex, RefPtr<Semaphore>& renderingFinishedSemaphore) = 0;
+        virtual void WaitDeviceIdle(RefPtr<GraphicsContext>& context) = 0;
+        virtual void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) = 0;
+        virtual Bounds GetSurfaceSize() = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);

@@ -1,8 +1,6 @@
 #include "GraphicsPipeline.hpp"
 
 #include "NebulaEngine/Core/Log.hpp"
-#include "NebulaEngine/Renderer/GraphicsContext.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 #include "RenderPass.hpp"
 
@@ -64,7 +62,7 @@ namespace Nebula::Vulkan
         fragmentShaderStageInfo.module = fragmentShaderModule;
         fragmentShaderStageInfo.pName = "main";
 
-        VkPipelineShaderStageCreateInfo shaderStages[] = {vertexShaderStageInfo, fragmentShaderStageInfo};
+        std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages = {vertexShaderStageInfo, fragmentShaderStageInfo};
 
         std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
@@ -108,7 +106,7 @@ namespace Nebula::Vulkan
         rasterizer.rasterizerDiscardEnable = VK_FALSE;
         rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
         rasterizer.lineWidth = 1.0F;
-        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+        rasterizer.cullMode = VK_CULL_MODE_NONE;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
         rasterizer.depthBiasEnable = VK_FALSE;
@@ -145,18 +143,19 @@ namespace Nebula::Vulkan
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount = 2;
-        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
+        pipelineInfo.pStages = shaderStages.data();
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssembly;
         pipelineInfo.pViewportState = &viewportState;
         pipelineInfo.pRasterizationState = &rasterizer;
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDynamicState = &dynamicStateCreateInfo;
         pipelineInfo.layout = m_PipelineLayout;
         pipelineInfo.renderPass = renderPass.m_RenderPass;
         pipelineInfo.subpass = 0;
-        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
 
         if (vkCreateGraphicsPipelines(device.GetHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline) != VK_SUCCESS)
         {
@@ -174,5 +173,11 @@ namespace Nebula::Vulkan
     {
         vkDestroyPipeline(device.GetHandle(), m_Pipeline, nullptr);
         vkDestroyPipelineLayout(device.GetHandle(), m_PipelineLayout, nullptr);
+    }
+
+    void GraphicsPipeline::Bind(RefPtr<Nebula::CommandBuffer>& commandBuffer)
+    {
+        auto cBuffer = commandBuffer.As<CommandBuffer>();
+        vkCmdBindPipeline(cBuffer->m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_Pipeline);
     }
 } // namespace Nebula::Vulkan

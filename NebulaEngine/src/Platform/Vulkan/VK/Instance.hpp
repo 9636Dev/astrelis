@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 #include <vector>
 #include <vulkan/vulkan.h>
@@ -12,6 +13,7 @@ namespace Nebula::Vulkan
         std::uint32_t minor = 0;
 
         APIVersion() = default;
+
         APIVersion(std::uint32_t major, std::uint32_t minor) : major(major), minor(minor) {}
     };
 

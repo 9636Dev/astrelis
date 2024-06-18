@@ -102,6 +102,7 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Time.cpp
 
     # Renderer
+    src/NebulaEngine/Renderer/Viewport.hpp
     src/NebulaEngine/Renderer/RendererAPI.hpp
     src/NebulaEngine/Renderer/RendererAPI.cpp
     src/NebulaEngine/Renderer/GraphicsContext.hpp
@@ -114,7 +115,9 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/ImageViews.hpp
     src/NebulaEngine/Renderer/RenderPass.hpp
     src/NebulaEngine/Renderer/GraphicsPipeline.hpp
-    src/NebulaEngine/Renderer/SwapChainFramebuffers.hpp
+    src/NebulaEngine/Renderer/SwapChainFrameBuffers.hpp
+    src/NebulaEngine/Renderer/Semaphore.hpp
+    src/NebulaEngine/Renderer/Fence.hpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -160,8 +163,8 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/PhysicalDevice.cpp
         src/Platform/Vulkan/VK/LogicalDevice.hpp
         src/Platform/Vulkan/VK/LogicalDevice.cpp
-        src/Platform/Vulkan/VK/Swapchain.hpp
-        src/Platform/Vulkan/VK/Swapchain.cpp
+        src/Platform/Vulkan/VK/SwapChain.hpp
+        src/Platform/Vulkan/VK/SwapChain.cpp
         src/Platform/Vulkan/VK/CommandBuffer.hpp
         src/Platform/Vulkan/VK/CommandBuffer.cpp
         src/Platform/Vulkan/VK/CommandPool.hpp
@@ -172,8 +175,12 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/RenderPass.cpp
         src/Platform/Vulkan/VK/GraphicsPipeline.hpp
         src/Platform/Vulkan/VK/GraphicsPipeline.cpp
-        src/Platform/Vulkan/VK/SwapChainFramebuffers.hpp
-        src/Platform/Vulkan/VK/SwapChainFramebuffers.cpp
+        src/Platform/Vulkan/VK/SwapChainFrameBuffers.hpp
+        src/Platform/Vulkan/VK/SwapChainFrameBuffers.cpp
+        src/Platform/Vulkan/VK/Semaphore.hpp
+        src/Platform/Vulkan/VK/Semaphore.cpp
+        src/Platform/Vulkan/VK/Fence.hpp
+        src/Platform/Vulkan/VK/Fence.cpp
     >
 )
 

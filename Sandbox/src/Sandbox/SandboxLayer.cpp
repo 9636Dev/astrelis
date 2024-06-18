@@ -27,7 +27,11 @@ void SandboxLayer::OnDetach()
     m_Renderer2D->Shutdown();
 }
 
-void SandboxLayer::OnUpdate() {}
+void SandboxLayer::OnUpdate()
+{
+    m_Renderer2D->BeginFrame();
+    m_Renderer2D->EndFrame();
+}
 
 void SandboxLayer::OnUIRender()
 {

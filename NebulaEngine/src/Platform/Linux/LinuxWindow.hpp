@@ -1,12 +1,10 @@
 #pragma once
 
-#include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Result.hpp"
 #include "NebulaEngine/Core/Window.hpp"
-#include "NebulaEngine/Renderer/RenderContext.hpp"
+#include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
 #include <GLFW/glfw3.h>
-#include <string>
 
 namespace Nebula
 {
@@ -32,18 +30,15 @@ namespace Nebula
 
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
-        void* GetNativeWindow() const override { return m_Window; }
-
-        std::uint32_t GetWidth() const override { return m_Data.Width; }
-
-        std::uint32_t GetHeight() const override { return m_Data.Height; }
-
-        static Result<Ptr<LinuxWindow>, std::string> Create(const WindowProps& props);
-
+        RefPtr<GraphicsContext> GetGraphicsContext() const override { return m_Context; }
         Bounds GetViewportBounds() const override;
+
+        static Result<RefPtr<LinuxWindow>, std::string> Create(const WindowProps& props);
     private:
-        GLFWwindow* m_Window;
+        OwnedPtr<GLFWwindow*> m_Window;
         LinuxWindowData m_Data;
-        Ptr<RenderContext> m_RenderContext;
+        RefPtr<GraphicsContext> m_Context;
     };
 } // namespace Nebula
+
+
