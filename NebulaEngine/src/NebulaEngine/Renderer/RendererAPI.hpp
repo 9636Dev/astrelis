@@ -4,6 +4,7 @@
 #include "NebulaEngine/Core/Pointer.hpp"
 
 #include "GraphicsContext.hpp"
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "RendererStorage.hpp"
 #include "Viewport.hpp"
 
@@ -39,6 +40,9 @@ namespace Nebula
         struct CreateDetails
         {
             std::uint32_t MaxFramesInFlight = 2;
+            std::size_t VertexBufferSize    = 0;
+            std::uint32_t IndicesCount      = 0;
+            VertexInput VertexInput         = {};
         };
         virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
         virtual void DestroyComponents(Renderer2DStorage& storage) = 0;
@@ -48,12 +52,14 @@ namespace Nebula
         virtual void AcquireNextImage(RefPtr<GraphicsContext>& context, RefPtr<Semaphore>& imageAvailableSempahore, std::uint32_t& imageIndex) = 0;
         virtual void Present(std::uint32_t imageIndex, RefPtr<Semaphore>& renderingFinishedSemaphore) = 0;
         virtual void WaitDeviceIdle(RefPtr<GraphicsContext>& context) = 0;
-        virtual void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) = 0;
         virtual Bounds GetSurfaceSize() = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
         virtual void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) = 0;
         virtual bool NeedsResize() const = 0;
+
+        virtual void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) = 0;
+        virtual void DrawInstancedIndexed(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);

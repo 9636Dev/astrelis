@@ -74,6 +74,11 @@ else()
     message(FATAL_ERROR "Unknown platform: ${NEBULA_PLATFORM}")
 endif()
 
+if (NEBULA_RENDERER_VULKAN)
+    find_package(Vulkan REQUIRED)
+endif()
+
+
 add_subdirectory(vendor)
 
 
@@ -93,6 +98,7 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Window.hpp
     src/NebulaEngine/Core/Window.cpp
     src/NebulaEngine/Core/Utils/Function.hpp
+    src/NebulaEngine/Core/Utils/Debug.hpp
     src/NebulaEngine/Core/Layer.hpp
     src/NebulaEngine/Core/Layer.cpp
     src/NebulaEngine/Core/LayerStack.hpp
@@ -118,6 +124,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/SwapChainFrameBuffers.hpp
     src/NebulaEngine/Renderer/Semaphore.hpp
     src/NebulaEngine/Renderer/Fence.hpp
+    src/NebulaEngine/Renderer/VertexBuffer.hpp
+    src/NebulaEngine/Renderer/IndexBuffer.hpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -185,12 +193,12 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/Semaphore.cpp
         src/Platform/Vulkan/VK/Fence.hpp
         src/Platform/Vulkan/VK/Fence.cpp
+        src/Platform/Vulkan/VK/VertexBuffer.hpp
+        src/Platform/Vulkan/VK/VertexBuffer.cpp
+        src/Platform/Vulkan/VK/IndexBuffer.hpp
+        src/Platform/Vulkan/VK/IndexBuffer.cpp
     >
 )
-
-if (NEBULA_RENDERER_VULKAN)
-    find_package(Vulkan REQUIRED)
-endif()
 
 set(NEBULA_ENGINE_PCH_SOURCES
 )

@@ -1,6 +1,9 @@
 #include "Fence.hpp"
 
+#include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
+
+#include "NebulaEngine/Core/Utils/Debug.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula::Vulkan
@@ -19,15 +22,28 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void Fence::Destroy(LogicalDevice& device) { vkDestroyFence(device.GetHandle(), m_Fence, nullptr); }
+    void Fence::Destroy(LogicalDevice& device)
+    {
+        NEBULA_CORE_ASSERT(m_Fence, "Fence is null!");
+        vkDestroyFence(device.GetHandle(), m_Fence, nullptr);
+        m_Fence = nullptr;
+    }
 
     void Fence::Wait(RefPtr<GraphicsContext>& context, std::uint64_t timeout)
     {
-        vkWaitForFences(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), 1, &m_Fence, VK_TRUE, timeout);
+        NEBULA_CORE_ASSERT(m_Fence, "Fence is null!");
+        NEBULA_CORE_ASSERT(vkWaitForFences(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), 1,
+                                           &m_Fence, VK_TRUE, timeout) == VK_SUCCESS,
+                           "Failed to wait for fence!");
     }
 
     void Fence::Reset(RefPtr<GraphicsContext>& context)
     {
-        vkResetFences(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), 1, &m_Fence);
+        NEBULA_CORE_ASSERT(m_Fence, "Fence is null!");
+        VkDevice device = context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle();
+        NEBULA_CORE_ASSERT(vkGetFenceStatus(device, m_Fence) == VK_SUCCESS, "Fence is not signalled before reset!");
+        NEBULA_CORE_ASSERT(
+            vkResetFences(device, 1, &m_Fence) == VK_SUCCESS,
+            "Failed to reset fence!");
     }
 } // namespace Nebula::Vulkan

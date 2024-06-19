@@ -24,9 +24,9 @@ namespace Nebula::Vulkan
         bool End() override;
         void Reset() override;
         bool Submit(RefPtr<GraphicsContext>& context,
-                    RefPtr<Semaphore>& imageAvailableSemaphore,
-                    RefPtr<Semaphore>& finishedRenderingSemaphore,
-                    RefPtr<Fence>& inFlightFence) override;
+                    RefPtr<Nebula::Semaphore>& imageAvailableSemaphore,
+                    RefPtr<Nebula::Semaphore>& finishedRenderingSemaphore,
+                    RefPtr<Nebula::Fence>& inFlightFence) override;
 
         VkCommandBuffer m_CommandBuffer = VK_NULL_HANDLE;
     };

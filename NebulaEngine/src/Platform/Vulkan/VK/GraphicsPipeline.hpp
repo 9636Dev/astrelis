@@ -5,7 +5,6 @@
 #include "LogicalDevice.hpp"
 #include "RenderPass.hpp"
 #include "SwapChain.hpp"
-#include "CommandBuffer.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -21,8 +20,9 @@ namespace Nebula::Vulkan
         GraphicsPipeline(GraphicsPipeline&&)                 = delete;
         GraphicsPipeline& operator=(GraphicsPipeline&&)      = delete;
 
-        bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain);
+        bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& vertexInput);
         void Destroy(LogicalDevice& device);
+
         void Bind(RefPtr<Nebula::CommandBuffer>& commandBuffer) override;
 
         VkPipeline m_Pipeline             = VK_NULL_HANDLE;

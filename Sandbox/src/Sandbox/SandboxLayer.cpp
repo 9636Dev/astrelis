@@ -11,10 +11,10 @@ SandboxLayer::~SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Destroyed"); }
 
 void SandboxLayer::OnAttach()
 {
+    auto& app    = Nebula::Application::Get();
     NEBULA_PROFILE_SCOPE("SandboxLayer::OnAttach");
     if (m_Renderer2D == nullptr)
     {
-        auto& app    = Nebula::Application::Get();
         m_Renderer2D = std::move(
             Nebula::ScopedPtr<Nebula::Renderer2D>::Create(app.GetWindow(), app.GetWindow()->GetViewportBounds()));
     }
@@ -30,6 +30,7 @@ void SandboxLayer::OnDetach()
 void SandboxLayer::OnUpdate()
 {
     m_Renderer2D->BeginFrame();
+
     m_Renderer2D->EndFrame();
 }
 

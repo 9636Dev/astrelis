@@ -28,6 +28,7 @@ namespace Nebula
         void Present(std::uint32_t imageIndex, RefPtr<Semaphore>& renderingFinishedSemaphore) override;
         void WaitDeviceIdle(RefPtr<GraphicsContext>& context) override;
         void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
+        void DrawInstancedIndexed(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
         Bounds GetSurfaceSize() override;
 
         void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) override;

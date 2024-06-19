@@ -26,6 +26,7 @@ namespace Nebula
 
         void Begin();
         void End();
+        void Render();
 
         void SetDarkThemeColors();
         void BlockEvents(bool block) { m_BlockEvents = block; }

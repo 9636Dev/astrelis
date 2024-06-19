@@ -8,9 +8,11 @@
 #include "VK/Fence.hpp"
 #include "VK/GraphicsPipeline.hpp"
 #include "VK/ImageViews.hpp"
+#include "VK/IndexBuffer.hpp"
 #include "VK/RenderPass.hpp"
 #include "VK/Semaphore.hpp"
 #include "VK/SwapChainFrameBuffers.hpp"
+#include "VK/VertexBuffer.hpp"
 #include "VulkanGraphicsContext.hpp"
 
 #include <array>
@@ -36,7 +38,7 @@ namespace Nebula
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define CHECK_RETURN(x)                                                            \
-    if (!(x))                                                                        \
+    if (!(x))                                                                      \
     {                                                                              \
         NEBULA_CORE_LOG_ERROR("Failed to create Vulkan2DRendererAPI components!"); \
         return Renderer2DStorage();                                                \
@@ -73,8 +75,17 @@ namespace Nebula
         storage.m_FrameBuffers = static_cast<RefPtr<SwapChainFrameBuffers>>(frameBuffers);
 
         RefPtr<Vulkan::GraphicsPipeline> graphicsPipeline = RefPtr<Vulkan::GraphicsPipeline>::Create();
-        CHECK_RETURN(graphicsPipeline->Init(m_Context->m_LogicalDevice, *renderPass, m_Context->m_SwapChain));
+        CHECK_RETURN(graphicsPipeline->Init(m_Context->m_LogicalDevice, *renderPass, m_Context->m_SwapChain, details.VertexInput));
         storage.m_GraphicsPipeline = static_cast<RefPtr<GraphicsPipeline>>(graphicsPipeline);
+
+        RefPtr<Vulkan::VertexBuffer> vertexBuffer = RefPtr<Vulkan::VertexBuffer>::Create();
+        CHECK_RETURN(
+            vertexBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, details.VertexBufferSize));
+        storage.m_VertexBuffer = static_cast<RefPtr<VertexBuffer>>(vertexBuffer);
+
+        RefPtr<Vulkan::IndexBuffer> indexBuffer = RefPtr<Vulkan::IndexBuffer>::Create();
+        CHECK_RETURN(indexBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, details.IndicesCount));
+        storage.m_IndexBuffer = static_cast<RefPtr<IndexBuffer>>(indexBuffer);
 
         std::vector<RefPtr<Semaphore>> imageAvailableSemaphores;
         std::vector<RefPtr<Semaphore>> renderFinishedSemaphores;
@@ -109,6 +120,8 @@ namespace Nebula
 
     void Vulkan2DRendererAPI::DestroyComponents(Renderer2DStorage& storage)
     {
+        storage.m_IndexBuffer.As<Vulkan::IndexBuffer>()->Destroy(m_Context->m_LogicalDevice);
+        storage.m_VertexBuffer.As<Vulkan::VertexBuffer>()->Destroy(m_Context->m_LogicalDevice);
         for (std::size_t i = 0; i < storage.m_ImageAvailableSemaphores.size(); ++i)
         {
             storage.m_ImageAvailableSemaphores[i].As<Vulkan::Semaphore>()->Destroy(m_Context->m_LogicalDevice);
@@ -212,6 +225,17 @@ namespace Nebula
                   firstInstance);
     }
 
+    void Vulkan2DRendererAPI::DrawInstancedIndexed(RefPtr<CommandBuffer>& commandBuffer,
+                                                   std::uint32_t indexCount,
+                                                   std::uint32_t instanceCount,
+                                                   std::uint32_t firstIndex,
+                                                   std::uint32_t vertexOffset,
+                                                   std::uint32_t firstInstance)
+    {
+        vkCmdDrawIndexed(commandBuffer.As<Vulkan::CommandBuffer>()->m_CommandBuffer, indexCount, instanceCount, firstIndex,
+                         static_cast<std::int32_t>(vertexOffset), firstInstance);
+    }
+
     Bounds Vulkan2DRendererAPI::GetSurfaceSize()
     {
         VkExtent2D extent = m_Context->m_SwapChain.GetExtent();
@@ -233,9 +257,10 @@ namespace Nebula
         storage.m_ImageViews.As<Vulkan::ImageViews>()->Init(device, m_Context->m_SwapChain);
         auto renderPass = storage.m_RenderPass.As<Vulkan::RenderPass>();
         auto imageViews = storage.m_ImageViews.As<Vulkan::ImageViews>();
-        storage.m_FrameBuffers.As<Vulkan::SwapChainFrameBuffers>()->Init(device, *renderPass, *imageViews, m_Context->m_SwapChain);
+        storage.m_FrameBuffers.As<Vulkan::SwapChainFrameBuffers>()->Init(device, *renderPass, *imageViews,
+                                                                         m_Context->m_SwapChain);
 
-        m_Viewport = viewport;
+        m_Viewport    = viewport;
         m_NeedsResize = false;
     }
 

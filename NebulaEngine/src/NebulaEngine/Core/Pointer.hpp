@@ -20,7 +20,7 @@ namespace Nebula
         template<typename U> friend class ScopedPtr;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        ScopedPtr(std::nullptr_t) : m_Ptr(nullptr) {}
+        ScopedPtr(std::nullptr_t = nullptr) : m_Ptr(nullptr) {}
 
         explicit ScopedPtr(T* ptr) : m_Ptr(ptr) {}
 
@@ -82,7 +82,7 @@ namespace Nebula
         template<typename U> friend class RefPtr;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        RefPtr(std::nullptr_t) : m_Ptr(nullptr), m_RefCount(nullptr) {}
+        RefPtr(std::nullptr_t = nullptr) : m_Ptr(nullptr), m_RefCount(nullptr) {}
 
         explicit RefPtr(T* ptr) : m_Ptr(ptr), m_RefCount(new RefCountType(1)) {}
 

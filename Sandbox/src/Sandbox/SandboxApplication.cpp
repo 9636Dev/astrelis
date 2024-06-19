@@ -2,6 +2,7 @@
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "SandboxLayer.hpp"
+#include "DebugLayer.hpp"
 
 #include "NebulaEngine/Core/Profiler.hpp"
 
@@ -11,6 +12,7 @@ SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec) : 
 {
     NEBULA_PROFILE_SCOPE("SandboxApplication::SandboxApplication");
     PushLayer(static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(Nebula::OwnedPtr<SandboxLayer*>::Create()));
+    PushOverlay(static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(Nebula::OwnedPtr<DebugLayer*>::Create()));
 }
 
 SandboxApplication::~SandboxApplication() { NEBULA_LOG_INFO("Sandbox Application Destroyed"); }

@@ -52,14 +52,10 @@ namespace Nebula
     {
         while (m_Running)
         {
-            //m_Renderer->BeginFrame();
-
             for (auto& layer : m_LayerStack)
             {
                 layer->OnUpdate();
             }
-
-            //m_Renderer->EndFrame();
 
             m_ImGuiLayer->Begin();
 
