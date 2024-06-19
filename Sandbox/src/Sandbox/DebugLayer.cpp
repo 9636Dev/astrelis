@@ -14,11 +14,6 @@ void DebugLayer::OnDetach()
 
 void DebugLayer::OnUIRender()
 {
-    ImGui::Begin("Debug Layer");
-
-    ImGui::Text("Hello, World!");
-
-    ImGui::End();
 }
 
 void DebugLayer::OnEvent(Nebula::Event& event)

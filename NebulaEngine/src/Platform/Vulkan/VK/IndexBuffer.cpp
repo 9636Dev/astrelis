@@ -1,5 +1,7 @@
 #include "IndexBuffer.hpp"
 
+#include <cstring>
+
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"

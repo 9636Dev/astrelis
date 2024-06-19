@@ -1,5 +1,7 @@
 #include "VertexBuffer.hpp"
 
+#include <cstring>
+
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
 #include "Utils.hpp"
