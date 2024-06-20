@@ -116,16 +116,11 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/Renderer2D.hpp
     src/NebulaEngine/Renderer/Renderer2D.cpp
 
-    src/NebulaEngine/Renderer/CommandBuffer.hpp
-    src/NebulaEngine/Renderer/CommandPool.hpp
-    src/NebulaEngine/Renderer/ImageViews.hpp
-    src/NebulaEngine/Renderer/RenderPass.hpp
     src/NebulaEngine/Renderer/GraphicsPipeline.hpp
-    src/NebulaEngine/Renderer/SwapChainFrameBuffers.hpp
-    src/NebulaEngine/Renderer/Semaphore.hpp
-    src/NebulaEngine/Renderer/Fence.hpp
     src/NebulaEngine/Renderer/VertexBuffer.hpp
     src/NebulaEngine/Renderer/IndexBuffer.hpp
+    src/NebulaEngine/Renderer/DescriptorSetLayout.hpp
+    src/NebulaEngine/Renderer/UniformBuffer.hpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -181,14 +176,14 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/CommandBuffer.cpp
         src/Platform/Vulkan/VK/CommandPool.hpp
         src/Platform/Vulkan/VK/CommandPool.cpp
-        src/Platform/Vulkan/VK/ImageViews.hpp
-        src/Platform/Vulkan/VK/ImageViews.cpp
+        src/Platform/Vulkan/VK/ImageView.hpp
+        src/Platform/Vulkan/VK/ImageView.cpp
         src/Platform/Vulkan/VK/RenderPass.hpp
         src/Platform/Vulkan/VK/RenderPass.cpp
         src/Platform/Vulkan/VK/GraphicsPipeline.hpp
         src/Platform/Vulkan/VK/GraphicsPipeline.cpp
-        src/Platform/Vulkan/VK/SwapChainFrameBuffers.hpp
-        src/Platform/Vulkan/VK/SwapChainFrameBuffers.cpp
+        src/Platform/Vulkan/VK/FrameBuffer.hpp
+        src/Platform/Vulkan/VK/FrameBuffer.cpp
         src/Platform/Vulkan/VK/Semaphore.hpp
         src/Platform/Vulkan/VK/Semaphore.cpp
         src/Platform/Vulkan/VK/Fence.hpp
@@ -197,6 +192,12 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/VertexBuffer.cpp
         src/Platform/Vulkan/VK/IndexBuffer.hpp
         src/Platform/Vulkan/VK/IndexBuffer.cpp
+        src/Platform/Vulkan/VK/DescriptorSetLayout.hpp
+        src/Platform/Vulkan/VK/DescriptorSetLayout.cpp
+        src/Platform/Vulkan/VK/UniformBuffer.hpp
+        src/Platform/Vulkan/VK/UniformBuffer.cpp
+        src/Platform/Vulkan/VK/DescriptorPool.hpp
+        src/Platform/Vulkan/VK/DescriptorPool.cpp
     >
 )
 

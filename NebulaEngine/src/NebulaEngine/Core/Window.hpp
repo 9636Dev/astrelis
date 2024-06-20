@@ -56,7 +56,10 @@ namespace Nebula
         Window(Window&&)                 = delete;
         Window& operator=(Window&&)      = delete;
 
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
         virtual void OnUpdate() = 0;
+
         virtual void WaitForEvents() = 0;
         virtual void SetEventCallback(const WindowEventCallback& callback) = 0;
         virtual Bounds GetViewportBounds() const = 0;

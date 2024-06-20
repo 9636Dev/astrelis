@@ -2,6 +2,10 @@
 
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiBackend.hpp"
+
+#include "Vulkan2DRendererAPI.hpp"
+#include "VulkanGraphicsContext.hpp"
+
 #include <vulkan/vulkan_core.h>
 
 namespace Nebula
@@ -20,6 +24,10 @@ namespace Nebula
         void Shutdown() override;
         void Begin() override;
         void End() override;
+    private:
+        RefPtr<Window> m_Window;
+        RefPtr<VulkanGraphicsContext> m_Context;
+        RefPtr<Vulkan2DRendererAPI> m_API;
     };
 } // namespace Nebula
 

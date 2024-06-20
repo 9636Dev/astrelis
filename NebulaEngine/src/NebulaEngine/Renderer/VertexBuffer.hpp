@@ -1,7 +1,5 @@
 #pragma once
 
-#include "CommandBuffer.hpp"
-#include "CommandPool.hpp"
 #include "GraphicsContext.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include <cstddef>
@@ -18,7 +16,7 @@ namespace Nebula
         VertexBuffer(VertexBuffer&&)                 = delete;
         VertexBuffer& operator=(VertexBuffer&&)      = delete;
 
-        virtual bool SetData(RefPtr<GraphicsContext>& context, RefPtr<CommandPool>& commandPool, const void* data, std::size_t size) = 0;
-        virtual void Bind(RefPtr<CommandBuffer>& buffer) const                                     = 0;
+        virtual bool SetData(RefPtr<GraphicsContext>& context, const void* data, std::size_t size) = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& context) const                                     = 0;
     };
 } // namespace Nebula

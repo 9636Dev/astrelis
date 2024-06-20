@@ -22,22 +22,20 @@ namespace Nebula
         Renderer2DStorage CreateComponents(CreateDetails& details) override;
         void DestroyComponents(Renderer2DStorage& storage) override;
 
-        void SetViewport(RefPtr<CommandBuffer>& commandBuffer, Viewport& viewport) override;
-        void SetScissor(RefPtr<CommandBuffer>& commandBuffer, Bounds& scissor) override;
-        void AcquireNextImage(RefPtr<GraphicsContext>& context, RefPtr<Semaphore>& imageAvailableSemaphore, std::uint32_t& imageIndex) override;
-        void Present(std::uint32_t imageIndex, RefPtr<Semaphore>& renderingFinishedSemaphore) override;
-        void WaitDeviceIdle(RefPtr<GraphicsContext>& context) override;
-        void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
-        void DrawInstancedIndexed(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
+        void SetViewport(Viewport& viewport) override;
+        void SetScissor(Bounds& scissor) override;
+        void WaitDeviceIdle() override;
+        void DrawInstanced(std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
+        void DrawInstancedIndexed(std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
         Bounds GetSurfaceSize() override;
 
         void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) override;
-        bool NeedsResize() const override { return m_NeedsResize; }
+        bool NeedsResize() const override { return m_Context->m_NeedsResize; }
 
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
     private:
         RefPtr<VulkanGraphicsContext> m_Context;
+
         Bounds m_Viewport;
-        bool m_NeedsResize = false;
     };
 } // namespace Nebula

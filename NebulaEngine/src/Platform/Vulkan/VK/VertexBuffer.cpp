@@ -14,7 +14,10 @@ namespace Nebula::Vulkan
     bool VertexBuffer::Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::size_t size)
     {
         VkDeviceSize bufferSize = size;
-        if (!CreateBuffer(physicalDevice.GetHandle(), logicalDevice.GetHandle(), bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT , VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer, m_BufferMemory))
+        if (!CreateBuffer(physicalDevice.GetHandle(), logicalDevice.GetHandle(), bufferSize,
+                          VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer,
+                          m_BufferMemory))
         {
             return false;
         }
@@ -29,12 +32,15 @@ namespace Nebula::Vulkan
         vkFreeMemory(logicalDevice.GetHandle(), m_BufferMemory, nullptr);
     }
 
-    bool VertexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, RefPtr<Nebula::CommandPool>& commandPool, const void* data, std::size_t size)
+    bool VertexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, const void* data, std::size_t size)
     {
-        auto ctx = context.As<VulkanGraphicsContext>();
-        VkBuffer stagingBuffer = VK_NULL_HANDLE;
+        auto ctx                           = context.As<VulkanGraphicsContext>();
+        VkBuffer stagingBuffer             = VK_NULL_HANDLE;
         VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
-        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory))
+        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), size,
+                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
+                          stagingBufferMemory))
         {
             return false;
         }
@@ -45,7 +51,8 @@ namespace Nebula::Vulkan
         memcpy(mappedData, data, size);
         vkUnmapMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory);
 
-        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), commandPool.As<CommandPool>()->m_CommandPool, stagingBuffer, m_Buffer, size))
+        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(),
+                        ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Buffer, size))
         {
             return false;
         }
@@ -56,10 +63,11 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void VertexBuffer::Bind(RefPtr<Nebula::CommandBuffer>& buffer) const
+    void VertexBuffer::Bind(RefPtr<GraphicsContext>& context) const
     {
-        std::array<VkBuffer, 1> buffers = {m_Buffer};
+        std::array<VkBuffer, 1> buffers     = {m_Buffer};
         std::array<VkDeviceSize, 1> offsets = {0};
-        vkCmdBindVertexBuffers(buffer.As<CommandBuffer>()->m_CommandBuffer, 0, buffers.size(), buffers.data(), offsets.data());
+        vkCmdBindVertexBuffers(context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer.GetHandle(), 0,
+                               buffers.size(), buffers.data(), offsets.data());
     }
 } // namespace Nebula::Vulkan

@@ -25,6 +25,8 @@ namespace Nebula::Vulkan
         [[nodiscard]] VkFormat GetImageFormat() const { return m_ImageFormat; }
         [[nodiscard]] VkExtent2D GetExtent() const { return m_Extent; }
         [[nodiscard]] const std::vector<VkImage>& GetImages() const { return m_Images; }
+
+        std::uint32_t GetImageCount() const { return GetImages().size(); }
     private:
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
         VkFormat m_ImageFormat = VK_FORMAT_UNDEFINED;

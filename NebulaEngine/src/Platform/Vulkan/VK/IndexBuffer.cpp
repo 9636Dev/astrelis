@@ -27,7 +27,7 @@ namespace Nebula::Vulkan
         vkFreeMemory(logicalDevice.GetHandle(), m_BufferMemory, nullptr);
     }
 
-    bool IndexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, RefPtr<Nebula::CommandPool>& commandPool, const std::uint32_t* data, std::uint32_t count)
+    bool IndexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, const std::uint32_t* data, std::uint32_t count)
     {
         auto ctx = context.As<VulkanGraphicsContext>();
         VkBuffer stagingBuffer = VK_NULL_HANDLE;
@@ -44,7 +44,7 @@ namespace Nebula::Vulkan
         memcpy(mappedData, data, size);
         vkUnmapMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory);
 
-        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), commandPool.As<CommandPool>()->m_CommandPool, stagingBuffer, m_Buffer, size))
+        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Buffer, size))
         {
             return false;
         }
@@ -55,8 +55,8 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void IndexBuffer::Bind(RefPtr<Nebula::CommandBuffer>& buffer) const
+    void IndexBuffer::Bind(RefPtr<GraphicsContext>& context) const
     {
-        vkCmdBindIndexBuffer(buffer.As<CommandBuffer>()->m_CommandBuffer, m_Buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer.GetHandle(), m_Buffer, 0, VK_INDEX_TYPE_UINT32);
     }
 } // namespace Nebula::Vulkan

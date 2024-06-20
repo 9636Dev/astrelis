@@ -11,7 +11,7 @@ public:
         : Nebula::Application(spec)
     {
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-        PushOverlay(Nebula::OwnedPtr<EditorLayer*>::Create(spec.WorkingDirectory));
+        PushOverlay(static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(Nebula::OwnedPtr<EditorLayer*>::Create(spec.WorkingDirectory)));
     }
 };
 
@@ -21,6 +21,6 @@ Nebula::ScopedPtr<Nebula::Application> Nebula::CreateApplication(Nebula::Command
     spec.Name = "Nebula Editor";
     spec.WorkingDirectory = "./";
     spec.Arguments = std::move(args);
-    return ScopedPtr<EditorApplication>::Create(spec);
+    return static_cast<Nebula::ScopedPtr<Nebula::Application>>(ScopedPtr<EditorApplication>::Create(spec));
 }
 

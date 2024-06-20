@@ -1,17 +1,14 @@
-#include "ImageViews.hpp"
+#include "ImageView.hpp"
 
 namespace Nebula::Vulkan
 {
-    bool ImageViews::Init(LogicalDevice& device, SwapChain& swapChain)
+    bool ImageView::Init(LogicalDevice& device, VkImage image, VkFormat format)
     {
-        m_ImageViews.resize(swapChain.GetImages().size());
-        for (size_t i = 0; i < m_ImageViews.size(); i++)
-        {
             VkImageViewCreateInfo createInfo {};
             createInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image                           = swapChain.GetImages()[i];
+            createInfo.image                           = image;
             createInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format                          = swapChain.GetImageFormat();
+            createInfo.format                          = format;
             createInfo.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -22,19 +19,11 @@ namespace Nebula::Vulkan
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount     = 1;
 
-            if (vkCreateImageView(device.GetHandle(), &createInfo, nullptr, &m_ImageViews[i]) != VK_SUCCESS)
-            {
-                return false;
-            }
-        }
-        return true;
+            return vkCreateImageView(device.GetHandle(), &createInfo, nullptr, &m_ImageView) == VK_SUCCESS;
     }
 
-    void ImageViews::Destroy(LogicalDevice& device)
+    void ImageView::Destroy(LogicalDevice& device)
     {
-        for (auto* imageView : m_ImageViews)
-        {
-            vkDestroyImageView(device.GetHandle(), imageView, nullptr);
-        }
+        vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr);
     }
 } // namespace Nebula::Vulkan

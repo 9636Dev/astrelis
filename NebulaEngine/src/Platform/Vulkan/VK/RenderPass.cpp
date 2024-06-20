@@ -2,10 +2,8 @@
 
 #include "NebulaEngine/Core/Log.hpp"
 
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
-
-#include "SwapChainFrameBuffers.hpp"
 #include "CommandBuffer.hpp"
+#include "FrameBuffer.hpp"
 
 namespace Nebula::Vulkan
 {
@@ -46,11 +44,10 @@ namespace Nebula::Vulkan
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
         renderPassInfo.dependencyCount = 1;
-        renderPassInfo.pDependencies    = &dependency;
+        renderPassInfo.pDependencies   = &dependency;
 
 
-        if (vkCreateRenderPass(device.GetHandle(), &renderPassInfo,
-                               nullptr, &m_RenderPass) != VK_SUCCESS)
+        if (vkCreateRenderPass(device.GetHandle(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
         {
             NEBULA_CORE_LOG_ERROR("Failed to create render pass!");
             return false;
@@ -59,30 +56,24 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void RenderPass::Destroy(LogicalDevice& device)
-    {
-        vkDestroyRenderPass(device.GetHandle(), m_RenderPass, nullptr);
-    }
+    void RenderPass::Destroy(LogicalDevice& device) { vkDestroyRenderPass(device.GetHandle(), m_RenderPass, nullptr); }
 
-    void RenderPass::Begin(RefPtr<GraphicsContext>& context, RefPtr<Nebula::CommandBuffer>& commandBuffer, RefPtr<Nebula::SwapChainFrameBuffers>& frameBuffers, std::uint32_t frameIndex)
+    void RenderPass::Begin(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent)
     {
         VkRenderPassBeginInfo renderPassInfo {};
         renderPassInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass        = m_RenderPass;
-        renderPassInfo.framebuffer       = frameBuffers.As<SwapChainFrameBuffers>()->m_SwapChainFrameBuffers[frameIndex];
+        renderPassInfo.framebuffer       = frameBuffer.GetHandle();
         renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = context.As<VulkanGraphicsContext>()->m_SwapChain.GetExtent();
+        renderPassInfo.renderArea.extent = extent;
 
-        VkClearValue clearColor = {{{0.0F, 0.0F, 0.0F, 1.0F}}};
+        VkClearValue clearColor        = {{{0.0F, 0.0F, 0.0F, 1.0F}}};
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues    = &clearColor;
 
-        vkCmdBeginRenderPass(commandBuffer.As<Vulkan::CommandBuffer>()->m_CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
-    void RenderPass::End([[maybe_unused]] RefPtr<GraphicsContext>& context, RefPtr<Nebula::CommandBuffer>& commandBuffer)
-    {
-        vkCmdEndRenderPass(commandBuffer.As<Vulkan::CommandBuffer>()->m_CommandBuffer);
-    }
+    void RenderPass::End(CommandBuffer& commandBuffer) { vkCmdEndRenderPass(commandBuffer.GetHandle()); }
 
 } // namespace Nebula::Vulkan

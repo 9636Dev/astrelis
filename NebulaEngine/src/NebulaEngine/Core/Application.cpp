@@ -52,6 +52,7 @@ namespace Nebula
     {
         while (m_Running)
         {
+            m_Window->BeginFrame();
             for (auto& layer : m_LayerStack)
             {
                 layer->OnUpdate();
@@ -66,6 +67,7 @@ namespace Nebula
 
             m_ImGuiLayer->End();
 
+            m_Window->EndFrame();
             m_Window->OnUpdate();
         }
     }

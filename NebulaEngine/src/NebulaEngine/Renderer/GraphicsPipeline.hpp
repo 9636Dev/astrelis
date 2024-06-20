@@ -1,8 +1,7 @@
 #pragma once
 
 #include "NebulaEngine/Core/Pointer.hpp"
-
-#include "CommandBuffer.hpp"
+#include "GraphicsContext.hpp"
 
 #include <vector>
 
@@ -34,6 +33,6 @@ namespace Nebula
         GraphicsPipeline(GraphicsPipeline&&) = delete;
         GraphicsPipeline& operator=(GraphicsPipeline&&) = delete;
 
-        virtual void Bind(RefPtr<CommandBuffer>& commandBuffer) = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& context) = 0;
     };
 } // namespace Nebula

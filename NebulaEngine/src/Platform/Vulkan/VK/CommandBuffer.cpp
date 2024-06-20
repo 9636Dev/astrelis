@@ -3,7 +3,6 @@
 #include <array>
 
 #include "Fence.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "Semaphore.hpp"
 
 namespace Nebula::Vulkan
@@ -12,7 +11,7 @@ namespace Nebula::Vulkan
     {
         VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType                       = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool                 = pool.m_CommandPool;
+        allocInfo.commandPool                 = pool.GetHandle();
         allocInfo.level                       = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount          = 1;
 
@@ -21,10 +20,10 @@ namespace Nebula::Vulkan
 
     void CommandBuffer::Destroy(LogicalDevice& device, CommandPool& pool)
     {
-        vkFreeCommandBuffers(device.GetHandle(), pool.m_CommandPool, 1, &m_CommandBuffer);
+        vkFreeCommandBuffers(device.GetHandle(), pool.GetHandle(), 1, &m_CommandBuffer);
     }
 
-    bool CommandBuffer::Begin()
+    bool CommandBuffer::Begin() const
     {
         VkCommandBufferBeginInfo beginInfo = {};
         beginInfo.sType                    = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -33,22 +32,19 @@ namespace Nebula::Vulkan
         return vkBeginCommandBuffer(m_CommandBuffer, &beginInfo) == VK_SUCCESS;
     }
 
-    bool CommandBuffer::End() { return vkEndCommandBuffer(m_CommandBuffer) == VK_SUCCESS; }
+    bool CommandBuffer::End() const { return vkEndCommandBuffer(m_CommandBuffer) == VK_SUCCESS; }
 
     void CommandBuffer::Reset()
     {
         vkResetCommandBuffer(m_CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
     }
 
-    bool CommandBuffer::Submit(RefPtr<GraphicsContext>& context,
-                               RefPtr<Nebula::Semaphore>& imageAvailableSemaphore,
-                               RefPtr<Nebula::Semaphore>& finishedRenderingSemaphore,
-                               RefPtr<Nebula::Fence>& inFlightFence)
+    bool CommandBuffer::Submit(VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence)
     {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        std::array<VkSemaphore, 1> waitSemaphores      = {imageAvailableSemaphore.As<Semaphore>()->m_Semaphore};
+        std::array<VkSemaphore, 1> waitSemaphores      = {waitSemaphore.GetHandle()};
         std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
         submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
@@ -57,12 +53,10 @@ namespace Nebula::Vulkan
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers    = &m_CommandBuffer;
 
-        std::array<VkSemaphore, 1> signal = {finishedRenderingSemaphore.As<Semaphore>()->m_Semaphore};
-        submitInfo.signalSemaphoreCount   = static_cast<uint32_t>(signal.size());
-        submitInfo.pSignalSemaphores      = signal.data();
+        std::array<VkSemaphore, 1> signal = {signalSemaphore.GetHandle()};
+        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signal.size());
+        submitInfo.pSignalSemaphores    = signal.data();
 
-        auto ctx = context.As<VulkanGraphicsContext>();
-        return vkQueueSubmit(ctx->m_LogicalDevice.GetGraphicsQueue(), 1, &submitInfo,
-                             inFlightFence.As<Fence>()->m_Fence) == VK_SUCCESS;
-    }
+        return vkQueueSubmit(queue, 1, &submitInfo, fence.GetHandle()) == VK_SUCCESS;
+}
 } // namespace Nebula::Vulkan

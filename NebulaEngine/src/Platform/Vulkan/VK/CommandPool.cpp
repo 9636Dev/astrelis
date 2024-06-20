@@ -2,8 +2,6 @@
 
 namespace Nebula::Vulkan
 {
-    CommandPool::~CommandPool() = default;
-
     bool CommandPool::Init(LogicalDevice& device)
     {
         VkCommandPoolCreateInfo poolInfo {};

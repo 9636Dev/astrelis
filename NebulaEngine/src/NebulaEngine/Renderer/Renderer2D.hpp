@@ -7,8 +7,17 @@
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
 #include "NebulaEngine/Renderer/RendererStorage.hpp"
 
+#include <glm/glm.hpp>
+
 namespace Nebula
 {
+    struct UniformBufferObject
+    {
+        glm::mat4 Model = glm::mat4(1.0F);
+        glm::mat4 View = glm::mat4(1.0F);
+        glm::mat4 Projection = glm::mat4(1.0F);
+    };
+
     class Renderer2D
     {
     public:
@@ -33,7 +42,7 @@ namespace Nebula
         RefPtr<GraphicsContext> m_Context;
         RefPtr<RendererAPI> m_RendererAPI;
         Renderer2DStorage m_Storage;
-        std::uint32_t m_ImageIndex = 0;
+        UniformBufferObject m_UBO;
         bool m_SkipRender = false;
 
         const std::uint32_t m_MaxFramesInFlight;

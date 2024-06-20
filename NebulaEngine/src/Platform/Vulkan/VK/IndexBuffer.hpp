@@ -23,10 +23,9 @@ namespace Nebula::Vulkan
         void Destroy(LogicalDevice& logicalDevice);
 
         bool SetData(RefPtr<GraphicsContext>& context,
-                     RefPtr<Nebula::CommandPool>& commandPool,
                      const std::uint32_t* data,
                      std::uint32_t count) override;
-        void Bind(RefPtr<Nebula::CommandBuffer>& buffer) const override;
+        void Bind(RefPtr<Nebula::GraphicsContext>& context) const override;
     private:
         VkBuffer m_Buffer             = VK_NULL_HANDLE;
         VkDeviceMemory m_BufferMemory = VK_NULL_HANDLE;

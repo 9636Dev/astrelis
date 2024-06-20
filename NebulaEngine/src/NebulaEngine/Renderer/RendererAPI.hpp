@@ -43,23 +43,31 @@ namespace Nebula
             std::size_t VertexBufferSize    = 0;
             std::uint32_t IndicesCount      = 0;
             VertexInput VertexInput         = {};
+            std::vector<UniformDescriptor> UniformDescriptors;
         };
-        virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
-        virtual void DestroyComponents(Renderer2DStorage& storage) = 0;
 
-        virtual void SetViewport(RefPtr<CommandBuffer>& commandBuffer, Viewport& viewport) = 0;
-        virtual void SetScissor(RefPtr<CommandBuffer>& commandBuffer, Bounds& scissor) = 0;
-        virtual void AcquireNextImage(RefPtr<GraphicsContext>& context, RefPtr<Semaphore>& imageAvailableSempahore, std::uint32_t& imageIndex) = 0;
-        virtual void Present(std::uint32_t imageIndex, RefPtr<Semaphore>& renderingFinishedSemaphore) = 0;
-        virtual void WaitDeviceIdle(RefPtr<GraphicsContext>& context) = 0;
-        virtual Bounds GetSurfaceSize() = 0;
+        virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
+        virtual void DestroyComponents(Renderer2DStorage& storage)         = 0;
+
+        virtual void SetViewport(Viewport& viewport) = 0;
+        virtual void SetScissor(Bounds& scissor)     = 0;
+
+        virtual void WaitDeviceIdle() = 0;
+        virtual Bounds GetSurfaceSize()                               = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
         virtual void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) = 0;
-        virtual bool NeedsResize() const = 0;
+        virtual bool NeedsResize() const                                          = 0;
 
-        virtual void DrawInstanced(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) = 0;
-        virtual void DrawInstancedIndexed(RefPtr<CommandBuffer>& commandBuffer, std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) = 0;
+        virtual void DrawInstanced(std::uint32_t vertexCount,
+                                   std::uint32_t instanceCount,
+                                   std::uint32_t firstVertex,
+                                   std::uint32_t firstInstance)        = 0;
+        virtual void DrawInstancedIndexed(std::uint32_t indexCount,
+                                          std::uint32_t instanceCount,
+                                          std::uint32_t firstIndex,
+                                          std::uint32_t vertexOffset,
+                                          std::uint32_t firstInstance) = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);

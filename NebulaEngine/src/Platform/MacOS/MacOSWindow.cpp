@@ -17,6 +17,16 @@ namespace Nebula
         GLFWWindowHelper::DestroyWindow(std::move(m_Window));
     }
 
+    void MacOSWindow::BeginFrame()
+    {
+        m_Context->BeginFrame();
+    }
+
+    void MacOSWindow::EndFrame()
+    {
+        m_Context->EndFrame();
+    }
+
     void MacOSWindow::OnUpdate()
     {
         glfwPollEvents();

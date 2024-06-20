@@ -1,9 +1,8 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/RenderPass.hpp"
-
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-#include "Platform/Vulkan/VK/SwapChain.hpp"
+#include "CommandBuffer.hpp"
+#include "LogicalDevice.hpp"
+#include "SwapChain.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -19,11 +18,13 @@ namespace Nebula::Vulkan
         RenderPassInfo() = default;
     };
 
-    class RenderPass : public Nebula::RenderPass
+    class FrameBuffer;
+
+    class RenderPass
     {
     public:
         RenderPass()                             = default;
-        ~RenderPass() override                   = default;
+        ~RenderPass()                            = default;
         RenderPass(const RenderPass&)            = delete;
         RenderPass& operator=(const RenderPass&) = delete;
         RenderPass(RenderPass&&)                 = delete;
@@ -32,11 +33,8 @@ namespace Nebula::Vulkan
         bool Init(LogicalDevice& device, SwapChain& swapChain, RenderPassInfo info = {});
         void Destroy(LogicalDevice& device);
 
-        void Begin(RefPtr<GraphicsContext>& context,
-                   RefPtr<Nebula::CommandBuffer>& commandBuffer,
-                   RefPtr<Nebula::SwapChainFrameBuffers>& frameBuffers,
-                   std::uint32_t frameIndex) override;
-        void End(RefPtr<GraphicsContext>& context, RefPtr<Nebula::CommandBuffer>& commandBuffer) override;
+        void Begin(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent);
+        void End(CommandBuffer& buffer);
 
         VkRenderPass m_RenderPass = VK_NULL_HANDLE;
     };

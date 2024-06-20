@@ -26,6 +26,8 @@ namespace Nebula
         MacOSWindow(MacOSWindow&&)                 = delete;
         MacOSWindow& operator=(MacOSWindow&&)      = delete;
 
+        void BeginFrame() override;
+        void EndFrame() override;
         void OnUpdate() override;
         void WaitForEvents() override;
 

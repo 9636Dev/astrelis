@@ -1,25 +1,26 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/CommandPool.hpp"
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
+#include "LogicalDevice.hpp"
 
 #include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {
-    class CommandPool : public Nebula::CommandPool
+    class CommandPool
     {
     public:
         CommandPool() = default;
-        ~CommandPool() override;
+        ~CommandPool() = default;
         CommandPool(const CommandPool&) = delete;
         CommandPool& operator=(const CommandPool&) = delete;
-        CommandPool(CommandPool&&) = delete;
-        CommandPool& operator=(CommandPool&&) = delete;
+        CommandPool(CommandPool&&) = default;
+        CommandPool& operator=(CommandPool&&) = default;
 
         bool Init(LogicalDevice& device);
         void Destroy(LogicalDevice& device);
 
+        VkCommandPool GetHandle() const { return m_CommandPool; }
+    private:
         VkCommandPool m_CommandPool = VK_NULL_HANDLE;
     };
 } // namespace Nebula::Vulkan

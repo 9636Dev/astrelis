@@ -17,7 +17,6 @@ namespace Nebula
 
     void ImGuiLayer::OnAttach()
     {
-        /*
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -45,43 +44,34 @@ namespace Nebula
 
         // Set Dark Theme Colors
         SetDarkThemeColors();
-        */
     }
 
     void ImGuiLayer::OnDetach()
     {
-        /*
         m_Backend->Shutdown();
         ImGui::DestroyContext();
-        */
     }
 
     void ImGuiLayer::OnEvent(Event& event)
     {
-        (void)event;
-        /*
         if (m_BlockEvents)
         {
             ImGuiIO& imguiIo = ImGui::GetIO();
             event.Handled |= event.IsInCategory(EventCategory::Mouse) && imguiIo.WantCaptureMouse;
             event.Handled |= event.IsInCategory(EventCategory::Keyboard) && imguiIo.WantCaptureKeyboard;
         }
-        */
     }
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     void ImGuiLayer::Begin()
     {
-        /*
         m_Backend->Begin();
         ImGui::NewFrame();
-        */
     }
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     void ImGuiLayer::End()
     {
-        /*
         ImGuiIO& imguiIo    = ImGui::GetIO();
         Application& app    = Application::Get();
         imguiIo.DisplaySize = ImVec2((float)app.GetWindow()->GetWidth(), (float)app.GetWindow()->GetHeight());
@@ -97,7 +87,6 @@ namespace Nebula
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current);
         }
-        */
     }
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)

@@ -3,12 +3,20 @@
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-#include "Platform/Vulkan/VK/Surface.hpp"
-#include "Platform/Vulkan/VK/SwapChain.hpp"
+#include "VK/CommandBuffer.hpp"
+#include "VK/CommandPool.hpp"
 #include "VK/DebugMessenger.hpp"
+#include "VK/DescriptorPool.hpp"
+#include "VK/Fence.hpp"
+#include "VK/FrameBuffer.hpp"
+#include "VK/ImageView.hpp"
 #include "VK/Instance.hpp"
+#include "VK/LogicalDevice.hpp"
 #include "VK/PhysicalDevice.hpp"
+#include "VK/RenderPass.hpp"
+#include "VK/Semaphore.hpp"
+#include "VK/Surface.hpp"
+#include "VK/SwapChain.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -27,9 +35,32 @@ namespace Nebula
         VulkanGraphicsContext(VulkanGraphicsContext&&)                 = delete;
         VulkanGraphicsContext& operator=(VulkanGraphicsContext&&)      = delete;
 
+        struct SwapChainFrame
+        {
+            Vulkan::ImageView ImageView;
+            Vulkan::FrameBuffer FrameBuffer;
+
+            SwapChainFrame() = default;
+        };
+
+        struct FrameData
+        {
+            Vulkan::CommandBuffer CommandBuffer;
+            Vulkan::Semaphore ImageAvailableSemaphore;
+            Vulkan::Semaphore RenderFinishedSemaphore;
+            Vulkan::Fence InFlightFence;
+
+            FrameData() = default;
+        };
+
         bool Init() override;
         void Shutdown() override;
+        void BeginFrame() override;
+        void EndFrame() override;
+
         bool IsInitialized() const override { return m_IsInitialized; }
+
+        FrameData& GetCurrentFrame() { return m_Frames[m_CurrentFrame]; }
 
         static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window);
 
@@ -39,9 +70,19 @@ namespace Nebula
         Vulkan::Surface m_Surface;
         Vulkan::PhysicalDevice m_PhysicalDevice;
         Vulkan::LogicalDevice m_LogicalDevice;
+        Vulkan::CommandPool m_CommandPool;
         Vulkan::SwapChain m_SwapChain;
+        Vulkan::RenderPass m_RenderPass;
+        Vulkan::DescriptorPool m_DescriptorPool;
 
-        bool m_Debug = true;
+        std::vector<SwapChainFrame> m_SwapChainFrames;
+        std::vector<FrameData> m_Frames;
+
+        std::uint32_t m_CurrentFrame = 0;
+        std::uint32_t m_ImageIndex   = 0;
+
+        bool m_Debug         = true;
         bool m_IsInitialized = false;
+        bool m_NeedsResize   = false;
     };
 } // namespace Nebula

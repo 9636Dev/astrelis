@@ -1,26 +1,28 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/Fence.hpp"
+
 #include "LogicalDevice.hpp"
 
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {
-    class Fence : public Nebula::Fence
+    class Fence
     {
     public:
         Fence() = default;
-        ~Fence() override = default;
+        ~Fence() = default;
         Fence(const Fence&) = delete;
         Fence& operator=(const Fence&) = delete;
-        Fence(Fence&&) = delete;
-        Fence& operator=(Fence&&) = delete;
+        Fence(Fence&&) = default;
+        Fence& operator=(Fence&&) = default;
 
         bool Init(LogicalDevice& device);
         void Destroy(LogicalDevice& device);
-        void Wait(RefPtr<GraphicsContext>& context, std::uint64_t timeout) override;
-        void Reset(RefPtr<GraphicsContext>& context) override;
+
+        void Wait(LogicalDevice& device, std::uint64_t timeout);
+        void Reset(LogicalDevice& device);
 
         VkFence GetHandle() const { return m_Fence; }
 

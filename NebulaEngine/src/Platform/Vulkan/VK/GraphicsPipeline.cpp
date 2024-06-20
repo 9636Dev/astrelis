@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Log.hpp"
 
 #include "CommandBuffer.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "RenderPass.hpp"
 
 #include <fstream>
@@ -216,9 +217,9 @@ namespace Nebula::Vulkan
         vkDestroyPipelineLayout(device.GetHandle(), m_PipelineLayout, nullptr);
     }
 
-    void GraphicsPipeline::Bind(RefPtr<Nebula::CommandBuffer>& commandBuffer)
+    void GraphicsPipeline::Bind(RefPtr<Nebula::GraphicsContext>& context)
     {
-        auto cBuffer = commandBuffer.As<CommandBuffer>();
-        vkCmdBindPipeline(cBuffer->m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_Pipeline);
+        auto& cBuffer = context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer;
+        vkCmdBindPipeline(cBuffer.GetHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_Pipeline);
     }
 } // namespace Nebula::Vulkan

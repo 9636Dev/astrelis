@@ -23,7 +23,7 @@ namespace Nebula::Vulkan
         bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& vertexInput);
         void Destroy(LogicalDevice& device);
 
-        void Bind(RefPtr<Nebula::CommandBuffer>& commandBuffer) override;
+        void Bind(RefPtr<GraphicsContext>& context) override;
 
         VkPipeline m_Pipeline             = VK_NULL_HANDLE;
         VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
