@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Bounds.hpp"
 
+#include "Platform/Vulkan/VK/DescriptorSet.hpp"
 #include "VK/DescriptorSetLayout.hpp"
 #include "VK/GraphicsPipeline.hpp"
 #include "VK/IndexBuffer.hpp"
@@ -74,6 +75,16 @@ namespace Nebula
             CHECK_RETURN(
                 uniformBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, uniformBufferSize));
             storage.m_UniformBuffers.push_back(static_cast<RefPtr<UniformBuffer>>(uniformBuffer));
+
+            /*RefPtr<Vulkan::DescriptorSet> descriptorSet = RefPtr<Vulkan::DescriptorSet>::Create();
+            Vulkan::DescriptorSetInfo descriptorSetInfo {};
+            descriptorSetInfo.Buffer = uniformBuffer->GetBuffer();
+            descriptorSetInfo.Offset = 0;
+            descriptorSetInfo.Size   = uniformBufferSize;
+            descriptorSetInfo.Binding = 0;
+            CHECK_RETURN(descriptorSet->Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
+                                            descriptorSetLayout->m_Layout, descriptorSetInfo));
+            storage.m_DescriptorSets.push_back(static_cast<RefPtr<DescriptorSet>>(descriptorSet));*/
         }
 
         return storage;

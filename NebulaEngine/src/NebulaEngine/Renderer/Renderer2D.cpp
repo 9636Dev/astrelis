@@ -73,13 +73,21 @@ namespace Nebula
         m_RendererAPI->SetViewport(viewport);
         m_RendererAPI->SetScissor(scissor);
 
-        m_Storage.m_VertexBuffer->Bind(m_Context);
-        m_Storage.m_IndexBuffer->Bind(m_Context);
+    }
+
+    void Renderer2D::RenderScene(Scene& scene, Camera& camera)
+    {
+        NEBULA_PROFILE_SCOPE("Renderer2D::RenderScene");
+        (void)scene;
 
         m_UBO.Model = glm::rotate(m_UBO.Model, glm::radians(0.1F), glm::vec3(0.0F, 0.0F, 1.0F));
+        m_UBO.View       = camera.GetViewMatrix();
+        m_UBO.Projection = camera.GetProjectionMatrix();
 
-        //m_Storage.m_UniformBuffers[m_Storage.m_CurrentFrame]->SetData(&m_UBO, sizeof(UniformBufferObject), 0);
-
+        m_Storage.m_VertexBuffer->Bind(m_Context);
+        m_Storage.m_IndexBuffer->Bind(m_Context);
+        //m_Storage.m_DescriptorSets[m_Context->GetCurrentFrameIndex()]->Bind(m_Context, m_Storage.m_GraphicsPipeline);
+        //m_Storage.m_UniformBuffers[m_Context->GetCurrentFrameIndex()]->SetData(&m_UBO, sizeof(UniformBufferObject), 0);
         m_RendererAPI->DrawInstancedIndexed(static_cast<std::uint32_t>(m_Indices.size()), 1, 0, 0, 0);
     }
 

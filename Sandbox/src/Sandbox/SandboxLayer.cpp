@@ -31,6 +31,8 @@ void SandboxLayer::OnUpdate()
 {
     m_Renderer2D->BeginFrame();
 
+    m_Renderer2D->RenderScene(m_Scene, m_Camera);
+
     m_Renderer2D->EndFrame();
 }
 

@@ -1,6 +1,9 @@
 #include "DescriptorSet.hpp"
 
 #include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
+#include "Platform/Vulkan/VK/GraphicsPipeline.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula::Vulkan
 {
@@ -22,7 +25,7 @@ namespace Nebula::Vulkan
         }
 
         VkDescriptorBufferInfo bufferInfo {};
-        bufferInfo.buffer = info.UniformBuffer.GetBuffer();
+        bufferInfo.buffer = info.Buffer;
         bufferInfo.offset = info.Offset;
         bufferInfo.range  = info.Size;
 
@@ -41,6 +44,13 @@ namespace Nebula::Vulkan
         vkUpdateDescriptorSets(device.GetHandle(), static_cast<std::uint32_t>(descriptorWrites.size()),
                                descriptorWrites.data(), 0, nullptr);
         return true;
+    }
+
+    void DescriptorSet::Bind(RefPtr<GraphicsContext>& context, RefPtr<Nebula::GraphicsPipeline>& pipeline) const
+    {
+        auto vkContext = context.As<VulkanGraphicsContext>();
+        vkCmdBindDescriptorSets(vkContext->GetCurrentFrame().CommandBuffer.GetHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                pipeline.As<GraphicsPipeline>()->m_PipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
     }
 
     void DescriptorSet::Destroy(LogicalDevice& device, DescriptorPool& pool) const

@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "GraphicsContext.hpp"
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 
 namespace Nebula
 {
@@ -15,6 +16,6 @@ namespace Nebula
         DescriptorSet(DescriptorSet &&other) = delete;
         DescriptorSet &operator=(DescriptorSet &&other) = delete;
 
-        virtual void Bind(RefPtr<GraphicsContext>& context) const = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& context, RefPtr<GraphicsPipeline>& pipeline) const = 0;
     };
 } // namespace Nebula

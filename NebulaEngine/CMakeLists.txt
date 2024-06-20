@@ -120,6 +120,7 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/VertexBuffer.hpp
     src/NebulaEngine/Renderer/IndexBuffer.hpp
     src/NebulaEngine/Renderer/DescriptorSetLayout.hpp
+    src/NebulaEngine/Renderer/DescriptorSet.hpp
     src/NebulaEngine/Renderer/UniformBuffer.hpp
 
     # UI
@@ -127,6 +128,10 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp
     src/NebulaEngine/UI/ImGui/ImGuiBackend.hpp
     src/NebulaEngine/UI/ImGui/ImGuiBackend.cpp
+
+    # Scene
+    src/NebulaEngine/Scene/Scene.hpp
+    src/NebulaEngine/Scene/Scene.cpp
 
     # Platform
     $<$<STREQUAL:${NEBULA_PLATFORM},Linux>:
@@ -198,6 +203,8 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/UniformBuffer.cpp
         src/Platform/Vulkan/VK/DescriptorPool.hpp
         src/Platform/Vulkan/VK/DescriptorPool.cpp
+        src/Platform/Vulkan/VK/DescriptorSet.hpp
+        src/Platform/Vulkan/VK/DescriptorSet.cpp
     >
 )
 

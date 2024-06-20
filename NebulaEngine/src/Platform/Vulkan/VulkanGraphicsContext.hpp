@@ -57,12 +57,15 @@ namespace Nebula
         void Shutdown() override;
         void BeginFrame() override;
         void EndFrame() override;
+
         bool SkipFrame() override { return m_SkipFrame; }
 
         void RecreateSwapChain();
 
         bool IsInitialized() const override { return m_IsInitialized; }
+
         std::uint32_t GetCurrentFrameIndex() const override { return m_CurrentFrame; }
+
         std::uint32_t GetImageIndex() const override { return m_ImageIndex; }
 
         FrameData& GetCurrentFrame() { return m_Frames[m_CurrentFrame]; }
