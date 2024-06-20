@@ -18,7 +18,7 @@ namespace Nebula::Vulkan
         SwapChain(SwapChain&&)                 = delete;
         SwapChain& operator=(SwapChain&&)      = delete;
 
-        bool Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, Surface& surface);
+        bool Init(const RawRef<GLFWwindow*>& window, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, Surface& surface, VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE);
         void Destroy(LogicalDevice& device);
 
         [[nodiscard]] VkSwapchainKHR GetHandle() const { return m_SwapChain; }

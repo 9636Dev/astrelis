@@ -19,6 +19,7 @@ namespace Nebula
         virtual void Shutdown() = 0;
         virtual void Begin() = 0;
         virtual void End() = 0;
+        virtual void Resize(int width, int height) = 0;
 
         static RefPtr<ImGuiBackend> Create(RefPtr<Window> window);
     };

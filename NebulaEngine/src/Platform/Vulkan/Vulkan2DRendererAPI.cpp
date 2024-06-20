@@ -144,31 +144,6 @@ namespace Nebula
         return Bounds(0, 0, static_cast<std::int32_t>(extent.width), static_cast<std::int32_t>(extent.height));
     }
 
-    void Vulkan2DRendererAPI::ResizeViewport(Renderer2DStorage& storage, Bounds& viewport)
-    {
-        (void)storage;
-        auto& device = m_Context->m_LogicalDevice;
-        vkDeviceWaitIdle(device.GetHandle());
-
-        // We have to do in this order:
-        // Framebuffers -> Color resources -> Depth resources -> Image views -> Swap chain
-        auto& swapchainFrame = m_Context->m_SwapChainFrames[m_Context->m_ImageIndex];
-        swapchainFrame.FrameBuffer.Destroy(device);
-        swapchainFrame.ImageView.Destroy(device);
-        m_Context->m_SwapChain.Destroy(device);
-
-        m_Context->m_SwapChain.Init(m_Context->m_PhysicalDevice, device, m_Context->m_Surface);
-        swapchainFrame.ImageView.Init(device, m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex],
-                                       m_Context->m_SwapChain.GetImageFormat());
-        swapchainFrame.ImageView.Init(device, m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex],
-                                      m_Context->m_SwapChain.GetImageFormat());
-        swapchainFrame.FrameBuffer.Init(device, m_Context->m_RenderPass, swapchainFrame.ImageView,
-                                        m_Context->m_SwapChain.GetExtent().width, m_Context->m_SwapChain.GetExtent().height);
-
-        m_Viewport    = viewport;
-        m_Context->m_NeedsResize = false;
-    }
-
     RefPtr<Vulkan2DRendererAPI> Vulkan2DRendererAPI::Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport)
     {
         return RefPtr<Vulkan2DRendererAPI>::Create(context, viewport);

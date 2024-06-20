@@ -65,12 +65,6 @@ namespace Nebula
 
     void Renderer2D::BeginFrame()
     {
-        if (m_SkipRender)
-        {
-            // We want it to skip both the BeginFrame and EndFrame
-            return;
-        }
-
         NEBULA_PROFILE_SCOPE("Renderer2D::BeginFrame");
 
         m_Storage.m_GraphicsPipeline->Bind(m_Context);
@@ -89,25 +83,11 @@ namespace Nebula
         m_RendererAPI->DrawInstancedIndexed(static_cast<std::uint32_t>(m_Indices.size()), 1, 0, 0, 0);
     }
 
-    void Renderer2D::EndFrame()
-    {
-        if (m_SkipRender)
-        {
-            m_SkipRender = false;
-            return;
-        }
+    void Renderer2D::EndFrame() { NEBULA_PROFILE_SCOPE("Renderer2D::EndFrame"); }
 
-        NEBULA_PROFILE_SCOPE("Renderer2D::EndFrame");
-    }
-
-    void Renderer2D::ResizeViewport(Bounds& viewport)
+    void Renderer2D::ResizeViewport()
     {
-        while (viewport.Width == 0 || viewport.Height == 0)
-        {
-            viewport = m_Window->GetViewportBounds();
-            m_Window->WaitForEvents();
-        }
-        m_RendererAPI->ResizeViewport(m_Storage, viewport);
+        m_RendererAPI->ResizeViewport();
     }
 
 } // namespace Nebula

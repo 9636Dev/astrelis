@@ -34,7 +34,7 @@ namespace Nebula
         void BeginFrame();
         void EndFrame();
 
-        void ResizeViewport(Bounds& viewport);
+        void ResizeViewport();
 
         Renderer2DStorage& GetStorage() { return m_Storage; }
     private:
@@ -43,7 +43,6 @@ namespace Nebula
         RefPtr<RendererAPI> m_RendererAPI;
         Renderer2DStorage m_Storage;
         UniformBufferObject m_UBO;
-        bool m_SkipRender = false;
 
         const std::uint32_t m_MaxFramesInFlight;
     };

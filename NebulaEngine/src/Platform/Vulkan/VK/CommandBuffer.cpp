@@ -39,7 +39,7 @@ namespace Nebula::Vulkan
         vkResetCommandBuffer(m_CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
     }
 
-    bool CommandBuffer::Submit(VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence)
+    bool CommandBuffer::Submit(LogicalDevice& device, VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence)
     {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -57,6 +57,7 @@ namespace Nebula::Vulkan
         submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signal.size());
         submitInfo.pSignalSemaphores    = signal.data();
 
+        fence.Reset(device);
         return vkQueueSubmit(queue, 1, &submitInfo, fence.GetHandle()) == VK_SUCCESS;
 }
 } // namespace Nebula::Vulkan

@@ -60,5 +60,12 @@ namespace Nebula
         VkCommandBuffer commandBuffer = m_Context->GetCurrentFrame().CommandBuffer.GetHandle();
         ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer);
     }
+
+    void VulkanImGuiBackend::Resize(std::int32_t width, std::int32_t height)
+    {
+        (void)width;
+        (void)height;
+        m_API->ResizeViewport();
+    }
 } // namespace Nebula
 

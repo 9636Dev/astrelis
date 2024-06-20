@@ -13,20 +13,27 @@ namespace Nebula::Vulkan
     class UniformBuffer : public Nebula::UniformBuffer
     {
     public:
-        UniformBuffer() = default;
-        ~UniformBuffer() override = default;
-        UniformBuffer(const UniformBuffer &) = delete;
-        UniformBuffer &operator=(const UniformBuffer &) = delete;
-        UniformBuffer(UniformBuffer &&) = delete;
-        UniformBuffer &operator=(UniformBuffer &&) = delete;
+        UniformBuffer()                                = default;
+        ~UniformBuffer() override                      = default;
+        UniformBuffer(const UniformBuffer&)            = delete;
+        UniformBuffer& operator=(const UniformBuffer&) = delete;
+        UniformBuffer(UniformBuffer&&)                 = delete;
+        UniformBuffer& operator=(UniformBuffer&&)      = delete;
 
-        bool Init(PhysicalDevice& physicalDevice, LogicalDevice &device, std::uint32_t size);
-        void Destroy(LogicalDevice &device) const;
+        bool Init(PhysicalDevice& physicalDevice, LogicalDevice& device, std::uint32_t size);
+        void Destroy(LogicalDevice& device) const;
 
-        void SetData(const void *data, std::uint32_t size, std::uint32_t offset) override;
+        void SetData(const void* data, std::uint32_t size, std::uint32_t offset) override;
 
-        VkBuffer m_Buffer = VK_NULL_HANDLE;
+        [[nodiscard]] VkBuffer GetBuffer() const { return m_Buffer; }
+
+        [[nodiscard]] VkDeviceMemory GetMemory() const { return m_Memory; }
+
+        [[nodiscard]] void* GetMappedMemory() const { return m_MappedMemory; }
+
+    private:
+        VkBuffer m_Buffer       = VK_NULL_HANDLE;
         VkDeviceMemory m_Memory = VK_NULL_HANDLE;
-        void *m_MappedMemory = nullptr;
+        void* m_MappedMemory    = nullptr;
     };
 } // namespace Nebula::Vulkan

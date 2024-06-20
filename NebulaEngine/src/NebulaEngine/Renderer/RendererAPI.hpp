@@ -52,11 +52,11 @@ namespace Nebula
         virtual void SetViewport(Viewport& viewport) = 0;
         virtual void SetScissor(Bounds& scissor)     = 0;
 
-        virtual void WaitDeviceIdle() = 0;
-        virtual Bounds GetSurfaceSize()                               = 0;
+        virtual void WaitDeviceIdle()   = 0;
+        virtual Bounds GetSurfaceSize() = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
-        virtual void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) = 0;
+        virtual void ResizeViewport() = 0;
         virtual bool NeedsResize() const                                          = 0;
 
         virtual void DrawInstanced(std::uint32_t vertexCount,

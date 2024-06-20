@@ -29,7 +29,7 @@ namespace Nebula
         void DrawInstancedIndexed(std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
         Bounds GetSurfaceSize() override;
 
-        void ResizeViewport(Renderer2DStorage& storage, Bounds& viewport) override;
+        void ResizeViewport() override { m_Context->m_NeedsResize = true; }
         bool NeedsResize() const override { return m_Context->m_NeedsResize; }
 
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);

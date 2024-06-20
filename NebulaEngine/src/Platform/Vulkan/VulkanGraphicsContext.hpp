@@ -57,8 +57,14 @@ namespace Nebula
         void Shutdown() override;
         void BeginFrame() override;
         void EndFrame() override;
+        bool SkipFrame() override { return m_SkipFrame; }
+
+        void ResizeViewport();
+        void RecreateSwapChain();
 
         bool IsInitialized() const override { return m_IsInitialized; }
+        std::uint32_t GetCurrentFrameIndex() const override { return m_CurrentFrame; }
+        std::uint32_t GetImageIndex() const override { return m_ImageIndex; }
 
         FrameData& GetCurrentFrame() { return m_Frames[m_CurrentFrame]; }
 
@@ -81,8 +87,12 @@ namespace Nebula
         std::uint32_t m_CurrentFrame = 0;
         std::uint32_t m_ImageIndex   = 0;
 
+        // Internal
+        VkSwapchainKHR m_OldSwapChain = VK_NULL_HANDLE;
+
         bool m_Debug         = true;
         bool m_IsInitialized = false;
         bool m_NeedsResize   = false;
+        bool m_SkipFrame     = false;
     };
 } // namespace Nebula

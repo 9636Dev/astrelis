@@ -3,6 +3,10 @@
 #include <array>
 
 #include "NebulaEngine/Core/Log.hpp"
+#include "Platform/Vulkan/VK/Utils.hpp"
+
+#define GLFW_INCLUDE_VULKAN
+#include "GLFW/glfw3.h"
 
 namespace Nebula::Vulkan
 {
@@ -39,14 +43,21 @@ namespace Nebula::Vulkan
             return VK_PRESENT_MODE_FIFO_KHR;
         }
 
-        VkExtent2D ChooseExtent() const
+        VkExtent2D ChooseExtent(const RawRef<GLFWwindow*>& window) const
         {
             if (capabilities.currentExtent.width != UINT32_MAX)
             {
                 return capabilities.currentExtent;
             }
 
-            VkExtent2D actualExtent = {800, 600};
+            int width = 0;
+            int height = 0;
+            glfwGetFramebufferSize(window, &width, &height);
+
+            VkExtent2D actualExtent = {
+                static_cast<std::uint32_t>(width),
+                static_cast<std::uint32_t>(height),
+            };
 
             actualExtent.width =
                 std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
@@ -84,14 +95,14 @@ namespace Nebula::Vulkan
         return details;
     }
 
-    bool SwapChain::Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, Surface& surface)
+    bool SwapChain::Init(const RawRef<GLFWwindow*>& window, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, Surface& surface, VkSwapchainKHR oldSwapchain)
     {
         SwapChainSupportDetails swapChainSupport =
             QuerySwapChainSupport(physicalDevice.GetHandle(), surface.GetHandle());
 
         VkSurfaceFormatKHR surfaceFormat = swapChainSupport.ChooseSwapSurfaceFormat();
         VkPresentModeKHR presentMode = swapChainSupport.ChooseSwapPresentMode();
-        VkExtent2D extent = swapChainSupport.ChooseExtent();
+        VkExtent2D extent = swapChainSupport.ChooseExtent(window);
 
         std::uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
         if (swapChainSupport.capabilities.maxImageCount > 0 &&
@@ -130,7 +141,7 @@ namespace Nebula::Vulkan
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        createInfo.oldSwapchain = oldSwapchain;
 
         if (vkCreateSwapchainKHR(logicalDevice.GetHandle(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
         {

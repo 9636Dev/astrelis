@@ -4,6 +4,7 @@
 
 #include "ImGuiBackend.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
+#include "NebulaEngine/Events/WindowEvent.hpp"
 
 #include <imgui.h>
 
@@ -23,14 +24,14 @@ namespace Nebula
         void OnDetach() override;
         void OnEvent(Event& event) override;
 
-
         void Begin();
         void End();
-        void Render();
 
         void SetDarkThemeColors();
         void BlockEvents(bool block) { m_BlockEvents = block; }
     private:
+        void Resize(ViewportResizedEvent& event);
+
         bool m_BlockEvents = true;
         RefPtr<ImGuiBackend> m_Backend;
     };

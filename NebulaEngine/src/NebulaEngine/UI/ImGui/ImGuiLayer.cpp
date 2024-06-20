@@ -60,6 +60,14 @@ namespace Nebula
             event.Handled |= event.IsInCategory(EventCategory::Mouse) && imguiIo.WantCaptureMouse;
             event.Handled |= event.IsInCategory(EventCategory::Keyboard) && imguiIo.WantCaptureKeyboard;
         }
+
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<ViewportResizedEvent>(NEBULA_BIND_EVENT_FN(Resize));
+    }
+
+    void ImGuiLayer::Resize(ViewportResizedEvent& event)
+    {
+        m_Backend->Resize(static_cast<std::int32_t>(event.GetWidth()), static_cast<std::int32_t>(event.GetHeight()));
     }
 
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)

@@ -24,6 +24,7 @@ namespace Nebula
         void Shutdown() override;
         void Begin() override;
         void End() override;
+        void Resize(std::int32_t width, std::int32_t height) override;
     private:
         RefPtr<Window> m_Window;
         RefPtr<VulkanGraphicsContext> m_Context;

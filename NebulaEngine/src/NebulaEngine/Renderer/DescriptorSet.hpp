@@ -1,5 +1,8 @@
 #pragma once
 
+#include "NebulaEngine/Core/Pointer.hpp"
+#include "GraphicsContext.hpp"
+
 namespace Nebula
 {
     class DescriptorSet
@@ -11,5 +14,7 @@ namespace Nebula
         DescriptorSet &operator=(const DescriptorSet &other) = delete;
         DescriptorSet(DescriptorSet &&other) = delete;
         DescriptorSet &operator=(DescriptorSet &&other) = delete;
+
+        virtual void Bind(RefPtr<GraphicsContext>& context) const = 0;
     };
 } // namespace Nebula
