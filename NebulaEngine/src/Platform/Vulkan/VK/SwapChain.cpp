@@ -161,7 +161,6 @@ namespace Nebula::Vulkan
 
     void SwapChain::Destroy(LogicalDevice& logicalDevice)
     {
-        // Swap chain images are automatically cleaned up when the swap chain is destroyed
         vkDestroySwapchainKHR(logicalDevice.GetHandle(), m_SwapChain, nullptr);
     }
 } // namespace Nebula::Vulkan

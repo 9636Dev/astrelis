@@ -19,7 +19,7 @@ namespace Nebula::Vulkan
         CommandBuffer(CommandBuffer&&)                 = default;
         CommandBuffer& operator=(CommandBuffer&&)      = default;
 
-        bool Init(LogicalDevice& device, CommandPool& commandPool);
+        [[nodiscard]] bool Init(LogicalDevice& device, CommandPool& commandPool);
         void Destroy(LogicalDevice& device, CommandPool& pool);
 
         bool Begin() const;

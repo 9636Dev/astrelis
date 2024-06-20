@@ -1,5 +1,7 @@
 #include "CommandPool.hpp"
 
+#include "NebulaEngine/Core/Log.hpp"
+
 namespace Nebula::Vulkan
 {
     bool CommandPool::Init(LogicalDevice& device)
@@ -9,7 +11,12 @@ namespace Nebula::Vulkan
         poolInfo.queueFamilyIndex = device.GetQueueFamilyIndices().graphicsFamily.value();
         poolInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-        return vkCreateCommandPool(device.GetHandle(), &poolInfo, nullptr, &m_CommandPool) == VK_SUCCESS;
+        if (vkCreateCommandPool(device.GetHandle(), &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
+        {
+            NEBULA_CORE_LOG_ERROR("Failed to create command pool!");
+            return false;
+        }
+        return true;
     }
 
     void CommandPool::Destroy(LogicalDevice& device)

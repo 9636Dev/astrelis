@@ -2,9 +2,11 @@
 
 #include <cstring>
 
+#include "NebulaEngine/Core/Log.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "Utils.hpp"
 
 namespace Nebula::Vulkan
@@ -12,8 +14,12 @@ namespace Nebula::Vulkan
     bool IndexBuffer::Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::uint32_t count)
     {
         VkDeviceSize bufferSize = sizeof(std::uint32_t) * count;
-        if (!CreateBuffer(physicalDevice.GetHandle(), logicalDevice.GetHandle(), bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT , VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer, m_BufferMemory))
+        if (!CreateBuffer(physicalDevice.GetHandle(), logicalDevice.GetHandle(), bufferSize,
+                          VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer,
+                          m_BufferMemory))
         {
+            NEBULA_CORE_LOG_ERROR("Failed to create index buffer!");
             return false;
         }
         vkBindBufferMemory(logicalDevice.GetHandle(), m_Buffer, m_BufferMemory, 0);
@@ -29,11 +35,14 @@ namespace Nebula::Vulkan
 
     bool IndexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, const std::uint32_t* data, std::uint32_t count)
     {
-        auto ctx = context.As<VulkanGraphicsContext>();
-        VkBuffer stagingBuffer = VK_NULL_HANDLE;
+        auto ctx                           = context.As<VulkanGraphicsContext>();
+        VkBuffer stagingBuffer             = VK_NULL_HANDLE;
         VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
-        auto size = sizeof(std::uint32_t) * count;
-        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory))
+        auto size                          = sizeof(std::uint32_t) * count;
+        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), size,
+                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
+                          stagingBufferMemory))
         {
             return false;
         }
@@ -44,7 +53,8 @@ namespace Nebula::Vulkan
         memcpy(mappedData, data, size);
         vkUnmapMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory);
 
-        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Buffer, size))
+        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(),
+                        ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Buffer, size))
         {
             return false;
         }
@@ -57,6 +67,7 @@ namespace Nebula::Vulkan
 
     void IndexBuffer::Bind(RefPtr<GraphicsContext>& context) const
     {
-        vkCmdBindIndexBuffer(context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer.GetHandle(), m_Buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer.GetHandle(), m_Buffer,
+                             0, VK_INDEX_TYPE_UINT32);
     }
 } // namespace Nebula::Vulkan

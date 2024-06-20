@@ -16,7 +16,7 @@ namespace Nebula::Vulkan
         Semaphore(Semaphore&&)                 = default;
         Semaphore& operator=(Semaphore&&)      = default;
 
-        bool Init(LogicalDevice& device);
+        [[nodiscard]] bool Init(LogicalDevice& device);
         void Destroy(LogicalDevice& device);
 
         VkSemaphore GetHandle() const { return m_Semaphore; }

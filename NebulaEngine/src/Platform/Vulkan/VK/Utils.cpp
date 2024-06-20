@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <cstdint>
 #include <cstring>
+#include <stdexcept>
+
 #ifdef NEBULA_PLATFORM_MACOS
     #include <vulkan/vulkan_macos.h>
 #endif
@@ -97,7 +99,10 @@ namespace Nebula::Vulkan
         return commandBuffer;
     }
 
-    void EndSingleTimeCommands(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool, VkCommandBuffer commandBuffer)
+    void EndSingleTimeCommands(VkDevice logicalDevice,
+                               VkQueue queue,
+                               VkCommandPool commandPool,
+                               VkCommandBuffer commandBuffer)
     {
         vkEndCommandBuffer(commandBuffer);
 
@@ -112,7 +117,13 @@ namespace Nebula::Vulkan
         vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
     }
 
-    void TransitionImageLayout(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+    void TransitionImageLayout(VkDevice logicalDevice,
+                               VkQueue queue,
+                               VkCommandPool commandPool,
+                               VkImage image,
+                               VkFormat format,
+                               VkImageLayout oldLayout,
+                               VkImageLayout newLayout)
     {
         (void)format;
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
@@ -130,11 +141,10 @@ namespace Nebula::Vulkan
         barrier.subresourceRange.baseArrayLayer = 0;
         barrier.subresourceRange.layerCount     = 1;
 
-        VkPipelineStageFlags sourceStage = 0;
+        VkPipelineStageFlags sourceStage      = 0;
         VkPipelineStageFlags destinationStage = 0;
 
-        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-            newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
         {
             barrier.srcAccessMask = 0;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -151,8 +161,7 @@ namespace Nebula::Vulkan
             sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-                 newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+        else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
         {
             barrier.srcAccessMask = 0;
             barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
@@ -165,21 +174,18 @@ namespace Nebula::Vulkan
             throw std::invalid_argument("unsupported layout transition!");
         }
 
-        vkCmdPipelineBarrier(commandBuffer,
-                             sourceStage,
-                             destinationStage,
-                             0,
-                             0,
-                             nullptr,
-                             0,
-                             nullptr,
-                             1,
-                             &barrier);
+        vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
         EndSingleTimeCommands(logicalDevice, queue, commandPool, commandBuffer);
     }
 
-    bool CreateBuffer(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+    bool CreateBuffer(VkPhysicalDevice physicalDevice,
+                      VkDevice logicalDevice,
+                      VkDeviceSize size,
+                      VkBufferUsageFlags usage,
+                      VkMemoryPropertyFlags properties,
+                      VkBuffer& buffer,
+                      VkDeviceMemory& bufferMemory)
     {
         VkBufferCreateInfo bufferInfo {};
         bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -198,14 +204,17 @@ namespace Nebula::Vulkan
         VkMemoryAllocateInfo allocInfo {};
         allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize  = memRequirements.size;
-        allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice,
-                                                   memRequirements.memoryTypeBits,
-                                                   properties);
+        allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
         return vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &bufferMemory) == VK_SUCCESS;
     }
 
-    bool CopyBuffer(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+    bool CopyBuffer(VkDevice logicalDevice,
+                    VkQueue queue,
+                    VkCommandPool commandPool,
+                    VkBuffer srcBuffer,
+                    VkBuffer dstBuffer,
+                    VkDeviceSize size)
     {
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
 

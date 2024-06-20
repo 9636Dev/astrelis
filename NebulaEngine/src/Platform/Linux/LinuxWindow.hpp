@@ -28,6 +28,8 @@ namespace Nebula
 
         void OnUpdate() override;
         void WaitForEvents() override;
+        void BeginFrame() override;
+        void EndFrame() override;
 
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 

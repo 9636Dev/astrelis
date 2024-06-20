@@ -59,7 +59,6 @@ namespace Nebula
         void EndFrame() override;
         bool SkipFrame() override { return m_SkipFrame; }
 
-        void ResizeViewport();
         void RecreateSwapChain();
 
         bool IsInitialized() const override { return m_IsInitialized; }

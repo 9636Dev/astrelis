@@ -16,12 +16,11 @@ namespace Nebula::Vulkan
         ImageView(ImageView&&)                 = default;
         ImageView& operator=(ImageView&&)      = default;
 
-        bool Init(LogicalDevice& device, VkImage image, VkFormat format);
+        [[nodiscard]] bool Init(LogicalDevice& device, VkImage image, VkFormat format);
         void Destroy(LogicalDevice& device);
 
         VkImageView GetHandle() const { return m_ImageView; }
 
-    private:
         VkImageView m_ImageView;
     };
 } // namespace Nebula::Vulkan

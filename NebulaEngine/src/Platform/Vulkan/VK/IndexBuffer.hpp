@@ -19,10 +19,10 @@ namespace Nebula::Vulkan
         IndexBuffer(IndexBuffer&&)                 = delete;
         IndexBuffer& operator=(IndexBuffer&&)      = delete;
 
-        bool Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::uint32_t count);
+        [[nodiscard]] bool Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::uint32_t count);
         void Destroy(LogicalDevice& logicalDevice);
 
-        bool SetData(RefPtr<GraphicsContext>& context,
+        [[nodiscard]] bool SetData(RefPtr<GraphicsContext>& context,
                      const std::uint32_t* data,
                      std::uint32_t count) override;
         void Bind(RefPtr<Nebula::GraphicsContext>& context) const override;

@@ -1,5 +1,9 @@
 #include "UniformBuffer.hpp"
 
+#include <cstring>
+
+#include "NebulaEngine/Core/Log.hpp"
+
 #include "Utils.hpp"
 
 namespace Nebula::Vulkan
@@ -8,12 +12,19 @@ namespace Nebula::Vulkan
     {
         VkDeviceSize bufferSize = size;
 
-        if (!CreateBuffer(physicalDevice.GetHandle(), device.GetHandle(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer, m_Memory))
+        if (!CreateBuffer(
+                physicalDevice.GetHandle(), device.GetHandle(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer, m_Memory))
         {
             return false;
         }
 
-        return vkMapMemory(device.GetHandle(), m_Memory, 0, bufferSize, 0, &m_MappedMemory) == VK_SUCCESS;
+        if (vkMapMemory(device.GetHandle(), m_Memory, 0, bufferSize, 0, &m_MappedMemory) != VK_SUCCESS)
+        {
+            NEBULA_CORE_LOG_ERROR("Failed to map uniform buffer memory!");
+            return false;
+        }
+        return true;
     }
 
     void UniformBuffer::Destroy(LogicalDevice& device) const
@@ -28,4 +39,4 @@ namespace Nebula::Vulkan
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         std::memcpy(static_cast<std::uint8_t*>(m_MappedMemory) + offset, data, size);
     }
-}  // namespace Nebula::Vulkan
+} // namespace Nebula::Vulkan

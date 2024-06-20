@@ -16,7 +16,7 @@ namespace Nebula::Vulkan
         CommandPool(CommandPool&&) = default;
         CommandPool& operator=(CommandPool&&) = default;
 
-        bool Init(LogicalDevice& device);
+        [[nodiscard]] bool Init(LogicalDevice& device);
         void Destroy(LogicalDevice& device);
 
         VkCommandPool GetHandle() const { return m_CommandPool; }

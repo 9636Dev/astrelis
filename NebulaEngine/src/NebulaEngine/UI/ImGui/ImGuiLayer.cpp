@@ -81,8 +81,6 @@ namespace Nebula
     void ImGuiLayer::End()
     {
         ImGuiIO& imguiIo    = ImGui::GetIO();
-        Application& app    = Application::Get();
-        imguiIo.DisplaySize = ImVec2((float)app.GetWindow()->GetWidth(), (float)app.GetWindow()->GetHeight());
 
         // Rendering
         ImGui::Render();

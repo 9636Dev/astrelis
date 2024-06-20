@@ -18,7 +18,7 @@ namespace Nebula::Vulkan
         Fence(Fence&&) = default;
         Fence& operator=(Fence&&) = default;
 
-        bool Init(LogicalDevice& device);
+        [[nodiscard]] bool Init(LogicalDevice& device);
         void Destroy(LogicalDevice& device);
 
         void Wait(LogicalDevice& device, std::uint64_t timeout);

@@ -17,7 +17,7 @@ namespace Nebula::Vulkan
         DescriptorPool(DescriptorPool &&other) = delete;
         DescriptorPool &operator=(DescriptorPool &&other) = delete;
 
-        bool Init(LogicalDevice& device, std::uint32_t size);
+        [[nodiscard]] bool Init(LogicalDevice& device, std::uint32_t size);
         void Destroy(LogicalDevice& device);
 
         [[nodiscard]] VkDescriptorPool GetHandle() const { return m_DescriptorPool; }

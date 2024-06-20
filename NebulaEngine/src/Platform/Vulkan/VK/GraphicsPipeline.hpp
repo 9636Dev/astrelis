@@ -20,7 +20,7 @@ namespace Nebula::Vulkan
         GraphicsPipeline(GraphicsPipeline&&)                 = delete;
         GraphicsPipeline& operator=(GraphicsPipeline&&)      = delete;
 
-        bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& vertexInput);
+        [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& vertexInput);
         void Destroy(LogicalDevice& device);
 
         void Bind(RefPtr<GraphicsContext>& context) override;

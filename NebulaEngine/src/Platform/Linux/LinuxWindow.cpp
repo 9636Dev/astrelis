@@ -27,6 +27,16 @@ namespace Nebula
         glfwWaitEvents();
     }
 
+    void LinuxWindow::BeginFrame()
+    {
+        m_Context->BeginFrame();
+    }
+
+    void LinuxWindow::EndFrame()
+    {
+        m_Context->EndFrame();
+    }
+
     Bounds LinuxWindow::GetViewportBounds() const
     {
         // Get size using GLFW

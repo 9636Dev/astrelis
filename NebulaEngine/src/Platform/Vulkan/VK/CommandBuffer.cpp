@@ -3,6 +3,7 @@
 #include <array>
 
 #include "Fence.hpp"
+#include "NebulaEngine/Core/Log.hpp"
 #include "Semaphore.hpp"
 
 namespace Nebula::Vulkan
@@ -15,7 +16,12 @@ namespace Nebula::Vulkan
         allocInfo.level                       = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount          = 1;
 
-        return vkAllocateCommandBuffers(device.GetHandle(), &allocInfo, &m_CommandBuffer) == VK_SUCCESS;
+        if (vkAllocateCommandBuffers(device.GetHandle(), &allocInfo, &m_CommandBuffer) != VK_SUCCESS)
+        {
+            NEBULA_CORE_LOG_ERROR("Failed to allocate command buffer!");
+        }
+
+        return true;
     }
 
     void CommandBuffer::Destroy(LogicalDevice& device, CommandPool& pool)
@@ -39,8 +45,10 @@ namespace Nebula::Vulkan
         vkResetCommandBuffer(m_CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
     }
 
-    bool CommandBuffer::Submit(LogicalDevice& device, VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence)
+    bool CommandBuffer::Submit(
+        LogicalDevice& device, VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence)
     {
+        (void)device;
         VkSubmitInfo submitInfo = {};
         submitInfo.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -54,10 +62,9 @@ namespace Nebula::Vulkan
         submitInfo.pCommandBuffers    = &m_CommandBuffer;
 
         std::array<VkSemaphore, 1> signal = {signalSemaphore.GetHandle()};
-        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signal.size());
-        submitInfo.pSignalSemaphores    = signal.data();
+        submitInfo.signalSemaphoreCount   = static_cast<uint32_t>(signal.size());
+        submitInfo.pSignalSemaphores      = signal.data();
 
-        fence.Reset(device);
         return vkQueueSubmit(queue, 1, &submitInfo, fence.GetHandle()) == VK_SUCCESS;
-}
+    }
 } // namespace Nebula::Vulkan

@@ -41,7 +41,6 @@ void SandboxLayer::OnUIRender()
 
 void SandboxLayer::OnViewportResize(Nebula::WindowResizedEvent& event)
 {
-    NEBULA_CORE_LOG_INFO("SandboxLayer::OnViewportResize: {0}, {1}", event.GetWidth(), event.GetHeight());
     m_Renderer2D->ResizeViewport();
     event.Handled = true;
 }

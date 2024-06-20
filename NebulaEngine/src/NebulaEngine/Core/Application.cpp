@@ -53,6 +53,7 @@ namespace Nebula
         while (m_Running)
         {
             m_Window->BeginFrame();
+
             for (auto& layer : m_LayerStack)
             {
                 layer->OnUpdate();
@@ -102,7 +103,8 @@ namespace Nebula
             return false;
         }
 
-        NEBULA_CORE_LOG_DEBUG("Resizing to {0}x{1}", event.GetWidth(), event.GetHeight());
+        // TODO(6/20/24) Resize the framebuffers for other libraries, like OpenGL
+
         return false;
     }
 

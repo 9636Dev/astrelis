@@ -17,10 +17,10 @@ namespace Nebula::Vulkan
         VertexBuffer(VertexBuffer&&) = delete;
         VertexBuffer& operator=(VertexBuffer&&) = delete;
 
-        bool Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::size_t size);
+        [[nodiscard]] bool Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::size_t size);
         void Destroy(LogicalDevice& logicalDevice);
 
-        bool SetData(RefPtr<GraphicsContext>& context, const void* data, std::size_t size) override;
+        [[nodiscard]] bool SetData(RefPtr<GraphicsContext>& context, const void* data, std::size_t size) override;
         void Bind(RefPtr<GraphicsContext>& buffer) const override;
 
     private:

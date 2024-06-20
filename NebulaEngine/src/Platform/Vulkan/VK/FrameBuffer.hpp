@@ -18,11 +18,11 @@ namespace Nebula::Vulkan
         FrameBuffer(FrameBuffer&&)                 = default;
         FrameBuffer& operator=(FrameBuffer&&)      = default;
 
-        bool Init(LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, std::uint32_t width, std::uint32_t height);
+        [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, VkExtent2D extent);
         void Destroy(LogicalDevice& device);
 
         VkFramebuffer GetHandle() const { return m_Buffer; }
-    private:
+
         VkFramebuffer m_Buffer;
     };
 } // namespace Nebula::Vulkan

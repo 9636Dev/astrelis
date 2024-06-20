@@ -30,7 +30,7 @@ namespace Nebula::Vulkan
         RenderPass(RenderPass&&)                 = delete;
         RenderPass& operator=(RenderPass&&)      = delete;
 
-        bool Init(LogicalDevice& device, SwapChain& swapChain, RenderPassInfo info = {});
+        [[nodiscard]] bool Init(LogicalDevice& device, SwapChain& swapChain, RenderPassInfo info = {});
         void Destroy(LogicalDevice& device);
 
         void Begin(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent);

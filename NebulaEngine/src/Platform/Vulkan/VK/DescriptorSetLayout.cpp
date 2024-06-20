@@ -1,5 +1,7 @@
 #include "DescriptorSetLayout.hpp"
 
+#include "NebulaEngine/Core/Log.hpp"
+
 namespace Nebula::Vulkan
 {
     bool DescriptorSetLayout::Init(LogicalDevice& device, std::vector<UniformDescriptor>& uniformDescriptors)
@@ -15,12 +17,17 @@ namespace Nebula::Vulkan
             bindings[i].pImmutableSamplers = nullptr;
         }
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo{};
+        VkDescriptorSetLayoutCreateInfo layoutInfo {};
         layoutInfo.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = static_cast<std::uint32_t>(bindings.size());
         layoutInfo.pBindings    = bindings.data();
 
-        return vkCreateDescriptorSetLayout(device.GetHandle(), &layoutInfo, nullptr, &m_Layout) == VK_SUCCESS;
+        if (vkCreateDescriptorSetLayout(device.GetHandle(), &layoutInfo, nullptr, &m_Layout) != VK_SUCCESS)
+        {
+            NEBULA_CORE_LOG_ERROR("Failed to create descriptor set layout!");
+            return false;
+        }
+        return true;
     }
 
     void DescriptorSetLayout::Destroy(LogicalDevice& device) const

@@ -1,9 +1,11 @@
 #include "DescriptorSet.hpp"
 
+#include "NebulaEngine/Core/Log.hpp"
+
 namespace Nebula::Vulkan
 {
     bool DescriptorSet::Init(LogicalDevice& device,
-                            DescriptorPool& pool,
+                             DescriptorPool& pool,
                              VkDescriptorSetLayout layout,
                              DescriptorSetInfo& info)
     {
@@ -15,6 +17,7 @@ namespace Nebula::Vulkan
 
         if (vkAllocateDescriptorSets(device.GetHandle(), &allocInfo, &m_DescriptorSet) != VK_SUCCESS)
         {
+            NEBULA_CORE_LOG_ERROR("Failed to allocate descriptor set!");
             return false;
         }
 

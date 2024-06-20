@@ -57,23 +57,24 @@ namespace Nebula
         INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, 1'000));
 
         m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
+
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
         {
             auto& frame = m_SwapChainFrames[i];
             INIT_COMPONENT(
                 frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat()));
-            INIT_COMPONENT(frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView,
-                                                  m_SwapChain.GetExtent().width, m_SwapChain.GetExtent().height));
+            INIT_COMPONENT(
+                frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView, m_SwapChain.GetExtent()));
         }
 
         m_Frames.resize(m_SwapChain.GetImageCount());
         for (std::size_t i = 0; i < m_Frames.size(); ++i)
         {
             auto& frame = m_Frames[i];
-            frame.CommandBuffer.Init(m_LogicalDevice, m_CommandPool);
-            frame.ImageAvailableSemaphore.Init(m_LogicalDevice);
-            frame.RenderFinishedSemaphore.Init(m_LogicalDevice);
-            frame.InFlightFence.Init(m_LogicalDevice);
+            INIT_COMPONENT(frame.CommandBuffer.Init(m_LogicalDevice, m_CommandPool));
+            INIT_COMPONENT(frame.ImageAvailableSemaphore.Init(m_LogicalDevice));
+            INIT_COMPONENT(frame.RenderFinishedSemaphore.Init(m_LogicalDevice));
+            INIT_COMPONENT(frame.InFlightFence.Init(m_LogicalDevice));
         }
 
         NEBULA_CORE_LOG_INFO("Vulkan Graphics Context initialized!");
@@ -124,20 +125,38 @@ namespace Nebula
             m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
             frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
 
-        if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || m_NeedsResize)
         {
-            NEBULA_CORE_LOG_TRACE("Out of date swap chain! (FrameBegin)");
+            VkSubmitInfo submitInfo                        = {};
+            submitInfo.sType                               = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            std::array<VkSemaphore, 1> waitSemaphores      = {frame.ImageAvailableSemaphore.GetHandle()};
+            submitInfo.waitSemaphoreCount                  = static_cast<std::uint32_t>(waitSemaphores.size());
+            submitInfo.pWaitSemaphores                     = waitSemaphores.data();
+            std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+            static_assert(waitSemaphores.size() == waitStages.size());
+            submitInfo.pWaitDstStageMask    = waitStages.data();
+            submitInfo.commandBufferCount   = 0;
+            submitInfo.pCommandBuffers      = nullptr;
+            submitInfo.signalSemaphoreCount = 0;
+            submitInfo.pSignalSemaphores    = nullptr;
+            vkQueueSubmit(m_LogicalDevice.GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+            vkQueueWaitIdle(m_LogicalDevice.GetGraphicsQueue());
+
             m_SkipFrame = true;
-            ResizeViewport();
+            RecreateSwapChain();
         }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
             NEBULA_CORE_LOG_ERROR("Failed to acquire swap chain image!");
         }
+        else
+        {
+            frame.InFlightFence.Reset(m_LogicalDevice);
+        }
 
-        NEBULA_CORE_LOG_TRACE("Begin frame...");
         frame.CommandBuffer.Reset();
         frame.CommandBuffer.Begin();
+
         m_RenderPass.Begin(frame.CommandBuffer, m_SwapChainFrames[m_ImageIndex].FrameBuffer, m_SwapChain.GetExtent());
     }
 
@@ -146,33 +165,30 @@ namespace Nebula
         auto& frame = GetCurrentFrame();
         m_RenderPass.End(frame.CommandBuffer);
         frame.CommandBuffer.End();
+
         if (m_SkipFrame)
         {
-            NEBULA_CORE_LOG_TRACE("Skipping EndFrame...");
-            frame.CommandBuffer.Reset();
             m_SkipFrame = false;
+            frame.CommandBuffer.Reset();
             return;
         }
-        NEBULA_CORE_LOG_TRACE("Submitting frame...");
 
         frame.CommandBuffer.Submit(m_LogicalDevice, m_LogicalDevice.GetGraphicsQueue(), frame.ImageAvailableSemaphore,
                                    frame.RenderFinishedSemaphore, frame.InFlightFence);
 
         std::array<VkSemaphore, 1> presentWaitSemaphores = {frame.RenderFinishedSemaphore.GetHandle()};
-
-        std::array<VkSwapchainKHR, 1> swapChains = {m_SwapChain.GetHandle()};
-        VkPresentInfoKHR presentInfo             = {};
-        presentInfo.sType                        = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.waitSemaphoreCount           = static_cast<std::uint32_t>(presentWaitSemaphores.size());
-        presentInfo.pWaitSemaphores              = presentWaitSemaphores.data();
-        presentInfo.swapchainCount               = static_cast<std::uint32_t>(swapChains.size());
-        presentInfo.pSwapchains                  = swapChains.data();
-        presentInfo.pImageIndices                = &m_ImageIndex;
+        std::array<VkSwapchainKHR, 1> swapChains         = {m_SwapChain.GetHandle()};
+        VkPresentInfoKHR presentInfo                     = {};
+        presentInfo.sType                                = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.waitSemaphoreCount                   = 1;
+        presentInfo.pWaitSemaphores                      = presentWaitSemaphores.data();
+        presentInfo.swapchainCount                       = static_cast<std::uint32_t>(swapChains.size());
+        presentInfo.pSwapchains                          = swapChains.data();
+        presentInfo.pImageIndices                        = &m_ImageIndex;
 
         auto result = vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_NeedsResize)
         {
-            NEBULA_CORE_LOG_TRACE("Out of date swap chain! (FrameEnd)");
             RecreateSwapChain();
         }
         else if (result != VK_SUCCESS)
@@ -181,14 +197,6 @@ namespace Nebula
         }
 
         m_CurrentFrame = (m_CurrentFrame + 1) % m_SwapChain.GetImageCount();
-    }
-
-    void VulkanGraphicsContext::ResizeViewport()
-    {
-        NEBULA_CORE_LOG_DEBUG("Recreating swap chain...");
-
-        m_SkipFrame = true;
-        RecreateSwapChain();
     }
 
     void VulkanGraphicsContext::RecreateSwapChain()
@@ -212,19 +220,21 @@ namespace Nebula
             swapchainFrame.ImageView.Destroy(m_LogicalDevice);
         }
 
-        m_SwapChain.Destroy(m_LogicalDevice);
+        vkDestroySwapchainKHR(m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), nullptr);
 
         auto result = m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface);
+        (void)result; // For release builds
         NEBULA_CORE_ASSERT(result, "Failed to recreate swap chain!");
 
-        for (auto& swapchainFrame : m_SwapChainFrames)
+        for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
         {
-            result = swapchainFrame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[m_ImageIndex],
-                                                   m_SwapChain.GetImageFormat());
-            NEBULA_CORE_ASSERT(result, "Failed to recreate image view!");
-            result = swapchainFrame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, swapchainFrame.ImageView,
-                                                     m_SwapChain.GetExtent().width, m_SwapChain.GetExtent().height);
-            NEBULA_CORE_ASSERT(result, "Failed to recreate frame buffer!");
+            auto& frame = m_SwapChainFrames[i];
+
+            auto res = frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat());
+            NEBULA_CORE_ASSERT(res, "Failed to recreate image view!");
+            res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView, m_SwapChain.GetExtent());
+            NEBULA_CORE_ASSERT(res, "Failed to recreate frame buffer!");
+            (void)res; // For release builds
         }
 
         m_NeedsResize = false;

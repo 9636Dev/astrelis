@@ -18,7 +18,7 @@ namespace Nebula::Vulkan
         DescriptorSetLayout(DescriptorSetLayout&&)                 = delete;
         DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = delete;
 
-        bool Init(LogicalDevice& device, std::vector<UniformDescriptor>& uniformDescriptors);
+        [[nodiscard]] bool Init(LogicalDevice& device, std::vector<UniformDescriptor>& uniformDescriptors);
         void Destroy(LogicalDevice& device) const;
 
         VkDescriptorSetLayout m_Layout = VK_NULL_HANDLE;

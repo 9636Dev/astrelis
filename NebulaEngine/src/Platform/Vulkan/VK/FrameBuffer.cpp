@@ -5,7 +5,8 @@
 
 namespace Nebula::Vulkan
 {
-    bool FrameBuffer::Init(LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, std::uint32_t width, std::uint32_t height)
+    bool FrameBuffer::Init(
+        LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, VkExtent2D extent)
     {
         std::array<VkImageView, 1> attachments = {imageView.GetHandle()};
 
@@ -14,8 +15,8 @@ namespace Nebula::Vulkan
         framebufferInfo.renderPass      = renderPass.m_RenderPass;
         framebufferInfo.attachmentCount = static_cast<std::uint32_t>(attachments.size());
         framebufferInfo.pAttachments    = attachments.data();
-        framebufferInfo.width           = width;
-        framebufferInfo.height          = height;
+        framebufferInfo.width           = extent.width;
+        framebufferInfo.height          = extent.height;
         framebufferInfo.layers          = 1;
 
         if (vkCreateFramebuffer(device.GetHandle(), &framebufferInfo, nullptr, &m_Buffer) != VK_SUCCESS)
@@ -27,6 +28,8 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void FrameBuffer::Destroy(LogicalDevice& device) { vkDestroyFramebuffer(device.GetHandle(), m_Buffer, nullptr); }
+    void FrameBuffer::Destroy(LogicalDevice& device) {
+        vkDestroyFramebuffer(device.GetHandle(), m_Buffer, nullptr);
+    }
 } // namespace Nebula::Vulkan
 

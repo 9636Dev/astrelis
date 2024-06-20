@@ -6,6 +6,7 @@
 #include "CommandPool.hpp"
 #include "Utils.hpp"
 
+#include "NebulaEngine/Core/Log.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula::Vulkan
@@ -19,6 +20,7 @@ namespace Nebula::Vulkan
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer,
                           m_BufferMemory))
         {
+            NEBULA_CORE_LOG_ERROR("Failed to create vertex buffer!");
             return false;
         }
         vkBindBufferMemory(logicalDevice.GetHandle(), m_Buffer, m_BufferMemory, 0);

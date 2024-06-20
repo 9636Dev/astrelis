@@ -28,7 +28,7 @@ namespace Nebula::Vulkan
         DescriptorSet(DescriptorSet&& other)                 = delete;
         DescriptorSet& operator=(DescriptorSet&& other)      = delete;
 
-        bool Init(LogicalDevice& device, DescriptorPool& pool, VkDescriptorSetLayout layout, DescriptorSetInfo& info);
+        [[nodiscard]] bool Init(LogicalDevice& device, DescriptorPool& pool, VkDescriptorSetLayout layout, DescriptorSetInfo& info);
         void Destroy(LogicalDevice& device, DescriptorPool& pool) const;
 
         [[nodiscard]] VkDescriptorSet GetHandle() const { return m_DescriptorSet; }

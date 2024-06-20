@@ -29,17 +29,18 @@ namespace Nebula::Vulkan
     void Fence::Wait(LogicalDevice& device, std::uint64_t timeout)
     {
         NEBULA_CORE_ASSERT(m_Fence, "Fence is null!");
-        NEBULA_CORE_ASSERT(vkWaitForFences(device.GetHandle(), 1,
-                                           &m_Fence, VK_TRUE, timeout) == VK_SUCCESS,
-                           "Failed to wait for fence!");
+        auto res = vkWaitForFences(device.GetHandle(), 1, &m_Fence, VK_TRUE, timeout);
+        (void)res;
+        NEBULA_CORE_ASSERT(res == VK_SUCCESS, "Failed to wait for fence!");
     }
 
     void Fence::Reset(LogicalDevice& device)
     {
         NEBULA_CORE_ASSERT(m_Fence, "Fence is null!");
-        NEBULA_CORE_ASSERT(vkGetFenceStatus(device.GetHandle(), m_Fence) == VK_SUCCESS, "Fence is not signalled before reset!");
-        NEBULA_CORE_ASSERT(
-            vkResetFences(device.GetHandle(), 1, &m_Fence) == VK_SUCCESS,
-            "Failed to reset fence!");
+        NEBULA_CORE_ASSERT(vkGetFenceStatus(device.GetHandle(), m_Fence) == VK_SUCCESS,
+                           "Fence is not signalled before reset!");
+        auto res = vkResetFences(device.GetHandle(), 1, &m_Fence);
+        (void)res;
+        NEBULA_CORE_ASSERT(res == VK_SUCCESS, "Failed to reset fence!");
     }
 } // namespace Nebula::Vulkan

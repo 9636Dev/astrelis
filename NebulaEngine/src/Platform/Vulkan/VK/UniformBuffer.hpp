@@ -20,7 +20,7 @@ namespace Nebula::Vulkan
         UniformBuffer(UniformBuffer&&)                 = delete;
         UniformBuffer& operator=(UniformBuffer&&)      = delete;
 
-        bool Init(PhysicalDevice& physicalDevice, LogicalDevice& device, std::uint32_t size);
+        [[nodiscard]] bool Init(PhysicalDevice& physicalDevice, LogicalDevice& device, std::uint32_t size);
         void Destroy(LogicalDevice& device) const;
 
         void SetData(const void* data, std::uint32_t size, std::uint32_t offset) override;

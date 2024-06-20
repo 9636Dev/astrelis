@@ -74,6 +74,8 @@ namespace Nebula::Vulkan
         vkCmdBeginRenderPass(commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
-    void RenderPass::End(CommandBuffer& commandBuffer) { vkCmdEndRenderPass(commandBuffer.GetHandle()); }
+    void RenderPass::End(CommandBuffer& commandBuffer) {
+        vkCmdEndRenderPass(commandBuffer.GetHandle());
+    }
 
 } // namespace Nebula::Vulkan
