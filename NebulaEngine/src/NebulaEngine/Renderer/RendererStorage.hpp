@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Pointer.hpp"
 
+#include <unordered_map>
 #include <vector>
 
 #include "DescriptorSet.hpp"
@@ -21,6 +22,7 @@ namespace Nebula
         RefPtr<DescriptorSetLayout> m_DescriptorSetLayout = nullptr;
         std::vector<RefPtr<UniformBuffer>> m_UniformBuffers;
         std::vector<RefPtr<DescriptorSet>> m_DescriptorSets;
+        std::unordered_map<std::string, std::uint32_t> m_DescriptorSetIndices;
 
         Renderer2DStorage() = default;
     };

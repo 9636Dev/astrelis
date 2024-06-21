@@ -50,6 +50,8 @@ namespace Nebula
 
         UniformBufferObject m_UBO;
         RefPtr<TextureImage> m_TextureImage;
+        RefPtr<TextureSampler> m_TextureSampler;
+        std::uint32_t m_DescriptorCount;
     };
 
 } // namespace Nebula

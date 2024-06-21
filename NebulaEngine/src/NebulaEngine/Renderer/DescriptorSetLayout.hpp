@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <string>
 
+#include "TextureImage.hpp"
+#include "TextureSampler.hpp"
+
 namespace Nebula
 {
     struct UniformDescriptor
@@ -18,6 +21,8 @@ namespace Nebula
         std::string Name;
         std::uint32_t Binding;
         std::uint32_t Count;
+        RefPtr<TextureImage> Texture;
+        RefPtr<TextureSampler> Sampler;
     };
 
     class DescriptorSetLayout

@@ -4,6 +4,7 @@
 #include "NebulaEngine/Core/Bounds.hpp"
 
 #include "Platform/Vulkan/VK/DescriptorSet.hpp"
+#include "Platform/Vulkan/VK/TextureSampler.hpp"
 #include "VK/DescriptorSetLayout.hpp"
 #include "VK/GraphicsPipeline.hpp"
 #include "VK/IndexBuffer.hpp"
@@ -80,15 +81,45 @@ namespace Nebula
                 uniformBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, uniformBufferSize));
             storage.m_UniformBuffers.push_back(static_cast<RefPtr<UniformBuffer>>(uniformBuffer));
 
-            RefPtr<Vulkan::DescriptorSet> descriptorSet = RefPtr<Vulkan::DescriptorSet>::Create();
-            Vulkan::DescriptorSetInfo descriptorSetInfo {};
-            descriptorSetInfo.Buffer = uniformBuffer->GetBuffer();
-            descriptorSetInfo.Offset = 0;
-            descriptorSetInfo.Size   = uniformBufferSize;
-            descriptorSetInfo.Binding = 0;
-            CHECK_RETURN(descriptorSet->Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
-                                            descriptorSetLayout->m_Layout, descriptorSetInfo));
-            storage.m_DescriptorSets.push_back(static_cast<RefPtr<DescriptorSet>>(descriptorSet));
+            std::uint32_t offset = 0;
+            for (auto& descriptor : details.UniformDescriptors)
+            {
+                RefPtr<Vulkan::DescriptorSet> descriptorSet = RefPtr<Vulkan::DescriptorSet>::Create();
+                Vulkan::DescriptorSetInfo descriptorSetInfo {};
+                descriptorSetInfo.Buffer = uniformBuffer->GetBuffer();
+                descriptorSetInfo.Offset = offset;
+                descriptorSetInfo.Size   = descriptor.Size;
+                descriptorSetInfo.Binding = descriptor.Binding;
+                descriptorSetInfo.Type = Vulkan::DescriptorType::UniformBuffer;
+                offset += descriptor.Size;
+                CHECK_RETURN(descriptorSet->Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
+                                                descriptorSetLayout->m_Layout, descriptorSetInfo));
+                storage.m_DescriptorSets.push_back(static_cast<RefPtr<DescriptorSet>>(descriptorSet));
+            }
+
+            for (auto& descriptor : details.SamplerDescriptors)
+            {
+                RefPtr<Vulkan::DescriptorSet> descriptorSet = RefPtr<Vulkan::DescriptorSet>::Create();
+                Vulkan::DescriptorSetInfo descriptorSetInfo {};
+                descriptorSetInfo.Sampler = descriptor.Sampler.As<Vulkan::TextureSampler>()->m_Sampler;
+                descriptorSetInfo.ImageView = descriptor.Texture.As<Vulkan::TextureImage>()->m_ImageView;
+                descriptorSetInfo.Binding = descriptor.Binding;
+                descriptorSetInfo.Type = Vulkan::DescriptorType::Sampler;
+                CHECK_RETURN(descriptorSet->Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
+                                                descriptorSetLayout->m_Layout, descriptorSetInfo));
+                storage.m_DescriptorSets.push_back(static_cast<RefPtr<DescriptorSet>>(descriptorSet));
+            }
+        }
+
+        // Set the indices map
+        std::uint32_t index = 0;
+        for (const auto& descriptor : details.UniformDescriptors)
+        {
+            storage.m_DescriptorSetIndices[descriptor.Name] = index++;
+        }
+        for (const auto& descriptor : details.SamplerDescriptors)
+        {
+            storage.m_DescriptorSetIndices[descriptor.Name] = index++;
         }
 
         return storage;
@@ -167,6 +198,11 @@ namespace Nebula
     RefPtr<TextureImage> Vulkan2DRendererAPI::CreateTextureImage()
     {
         return static_cast<RefPtr<TextureImage>>(RefPtr<Vulkan::TextureImage>::Create());
+    }
+
+    RefPtr<TextureSampler> Vulkan2DRendererAPI::CreateTextureSampler()
+    {
+        return static_cast<RefPtr<TextureSampler>>(RefPtr<Vulkan::TextureSampler>::Create());
     }
 
     RefPtr<Vulkan2DRendererAPI> Vulkan2DRendererAPI::Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport)

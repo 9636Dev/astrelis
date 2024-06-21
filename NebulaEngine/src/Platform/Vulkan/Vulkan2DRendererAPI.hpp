@@ -34,6 +34,7 @@ namespace Nebula
         void CorrectProjection(glm::mat4& projection) override;
 
         RefPtr<TextureImage> CreateTextureImage() override;
+        RefPtr<TextureSampler> CreateTextureSampler() override;
 
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
     private:

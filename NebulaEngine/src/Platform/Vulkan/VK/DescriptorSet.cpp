@@ -44,6 +44,7 @@ namespace Nebula::Vulkan
             descriptorWrites[0].descriptorType  = descriptorType;
             descriptorWrites[0].descriptorCount = 1;
             descriptorWrites[0].pBufferInfo     = &bufferInfo;
+            NEBULA_CORE_LOG_TRACE("Creating uniform descriptor set at binding '{}'", info.Binding);
         }
         else if (info.Type == DescriptorType::Sampler)
         {
@@ -59,6 +60,7 @@ namespace Nebula::Vulkan
             descriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             descriptorWrites[0].descriptorCount = 1;
             descriptorWrites[0].pImageInfo      = &imageInfo;
+            NEBULA_CORE_LOG_TRACE("Creating sampler descriptor set at binding '{}'", info.Binding);
         }
 
 

@@ -74,6 +74,7 @@ namespace Nebula
                                           std::uint32_t firstInstance) = 0;
 
         virtual RefPtr<TextureImage> CreateTextureImage() = 0;
+        virtual RefPtr<TextureSampler> CreateTextureSampler() = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);
