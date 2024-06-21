@@ -8,6 +8,7 @@
 #include "TextureImage.hpp"
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
+#include "DescriptorSetLayout.hpp"
 
 namespace Nebula::Vulkan
 {

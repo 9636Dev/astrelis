@@ -8,9 +8,9 @@
 #include "VK/DescriptorSetLayout.hpp"
 #include "VK/GraphicsPipeline.hpp"
 #include "VK/IndexBuffer.hpp"
+#include "VK/TextureImage.hpp"
 #include "VK/UniformBuffer.hpp"
 #include "VK/VertexBuffer.hpp"
-#include "VK/TextureImage.hpp"
 #include "VulkanGraphicsContext.hpp"
 
 #include <utility>
@@ -56,11 +56,6 @@ namespace Nebula
                                             details.VertexInput, descriptorSetLayouts));
         storage.m_GraphicsPipeline = static_cast<RefPtr<GraphicsPipeline>>(graphicsPipeline);
 
-        RefPtr<Vulkan::VertexBuffer> vertexBuffer = RefPtr<Vulkan::VertexBuffer>::Create();
-        CHECK_RETURN(
-            vertexBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, details.VertexBufferSize));
-        storage.m_VertexBuffer = static_cast<RefPtr<VertexBuffer>>(vertexBuffer);
-
         RefPtr<Vulkan::IndexBuffer> indexBuffer = RefPtr<Vulkan::IndexBuffer>::Create();
         CHECK_RETURN(indexBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, details.IndicesCount));
         storage.m_IndexBuffer = static_cast<RefPtr<IndexBuffer>>(indexBuffer);
@@ -73,7 +68,6 @@ namespace Nebula
     void Vulkan2DRendererAPI::DestroyComponents(Renderer2DStorage& storage)
     {
         storage.m_IndexBuffer.As<Vulkan::IndexBuffer>()->Destroy(m_Context->m_LogicalDevice);
-        storage.m_VertexBuffer.As<Vulkan::VertexBuffer>()->Destroy(m_Context->m_LogicalDevice);
         storage.m_GraphicsPipeline.As<Vulkan::GraphicsPipeline>()->Destroy(m_Context->m_LogicalDevice);
     }
 
@@ -110,15 +104,14 @@ namespace Nebula
                   firstInstance);
     }
 
-    void Vulkan2DRendererAPI::DrawInstancedIndexed(
-                                                   std::uint32_t indexCount,
+    void Vulkan2DRendererAPI::DrawInstancedIndexed(std::uint32_t indexCount,
                                                    std::uint32_t instanceCount,
                                                    std::uint32_t firstIndex,
                                                    std::uint32_t vertexOffset,
                                                    std::uint32_t firstInstance)
     {
-        vkCmdDrawIndexed(m_Context->GetCurrentFrame().CommandBuffer.GetHandle(), indexCount, instanceCount,
-                         firstIndex, static_cast<std::int32_t>(vertexOffset), firstInstance);
+        vkCmdDrawIndexed(m_Context->GetCurrentFrame().CommandBuffer.GetHandle(), indexCount, instanceCount, firstIndex,
+                         static_cast<std::int32_t>(vertexOffset), firstInstance);
     }
 
     Bounds Vulkan2DRendererAPI::GetSurfaceSize()
@@ -127,9 +120,11 @@ namespace Nebula
         return Bounds(0, 0, static_cast<std::int32_t>(extent.width), static_cast<std::int32_t>(extent.height));
     }
 
-    void Vulkan2DRendererAPI::CorrectProjection(glm::mat4& projection)
+    void Vulkan2DRendererAPI::CorrectProjection(glm::mat4& projection) { projection[1][1] *= -1.0F; }
+
+    RefPtr<VertexBuffer> Vulkan2DRendererAPI::CreateVertexBuffer()
     {
-        projection[1][1] *= -1.0F;
+        return static_cast<RefPtr<VertexBuffer>>(RefPtr<Vulkan::VertexBuffer>::Create());
     }
 
     RefPtr<DescriptorSetLayout> Vulkan2DRendererAPI::CreateDescriptorSetLayout()

@@ -57,8 +57,11 @@ namespace Nebula
 
     void Application::Run()
     {
+        TimePoint lastFrameTime = Time::Now();
         while (m_Running)
         {
+            Time::s_DeltaTime = Time::ElapsedTime<Milliseconds>(lastFrameTime, Time::Now());
+            lastFrameTime     = Time::Now();
             m_Window->BeginFrame();
 
             for (auto& layer : m_LayerStack)

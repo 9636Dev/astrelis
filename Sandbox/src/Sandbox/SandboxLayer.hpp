@@ -1,9 +1,10 @@
 #pragma once
 
 #include "NebulaEngine/Core/Layer.hpp"
+#include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
 #include "NebulaEngine/Renderer/Renderer2D.hpp"
-#include "NebulaEngine/Scene/Scene.hpp"
+#include "NebulaEngine/Scene/Scene2D.hpp"
 
 class SandboxLayer : public Nebula::Layer
 {
@@ -25,6 +26,8 @@ public:
 private:
     Nebula::Camera m_Camera;
     Nebula::Camera m_Camera2;
-    Nebula::Scene m_Scene;
+    Nebula::Scene2D m_Scene;
     Nebula::ScopedPtr<Nebula::Renderer2D> m_Renderer2D = nullptr;
+
+    Nebula::Milliseconds m_CpuTime;
 };

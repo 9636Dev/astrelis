@@ -11,6 +11,7 @@
 #include "TextureImage.hpp"
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
+#include "VertexBuffer.hpp"
 #include "Viewport.hpp"
 
 #include <glm/glm.hpp>
@@ -48,7 +49,7 @@ namespace Nebula
         {
             std::size_t VertexBufferSize = 0;
             std::uint32_t IndicesCount   = 0;
-            VertexInput VertexInput      = {};
+            std::vector<BufferBinding> VertexInput;
             std::vector<RefPtr<DescriptorSetLayout>> DescriptorSetLayouts;
         };
 
@@ -76,6 +77,7 @@ namespace Nebula
                                           std::uint32_t vertexOffset,
                                           std::uint32_t firstInstance) = 0;
 
+        virtual RefPtr<VertexBuffer> CreateVertexBuffer()               = 0;
         virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;
         virtual RefPtr<DescriptorSets> CreateDescriptorSets()           = 0;
         virtual RefPtr<UniformBuffer> CreateUniformBuffer()             = 0;

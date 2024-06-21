@@ -3,7 +3,6 @@
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 
 #include "LogicalDevice.hpp"
-#include "Platform/Vulkan/VK/DescriptorSetLayout.hpp"
 #include "RenderPass.hpp"
 #include "SwapChain.hpp"
 
@@ -21,7 +20,7 @@ namespace Nebula::Vulkan
         GraphicsPipeline(GraphicsPipeline&&)                 = delete;
         GraphicsPipeline& operator=(GraphicsPipeline&&)      = delete;
 
-        [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& vertexInput, std::vector<VkDescriptorSetLayout>& layouts);
+        [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, std::vector<BufferBinding>& vertexInput, std::vector<VkDescriptorSetLayout>& layouts);
         void Destroy(LogicalDevice& device);
 
         void Bind(RefPtr<GraphicsContext>& context) override;

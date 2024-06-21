@@ -139,6 +139,8 @@ set(NEBULA_ENGINE_SOURCES
     # Scene
     src/NebulaEngine/Scene/Scene.hpp
     src/NebulaEngine/Scene/Scene.cpp
+    src/NebulaEngine/Scene/Scene2D.hpp
+    src/NebulaEngine/Scene/Scene2D.cpp
 
     # Platform
     $<$<STREQUAL:${NEBULA_PLATFORM},Linux>:

@@ -34,6 +34,7 @@ namespace Nebula
         bool NeedsResize() const override { return m_Context->m_NeedsResize; }
         void CorrectProjection(glm::mat4& projection) override;
 
+        RefPtr<VertexBuffer> CreateVertexBuffer() override;
         RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() override;
         RefPtr<DescriptorSets> CreateDescriptorSets() override;
         RefPtr<UniformBuffer> CreateUniformBuffer() override;

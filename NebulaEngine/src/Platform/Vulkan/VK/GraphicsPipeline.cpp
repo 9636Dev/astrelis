@@ -63,7 +63,7 @@ namespace Nebula::Vulkan
         }
     }
 
-    bool GraphicsPipeline::Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& input, std::vector<VkDescriptorSetLayout>& layouts)
+    bool GraphicsPipeline::Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, std::vector<BufferBinding>& input, std::vector<VkDescriptorSetLayout>& layouts)
     {
         auto vertexShaderCode   = ReadFile("shaders/Basic_vert.spv");
         auto fragmentShaderCode = ReadFile("shaders/Basic_frag.spv");
@@ -95,24 +95,28 @@ namespace Nebula::Vulkan
         VkPipelineVertexInputStateCreateInfo vertexInputInfo {};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-        VkVertexInputBindingDescription bindingDescription {};
-        bindingDescription.binding   = 0;
-        bindingDescription.stride    = input.Stride;
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
+        std::vector<VkVertexInputBindingDescription> bindingDescriptions;
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-        attributeDescriptions.resize(input.Elements.size());
-
-        for (std::size_t i = 0; i < input.Elements.size(); i++)
+        bindingDescriptions.resize(input.size());
+        for (std::size_t i = 0; i < input.size(); i++)
         {
-            attributeDescriptions[i].binding  = 0;
-            attributeDescriptions[i].location = static_cast<uint32_t>(i);
-            attributeDescriptions[i].format   = InputCountToFormat(input.Elements[i].Count);
-            attributeDescriptions[i].offset   = input.Elements[i].Offset;
-        }
+            bindingDescriptions[i].binding   = static_cast<uint32_t>(i);
+            bindingDescriptions[i].stride    = input[i].Stride;
+            bindingDescriptions[i].inputRate = input[i].Instanced ? VK_VERTEX_INPUT_RATE_INSTANCE : VK_VERTEX_INPUT_RATE_VERTEX;
 
-        vertexInputInfo.vertexBindingDescriptionCount   = 1;
-        vertexInputInfo.pVertexBindingDescriptions      = &bindingDescription;
+            attributeDescriptions.reserve(input[i].Elements.size());
+            for (std::size_t j = 0; j < input[i].Elements.size(); j++)
+            {
+                VkVertexInputAttributeDescription attributeDescription {};
+                attributeDescription.binding  = static_cast<uint32_t>(i);
+                attributeDescription.location = input[i].Elements[j].Location;
+                attributeDescription.format   = InputCountToFormat(input[i].Elements[j].Count);
+                attributeDescription.offset   = input[i].Elements[j].Offset;
+                attributeDescriptions.push_back(attributeDescription);
+            }
+        }
+        vertexInputInfo.vertexBindingDescriptionCount   = static_cast<uint32_t>(bindingDescriptions.size());
+        vertexInputInfo.pVertexBindingDescriptions      = bindingDescriptions.data();
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
         vertexInputInfo.pVertexAttributeDescriptions    = attributeDescriptions.data();
 

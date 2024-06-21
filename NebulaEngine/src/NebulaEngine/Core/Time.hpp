@@ -4,6 +4,8 @@
 
 namespace Nebula
 {
+    // TODO: Test, refactor, and document this class
+
     template<typename T = double, typename Ratio = std::ratio<1>> class TimeSpan
     {
     public:
@@ -45,8 +47,7 @@ namespace Nebula
 
         template<typename T2, typename Ratio2> TimeSpan operator-(const TimeSpan<T2, Ratio2>& other) const
         {
-            return TimeSpan(m_Duration -
-                            std::chrono::duration_cast<std::chrono::duration<T, Ratio>>(other.GetDuration()));
+            return TimeSpan(m_Duration - std::chrono::duration_cast<std::chrono::duration<T, Ratio>>(other.m_Duration));
         }
 
         template<typename T2> TimeSpan operator*(T2 scalar) const { return TimeSpan(m_Duration * scalar); }
