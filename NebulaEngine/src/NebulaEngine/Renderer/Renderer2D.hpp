@@ -49,6 +49,9 @@ namespace Nebula
         Renderer2DStorage m_Storage;
 
         UniformBufferObject m_UBO;
+        RefPtr<DescriptorSetLayout> m_DescriptorSetLayout;
+        RefPtr<DescriptorSets> m_DescriptorSets;
+        RefPtr<UniformBuffer> m_UniformBuffer;
         RefPtr<TextureImage> m_TextureImage;
         RefPtr<TextureSampler> m_TextureSampler;
         std::uint32_t m_DescriptorCount;

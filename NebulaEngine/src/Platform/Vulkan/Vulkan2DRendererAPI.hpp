@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
+#include "NebulaEngine/Renderer/UniformBuffer.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula
@@ -33,6 +34,9 @@ namespace Nebula
         bool NeedsResize() const override { return m_Context->m_NeedsResize; }
         void CorrectProjection(glm::mat4& projection) override;
 
+        RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() override;
+        RefPtr<DescriptorSets> CreateDescriptorSets() override;
+        RefPtr<UniformBuffer> CreateUniformBuffer() override;
         RefPtr<TextureImage> CreateTextureImage() override;
         RefPtr<TextureSampler> CreateTextureSampler() override;
 

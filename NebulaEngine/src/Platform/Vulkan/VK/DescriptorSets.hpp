@@ -1,9 +1,7 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/DescriptorSet.hpp"
-
-#include "DescriptorPool.hpp"
-#include "LogicalDevice.hpp"
+#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
+#include "NebulaEngine/Renderer/DescriptorSets.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -16,17 +14,6 @@ namespace Nebula::Vulkan
         Sampler
     };
 
-    struct DescriptorSetInfo
-    {
-        VkBuffer Buffer;
-        VkImageView ImageView;
-        VkSampler Sampler;
-        std::uint32_t Offset;
-        std::uint32_t Size;
-        std::uint32_t Binding;
-        DescriptorType Type;
-    };
-
     class DescriptorSets : public Nebula::DescriptorSets
     {
     public:
@@ -37,8 +24,8 @@ namespace Nebula::Vulkan
         DescriptorSets(DescriptorSets&& other)                 = delete;
         DescriptorSets& operator=(DescriptorSets&& other)      = delete;
 
-        [[nodiscard]] bool Init(LogicalDevice& device, DescriptorPool& pool, VkDescriptorSetLayout layout, DescriptorSetInfo& info);
-        void Destroy(LogicalDevice& device, DescriptorPool& pool) const;
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, RefPtr<Nebula::DescriptorSetLayout>& layout, const std::vector<BindingDescriptor>& descriptors);
+        void Destroy(RefPtr<GraphicsContext>& context) const;
 
         void Bind(RefPtr<GraphicsContext>& context, RefPtr<Nebula::GraphicsPipeline>& pipeline) const override;
 

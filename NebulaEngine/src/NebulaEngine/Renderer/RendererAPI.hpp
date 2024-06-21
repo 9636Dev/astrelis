@@ -3,10 +3,14 @@
 #include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 
+#include "DescriptorSetLayout.hpp"
+#include "DescriptorSets.hpp"
 #include "GraphicsContext.hpp"
-#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
-#include "NebulaEngine/Renderer/TextureImage.hpp"
+#include "GraphicsPipeline.hpp"
 #include "RendererStorage.hpp"
+#include "TextureImage.hpp"
+#include "TextureSampler.hpp"
+#include "UniformBuffer.hpp"
 #include "Viewport.hpp"
 
 #include <glm/glm.hpp>
@@ -42,11 +46,10 @@ namespace Nebula
 
         struct CreateDetails
         {
-            std::size_t VertexBufferSize    = 0;
-            std::uint32_t IndicesCount      = 0;
-            VertexInput VertexInput         = {};
-            std::vector<UniformDescriptor> UniformDescriptors;
-            std::vector<SamplerDescriptor> SamplerDescriptors;
+            std::size_t VertexBufferSize = 0;
+            std::uint32_t IndicesCount   = 0;
+            VertexInput VertexInput      = {};
+            RefPtr<DescriptorSetLayout> DescriptorSetLayout;
         };
 
         virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
@@ -55,13 +58,13 @@ namespace Nebula
         virtual void SetViewport(Viewport& viewport) = 0;
         virtual void SetScissor(Bounds& scissor)     = 0;
 
-        virtual void WaitDeviceIdle()   = 0;
-        virtual Bounds GetSurfaceSize() = 0;
+        virtual void WaitDeviceIdle()                         = 0;
+        virtual Bounds GetSurfaceSize()                       = 0;
         virtual void CorrectProjection(glm::mat4& projection) = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
-        virtual void ResizeViewport() = 0;
-        virtual bool NeedsResize() const                                          = 0;
+        virtual void ResizeViewport()    = 0;
+        virtual bool NeedsResize() const = 0;
 
         virtual void DrawInstanced(std::uint32_t vertexCount,
                                    std::uint32_t instanceCount,
@@ -73,8 +76,11 @@ namespace Nebula
                                           std::uint32_t vertexOffset,
                                           std::uint32_t firstInstance) = 0;
 
-        virtual RefPtr<TextureImage> CreateTextureImage() = 0;
-        virtual RefPtr<TextureSampler> CreateTextureSampler() = 0;
+        virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;
+        virtual RefPtr<DescriptorSets> CreateDescriptorSets()           = 0;
+        virtual RefPtr<UniformBuffer> CreateUniformBuffer()             = 0;
+        virtual RefPtr<TextureImage> CreateTextureImage()               = 0;
+        virtual RefPtr<TextureSampler> CreateTextureSampler()           = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);

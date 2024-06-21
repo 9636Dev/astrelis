@@ -4,6 +4,7 @@
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/IO/Image.hpp"
+#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 #include "Vertex.hpp"
 
 #include "glm/ext/matrix_clip_space.hpp"
@@ -39,9 +40,9 @@ namespace Nebula
             {offsetof(Vertex2D, Color),    3, 0},
             {offsetof(Vertex2D, TexCoord), 2, 0},
         };
-        details.UniformDescriptors = {
-            {"MVP", 0, 1, sizeof(UniformBufferObject)},
-        };
+
+        m_UniformBuffer = m_RendererAPI->CreateUniformBuffer();
+        m_UniformBuffer->Init(m_Context, sizeof(UniformBufferObject));
 
         InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
         m_TextureImage = m_RendererAPI->CreateTextureImage();
@@ -56,10 +57,19 @@ namespace Nebula
             return false;
         }
 
-        details.SamplerDescriptors = {
-            {"TextureSampler", 1, 1, m_TextureImage, m_TextureSampler},
+        std::vector<BindingDescriptor> bindings = {
+            BindingDescriptor::Uniform("MVP", 0, sizeof(UniformBufferObject), m_UniformBuffer),
+            BindingDescriptor::TextureSampler("TextureSampler", 1, m_TextureImage, m_TextureSampler),
         };
-        m_DescriptorCount = details.UniformDescriptors.size() + details.SamplerDescriptors.size();
+
+        m_DescriptorSetLayout = m_RendererAPI->CreateDescriptorSetLayout();
+        if (!m_DescriptorSetLayout->Init(m_Context, bindings))
+        {
+            return false;
+        }
+
+        m_DescriptorSets = m_RendererAPI->CreateDescriptorSets();
+        m_DescriptorCount = m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, 1);
 
         m_Storage = m_RendererAPI->CreateComponents(details);
 
@@ -78,6 +88,7 @@ namespace Nebula
         m_RendererAPI->WaitDeviceIdle();
         m_TextureImage->Destroy(m_Context);
         m_TextureSampler->Destroy(m_Context);
+        m_UniformBuffer->Destroy(m_Context);
         m_RendererAPI->DestroyComponents(m_Storage);
         m_RendererAPI->Shutdown();
 
@@ -109,7 +120,7 @@ namespace Nebula
 
         m_Storage.m_VertexBuffer->Bind(m_Context);
         m_Storage.m_IndexBuffer->Bind(m_Context);
-        m_Storage.m_UniformBuffers[m_Context->GetCurrentFrameIndex()]->SetData(&m_UBO, sizeof(UniformBufferObject), 0);
+        m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(UniformBufferObject), 0);
         std::uint32_t currentDsi = m_Context->GetCurrentFrameIndex() * m_DescriptorCount;
         m_Storage.m_DescriptorSets[currentDsi + m_Storage.m_DescriptorSetIndices["MVP"]]->Bind(
             m_Context, m_Storage.m_GraphicsPipeline);

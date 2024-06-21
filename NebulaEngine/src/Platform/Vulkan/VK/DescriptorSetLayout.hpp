@@ -2,8 +2,6 @@
 
 #include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 
-#include "LogicalDevice.hpp"
-
 #include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
@@ -18,8 +16,8 @@ namespace Nebula::Vulkan
         DescriptorSetLayout(DescriptorSetLayout&&)                 = delete;
         DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = delete;
 
-        [[nodiscard]] bool Init(LogicalDevice& device, std::vector<UniformDescriptor>& uniformDescriptors, std::vector<SamplerDescriptor>& samplerDescriptors);
-        void Destroy(LogicalDevice& device) const;
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, const std::vector<BindingDescriptor>& descriptors) override;
+        void Destroy(RefPtr<GraphicsContext>& context) const override;
 
         VkDescriptorSetLayout m_Layout = VK_NULL_HANDLE;
     };
