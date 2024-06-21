@@ -19,6 +19,7 @@ namespace Nebula::Vulkan
             return false;
         }
 
+        vkBindBufferMemory(device.GetHandle(), m_Buffer, m_Memory, 0);
         if (vkMapMemory(device.GetHandle(), m_Memory, 0, bufferSize, 0, &m_MappedMemory) != VK_SUCCESS)
         {
             NEBULA_CORE_LOG_ERROR("Failed to map uniform buffer memory!");

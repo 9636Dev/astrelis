@@ -4,6 +4,7 @@
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "Vertex.hpp"
 
+#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
 namespace Nebula
@@ -16,13 +17,10 @@ namespace Nebula
     };
     const std::vector<std::uint32_t> m_Indices = {0, 1, 2, 2, 3, 0};
 
-    constexpr std::uint32_t MAX_FRAMES_IN_FLIGHT = 2;
-
     Renderer2D::Renderer2D(RefPtr<Window> window, Bounds viewport) :
         m_Window(std::move(window)),
         m_Context(m_Window->GetGraphicsContext()),
-        m_RendererAPI(RendererAPI::Create(m_Context, viewport, RendererAPI::Type::Renderer2D)),
-        m_MaxFramesInFlight(MAX_FRAMES_IN_FLIGHT)
+        m_RendererAPI(RendererAPI::Create(m_Context, viewport, RendererAPI::Type::Renderer2D))
     {
     }
 
@@ -30,7 +28,6 @@ namespace Nebula
     {
         m_RendererAPI->Init();
         RendererAPI::CreateDetails details;
-        details.MaxFramesInFlight    = m_MaxFramesInFlight;
         details.VertexBufferSize     = m_Vertices.size() * sizeof(Vertex2D);
         details.IndicesCount         = m_Indices.size();
         details.VertexInput.Stride   = sizeof(Vertex2D);
@@ -82,12 +79,15 @@ namespace Nebula
 
         m_UBO.Model = glm::rotate(m_UBO.Model, glm::radians(0.1F), glm::vec3(0.0F, 0.0F, 1.0F));
         m_UBO.View       = camera.GetViewMatrix();
-        m_UBO.Projection = camera.GetProjectionMatrix();
+        Bounds surfaceSize = m_RendererAPI->GetSurfaceSize();
+        float aspectRatio = static_cast<float>(surfaceSize.Width) / static_cast<float>(surfaceSize.Height);
+        m_UBO.Projection = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F, -1.0F, 1.0F);
+        m_RendererAPI->CorrectProjection(m_UBO.Projection);
 
         m_Storage.m_VertexBuffer->Bind(m_Context);
         m_Storage.m_IndexBuffer->Bind(m_Context);
-        //m_Storage.m_DescriptorSets[m_Context->GetCurrentFrameIndex()]->Bind(m_Context, m_Storage.m_GraphicsPipeline);
-        //m_Storage.m_UniformBuffers[m_Context->GetCurrentFrameIndex()]->SetData(&m_UBO, sizeof(UniformBufferObject), 0);
+        m_Storage.m_UniformBuffers[m_Context->GetCurrentFrameIndex()]->SetData(&m_UBO, sizeof(UniformBufferObject), 0);
+        m_Storage.m_DescriptorSets[m_Context->GetCurrentFrameIndex()]->Bind(m_Context, m_Storage.m_GraphicsPipeline);
         m_RendererAPI->DrawInstancedIndexed(static_cast<std::uint32_t>(m_Indices.size()), 1, 0, 0, 0);
     }
 

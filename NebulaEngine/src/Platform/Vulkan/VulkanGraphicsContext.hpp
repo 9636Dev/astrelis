@@ -88,6 +88,7 @@ namespace Nebula
 
         std::uint32_t m_CurrentFrame = 0;
         std::uint32_t m_ImageIndex   = 0;
+        std::uint32_t m_MaxFramesInFlight = 2;
 
         // Internal
         VkSwapchainKHR m_OldSwapChain = VK_NULL_HANDLE;

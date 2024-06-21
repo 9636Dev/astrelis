@@ -20,7 +20,7 @@ namespace Nebula
         RefPtr<IndexBuffer> m_IndexBuffer                 = nullptr;
         RefPtr<DescriptorSetLayout> m_DescriptorSetLayout = nullptr;
         std::vector<RefPtr<UniformBuffer>> m_UniformBuffers;
-        //std::vector<RefPtr<DescriptorSet>> m_DescriptorSets;
+        std::vector<RefPtr<DescriptorSet>> m_DescriptorSets;
 
         Renderer2DStorage() = default;
     };

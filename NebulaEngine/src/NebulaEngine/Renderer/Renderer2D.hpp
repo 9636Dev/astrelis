@@ -47,8 +47,6 @@ namespace Nebula
         RefPtr<RendererAPI> m_RendererAPI;
         Renderer2DStorage m_Storage;
         UniformBufferObject m_UBO;
-
-        const std::uint32_t m_MaxFramesInFlight;
     };
 
 } // namespace Nebula

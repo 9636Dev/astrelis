@@ -63,7 +63,7 @@ namespace Nebula::Vulkan
         }
     }
 
-    bool GraphicsPipeline::Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& input)
+    bool GraphicsPipeline::Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& input, std::vector<VkDescriptorSetLayout>& layouts)
     {
         auto vertexShaderCode   = ReadFile("shaders/BasicVert.spv");
         auto fragmentShaderCode = ReadFile("shaders/BasicFrag.spv");
@@ -147,7 +147,7 @@ namespace Nebula::Vulkan
         rasterizer.polygonMode             = VK_POLYGON_MODE_FILL;
         rasterizer.lineWidth               = 1.0F;
         rasterizer.cullMode                = VK_CULL_MODE_NONE;
-        rasterizer.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        rasterizer.frontFace               = VK_FRONT_FACE_CLOCKWISE;
 
         rasterizer.depthBiasEnable         = VK_FALSE;
         rasterizer.depthBiasConstantFactor = 0.0F;
@@ -173,7 +173,8 @@ namespace Nebula::Vulkan
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
         pipelineLayoutInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount         = 0;
+        pipelineLayoutInfo.setLayoutCount         = static_cast<uint32_t>(layouts.size());
+        pipelineLayoutInfo.pSetLayouts            = layouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0;
 
         if (vkCreatePipelineLayout(device.GetHandle(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)

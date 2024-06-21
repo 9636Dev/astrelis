@@ -103,9 +103,14 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Layer.cpp
     src/NebulaEngine/Core/LayerStack.hpp
     src/NebulaEngine/Core/LayerStack.cpp
-    src/NebulaEngine/Core/Math.hpp
     src/NebulaEngine/Core/Time.hpp
     src/NebulaEngine/Core/Time.cpp
+
+    # IO
+    src/NebulaEngine/IO/File.hpp
+    src/NebulaEngine/IO/File.cpp
+    src/NebulaEngine/IO/Image.hpp
+    src/NebulaEngine/IO/Image.cpp
 
     # Renderer
     src/NebulaEngine/Renderer/Viewport.hpp
@@ -224,7 +229,6 @@ PUBLIC
 
 target_link_libraries(NebulaEngine_Engine PUBLIC
     spdlog::spdlog
-    Microsoft.GSL::GSL
     glfw
     $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:
         glad
@@ -239,7 +243,6 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
     >
     glm
     ImGui
-    Eigen3::Eigen
     QProfile
     EnTT::EnTT
 )

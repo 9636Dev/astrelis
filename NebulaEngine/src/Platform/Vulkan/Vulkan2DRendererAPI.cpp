@@ -43,9 +43,15 @@ namespace Nebula
     {
         Renderer2DStorage storage;
 
+        RefPtr<Vulkan::DescriptorSetLayout> descriptorSetLayout = RefPtr<Vulkan::DescriptorSetLayout>::Create();
+        CHECK_RETURN(descriptorSetLayout->Init(m_Context->m_LogicalDevice, details.UniformDescriptors));
+        storage.m_DescriptorSetLayout = static_cast<RefPtr<DescriptorSetLayout>>(descriptorSetLayout);
+
+        std::vector<VkDescriptorSetLayout> layouts = {descriptorSetLayout->m_Layout};
+
         RefPtr<Vulkan::GraphicsPipeline> graphicsPipeline = RefPtr<Vulkan::GraphicsPipeline>::Create();
         CHECK_RETURN(graphicsPipeline->Init(m_Context->m_LogicalDevice, m_Context->m_RenderPass, m_Context->m_SwapChain,
-                                            details.VertexInput));
+                                            details.VertexInput, layouts));
         storage.m_GraphicsPipeline = static_cast<RefPtr<GraphicsPipeline>>(graphicsPipeline);
 
         RefPtr<Vulkan::VertexBuffer> vertexBuffer = RefPtr<Vulkan::VertexBuffer>::Create();
@@ -57,11 +63,8 @@ namespace Nebula
         CHECK_RETURN(indexBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, details.IndicesCount));
         storage.m_IndexBuffer = static_cast<RefPtr<IndexBuffer>>(indexBuffer);
 
-        RefPtr<Vulkan::DescriptorSetLayout> descriptorSetLayout = RefPtr<Vulkan::DescriptorSetLayout>::Create();
-        CHECK_RETURN(descriptorSetLayout->Init(m_Context->m_LogicalDevice, details.UniformDescriptors));
-        storage.m_DescriptorSetLayout = static_cast<RefPtr<DescriptorSetLayout>>(descriptorSetLayout);
-
-        storage.m_UniformBuffers.reserve(details.MaxFramesInFlight);
+        storage.m_UniformBuffers.reserve(m_Context->m_MaxFramesInFlight);
+        storage.m_DescriptorSets.reserve(m_Context->m_MaxFramesInFlight);
         // Calculate total size of uniform buffer
         std::uint32_t uniformBufferSize = 0;
         for (const auto& descriptor : details.UniformDescriptors)
@@ -69,14 +72,14 @@ namespace Nebula
             uniformBufferSize += descriptor.Size;
         }
 
-        for (std::size_t i = 0; i < details.MaxFramesInFlight; ++i)
+        for (std::size_t i = 0; i < m_Context->m_MaxFramesInFlight; ++i)
         {
             RefPtr<Vulkan::UniformBuffer> uniformBuffer = RefPtr<Vulkan::UniformBuffer>::Create();
             CHECK_RETURN(
                 uniformBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, uniformBufferSize));
             storage.m_UniformBuffers.push_back(static_cast<RefPtr<UniformBuffer>>(uniformBuffer));
 
-            /*RefPtr<Vulkan::DescriptorSet> descriptorSet = RefPtr<Vulkan::DescriptorSet>::Create();
+            RefPtr<Vulkan::DescriptorSet> descriptorSet = RefPtr<Vulkan::DescriptorSet>::Create();
             Vulkan::DescriptorSetInfo descriptorSetInfo {};
             descriptorSetInfo.Buffer = uniformBuffer->GetBuffer();
             descriptorSetInfo.Offset = 0;
@@ -84,7 +87,7 @@ namespace Nebula
             descriptorSetInfo.Binding = 0;
             CHECK_RETURN(descriptorSet->Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
                                             descriptorSetLayout->m_Layout, descriptorSetInfo));
-            storage.m_DescriptorSets.push_back(static_cast<RefPtr<DescriptorSet>>(descriptorSet));*/
+            storage.m_DescriptorSets.push_back(static_cast<RefPtr<DescriptorSet>>(descriptorSet));
         }
 
         return storage;
@@ -153,6 +156,11 @@ namespace Nebula
     {
         VkExtent2D extent = m_Context->m_SwapChain.GetExtent();
         return Bounds(0, 0, static_cast<std::int32_t>(extent.width), static_cast<std::int32_t>(extent.height));
+    }
+
+    void Vulkan2DRendererAPI::CorrectProjection(glm::mat4& projection)
+    {
+        projection[1][1] *= -1.0F;
     }
 
     RefPtr<Vulkan2DRendererAPI> Vulkan2DRendererAPI::Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport)

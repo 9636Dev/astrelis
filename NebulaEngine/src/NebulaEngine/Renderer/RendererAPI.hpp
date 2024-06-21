@@ -8,6 +8,8 @@
 #include "RendererStorage.hpp"
 #include "Viewport.hpp"
 
+#include <glm/glm.hpp>
+
 namespace Nebula
 {
     class RendererAPI
@@ -39,7 +41,6 @@ namespace Nebula
 
         struct CreateDetails
         {
-            std::uint32_t MaxFramesInFlight = 2;
             std::size_t VertexBufferSize    = 0;
             std::uint32_t IndicesCount      = 0;
             VertexInput VertexInput         = {};
@@ -54,6 +55,7 @@ namespace Nebula
 
         virtual void WaitDeviceIdle()   = 0;
         virtual Bounds GetSurfaceSize() = 0;
+        virtual void CorrectProjection(glm::mat4& projection) = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
         virtual void ResizeViewport() = 0;

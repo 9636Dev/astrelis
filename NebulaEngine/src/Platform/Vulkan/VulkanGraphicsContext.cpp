@@ -196,7 +196,7 @@ namespace Nebula
             NEBULA_CORE_LOG_ERROR("Failed to present swap chain image!");
         }
 
-        m_CurrentFrame = (m_CurrentFrame + 1) % m_SwapChain.GetImageCount();
+        m_CurrentFrame = (m_CurrentFrame + 1) % m_MaxFramesInFlight;
     }
 
     void VulkanGraphicsContext::RecreateSwapChain()
