@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
+#include "NebulaEngine/Renderer/TextureImage.hpp"
 #include "NebulaEngine/Scene/Scene.hpp"
 
 #include "Camera.hpp"
@@ -46,7 +47,9 @@ namespace Nebula
         RefPtr<GraphicsContext> m_Context;
         RefPtr<RendererAPI> m_RendererAPI;
         Renderer2DStorage m_Storage;
+
         UniformBufferObject m_UBO;
+        RefPtr<TextureImage> m_TextureImage;
     };
 
 } // namespace Nebula

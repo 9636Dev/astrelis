@@ -10,7 +10,7 @@ Nebula::ScopedPtr<Nebula::Application> Nebula::CreateApplication(CommandLineArgu
     Nebula::ApplicationSpecification spec;
     spec.Name = "Sandbox";
     spec.Arguments = std::move(args);
-    spec.WorkingDirectory = "../";
+    spec.WorkingDirectory = "./run";
 
     return static_cast<Nebula::ScopedPtr<Nebula::Application>>(Nebula::ScopedPtr<SandboxApplication>::Create(spec));
 }

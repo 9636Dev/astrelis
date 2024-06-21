@@ -8,6 +8,7 @@
 
 # Profiling results
 /profiles/*
+/run/profiles/*
 
 # Build Cache
 /.cache/

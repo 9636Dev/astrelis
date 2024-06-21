@@ -61,7 +61,7 @@ namespace Nebula::Vulkan
         return extensions;
     }
 
-    static std::uint32_t
+    std::uint32_t
         FindMemoryType(VkPhysicalDevice physicalDevice, std::uint32_t typeFilter, VkMemoryPropertyFlags properties)
     {
         VkPhysicalDeviceMemoryProperties memProperties;
@@ -218,4 +218,109 @@ namespace Nebula::Vulkan
 
         return true;
     }
+
+    bool CreateImage(VkPhysicalDevice physicalDevice,
+                      VkDevice logicalDevice,
+                      std::uint32_t width,
+                      std::uint32_t height,
+                      VkFormat format,
+                      VkImageTiling tiling,
+                      VkImageUsageFlags usage,
+                      VkMemoryPropertyFlags properties,
+                      VkImage& image,
+                      VkDeviceMemory& imageMemory)
+    {
+        VkImageCreateInfo imageInfo {};
+        imageInfo.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        imageInfo.imageType     = VK_IMAGE_TYPE_2D;
+        imageInfo.extent.width  = width;
+        imageInfo.extent.height = height;
+        imageInfo.extent.depth  = 1;
+        imageInfo.mipLevels     = 1;
+        imageInfo.arrayLayers   = 1;
+        imageInfo.format        = format;
+        imageInfo.tiling        = tiling;
+        imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        imageInfo.usage         = usage;
+        imageInfo.samples       = VK_SAMPLE_COUNT_1_BIT;
+        imageInfo.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
+
+        if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
+        {
+            return false;
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetImageMemoryRequirements(logicalDevice, image, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo {};
+        allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize  = memRequirements.size;
+        allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+
+        if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+        {
+            return false;
+        }
+
+        // TODO: Make behaviour consistent, since buffer doesn't bind memory
+        vkBindImageMemory(logicalDevice, image, imageMemory, 0);
+        return true;
+    }
+
+    void CopyBufferToImage(VkDevice logicalDevice,
+                           VkQueue queue,
+                           VkCommandPool commandPool,
+                           VkBuffer buffer,
+                           VkImage image,
+                           std::uint32_t width,
+                           std::uint32_t height)
+    {
+        VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
+
+        VkBufferImageCopy region {};
+        region.bufferOffset      = 0;
+        region.bufferRowLength   = 0;
+        region.bufferImageHeight = 0;
+
+        region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel       = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount     = 1;
+
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = {width, height, 1};
+
+        vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+        EndSingleTimeCommands(logicalDevice, queue, commandPool, commandBuffer);
+    }
+
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+    {
+        SwapChainSupportDetails details;
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+        std::uint32_t formatCount = 0;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+        if (formatCount != 0)
+        {
+            details.formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+        }
+
+        std::uint32_t presentModeCount = 0;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+
+        if (presentModeCount != 0)
+        {
+            details.presentModes.resize(presentModeCount);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+        }
+
+        return details;
+    }
+
 } // namespace Nebula::Vulkan

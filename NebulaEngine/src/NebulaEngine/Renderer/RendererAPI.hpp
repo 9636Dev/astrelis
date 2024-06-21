@@ -5,6 +5,7 @@
 
 #include "GraphicsContext.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
+#include "NebulaEngine/Renderer/TextureImage.hpp"
 #include "RendererStorage.hpp"
 #include "Viewport.hpp"
 
@@ -45,6 +46,7 @@ namespace Nebula
             std::uint32_t IndicesCount      = 0;
             VertexInput VertexInput         = {};
             std::vector<UniformDescriptor> UniformDescriptors;
+            std::vector<SamplerDescriptor> SamplerDescriptors;
         };
 
         virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
@@ -70,6 +72,8 @@ namespace Nebula
                                           std::uint32_t firstIndex,
                                           std::uint32_t vertexOffset,
                                           std::uint32_t firstInstance) = 0;
+
+        virtual RefPtr<TextureImage> CreateTextureImage() = 0;
 
         static RefPtr<RendererAPI>
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);

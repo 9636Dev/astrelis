@@ -127,6 +127,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/DescriptorSetLayout.hpp
     src/NebulaEngine/Renderer/DescriptorSet.hpp
     src/NebulaEngine/Renderer/UniformBuffer.hpp
+    src/NebulaEngine/Renderer/TextureImage.hpp
+    src/NebulaEngine/Renderer/TextureSampler.hpp
 
     # UI
     src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
@@ -210,6 +212,10 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/DescriptorPool.cpp
         src/Platform/Vulkan/VK/DescriptorSet.hpp
         src/Platform/Vulkan/VK/DescriptorSet.cpp
+        src/Platform/Vulkan/VK/TextureImage.hpp
+        src/Platform/Vulkan/VK/TextureImage.cpp
+        src/Platform/Vulkan/VK/TextureSampler.hpp
+        src/Platform/Vulkan/VK/TextureSampler.cpp
     >
 )
 
@@ -245,6 +251,7 @@ target_link_libraries(NebulaEngine_Engine PUBLIC
     ImGui
     QProfile
     EnTT::EnTT
+    stb
 )
 
 target_compile_definitions(NebulaEngine_Engine

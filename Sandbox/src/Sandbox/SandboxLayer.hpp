@@ -24,6 +24,7 @@ public:
     void OnViewportResize(Nebula::WindowResizedEvent& event);
 private:
     Nebula::Camera m_Camera;
+    Nebula::Camera m_Camera2;
     Nebula::Scene m_Scene;
     Nebula::ScopedPtr<Nebula::Renderer2D> m_Renderer2D = nullptr;
 };

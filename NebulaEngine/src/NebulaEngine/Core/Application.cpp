@@ -9,6 +9,7 @@
 #include "Window.hpp"
 
 #include <utility>
+#include <filesystem>
 
 namespace Nebula
 {
@@ -23,6 +24,12 @@ namespace Nebula
         Nebula::Log::Init();
         NEBULA_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
+
+        // First we chdir into the working directory
+        if (!m_Specification.WorkingDirectory.empty())
+        {
+            std::filesystem::current_path(m_Specification.WorkingDirectory);
+        }
 
         auto res = Window::Create();
         if (res.IsErr())

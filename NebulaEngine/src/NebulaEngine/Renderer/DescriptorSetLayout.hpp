@@ -13,6 +13,13 @@ namespace Nebula
         std::uint32_t Size;
     };
 
+    struct SamplerDescriptor
+    {
+        std::string Name;
+        std::uint32_t Binding;
+        std::uint32_t Count;
+    };
+
     class DescriptorSetLayout
     {
     public:

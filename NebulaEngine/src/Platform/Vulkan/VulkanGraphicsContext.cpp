@@ -43,9 +43,9 @@ namespace Nebula
         INIT_COMPONENT(m_Instance.Init("Nebula", "Nebula Engine", Vulkan::APIVersion(1, 0),
                                        Vulkan::GetRequiredExtensions(m_Debug), Vulkan::GetValidationLayers(),
                                        &debugCreateInfo));
-        m_PhysicalDevice.PickBestDevice(m_Instance);
-        INIT_COMPONENT(m_PhysicalDevice.IsFound());
         INIT_COMPONENT(m_Surface.Init(m_Instance, m_Window));
+        m_PhysicalDevice.PickBestDevice(m_Instance, m_Surface.GetHandle());
+        INIT_COMPONENT(m_PhysicalDevice.IsFound());
         INIT_COMPONENT(m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
                                             m_Debug ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
         INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface));

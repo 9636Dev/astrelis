@@ -33,6 +33,8 @@ namespace Nebula
         bool NeedsResize() const override { return m_Context->m_NeedsResize; }
         void CorrectProjection(glm::mat4& projection) override;
 
+        RefPtr<TextureImage> CreateTextureImage() override;
+
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
     private:
         RefPtr<VulkanGraphicsContext> m_Context;

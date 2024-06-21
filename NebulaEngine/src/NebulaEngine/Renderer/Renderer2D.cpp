@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
+#include "NebulaEngine/IO/Image.hpp"
 #include "Vertex.hpp"
 
 #include "glm/ext/matrix_clip_space.hpp"
@@ -10,10 +11,10 @@
 namespace Nebula
 {
     const std::vector<Vertex2D> m_Vertices = {
-        {{-0.5F, -0.5F, 0.0F}, {1.0F, 0.0F, 0.0F}},
-        {{0.5F, -0.5F, 0.0F},  {0.0F, 1.0F, 0.0F}},
-        {{0.5F, 0.5F, 0.0F},   {0.0F, 0.0F, 1.0F}},
-        {{-0.5F, 0.5F, 0.0F},  {1.0F, 1.0F, 1.0F}}
+        {{-0.5F, -0.5F, 0.0F}, {1.0F, 0.0F, 0.0F}, {0.0F, 0.0F}},
+        {{0.5F, -0.5F, 0.0F},  {0.0F, 1.0F, 0.0F}, {1.0F, 0.0F}},
+        {{0.5F, 0.5F, 0.0F},   {0.0F, 0.0F, 1.0F}, {1.0F, 1.0F}},
+        {{-0.5F, 0.5F, 0.0F},  {1.0F, 1.0F, 1.0F}, {0.0F, 1.0F}}
     };
     const std::vector<std::uint32_t> m_Indices = {0, 1, 2, 2, 3, 0};
 
@@ -33,10 +34,15 @@ namespace Nebula
         details.VertexInput.Stride   = sizeof(Vertex2D);
         details.VertexInput.Elements = {
             {offsetof(Vertex2D, Position), 3, 0},
-            {offsetof(Vertex2D, Color),    3, 0}
+            {offsetof(Vertex2D, Color),    3, 0},
+            {offsetof(Vertex2D, TexCoord), 2, 0},
         };
         details.UniformDescriptors = {
             {"MVP", 0, 1, sizeof(UniformBufferObject)},
+        };
+
+        details.SamplerDescriptors = {
+            {"TextureSampler", 1, 1},
         };
 
         m_Storage = m_RendererAPI->CreateComponents(details);
@@ -48,12 +54,17 @@ namespace Nebula
         m_UBO.View       = glm::mat4(1.0F);
         m_UBO.Projection = glm::mat4(1.0F);
 
+        InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
+        m_TextureImage = m_RendererAPI->CreateTextureImage();
+        m_TextureImage->LoadTexture(m_Context, image);
+
         return true;
     }
 
     void Renderer2D::Shutdown()
     {
         m_RendererAPI->WaitDeviceIdle();
+        m_TextureImage->Destroy(m_Context);
         m_RendererAPI->DestroyComponents(m_Storage);
         m_RendererAPI->Shutdown();
 

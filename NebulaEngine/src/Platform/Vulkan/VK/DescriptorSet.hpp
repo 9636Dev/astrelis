@@ -9,12 +9,22 @@
 
 namespace Nebula::Vulkan
 {
+
+    enum class DescriptorType
+    {
+        UniformBuffer,
+        Sampler
+    };
+
     struct DescriptorSetInfo
     {
         VkBuffer Buffer;
+        VkImageView ImageView;
+        VkSampler Sampler;
         std::uint32_t Offset;
         std::uint32_t Size;
         std::uint32_t Binding;
+        DescriptorType Type;
     };
 
     class DescriptorSet : public Nebula::DescriptorSet

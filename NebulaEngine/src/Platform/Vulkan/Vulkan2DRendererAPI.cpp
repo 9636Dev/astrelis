@@ -9,6 +9,7 @@
 #include "VK/IndexBuffer.hpp"
 #include "VK/UniformBuffer.hpp"
 #include "VK/VertexBuffer.hpp"
+#include "VK/TextureImage.hpp"
 #include "VulkanGraphicsContext.hpp"
 
 #include <utility>
@@ -44,7 +45,7 @@ namespace Nebula
         Renderer2DStorage storage;
 
         RefPtr<Vulkan::DescriptorSetLayout> descriptorSetLayout = RefPtr<Vulkan::DescriptorSetLayout>::Create();
-        CHECK_RETURN(descriptorSetLayout->Init(m_Context->m_LogicalDevice, details.UniformDescriptors));
+        CHECK_RETURN(descriptorSetLayout->Init(m_Context->m_LogicalDevice, details.UniformDescriptors, details.SamplerDescriptors));
         storage.m_DescriptorSetLayout = static_cast<RefPtr<DescriptorSetLayout>>(descriptorSetLayout);
 
         std::vector<VkDescriptorSetLayout> layouts = {descriptorSetLayout->m_Layout};
@@ -64,7 +65,7 @@ namespace Nebula
         storage.m_IndexBuffer = static_cast<RefPtr<IndexBuffer>>(indexBuffer);
 
         storage.m_UniformBuffers.reserve(m_Context->m_MaxFramesInFlight);
-        storage.m_DescriptorSets.reserve(m_Context->m_MaxFramesInFlight);
+        storage.m_DescriptorSets.reserve(m_Context->m_MaxFramesInFlight * (details.UniformDescriptors.size() + details.SamplerDescriptors.size()));
         // Calculate total size of uniform buffer
         std::uint32_t uniformBufferSize = 0;
         for (const auto& descriptor : details.UniformDescriptors)
@@ -161,6 +162,11 @@ namespace Nebula
     void Vulkan2DRendererAPI::CorrectProjection(glm::mat4& projection)
     {
         projection[1][1] *= -1.0F;
+    }
+
+    RefPtr<TextureImage> Vulkan2DRendererAPI::CreateTextureImage()
+    {
+        return static_cast<RefPtr<TextureImage>>(RefPtr<Vulkan::TextureImage>::Create());
     }
 
     RefPtr<Vulkan2DRendererAPI> Vulkan2DRendererAPI::Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport)

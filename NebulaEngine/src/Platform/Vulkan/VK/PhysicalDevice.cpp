@@ -1,11 +1,14 @@
 #include "PhysicalDevice.hpp"
+
 #include "NebulaEngine/Core/Log.hpp"
+
+#include "Utils.hpp"
 
 #include <algorithm>
 
 namespace Nebula::Vulkan
 {
-    std::int32_t PhysicalDevice::RateDevice(VkPhysicalDevice device)
+    std::int32_t PhysicalDevice::RateDevice(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
         VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -14,6 +17,19 @@ namespace Nebula::Vulkan
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
         int score = 0;
+
+        SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device, surface);
+        bool swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+
+
+        VkPhysicalDeviceFeatures supportedFeatures;
+        vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+        // TODO: Max anisotropy optional
+        if (supportedFeatures.samplerAnisotropy != VK_TRUE || !swapChainAdequate)
+        {
+            return 0;
+        }
 
         score += static_cast<std::int32_t>(deviceProperties.limits.maxImageDimension2D);
 
@@ -25,7 +41,7 @@ namespace Nebula::Vulkan
         return score;
     }
 
-    void PhysicalDevice::PickBestDevice(VkInstance instance)
+    void PhysicalDevice::PickBestDevice(VkInstance instance, VkSurfaceKHR surface)
     {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -42,7 +58,7 @@ namespace Nebula::Vulkan
         deviceScores.reserve(deviceCount);
         for (VkPhysicalDevice device : devices)
         {
-            deviceScores.emplace_back(device, RateDevice(device));
+            deviceScores.emplace_back(device, RateDevice(device, surface));
         }
 
         std::sort(deviceScores.begin(), deviceScores.end(),

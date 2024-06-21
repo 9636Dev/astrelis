@@ -30,3 +30,10 @@ target_link_libraries(ImGui
     $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:Vulkan::Vulkan>
 )
 target_include_directories(ImGui PUBLIC imgui)
+
+# STB
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE stb)
+
+# ImageMagick, precompiled binaries
+#find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
