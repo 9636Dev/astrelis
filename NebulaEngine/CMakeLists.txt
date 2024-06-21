@@ -277,3 +277,8 @@ if (NEBULA_PEDANTIC_WARNINGS)
     endif()
 endif()
 
+add_custom_target(NebulaEngine_Shaders
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/shaders/Basic.vert -o ${CMAKE_SOURCE_DIR}/run/shaders/Basic_vert.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/shaders/Basic_frag.spv
+)
+add_dependencies(NebulaEngine_Engine NebulaEngine_Shaders)

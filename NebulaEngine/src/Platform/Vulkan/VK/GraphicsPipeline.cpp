@@ -65,8 +65,8 @@ namespace Nebula::Vulkan
 
     bool GraphicsPipeline::Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, VertexInput& input, std::vector<VkDescriptorSetLayout>& layouts)
     {
-        auto vertexShaderCode   = ReadFile("shaders/BasicVert.spv");
-        auto fragmentShaderCode = ReadFile("shaders/BasicFrag.spv");
+        auto vertexShaderCode   = ReadFile("shaders/Basic_vert.spv");
+        auto fragmentShaderCode = ReadFile("shaders/Basic_frag.spv");
 
         VkShaderModule vertexShaderModule   = CreateShaderModule(device.GetHandle(), vertexShaderCode);
         VkShaderModule fragmentShaderModule = CreateShaderModule(device.GetHandle(), fragmentShaderCode);
