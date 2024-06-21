@@ -10,6 +10,8 @@
 #include "UniformBuffer.hpp"
 #include "DescriptorSetLayout.hpp"
 
+#include <array>
+
 namespace Nebula::Vulkan
 {
     bool DescriptorSets::Init(RefPtr<GraphicsContext>& context,

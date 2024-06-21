@@ -9,6 +9,8 @@
 #include <fstream>
 #include <vulkan/vulkan_core.h>
 
+#include <array>
+
 namespace Nebula::Vulkan
 {
     static std::vector<char> ReadFile(const std::string& filename)

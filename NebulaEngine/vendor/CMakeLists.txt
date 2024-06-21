@@ -26,7 +26,8 @@ set(IMGUI_SRC
 
 add_library(ImGui STATIC ${IMGUI_SRC})
 target_link_libraries(ImGui
-    $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:glad glfw>
+    glfw
+    $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:glad>
     $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:Vulkan::Vulkan>
 )
 target_include_directories(ImGui PUBLIC imgui)

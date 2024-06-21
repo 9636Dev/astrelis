@@ -70,6 +70,10 @@ elseif (NEBULA_PLATFORM STREQUAL "MacOS")
     set(NEBULA_RENDERER_OPENGL OFF)
     set(NEBULA_RENDERER_METAL OFF)
     set(NEBULA_RENDERER_VULKAN ON)
+elseif (NEBULA_PLATFORM STREQUAL "Windows")
+    set(NEBULA_RENDERER_OPENGL OFF)
+    set(NEBULA_RENDERER_METAL OFF)
+    set(NEBULA_RENDERER_VULKAN ON)
 else()
     message(FATAL_ERROR "Unknown platform: ${NEBULA_PLATFORM}")
 endif()
@@ -150,6 +154,10 @@ set(NEBULA_ENGINE_SOURCES
     $<$<STREQUAL:${NEBULA_PLATFORM},MacOS>:
         src/Platform/MacOS/MacOSWindow.hpp
         src/Platform/MacOS/MacOSWindow.cpp
+    >
+    $<$<STREQUAL:${NEBULA_PLATFORM},Windows>:
+        src/Platform/Windows/WindowsWindow.hpp
+        src/Platform/Windows/WindowsWindow.cpp
     >
     src/Platform/GLFW/GLFWWindowHelper.hpp
     src/Platform/GLFW/GLFWWindowHelper.cpp

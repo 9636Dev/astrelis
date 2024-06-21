@@ -6,6 +6,7 @@
 #include "VK/Utils.hpp"
 #include "VK/VulkanExt.hpp"
 
+#include <array>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 

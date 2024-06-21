@@ -3,6 +3,8 @@
 #include "NebulaEngine/Core/Log.hpp"
 #include "Platform/Vulkan/VK/LogicalDevice.hpp"
 
+#include <array>
+
 namespace Nebula::Vulkan
 {
     bool FrameBuffer::Init(

@@ -9,7 +9,7 @@ namespace Nebula
 {
     InMemoryImage::InMemoryImage(const File& file)
     {
-        stbi_uc* data = stbi_load(file.GetPath().c_str(), &m_Width, &m_Height, &m_Channels, 0);
+        stbi_uc* data = stbi_load(file.GetPath().string().c_str(), &m_Width, &m_Height, &m_Channels, 0);
         if (data != nullptr)
         {
             m_Data.resize(static_cast<std::size_t>(m_Width) * m_Height * 4);

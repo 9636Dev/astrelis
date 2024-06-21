@@ -9,6 +9,7 @@
 #include "NebulaEngine/Core/Log.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
+#include <array>
 #include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
