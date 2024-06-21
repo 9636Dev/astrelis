@@ -11,13 +11,19 @@ namespace Nebula
         std::int32_t Width;
         std::int32_t Height;
 
-        Bounds(std::int32_t paramX, std::int32_t paramY, std::int32_t width, std::int32_t height)
-            : X(paramX), Y(paramY), Width(width), Height(height) {}
-        Bounds() = default;
-        Bounds(const Bounds&) = default;
+        Bounds(std::int32_t paramX, std::int32_t paramY, std::int32_t width, std::int32_t height) :
+            X(paramX),
+            Y(paramY),
+            Width(width),
+            Height(height)
+        {
+        }
+
+        Bounds()                         = default;
+        Bounds(const Bounds&)            = default;
         Bounds& operator=(const Bounds&) = default;
-        Bounds(Bounds&&) = default;
-        Bounds& operator=(Bounds&&) = default;
-        ~Bounds() = default;
+        Bounds(Bounds&&)                 = default;
+        Bounds& operator=(Bounds&&)      = default;
+        ~Bounds()                        = default;
     };
 } // namespace Nebula

@@ -15,9 +15,7 @@ namespace Nebula
         IndexBuffer(IndexBuffer&&)                 = delete;
         IndexBuffer& operator=(IndexBuffer&&)      = delete;
 
-        virtual bool SetData(RefPtr<GraphicsContext>& context,
-                             const std::uint32_t* data,
-                             std::uint32_t count)              = 0;
-        virtual void Bind(RefPtr<GraphicsContext>& buffer) const = 0;
+        virtual bool SetData(RefPtr<GraphicsContext>& context, const std::uint32_t* data, std::uint32_t count) = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& buffer) const                                               = 0;
     };
 } // namespace Nebula

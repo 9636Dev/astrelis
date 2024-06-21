@@ -8,12 +8,12 @@ namespace Nebula
     class LLRApi
     {
     public:
-        LLRApi() = default;
-        virtual ~LLRApi() = default;
-        LLRApi(const LLRApi &) = delete;
-        LLRApi &operator=(const LLRApi &) = delete;
-        LLRApi(LLRApi &&) = delete;
-        LLRApi &operator=(LLRApi &&) = delete;
+        LLRApi()                         = default;
+        virtual ~LLRApi()                = default;
+        LLRApi(const LLRApi&)            = delete;
+        LLRApi& operator=(const LLRApi&) = delete;
+        LLRApi(LLRApi&&)                 = delete;
+        LLRApi& operator=(LLRApi&&)      = delete;
 
         /**
         * @brief Submits a frame to the rendering API

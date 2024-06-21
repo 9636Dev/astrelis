@@ -46,6 +46,7 @@ namespace Nebula::Vulkan
                 descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 VkDescriptorBufferInfo bufferInfo {};
                 bufferInfo.buffer = descriptors[i].Buffer.As<UniformBuffer>()->m_Buffers[ctx->m_CurrentFrame].m_Buffer;
+                bufferInfo.range = descriptors[i].Size;
                 bufferInfo.offset = 0; // TODO: Add offset support
 
                 descriptorWrites[i].pBufferInfo    = &bufferInfo;
@@ -53,6 +54,11 @@ namespace Nebula::Vulkan
             else if (descriptors[i].DescriptorType == BindingDescriptor::Type::TextureSampler)
             {
                 descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                VkDescriptorImageInfo imageInfo {};
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView   = descriptors[i].Texture.As<TextureImage>()->m_ImageView;
+                imageInfo.sampler     = descriptors[i].Sampler.As<TextureSampler>()->m_Sampler;
+                descriptorWrites[i].pImageInfo = &imageInfo;
             }
             else
             {
@@ -62,7 +68,7 @@ namespace Nebula::Vulkan
 
         }
 
-        vkUpdateDescriptorSets(device.GetHandle(), static_cast<std::uint32_t>(descriptorWrites.size()),
+        vkUpdateDescriptorSets(ctx->m_LogicalDevice.GetHandle(), static_cast<std::uint32_t>(descriptorWrites.size()),
                                descriptorWrites.data(), 0, nullptr);
         return true;
     }
@@ -74,8 +80,9 @@ namespace Nebula::Vulkan
                                 pipeline.As<GraphicsPipeline>()->m_PipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
     }
 
-    void DescriptorSets::Destroy(LogicalDevice& device, DescriptorPool& pool) const
+    void DescriptorSets::Destroy(RefPtr<GraphicsContext>& context) const
     {
-        vkFreeDescriptorSets(device.GetHandle(), pool.GetHandle(), 1, &m_DescriptorSet);
+        auto ctx = context.As<VulkanGraphicsContext>();
+        vkFreeDescriptorSets(ctx->m_LogicalDevice.GetHandle(), ctx->m_DescriptorPool.GetHandle(), 1, &m_DescriptorSet);
     }
 } // namespace Nebula::Vulkan

@@ -4,7 +4,7 @@
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
 
 #ifdef NEBULA_RENDERER_VULKAN
-#include "Platform/Vulkan/VulkanImGuiBackend.hpp"
+    #include "Platform/Vulkan/VulkanImGuiBackend.hpp"
 #endif
 
 namespace Nebula
@@ -17,12 +17,13 @@ namespace Nebula
             NEBULA_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
         case RendererAPI::API::Vulkan:
-            #ifdef NEBULA_RENDERER_VULKAN
-            return static_cast<RefPtr<ImGuiBackend>>(RefPtr<VulkanImGuiBackend>::Create(window, RendererAPI::Create(window->GetGraphicsContext(), window->GetViewportBounds())));
-            #else
+#ifdef NEBULA_RENDERER_VULKAN
+            return static_cast<RefPtr<ImGuiBackend>>(RefPtr<VulkanImGuiBackend>::Create(
+                window, RendererAPI::Create(window->GetGraphicsContext(), window->GetViewportBounds())));
+#else
             NEBULA_CORE_ASSERT(false, "RendererAPI::Vulkan is currently not supported!");
             return nullptr;
-            #endif
+#endif
         default:
             NEBULA_CORE_ASSERT(false, "Unknown RendererAPI!");
             return nullptr;

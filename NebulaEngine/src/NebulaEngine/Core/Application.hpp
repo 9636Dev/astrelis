@@ -49,7 +49,9 @@ namespace Nebula
         Application& operator=(Application&&)      = delete;
 
         RefPtr<Window>& GetWindow() { return m_Window; }
+
         const RefPtr<Window>& GetWindow() const { return m_Window; }
+
         static Application& Get() { return *s_Instance; }
     protected:
         void PushLayer(OwnedPtr<Layer*> layer);

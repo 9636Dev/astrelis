@@ -68,6 +68,7 @@ namespace Nebula
         [[nodiscard]] virtual std::string ToString() const                    = 0;
 
         bool Handled = false;
+
         bool IsInCategory(const EventCategory& category) const noexcept
         {
             return (GetCategoryFlags() & static_cast<std::uint32_t>(category)) != 0U;
@@ -91,7 +92,8 @@ namespace Nebula
         Event& m_Event; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
     };
 
-    // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-    #define NEBULA_BIND_EVENT_FN(func) [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define NEBULA_BIND_EVENT_FN(func) \
+    [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
 
 } // namespace Nebula

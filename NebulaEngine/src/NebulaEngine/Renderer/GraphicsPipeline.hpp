@@ -1,7 +1,7 @@
 #pragma once
 
-#include "NebulaEngine/Core/Pointer.hpp"
 #include "GraphicsContext.hpp"
+#include "NebulaEngine/Core/Pointer.hpp"
 
 #include <vector>
 
@@ -10,6 +10,7 @@ namespace Nebula
     struct VertexInput
     {
         std::size_t Stride;
+
         struct Element
         {
             std::size_t Offset;
@@ -26,12 +27,12 @@ namespace Nebula
     class GraphicsPipeline
     {
     public:
-        GraphicsPipeline() = default;
-        virtual ~GraphicsPipeline() = default;
-        GraphicsPipeline(const GraphicsPipeline&) = delete;
+        GraphicsPipeline()                                   = default;
+        virtual ~GraphicsPipeline()                          = default;
+        GraphicsPipeline(const GraphicsPipeline&)            = delete;
         GraphicsPipeline& operator=(const GraphicsPipeline&) = delete;
-        GraphicsPipeline(GraphicsPipeline&&) = delete;
-        GraphicsPipeline& operator=(GraphicsPipeline&&) = delete;
+        GraphicsPipeline(GraphicsPipeline&&)                 = delete;
+        GraphicsPipeline& operator=(GraphicsPipeline&&)      = delete;
 
         virtual void Bind(RefPtr<GraphicsContext>& context) = 0;
     };

@@ -5,9 +5,9 @@
 
 // Optimization macros
 #ifdef __clang__
-#define NEBULA_ALWAYS_INLINE __attribute__((always_inline))
-#define NEBULA_NEVER_INLINE __attribute__((noinline))
-#define NEBULA_UNREACHABLE __builtin_unreachable()
+    #define NEBULA_ALWAYS_INLINE __attribute__((always_inline))
+    #define NEBULA_NEVER_INLINE  __attribute__((noinline))
+    #define NEBULA_UNREACHABLE   __builtin_unreachable()
 #else
-#error "Compiler not supported"
+    #error "Compiler not supported"
 #endif

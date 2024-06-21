@@ -125,7 +125,7 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/VertexBuffer.hpp
     src/NebulaEngine/Renderer/IndexBuffer.hpp
     src/NebulaEngine/Renderer/DescriptorSetLayout.hpp
-    src/NebulaEngine/Renderer/DescriptorSet.hpp
+    src/NebulaEngine/Renderer/DescriptorSets.hpp
     src/NebulaEngine/Renderer/UniformBuffer.hpp
     src/NebulaEngine/Renderer/TextureImage.hpp
     src/NebulaEngine/Renderer/TextureSampler.hpp
@@ -210,8 +210,8 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/VK/UniformBuffer.cpp
         src/Platform/Vulkan/VK/DescriptorPool.hpp
         src/Platform/Vulkan/VK/DescriptorPool.cpp
-        src/Platform/Vulkan/VK/DescriptorSet.hpp
-        src/Platform/Vulkan/VK/DescriptorSet.cpp
+        src/Platform/Vulkan/VK/DescriptorSets.hpp
+        src/Platform/Vulkan/VK/DescriptorSets.cpp
         src/Platform/Vulkan/VK/TextureImage.hpp
         src/Platform/Vulkan/VK/TextureImage.cpp
         src/Platform/Vulkan/VK/TextureSampler.hpp
@@ -282,3 +282,15 @@ add_custom_target(NebulaEngine_Shaders
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/shaders/Basic_frag.spv
 )
 add_dependencies(NebulaEngine_Engine NebulaEngine_Shaders)
+
+if (NEBULA_FORMAT)
+    file(GLOB_RECURSE NEBULA_ENGINE_FORMAT_SOURCES
+        src/NebulaEngine/*.hpp
+        src/NebulaEngine/*.cpp
+    )
+    add_custom_target(NebulaEngine_Format
+        COMMAND clang-format -style=file -i ${NEBULA_ENGINE_FORMAT_SOURCES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    add_dependencies(NebulaEngine_Engine NebulaEngine_Format)
+endif()

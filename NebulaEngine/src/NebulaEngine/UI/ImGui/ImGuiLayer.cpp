@@ -80,7 +80,7 @@ namespace Nebula
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     void ImGuiLayer::End()
     {
-        ImGuiIO& imguiIo    = ImGui::GetIO();
+        ImGuiIO& imguiIo = ImGui::GetIO();
 
         // Rendering
         ImGui::Render();

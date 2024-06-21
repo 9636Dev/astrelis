@@ -1,6 +1,7 @@
 #include "Utils.hpp"
 
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <stdexcept>
@@ -220,15 +221,15 @@ namespace Nebula::Vulkan
     }
 
     bool CreateImage(VkPhysicalDevice physicalDevice,
-                      VkDevice logicalDevice,
-                      std::uint32_t width,
-                      std::uint32_t height,
-                      VkFormat format,
-                      VkImageTiling tiling,
-                      VkImageUsageFlags usage,
-                      VkMemoryPropertyFlags properties,
-                      VkImage& image,
-                      VkDeviceMemory& imageMemory)
+                     VkDevice logicalDevice,
+                     std::uint32_t width,
+                     std::uint32_t height,
+                     VkFormat format,
+                     VkImageTiling tiling,
+                     VkImageUsageFlags usage,
+                     VkMemoryPropertyFlags properties,
+                     VkImage& image,
+                     VkDeviceMemory& imageMemory)
     {
         VkImageCreateInfo imageInfo {};
         imageInfo.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -321,6 +322,30 @@ namespace Nebula::Vulkan
         }
 
         return details;
+    }
+
+    VkExtent2D SwapChainSupportDetails::ChooseExtent(const RawRef<GLFWwindow*>& window) const
+    {
+        if (capabilities.currentExtent.width != UINT32_MAX)
+        {
+            return capabilities.currentExtent;
+        }
+
+        int width  = 0;
+        int height = 0;
+        glfwGetFramebufferSize(window, &width, &height);
+
+        VkExtent2D actualExtent = {
+            static_cast<std::uint32_t>(width),
+            static_cast<std::uint32_t>(height),
+        };
+
+        actualExtent.width =
+            std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+        actualExtent.height =
+            std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+
+        return actualExtent;
     }
 
 } // namespace Nebula::Vulkan

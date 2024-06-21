@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Log.hpp"
 #include "Debug.hpp"
+#include "Log.hpp"
 
 #ifdef NEBULA_DEBUG
     #define NEBULA_INTERNAL_BUILD_TYPE 0

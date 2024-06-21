@@ -14,11 +14,11 @@ namespace Nebula
     {
     public:
         explicit ImGuiLayer(RefPtr<ImGuiBackend> backend);
-        ~ImGuiLayer() override = default;
-        ImGuiLayer(const ImGuiLayer&) = delete;
+        ~ImGuiLayer() override                   = default;
+        ImGuiLayer(const ImGuiLayer&)            = delete;
         ImGuiLayer& operator=(const ImGuiLayer&) = delete;
-        ImGuiLayer(ImGuiLayer&&) = delete;
-        ImGuiLayer& operator=(ImGuiLayer&&) = delete;
+        ImGuiLayer(ImGuiLayer&&)                 = delete;
+        ImGuiLayer& operator=(ImGuiLayer&&)      = delete;
 
         void OnAttach() override;
         void OnDetach() override;
@@ -28,6 +28,7 @@ namespace Nebula
         void End();
 
         void SetDarkThemeColors();
+
         void BlockEvents(bool block) { m_BlockEvents = block; }
     private:
         void Resize(ViewportResizedEvent& event);

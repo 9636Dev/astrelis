@@ -62,6 +62,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# Find clang format
+find_program(CLANG_FORMAT clang-format)
+if (NOT CLANG_FORMAT)
+    message(STAUS "NebulaEngine: Disabling clang-format (not found)")
+    option(NEBULA_FORMAT "Enable clang-format" OFF)
+else()
+    message(STATUS "NebulaEngine: Found clang-format")
+    option(NEBULA_FORMAT "Enable clang-format" ON)
+endif()
+
 add_subdirectory(NebulaEngine)
 add_library(NebulaEngine::Engine ALIAS NebulaEngine_Engine)
 #add_library(NebulaEngine::Format ALIAS NebulaEngine_Format)

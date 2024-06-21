@@ -46,8 +46,14 @@ namespace Nebula
         Renderer2DStorage storage;
 
         RefPtr<Vulkan::GraphicsPipeline> graphicsPipeline = RefPtr<Vulkan::GraphicsPipeline>::Create();
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+        descriptorSetLayouts.reserve(details.DescriptorSetLayouts.size());
+        for (const auto& layout : details.DescriptorSetLayouts)
+        {
+            descriptorSetLayouts.push_back(layout.As<Vulkan::DescriptorSetLayout>()->m_Layout);
+        }
         CHECK_RETURN(graphicsPipeline->Init(m_Context->m_LogicalDevice, m_Context->m_RenderPass, m_Context->m_SwapChain,
-                                            details.VertexInput, details.DescriptorSetLayout));
+                                            details.VertexInput, descriptorSetLayouts));
         storage.m_GraphicsPipeline = static_cast<RefPtr<GraphicsPipeline>>(graphicsPipeline);
 
         RefPtr<Vulkan::VertexBuffer> vertexBuffer = RefPtr<Vulkan::VertexBuffer>::Create();

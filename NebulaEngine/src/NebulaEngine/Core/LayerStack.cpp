@@ -18,10 +18,7 @@ namespace Nebula
         m_LayerInsertIndex++;
     }
 
-    void LayerStack::PushOverlay(OwnedPtr<Layer*> overlay)
-    {
-        m_Layers.emplace_back(std::move(overlay));
-    }
+    void LayerStack::PushOverlay(OwnedPtr<Layer*> overlay) { m_Layers.emplace_back(std::move(overlay)); }
 
     OwnedPtr<Layer*> LayerStack::PopLayer(RawRef<Layer*> layer)
     {
@@ -30,7 +27,7 @@ namespace Nebula
         {
             m_Layers.erase(iter);
             m_LayerInsertIndex--;
-        return std::move(*iter);
+            return std::move(*iter);
         }
 
         return nullptr;
@@ -42,7 +39,7 @@ namespace Nebula
         if (iter != m_Layers.end())
         {
             m_Layers.erase(iter);
-        return std::move(*iter);
+            return std::move(*iter);
         }
 
         return nullptr;

@@ -24,8 +24,8 @@ namespace Nebula::Vulkan
         DescriptorSets(DescriptorSets&& other)                 = delete;
         DescriptorSets& operator=(DescriptorSets&& other)      = delete;
 
-        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, RefPtr<Nebula::DescriptorSetLayout>& layout, const std::vector<BindingDescriptor>& descriptors);
-        void Destroy(RefPtr<GraphicsContext>& context) const;
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, RefPtr<Nebula::DescriptorSetLayout>& layout, const std::vector<BindingDescriptor>& descriptors) override;
+        void Destroy(RefPtr<GraphicsContext>& context) const override;
 
         void Bind(RefPtr<GraphicsContext>& context, RefPtr<Nebula::GraphicsPipeline>& pipeline) const override;
 

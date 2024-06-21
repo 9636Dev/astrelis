@@ -9,7 +9,7 @@ namespace Nebula
     class VertexBuffer
     {
     public:
-        VertexBuffer() = default;
+        VertexBuffer()                               = default;
         virtual ~VertexBuffer()                      = default;
         VertexBuffer(const VertexBuffer&)            = delete;
         VertexBuffer& operator=(const VertexBuffer&) = delete;
@@ -17,6 +17,6 @@ namespace Nebula
         VertexBuffer& operator=(VertexBuffer&&)      = delete;
 
         virtual bool SetData(RefPtr<GraphicsContext>& context, const void* data, std::size_t size) = 0;
-        virtual void Bind(RefPtr<GraphicsContext>& context) const                                     = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& context) const                                  = 0;
     };
 } // namespace Nebula

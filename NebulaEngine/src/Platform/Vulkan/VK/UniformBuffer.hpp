@@ -23,7 +23,6 @@ namespace Nebula::Vulkan
 
         void SetData(RefPtr<GraphicsContext>& context, const void* data, std::uint32_t size, std::uint32_t offset) override;
 
-    private:
         struct Buffer
         {
             VkBuffer m_Buffer       = VK_NULL_HANDLE;

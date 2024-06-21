@@ -43,6 +43,7 @@ namespace Nebula
         }
 
         T* operator->() const noexcept { return m_Ptr; }
+
         T& operator*() const noexcept { return *m_Ptr; }
 
         T* Get() const noexcept { return m_Ptr; }
@@ -146,6 +147,7 @@ namespace Nebula
         }
 
         T* operator->() const noexcept { return m_Ptr; }
+
         T& operator*() const noexcept { return *m_Ptr; }
 
         T* Get() const noexcept { return m_Ptr; }
@@ -165,7 +167,7 @@ namespace Nebula
 
         template<typename U>
             requires std::is_base_of_v<U, T>
-        explicit  operator RefPtr<U>() const
+        explicit operator RefPtr<U>() const
         {
             if (m_RefCount != nullptr)
             {
@@ -174,8 +176,7 @@ namespace Nebula
             return RefPtr<U>(static_cast<U*>(m_Ptr), m_RefCount);
         }
 
-        template<typename U>
-        RefPtr<U> DynamicCast()
+        template<typename U> RefPtr<U> DynamicCast()
         {
             if (m_RefCount != nullptr)
             {
@@ -184,8 +185,7 @@ namespace Nebula
             return RefPtr<U>(dynamic_cast<U*>(m_Ptr), m_RefCount);
         }
 
-        template<typename U>
-        RefPtr<U> As()
+        template<typename U> RefPtr<U> As() const
         {
             if (m_RefCount != nullptr)
             {
@@ -227,11 +227,10 @@ namespace Nebula
 
         explicit RawRef(std::remove_pointer_t<T>& obj) : m_Ptr(&obj) {}
 
-        ~RawRef()                        = default;
-        RawRef(const RawRef& other) : m_Ptr(other.m_Ptr)
-        {
+        ~RawRef() = default;
 
-        }
+        RawRef(const RawRef& other) : m_Ptr(other.m_Ptr) {}
+
         RawRef& operator=(const RawRef& other)
         {
             if (this != other)
@@ -346,6 +345,6 @@ namespace Nebula
     };
 
     template<typename T>
-    requires std::is_pointer_v<T>
+        requires std::is_pointer_v<T>
     using UnsafeRef = T;
 } // namespace Nebula

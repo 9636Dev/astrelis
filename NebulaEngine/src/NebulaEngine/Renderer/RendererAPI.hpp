@@ -49,7 +49,7 @@ namespace Nebula
             std::size_t VertexBufferSize = 0;
             std::uint32_t IndicesCount   = 0;
             VertexInput VertexInput      = {};
-            RefPtr<DescriptorSetLayout> DescriptorSetLayout;
+            std::vector<RefPtr<DescriptorSetLayout>> DescriptorSetLayouts;
         };
 
         virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;

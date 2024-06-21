@@ -26,7 +26,7 @@ namespace Nebula
         virtual bool IsInitialized() const = 0;
         virtual void BeginFrame()          = 0;
         virtual void EndFrame()            = 0;
-        virtual bool SkipFrame() = 0;
+        virtual bool SkipFrame()           = 0;
 
         virtual std::uint32_t GetCurrentFrameIndex() const = 0;
         virtual std::uint32_t GetImageIndex() const        = 0;

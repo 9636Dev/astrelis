@@ -1,12 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <vector>
 #include <vulkan/vulkan.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/PlatformDetection.hpp"
+#include "NebulaEngine/Core/Pointer.hpp"
 
 namespace Nebula::Vulkan
 {
@@ -114,29 +115,7 @@ namespace Nebula::Vulkan
             return VK_PRESENT_MODE_FIFO_KHR;
         }
 
-        VkExtent2D ChooseExtent(const RawRef<GLFWwindow*>& window) const
-        {
-            if (capabilities.currentExtent.width != UINT32_MAX)
-            {
-                return capabilities.currentExtent;
-            }
-
-            int width = 0;
-            int height = 0;
-            glfwGetFramebufferSize(window, &width, &height);
-
-            VkExtent2D actualExtent = {
-                static_cast<std::uint32_t>(width),
-                static_cast<std::uint32_t>(height),
-            };
-
-            actualExtent.width =
-                std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-            actualExtent.height =
-                std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-            return actualExtent;
-        }
+        VkExtent2D ChooseExtent(const RawRef<GLFWwindow*>& window) const;
     };
 
     SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);

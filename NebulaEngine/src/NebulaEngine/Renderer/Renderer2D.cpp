@@ -67,9 +67,13 @@ namespace Nebula
         {
             return false;
         }
+        details.DescriptorSetLayouts = {m_DescriptorSetLayout};
 
         m_DescriptorSets = m_RendererAPI->CreateDescriptorSets();
-        m_DescriptorCount = m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, 1);
+        if (!m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, bindings))
+        {
+            return false;
+        }
 
         m_Storage = m_RendererAPI->CreateComponents(details);
 
@@ -89,6 +93,8 @@ namespace Nebula
         m_TextureImage->Destroy(m_Context);
         m_TextureSampler->Destroy(m_Context);
         m_UniformBuffer->Destroy(m_Context);
+        m_DescriptorSets->Destroy(m_Context);
+        m_DescriptorSetLayout->Destroy(m_Context);
         m_RendererAPI->DestroyComponents(m_Storage);
         m_RendererAPI->Shutdown();
 
@@ -121,11 +127,7 @@ namespace Nebula
         m_Storage.m_VertexBuffer->Bind(m_Context);
         m_Storage.m_IndexBuffer->Bind(m_Context);
         m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(UniformBufferObject), 0);
-        std::uint32_t currentDsi = m_Context->GetCurrentFrameIndex() * m_DescriptorCount;
-        m_Storage.m_DescriptorSets[currentDsi + m_Storage.m_DescriptorSetIndices["MVP"]]->Bind(
-            m_Context, m_Storage.m_GraphicsPipeline);
-        m_Storage.m_DescriptorSets[currentDsi + m_Storage.m_DescriptorSetIndices["TextureSampler"]]->Bind(
-            m_Context, m_Storage.m_GraphicsPipeline);
+        m_DescriptorSets->Bind(m_Context, m_Storage.m_GraphicsPipeline);
         m_RendererAPI->DrawInstancedIndexed(static_cast<std::uint32_t>(m_Indices.size()), 1, 0, 0, 0);
     }
 

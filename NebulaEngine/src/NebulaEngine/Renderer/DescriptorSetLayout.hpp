@@ -54,17 +54,16 @@ namespace Nebula
         {
         }
 
-        static BindingDescriptor Uniform(std::string name,
-                                          std::uint32_t binding,
-                                          std::uint32_t size,
-                                          RefPtr<UniformBuffer> buffer)
+        static BindingDescriptor
+            Uniform(std::string name, std::uint32_t binding, std::uint32_t size, RefPtr<UniformBuffer> buffer)
         {
             return BindingDescriptor(std::move(name), binding, 1, size, std::move(buffer));
         }
+
         static BindingDescriptor TextureSampler(std::string name,
-                                         std::uint32_t binding,
-                                         RefPtr<TextureImage> texture,
-                                         RefPtr<TextureSampler> sampler)
+                                                std::uint32_t binding,
+                                                RefPtr<TextureImage> texture,
+                                                RefPtr<TextureSampler> sampler)
         {
             return BindingDescriptor(std::move(name), binding, 1, std::move(texture), std::move(sampler));
         }
@@ -80,7 +79,8 @@ namespace Nebula
         DescriptorSetLayout(DescriptorSetLayout&&)                 = delete;
         DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = delete;
 
-        [[nodiscard]] virtual bool Init(RefPtr<GraphicsContext>& context, const std::vector<BindingDescriptor>& descriptors);
-        virtual void Destroy(RefPtr<GraphicsContext>& context) const;
+        [[nodiscard]] virtual bool Init(RefPtr<GraphicsContext>& context,
+                                        const std::vector<BindingDescriptor>& descriptors) = 0;
+        virtual void Destroy(RefPtr<GraphicsContext>& context) const                       = 0;
     };
 } // namespace Nebula

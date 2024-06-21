@@ -2,11 +2,7 @@
 
 namespace Nebula
 {
-    Scene::Scene()
-    {
-    }
+    Scene::Scene() {}
 
-    Scene::~Scene()
-    {
-    }
+    Scene::~Scene() {}
 } // namespace Nebula
