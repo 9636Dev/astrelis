@@ -68,7 +68,6 @@ namespace Nebula
         RefPtr<UniformBuffer> m_UniformBuffer;
         RefPtr<TextureImage> m_TextureImage;
         RefPtr<TextureSampler> m_TextureSampler;
-        std::uint32_t m_DescriptorCount;
 
         // ========================
         // Rendering Data

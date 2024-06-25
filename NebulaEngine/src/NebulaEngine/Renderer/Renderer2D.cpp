@@ -26,8 +26,7 @@ namespace Nebula
     Renderer2D::Renderer2D(RefPtr<Window> window, Bounds viewport) :
         m_Window(std::move(window)),
         m_Context(m_Window->GetGraphicsContext()),
-        m_RendererAPI(RendererAPI::Create(m_Context, viewport, RendererAPI::Type::Renderer2D)),
-        m_DescriptorCount(0)
+        m_RendererAPI(RendererAPI::Create(m_Context, viewport, RendererAPI::Type::Renderer2D))
     {
         m_Instances.reserve(MAX_INSTANCE_COUNT);
     }
