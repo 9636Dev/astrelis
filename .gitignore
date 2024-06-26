@@ -9,6 +9,7 @@
 # Profiling results
 /profiles/*
 /run/profiles/*
+/run/imgui.ini
 
 # Build Cache
 /.cache/
