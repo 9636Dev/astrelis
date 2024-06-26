@@ -7,6 +7,7 @@
 #include "DescriptorSets.hpp"
 #include "GraphicsContext.hpp"
 #include "GraphicsPipeline.hpp"
+#include "IndexBuffer.hpp"
 #include "RendererStorage.hpp"
 #include "TextureImage.hpp"
 #include "TextureSampler.hpp"
@@ -47,8 +48,6 @@ namespace Nebula
 
         struct CreateDetails
         {
-            std::size_t VertexBufferSize = 0;
-            std::uint32_t IndicesCount   = 0;
             std::vector<BufferBinding> VertexInput;
             std::vector<RefPtr<DescriptorSetLayout>> DescriptorSetLayouts;
         };
@@ -78,6 +77,7 @@ namespace Nebula
                                           std::uint32_t firstInstance) = 0;
 
         virtual RefPtr<VertexBuffer> CreateVertexBuffer()               = 0;
+        virtual RefPtr<IndexBuffer> CreateIndexBuffer()                 = 0;
         virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;
         virtual RefPtr<DescriptorSets> CreateDescriptorSets()           = 0;
         virtual RefPtr<UniformBuffer> CreateUniformBuffer()             = 0;

@@ -35,8 +35,6 @@ namespace Nebula
     {
         m_RendererAPI->Init();
         RendererAPI::CreateDetails details;
-        details.VertexBufferSize = m_Vertices.size() * sizeof(Vertex2D);
-        details.IndicesCount     = m_Indices.size();
         details.VertexInput.resize(2);
         details.VertexInput[0].Binding   = 0;
         details.VertexInput[0].Stride    = sizeof(Vertex2D);
@@ -56,10 +54,13 @@ namespace Nebula
             {12 * sizeof(float), 4, 6},
         };
 
-        m_VertexBuffer = m_RendererAPI->CreateVertexBuffer();
-        m_VertexBuffer->Init(m_Context, details.VertexBufferSize);
+        m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
+        auto vertexBufferSize = sizeof(Vertex2D) * m_Vertices.size();
+        m_VertexBuffer->Init(m_Context, vertexBufferSize);
         m_InstanceBuffer = m_RendererAPI->CreateVertexBuffer();
         m_InstanceBuffer->Init(m_Context, sizeof(InstanceData) * MAX_INSTANCE_COUNT);
+        m_IndexBuffer = m_RendererAPI->CreateIndexBuffer();
+        m_IndexBuffer->Init(m_Context, m_Indices.size());
 
         m_UniformBuffer = m_RendererAPI->CreateUniformBuffer();
         m_UniformBuffer->Init(m_Context, sizeof(UniformBufferObject));
@@ -97,8 +98,8 @@ namespace Nebula
 
         m_Storage = m_RendererAPI->CreateComponents(details);
 
-        m_VertexBuffer->SetData(m_Context, m_Vertices.data(), details.VertexBufferSize);
-        m_Storage.m_IndexBuffer->SetData(m_Context, m_Indices.data(), details.IndicesCount);
+        m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
+        m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());
 
         m_UBO.Model      = glm::mat4(1.0F);
         m_UBO.View       = glm::mat4(1.0F);
@@ -118,6 +119,7 @@ namespace Nebula
         m_RendererAPI->WaitDeviceIdle();
 
         m_VertexBuffer->Destroy(m_Context);
+        m_IndexBuffer->Destroy(m_Context);
         m_InstanceBuffer->Destroy(m_Context);
 
         m_TextureImage->Destroy(m_Context);
@@ -156,7 +158,7 @@ namespace Nebula
 
         m_VertexBuffer->Bind(m_Context, 0);
         m_InstanceBuffer->Bind(m_Context, 1);
-        m_Storage.m_IndexBuffer->Bind(m_Context);
+        m_IndexBuffer->Bind(m_Context);
         m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(UniformBufferObject), 0);
         m_DescriptorSets->Bind(m_Context, m_Storage.m_GraphicsPipeline);
 

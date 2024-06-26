@@ -62,6 +62,7 @@ namespace Nebula
 
         RefPtr<VertexBuffer> m_VertexBuffer;
         RefPtr<VertexBuffer> m_InstanceBuffer;
+        RefPtr<IndexBuffer> m_IndexBuffer;
         UniformBufferObject m_UBO;
         RefPtr<DescriptorSetLayout> m_DescriptorSetLayout;
         RefPtr<DescriptorSets> m_DescriptorSets;

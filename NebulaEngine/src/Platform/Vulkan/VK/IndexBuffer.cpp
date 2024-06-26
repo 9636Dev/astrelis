@@ -11,10 +11,11 @@
 
 namespace Nebula::Vulkan
 {
-    bool IndexBuffer::Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::uint32_t count)
+    bool IndexBuffer::Init(RefPtr<GraphicsContext>& context, std::uint32_t count)
     {
+        auto ctx = context.As<VulkanGraphicsContext>();
         VkDeviceSize bufferSize = sizeof(std::uint32_t) * count;
-        if (!CreateBuffer(physicalDevice.GetHandle(), logicalDevice.GetHandle(), bufferSize,
+        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), bufferSize,
                           VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer,
                           m_BufferMemory))
@@ -22,13 +23,14 @@ namespace Nebula::Vulkan
             NEBULA_CORE_LOG_ERROR("Failed to create index buffer!");
             return false;
         }
-        vkBindBufferMemory(logicalDevice.GetHandle(), m_Buffer, m_BufferMemory, 0);
+        vkBindBufferMemory(ctx->m_LogicalDevice.GetHandle(), m_Buffer, m_BufferMemory, 0);
 
         return true;
     }
 
-    void IndexBuffer::Destroy(LogicalDevice& logicalDevice)
+    void IndexBuffer::Destroy(RefPtr<GraphicsContext>& context)
     {
+        auto& logicalDevice = context.As<VulkanGraphicsContext>()->m_LogicalDevice;
         vkDestroyBuffer(logicalDevice.GetHandle(), m_Buffer, nullptr);
         vkFreeMemory(logicalDevice.GetHandle(), m_BufferMemory, nullptr);
     }

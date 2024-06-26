@@ -2,9 +2,6 @@
 
 #include "NebulaEngine/Renderer/IndexBuffer.hpp"
 
-#include "LogicalDevice.hpp"
-#include "PhysicalDevice.hpp"
-
 #include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
@@ -19,8 +16,8 @@ namespace Nebula::Vulkan
         IndexBuffer(IndexBuffer&&)                 = delete;
         IndexBuffer& operator=(IndexBuffer&&)      = delete;
 
-        [[nodiscard]] bool Init(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, std::uint32_t count);
-        void Destroy(LogicalDevice& logicalDevice);
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, std::uint32_t count) override;
+        void Destroy(RefPtr<GraphicsContext>& context) override;
 
         [[nodiscard]] bool SetData(RefPtr<GraphicsContext>& context,
                      const std::uint32_t* data,

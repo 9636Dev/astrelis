@@ -55,11 +55,6 @@ namespace Nebula
         CHECK_RETURN(graphicsPipeline->Init(m_Context->m_LogicalDevice, m_Context->m_RenderPass, m_Context->m_SwapChain,
                                             details.VertexInput, descriptorSetLayouts));
         storage.m_GraphicsPipeline = static_cast<RefPtr<GraphicsPipeline>>(graphicsPipeline);
-
-        RefPtr<Vulkan::IndexBuffer> indexBuffer = RefPtr<Vulkan::IndexBuffer>::Create();
-        CHECK_RETURN(indexBuffer->Init(m_Context->m_PhysicalDevice, m_Context->m_LogicalDevice, details.IndicesCount));
-        storage.m_IndexBuffer = static_cast<RefPtr<IndexBuffer>>(indexBuffer);
-
         return storage;
     }
 
@@ -67,7 +62,6 @@ namespace Nebula
 
     void Vulkan2DRendererAPI::DestroyComponents(Renderer2DStorage& storage)
     {
-        storage.m_IndexBuffer.As<Vulkan::IndexBuffer>()->Destroy(m_Context->m_LogicalDevice);
         storage.m_GraphicsPipeline.As<Vulkan::GraphicsPipeline>()->Destroy(m_Context->m_LogicalDevice);
     }
 
@@ -125,6 +119,11 @@ namespace Nebula
     RefPtr<VertexBuffer> Vulkan2DRendererAPI::CreateVertexBuffer()
     {
         return static_cast<RefPtr<VertexBuffer>>(RefPtr<Vulkan::VertexBuffer>::Create());
+    }
+
+    RefPtr<IndexBuffer> Vulkan2DRendererAPI::CreateIndexBuffer()
+    {
+        return static_cast<RefPtr<IndexBuffer>>(RefPtr<Vulkan::IndexBuffer>::Create());
     }
 
     RefPtr<DescriptorSetLayout> Vulkan2DRendererAPI::CreateDescriptorSetLayout()
