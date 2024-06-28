@@ -1,10 +1,13 @@
 #include "Renderer2D.hpp"
 
+#include <utility>
+
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/IO/Image.hpp"
 #include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 #include "Vertex.hpp"
 
@@ -23,36 +26,35 @@ namespace Nebula
     };
     const std::vector<std::uint32_t> m_Indices = {0, 1, 2, 2, 3, 0};
 
-    Renderer2D::Renderer2D(RefPtr<Window> window, Bounds viewport) :
-        m_Window(std::move(window)),
-        m_Context(m_Window->GetGraphicsContext()),
-        m_RendererAPI(RendererAPI::Create(m_Context, viewport, RendererAPI::Type::Renderer2D))
+    Renderer2D::Renderer2D(RefPtr<Window> window, Bounds viewport) : BaseRenderer(std::move(window), viewport)
     {
         m_Instances.reserve(MAX_INSTANCE_COUNT);
     }
 
-    bool Renderer2D::Init()
+    bool Renderer2D::InitComponents()
     {
-        m_RendererAPI->Init();
-        RendererAPI::CreateDetails details;
-        details.VertexInput.resize(2);
-        details.VertexInput[0].Binding   = 0;
-        details.VertexInput[0].Stride    = sizeof(Vertex2D);
-        details.VertexInput[0].Instanced = false;
-        details.VertexInput[0].Elements  = {
-            {offsetof(Vertex2D, Position), 3, 0},
-            {offsetof(Vertex2D, Color),    3, 1},
-            {offsetof(Vertex2D, TexCoord), 2, 2},
+        std::vector<BufferBinding> vertexInputs(2);
+        vertexInputs[0].Binding   = 0;
+        vertexInputs[0].Stride    = sizeof(Vertex2D);
+        vertexInputs[0].Instanced = false;
+        vertexInputs[0].Elements  = {
+            {VertexInput::VertexType::Float, offsetof(Vertex2D, Position), 3, 0},
+            {VertexInput::VertexType::Float, offsetof(Vertex2D, Color),    3, 1},
+            {VertexInput::VertexType::Float, offsetof(Vertex2D, TexCoord), 2, 2},
         };
-        details.VertexInput[1].Binding   = 1;
-        details.VertexInput[1].Stride    = sizeof(InstanceData);
-        details.VertexInput[1].Instanced = true;
-        details.VertexInput[1].Elements  = {
-            {0,                  4, 3},
-            {4 * sizeof(float),  4, 4},
-            {8 * sizeof(float),  4, 5},
-            {12 * sizeof(float), 4, 6},
+        vertexInputs[1].Binding   = 1;
+        vertexInputs[1].Stride    = sizeof(InstanceData);
+        vertexInputs[1].Instanced = true;
+        vertexInputs[1].Elements  = {
+            {VertexInput::VertexType::Float, 0,                  4, 3},
+            {VertexInput::VertexType::Float, 4 * sizeof(float),  4, 4},
+            {VertexInput::VertexType::Float, 8 * sizeof(float),  4, 5},
+            {VertexInput::VertexType::Float, 12 * sizeof(float), 4, 6},
         };
+
+        PipelineShaders shaders;
+        shaders.Vertex = "shaders/Basic_vert.spv";
+        shaders.Fragment = "shaders/Basic_frag.spv";
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
         auto vertexBufferSize = sizeof(Vertex2D) * m_Vertices.size();
@@ -88,7 +90,6 @@ namespace Nebula
         {
             return false;
         }
-        details.DescriptorSetLayouts = {m_DescriptorSetLayout};
 
         m_DescriptorSets = m_RendererAPI->CreateDescriptorSets();
         if (!m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, bindings))
@@ -96,7 +97,9 @@ namespace Nebula
             return false;
         }
 
-        m_Storage = m_RendererAPI->CreateComponents(details);
+        std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
+        m_Pipeline                                          = m_RendererAPI->CreateGraphicsPipeline();
+        m_Pipeline->Init(m_Context, shaders, vertexInputs, setLayouts);
 
         m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
         m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());
@@ -127,21 +130,15 @@ namespace Nebula
         m_UniformBuffer->Destroy(m_Context);
         m_DescriptorSets->Destroy(m_Context);
         m_DescriptorSetLayout->Destroy(m_Context);
-        m_RendererAPI->DestroyComponents(m_Storage);
-        m_RendererAPI->Shutdown();
+        m_Pipeline->Destroy(m_Context);
 
         NEBULA_CORE_LOG_INFO("Renderer2D shutdown!");
     }
 
     void Renderer2D::BeginFrame()
     {
+        InternalBeginFrame();
         NEBULA_PROFILE_SCOPE("Renderer2D::BeginFrame");
-
-        m_Storage.m_GraphicsPipeline->Bind(m_Context);
-        Bounds scissor = m_RendererAPI->GetSurfaceSize();
-        Viewport viewport(0.0F, 0.0F, static_cast<float>(scissor.Width), static_cast<float>(scissor.Height));
-        m_RendererAPI->SetViewport(viewport);
-        m_RendererAPI->SetScissor(scissor);
     }
 
     void Renderer2D::RenderScene(Scene2D& scene, Camera& camera)
@@ -160,7 +157,7 @@ namespace Nebula
         m_InstanceBuffer->Bind(m_Context, 1);
         m_IndexBuffer->Bind(m_Context);
         m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(UniformBufferObject), 0);
-        m_DescriptorSets->Bind(m_Context, m_Storage.m_GraphicsPipeline);
+        m_DescriptorSets->Bind(m_Context, m_Pipeline);
 
         for (auto entity : scene.GetComponents<TransformComponent>())
         {
@@ -187,6 +184,5 @@ namespace Nebula
 
     void Renderer2D::EndFrame() { NEBULA_PROFILE_SCOPE("Renderer2D::EndFrame"); }
 
-    void Renderer2D::ResizeViewport() { m_RendererAPI->ResizeViewport(); }
 
 } // namespace Nebula

@@ -122,8 +122,12 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/RendererAPI.cpp
     src/NebulaEngine/Renderer/GraphicsContext.hpp
     src/NebulaEngine/Renderer/GraphicsContext.cpp
+    src/NebulaEngine/Renderer/BaseRenderer.hpp
+    src/NebulaEngine/Renderer/BaseRenderer.cpp
     src/NebulaEngine/Renderer/Renderer2D.hpp
     src/NebulaEngine/Renderer/Renderer2D.cpp
+    src/NebulaEngine/Renderer/VoxelRenderer.hpp
+    src/NebulaEngine/Renderer/VoxelRenderer.cpp
 
     src/NebulaEngine/Renderer/GraphicsPipeline.hpp
     src/NebulaEngine/Renderer/VertexBuffer.hpp

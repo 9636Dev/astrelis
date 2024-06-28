@@ -8,7 +8,6 @@
 #include "GraphicsContext.hpp"
 #include "GraphicsPipeline.hpp"
 #include "IndexBuffer.hpp"
-#include "RendererStorage.hpp"
 #include "TextureImage.hpp"
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
@@ -52,9 +51,6 @@ namespace Nebula
             std::vector<RefPtr<DescriptorSetLayout>> DescriptorSetLayouts;
         };
 
-        virtual Renderer2DStorage CreateComponents(CreateDetails& details) = 0;
-        virtual void DestroyComponents(Renderer2DStorage& storage)         = 0;
-
         virtual void SetViewport(Viewport& viewport) = 0;
         virtual void SetScissor(Bounds& scissor)     = 0;
 
@@ -76,6 +72,7 @@ namespace Nebula
                                           std::uint32_t vertexOffset,
                                           std::uint32_t firstInstance) = 0;
 
+        virtual RefPtr<GraphicsPipeline> CreateGraphicsPipeline()       = 0;
         virtual RefPtr<VertexBuffer> CreateVertexBuffer()               = 0;
         virtual RefPtr<IndexBuffer> CreateIndexBuffer()                 = 0;
         virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;

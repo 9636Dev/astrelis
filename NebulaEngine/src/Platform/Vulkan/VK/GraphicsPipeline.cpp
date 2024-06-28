@@ -1,8 +1,11 @@
 #include "GraphicsPipeline.hpp"
 
+#include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 
 #include "CommandBuffer.hpp"
+#include "DescriptorSetLayout.hpp"
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "RenderPass.hpp"
 
@@ -48,27 +51,77 @@ namespace Nebula::Vulkan
         return shaderModule;
     }
 
-    static VkFormat InputCountToFormat(std::size_t count)
+    static VkFormat InputCountToFormat(std::size_t count, VertexInput::VertexType type)
     {
+        switch (type)
+        {
+        case VertexInput::VertexType::Float:
+        case VertexInput::VertexType::Int:
+        case VertexInput::VertexType::UInt:
+            break;
+        default:
+            NEBULA_CORE_ASSERT(false, "Invalid VertexType!");
+        }
+
         switch (count)
         {
         case 1:
-            return VK_FORMAT_R32_SFLOAT;
+            switch (type)
+            {
+            case VertexInput::VertexType::Float:
+                return VK_FORMAT_R32_SFLOAT;
+            case VertexInput::VertexType::Int:
+                return VK_FORMAT_R32_SINT;
+            case VertexInput::VertexType::UInt:
+                return VK_FORMAT_R32_UINT;
+            }
         case 2:
-            return VK_FORMAT_R32G32_SFLOAT;
+            switch (type)
+            {
+            case VertexInput::VertexType::Float:
+                return VK_FORMAT_R32G32_SFLOAT;
+            case VertexInput::VertexType::Int:
+                return VK_FORMAT_R32G32_SINT;
+            case VertexInput::VertexType::UInt:
+                return VK_FORMAT_R32G32_UINT;
+            }
         case 3:
-            return VK_FORMAT_R32G32B32_SFLOAT;
+            switch (type)
+            {
+            case VertexInput::VertexType::Float:
+                return VK_FORMAT_R32G32B32_SFLOAT;
+            case VertexInput::VertexType::Int:
+                return VK_FORMAT_R32G32B32_SINT;
+            case VertexInput::VertexType::UInt:
+                return VK_FORMAT_R32G32B32_UINT;
+            }
         case 4:
-            return VK_FORMAT_R32G32B32A32_SFLOAT;
+            switch (type)
+            {
+            case VertexInput::VertexType::Float:
+                return VK_FORMAT_R32G32B32A32_SFLOAT;
+            case VertexInput::VertexType::Int:
+                return VK_FORMAT_R32G32B32A32_SINT;
+            case VertexInput::VertexType::UInt:
+                return VK_FORMAT_R32G32B32A32_UINT;
+            }
         default:
             return VK_FORMAT_UNDEFINED;
         }
     }
 
-    bool GraphicsPipeline::Init(LogicalDevice& device, RenderPass& renderPass, SwapChain& swapChain, std::vector<BufferBinding>& input, std::vector<VkDescriptorSetLayout>& layouts)
+    bool GraphicsPipeline::Init(RefPtr<GraphicsContext>& context,
+                                PipelineShaders& shaders,
+                                std::vector<BufferBinding>& bindings,
+                                std::vector<RefPtr<Nebula::DescriptorSetLayout>>& layouts)
     {
-        auto vertexShaderCode   = ReadFile("shaders/Basic_vert.spv");
-        auto fragmentShaderCode = ReadFile("shaders/Basic_frag.spv");
+        auto ctx         = context.As<VulkanGraphicsContext>();
+        auto& device     = ctx->m_LogicalDevice;
+        auto& swapChain  = ctx->m_SwapChain;
+        auto& renderPass = ctx->m_RenderPass;
+
+        auto vertexShaderCode   = ReadFile(shaders.Vertex);
+        auto fragmentShaderCode = ReadFile(shaders.Fragment);
 
         VkShaderModule vertexShaderModule   = CreateShaderModule(device.GetHandle(), vertexShaderCode);
         VkShaderModule fragmentShaderModule = CreateShaderModule(device.GetHandle(), fragmentShaderCode);
@@ -99,21 +152,23 @@ namespace Nebula::Vulkan
 
         std::vector<VkVertexInputBindingDescription> bindingDescriptions;
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-        bindingDescriptions.resize(input.size());
-        for (std::size_t i = 0; i < input.size(); i++)
+        bindingDescriptions.resize(bindings.size());
+        for (std::size_t i = 0; i < bindings.size(); i++)
         {
-            bindingDescriptions[i].binding   = static_cast<uint32_t>(i);
-            bindingDescriptions[i].stride    = input[i].Stride;
-            bindingDescriptions[i].inputRate = input[i].Instanced ? VK_VERTEX_INPUT_RATE_INSTANCE : VK_VERTEX_INPUT_RATE_VERTEX;
+            bindingDescriptions[i].binding = static_cast<uint32_t>(i);
+            bindingDescriptions[i].stride  = bindings[i].Stride;
+            bindingDescriptions[i].inputRate =
+                bindings[i].Instanced ? VK_VERTEX_INPUT_RATE_INSTANCE : VK_VERTEX_INPUT_RATE_VERTEX;
 
-            attributeDescriptions.reserve(input[i].Elements.size());
-            for (std::size_t j = 0; j < input[i].Elements.size(); j++)
+            attributeDescriptions.reserve(bindings[i].Elements.size());
+            for (std::size_t j = 0; j < bindings[i].Elements.size(); j++)
             {
                 VkVertexInputAttributeDescription attributeDescription {};
                 attributeDescription.binding  = static_cast<uint32_t>(i);
-                attributeDescription.location = input[i].Elements[j].Location;
-                attributeDescription.format   = InputCountToFormat(input[i].Elements[j].Count);
-                attributeDescription.offset   = input[i].Elements[j].Offset;
+                attributeDescription.location = bindings[i].Elements[j].Location;
+                attributeDescription.format =
+                    InputCountToFormat(bindings[i].Elements[j].Count, bindings[i].Elements[j].Type);
+                attributeDescription.offset = bindings[i].Elements[j].Offset;
                 attributeDescriptions.push_back(attributeDescription);
             }
         }
@@ -177,10 +232,17 @@ namespace Nebula::Vulkan
         colorBlending.attachmentCount = 1;
         colorBlending.pAttachments    = &colorBlendAttachment;
 
+        std::vector<VkDescriptorSetLayout> vulkanLayouts;
+        vulkanLayouts.resize(layouts.size());
+        for (std::size_t i = 0; i < vulkanLayouts.size(); i++)
+        {
+            vulkanLayouts[i] = layouts[i].As<DescriptorSetLayout>()->m_Layout;
+        }
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
         pipelineLayoutInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount         = static_cast<uint32_t>(layouts.size());
-        pipelineLayoutInfo.pSetLayouts            = layouts.data();
+        pipelineLayoutInfo.setLayoutCount         = static_cast<uint32_t>(vulkanLayouts.size());
+        pipelineLayoutInfo.pSetLayouts            = vulkanLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0;
 
         if (vkCreatePipelineLayout(device.GetHandle(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
@@ -218,8 +280,9 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void GraphicsPipeline::Destroy(LogicalDevice& device)
+    void GraphicsPipeline::Destroy(RefPtr<GraphicsContext>& context)
     {
+        auto& device = context.As<VulkanGraphicsContext>()->m_LogicalDevice;
         vkDestroyPipeline(device.GetHandle(), m_Pipeline, nullptr);
         vkDestroyPipelineLayout(device.GetHandle(), m_PipelineLayout, nullptr);
     }

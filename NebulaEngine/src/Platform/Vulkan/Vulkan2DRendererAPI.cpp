@@ -33,38 +33,6 @@ namespace Nebula
         NEBULA_CORE_ASSERT(m_Context->IsInitialized(), "RendererAPI should be destroyed before GraphicsContext!");
     }
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define CHECK_RETURN(x)                                                            \
-    if (!(x))                                                                      \
-    {                                                                              \
-        NEBULA_CORE_LOG_ERROR("Failed to create Vulkan2DRendererAPI components!"); \
-        return Renderer2DStorage();                                                \
-    }
-
-    Renderer2DStorage Vulkan2DRendererAPI::CreateComponents(CreateDetails& details)
-    {
-        Renderer2DStorage storage;
-
-        RefPtr<Vulkan::GraphicsPipeline> graphicsPipeline = RefPtr<Vulkan::GraphicsPipeline>::Create();
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
-        descriptorSetLayouts.reserve(details.DescriptorSetLayouts.size());
-        for (const auto& layout : details.DescriptorSetLayouts)
-        {
-            descriptorSetLayouts.push_back(layout.As<Vulkan::DescriptorSetLayout>()->m_Layout);
-        }
-        CHECK_RETURN(graphicsPipeline->Init(m_Context->m_LogicalDevice, m_Context->m_RenderPass, m_Context->m_SwapChain,
-                                            details.VertexInput, descriptorSetLayouts));
-        storage.m_GraphicsPipeline = static_cast<RefPtr<GraphicsPipeline>>(graphicsPipeline);
-        return storage;
-    }
-
-#undef CHECK_RETURN
-
-    void Vulkan2DRendererAPI::DestroyComponents(Renderer2DStorage& storage)
-    {
-        storage.m_GraphicsPipeline.As<Vulkan::GraphicsPipeline>()->Destroy(m_Context->m_LogicalDevice);
-    }
-
     void Vulkan2DRendererAPI::SetViewport(Viewport& viewport)
     {
         VkViewport vkViewport {};
@@ -115,6 +83,11 @@ namespace Nebula
     }
 
     void Vulkan2DRendererAPI::CorrectProjection(glm::mat4& projection) { projection[1][1] *= -1.0F; }
+
+    RefPtr<GraphicsPipeline> Vulkan2DRendererAPI::CreateGraphicsPipeline()
+    {
+        return static_cast<RefPtr<GraphicsPipeline>>(RefPtr<Vulkan::GraphicsPipeline>::Create());
+    }
 
     RefPtr<VertexBuffer> Vulkan2DRendererAPI::CreateVertexBuffer()
     {

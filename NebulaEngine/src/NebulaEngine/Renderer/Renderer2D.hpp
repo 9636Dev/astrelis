@@ -3,13 +3,11 @@
 #include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
+#include "NebulaEngine/Renderer/BaseRenderer.hpp"
 #include "NebulaEngine/Renderer/TextureImage.hpp"
 #include "NebulaEngine/Scene/Scene2D.hpp"
 
 #include "Camera.hpp"
-#include "GraphicsContext.hpp"
-#include "RendererAPI.hpp"
-#include "RendererStorage.hpp"
 #include "VertexBuffer.hpp"
 
 #include <chrono>
@@ -29,37 +27,28 @@ namespace Nebula
         glm::mat4 Transform;
     };
 
-    class Renderer2D
+        class Renderer2D : public BaseRenderer
     {
     public:
-        explicit Renderer2D(RefPtr<Window> window, Bounds viewport);
-        ~Renderer2D()                            = default;
+        Renderer2D(RefPtr<Window> window, Bounds viewport);
+        ~Renderer2D()                            override = default;
         Renderer2D(const Renderer2D&)            = delete;
         Renderer2D& operator=(const Renderer2D&) = delete;
         Renderer2D(Renderer2D&&)                 = delete;
         Renderer2D& operator=(Renderer2D&&)      = delete;
 
-        bool Init();
-        void Shutdown();
+        bool InitComponents() override;
+        void Shutdown() override;
 
-        void BeginFrame();
+        void BeginFrame() override;
         void RenderScene(Scene2D& scene, Camera& camera);
-        void EndFrame();
-
-        void ResizeViewport();
-
-        Renderer2DStorage& GetStorage() { return m_Storage; }
+        void EndFrame() override;
     private:
         void DrawInstances();
 
         // ========================
         // Rendering States
         // ========================
-        RefPtr<Window> m_Window;
-        RefPtr<GraphicsContext> m_Context;
-        RefPtr<RendererAPI> m_RendererAPI;
-        Renderer2DStorage m_Storage;
-
         RefPtr<VertexBuffer> m_VertexBuffer;
         RefPtr<VertexBuffer> m_InstanceBuffer;
         RefPtr<IndexBuffer> m_IndexBuffer;

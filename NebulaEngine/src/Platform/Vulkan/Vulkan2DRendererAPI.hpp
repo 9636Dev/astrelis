@@ -20,9 +20,6 @@ namespace Nebula
         void Init() override;
         void Shutdown() override;
 
-        Renderer2DStorage CreateComponents(CreateDetails& details) override;
-        void DestroyComponents(Renderer2DStorage& storage) override;
-
         void SetViewport(Viewport& viewport) override;
         void SetScissor(Bounds& scissor) override;
         void WaitDeviceIdle() override;
@@ -34,6 +31,7 @@ namespace Nebula
         bool NeedsResize() const override { return m_Context->m_NeedsResize; }
         void CorrectProjection(glm::mat4& projection) override;
 
+        RefPtr<GraphicsPipeline> CreateGraphicsPipeline() override;
         RefPtr<VertexBuffer> CreateVertexBuffer() override;
         RefPtr<IndexBuffer> CreateIndexBuffer() override;
         RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() override;
