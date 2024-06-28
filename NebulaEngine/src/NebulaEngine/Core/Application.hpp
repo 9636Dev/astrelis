@@ -10,10 +10,13 @@
 
 #include "NebulaEngine/Events/WindowEvent.hpp"
 
-int main(int argc, char** argv);
+int NebulaMain(int argc, char** argv);
 
 namespace Nebula
 {
+    /**
+    * @brief Representation of command line arguments, in a more C++ way, as a std::vector of std::string
+    */
     struct CommandLineArguments
     {
         std::vector<std::string> Arguments;
@@ -30,17 +33,29 @@ namespace Nebula
         }
     };
 
+    /**
+    * @brief Specifications for a application, which will be used internally
+    */
     struct ApplicationSpecification
     {
+        /**
+        * @brief The name of the application, this is used primarily when debugging, and logging
+        */
         std::string Name = "Nebula Application";
+        /**
+         * @brief The working directory of the application, use './' for the current directory.
+        */
         std::string WorkingDirectory;
         CommandLineArguments Arguments;
     };
 
+    /**
+    * The main application of NebulaEngine, including the core logic of the engine, and window lifetimes
+    */
     class Application
     {
     public:
-        friend int ::main(int argc, char** argv);
+        friend int ::NebulaMain(int argc, char** argv);
         explicit Application(ApplicationSpecification specification);
         virtual ~Application();
         Application(const Application&)            = delete;
@@ -52,17 +67,46 @@ namespace Nebula
 
         const RefPtr<Window>& GetWindow() const { return m_Window; }
 
+        /**
+         * Gets the application instance, which should be a singleton. The program will crash and throw an error if more than 1 application is created and not destroyed.
+         */
         static Application& Get() { return *s_Instance; }
     protected:
+        /**
+         * @brief Push a layer onto the stack, which will be updated and rendererd before all Overlays
+         * This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
+         */
         void PushLayer(OwnedPtr<Layer*> layer);
+        /**
+         * @brief Push an overlay onto the layer stack, which is after all of the layers
+         * This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
+         */
         void PushOverlay(OwnedPtr<Layer*> overlay);
+        /**
+         * @brief Pops a certain layer from the stack
+         * The owner is transfered back to the owner, which means that the user will need to handle the destruction. @see OwnedPtr
+         */
         [[nodiscard]] OwnedPtr<Layer*> PopLayer(RawRef<Layer*> layer);
+        /**
+         * @brief Pops a certain overlay from the stack
+         * The owner is transfered back to the owner, which means that the user will need to handle the destruction. @see OwnedPtr
+         */
         [[nodiscard]] OwnedPtr<Layer*> PopOverlay(RawRef<Layer*> overlay);
 
         void OnEvent(Event& event);
         bool OnWindowClose(WindowClosedEvent& event);
         bool OnViewportResize(ViewportResizedEvent& event);
 
+        /**
+         * This will start the application. This is called internally in 'NebulaMain'.
+         * The gameloop outlines these steps:
+         *  - Check if the window is closed / application is closed.
+         *  - Begin the frame using the graphics context, this can initialize per farme components, acquire frames, or clear the screen.
+         *  - Update all of the layers
+         *  - Update all of the overlays (after all the layers)
+         *  - End the frame (submit render commands, etc..)
+         *  - Query user input
+         */
         void Run();
 
         static Application* s_Instance;
@@ -73,5 +117,8 @@ namespace Nebula
         RawRef<ImGuiLayer*> m_ImGuiLayer;
     };
 
+    /**
+    * @brief Define this function in your application to create an instance of your Application class, extending the base class
+    */
     extern ScopedPtr<Application> CreateApplication(CommandLineArguments args);
 } // namespace Nebula

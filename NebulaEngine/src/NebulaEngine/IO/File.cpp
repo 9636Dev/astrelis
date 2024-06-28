@@ -1,5 +1,6 @@
 #include "File.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -65,4 +66,16 @@ namespace Nebula
         std::vector<char> buffer((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
         return buffer;
     }
+
+    std::vector<File> File::ListFiles() const
+    {
+        std::vector<File> files;
+        std::filesystem::directory_iterator iter(m_Path);
+        for (const auto& path : iter)
+        {
+            files.emplace_back(path.path());
+        }
+
+        return files;
+    };
 } // namespace Nebula

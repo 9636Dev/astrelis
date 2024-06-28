@@ -12,6 +12,10 @@ namespace Nebula
     template<typename T> class OwnedPtr;
     template<typename T> class RawRef;
 
+    /**
+    * @brief A smart pointer implementation, similar to 'std::unique_ptr'
+    * The destruction of the ScopedPtr is handled by the smart pointer destructor, so the user does not need to delete it manually.
+    */
     template<typename T> class ScopedPtr
     {
     public:
@@ -75,6 +79,9 @@ namespace Nebula
 
     using RefCountType = std::size_t;
 
+    /**
+    * @brief A reference counted smart pointer
+    */
     template<typename T> class RefPtr
     {
     public:
@@ -233,7 +240,7 @@ namespace Nebula
 
         RawRef& operator=(const RawRef& other)
         {
-            if (this != other)
+            if (this != &other)
             {
                 m_Ptr = other.m_Ptr;
             }
@@ -258,12 +265,22 @@ namespace Nebula
         T operator->() const noexcept { return m_Ptr; }
 
         bool operator==(const std::remove_pointer_t<T>* const other) { return m_Ptr == other; }
+        bool operator!=(const std::remove_pointer_t<T>* const other) { return m_Ptr != other; }
+        bool operator==(const RawRef other) { return m_Ptr == other.m_Ptr; }
+        bool operator!=(const RawRef other) { return m_Ptr != other.m_Ptr; }
 
         template<typename U>
             requires std::is_convertible_v<T, U>
         bool operator==(const std::remove_pointer_t<U>* const other)
         {
             return m_Ptr == static_cast<T>(other);
+        }
+
+        template<typename U>
+            requires std::is_convertible_v<T, U>
+        bool operator!=(const std::remove_pointer_t<U>* const other)
+        {
+            return m_Ptr != static_cast<T>(other);
         }
 
         // Auto conversion for derived classes
@@ -277,6 +294,9 @@ namespace Nebula
         T m_Ptr;
     };
 
+    /**
+    * @brief A non-smart pointer, but indicates the ownership of the pointer, responsible for deleting it.
+    */
     template<typename T> class OwnedPtr
     {
     public:
@@ -344,6 +364,10 @@ namespace Nebula
         T m_Ptr;
     };
 
+    /**
+    * @brief A raw, unsafe pointer
+    * @note This type is never used in the renderer, but the user can use it in their applications
+    */
     template<typename T>
         requires std::is_pointer_v<T>
     using UnsafeRef = T;

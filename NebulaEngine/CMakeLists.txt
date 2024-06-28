@@ -102,6 +102,7 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/Window.hpp
     src/NebulaEngine/Core/Window.cpp
     src/NebulaEngine/Core/Utils/Function.hpp
+    src/NebulaEngine/Core/Utils/Defer.hpp
     src/NebulaEngine/Core/Utils/Debug.hpp
     src/NebulaEngine/Core/Layer.hpp
     src/NebulaEngine/Core/Layer.cpp
@@ -292,8 +293,10 @@ if (NEBULA_PEDANTIC_WARNINGS)
 endif()
 
 add_custom_target(NebulaEngine_Shaders
-    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/shaders/Basic.vert -o ${CMAKE_SOURCE_DIR}/run/shaders/Basic_vert.spv
-    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/shaders/Basic_frag.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_vert.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_frag.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_vert.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_frag.spv
 )
 add_dependencies(NebulaEngine_Engine NebulaEngine_Shaders)
 

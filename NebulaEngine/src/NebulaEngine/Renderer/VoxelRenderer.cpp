@@ -99,8 +99,8 @@ namespace Nebula
         }
 
         PipelineShaders shaders;
-        shaders.Vertex = "shaders/Voxel_vert.spv";
-        shaders.Fragment = "shaders/Voxel_frag.spv";
+        shaders.Vertex = "resources/shaders/Voxel_vert.spv";
+        shaders.Fragment = "resources/shaders/Voxel_frag.spv";
 
         std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
         m_Pipeline                                          = m_RendererAPI->CreateGraphicsPipeline();

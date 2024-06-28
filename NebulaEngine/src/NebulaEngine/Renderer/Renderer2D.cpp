@@ -53,8 +53,8 @@ namespace Nebula
         };
 
         PipelineShaders shaders;
-        shaders.Vertex = "shaders/Basic_vert.spv";
-        shaders.Fragment = "shaders/Basic_frag.spv";
+        shaders.Vertex = "resources/shaders/Basic_vert.spv";
+        shaders.Fragment = "resources/shaders/Basic_frag.spv";
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
         auto vertexBufferSize = sizeof(Vertex2D) * m_Vertices.size();

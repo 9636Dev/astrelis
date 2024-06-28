@@ -30,7 +30,7 @@ namespace Nebula::Vulkan
         return true;
     }
 
-    void FrameBuffer::Destroy(LogicalDevice& device) {
+    void FrameBuffer::Destroy(LogicalDevice& device) const {
         vkDestroyFramebuffer(device.GetHandle(), m_Buffer, nullptr);
     }
 } // namespace Nebula::Vulkan

@@ -19,7 +19,7 @@ namespace Nebula::Vulkan
         FrameBuffer& operator=(FrameBuffer&&)      = default;
 
         [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, VkExtent2D extent);
-        void Destroy(LogicalDevice& device);
+        void Destroy(LogicalDevice& device) const;
 
         VkFramebuffer GetHandle() const { return m_Buffer; }
 

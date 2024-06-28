@@ -1,3 +1,8 @@
+/**
+* @file Entrypoint.hpp
+* @brief The entrypoint of the application, the user should include this file instead of specifying a 'main' function, or defining 'NEBULA_ENTRYPOINT_NO_MAIN', and instead calling 'NebulaMain(int argc, char** argv)'
+*/
+
 #pragma once
 
 #include "Application.hpp"
@@ -5,8 +10,7 @@
 
 //extern Nebula::Ptr<Nebula::Application> Nebula::CreateApplication(CommandLineArguments args);
 
-// NOLINTNEXTLINE(misc-definitions-in-headers)
-int main(int argc, char** argv)
+inline int NebulaMain(int argc, char** argv)
 {
     NEBULA_PROFILE_START_SESSION("Startup", "profiles/NebulaProfileStartup.json");
     Nebula::CommandLineArguments args          = Nebula::CommandLineArguments::Parse(argc, argv);
@@ -23,3 +27,11 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+#ifndef NEBULA_ENTRYPOINT_NO_MAIN
+// NOLINTNEXTLINE(misc-definitions-in-headers)
+int main(int argc, char** argv)
+{
+    return NebulaMain(argc, argv);
+}
+#endif

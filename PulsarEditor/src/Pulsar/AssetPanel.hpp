@@ -1,13 +1,20 @@
 #pragma once
 
+#include "FileTree.hpp"
+
+#include "NebulaEngine/IO/File.hpp"
+
 #include <string>
 
+namespace Pulsar
+{
 class AssetPanel
 {
 public:
-    explicit AssetPanel(std::string rootDirectory);
+    explicit AssetPanel(Nebula::File rootDirectory);
 
     void Draw();
 private:
-    std::string m_RootDirectory;
+    FileTree m_FileTree;
 };
+}

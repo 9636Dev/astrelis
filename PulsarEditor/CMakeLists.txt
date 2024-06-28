@@ -10,6 +10,8 @@ set(PULSAR_EDITOR_SOURCES
     src/Pulsar/EditorLayer.cpp
     src/Pulsar/AssetPanel.hpp
     src/Pulsar/AssetPanel.cpp
+    src/Pulsar/FileTree.hpp
+    src/Pulsar/FileTree.cpp
 )
 
 add_executable(PulsarEditor ${PULSAR_EDITOR_SOURCES})

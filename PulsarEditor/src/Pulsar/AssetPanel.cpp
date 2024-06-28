@@ -2,14 +2,64 @@
 
 #include <imgui.h>
 
-AssetPanel::AssetPanel(std::string rootDirectory)
-    : m_RootDirectory(std::move(rootDirectory))
-{
-}
+#include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Core/Utils/Defer.hpp"
 
-void AssetPanel::Draw()
+namespace Pulsar
 {
-    ImGui::Begin("Assets");
-    ImGui::Text("Root Directory: %s", m_RootDirectory.c_str());
-    ImGui::End();
-}
+    AssetPanel::AssetPanel(Nebula::File rootDirectory) : m_FileTree(std::move(rootDirectory)) {}
+
+    void AssetPanel::Draw()
+    {
+        ImGui::Begin("Assets");
+        Nebula::Deferred deferredImGuiEnd([]() { ImGui::End(); });
+
+        ImGuiTableFlags tableFlags = ImGuiTableFlags_None;
+        tableFlags |= ImGuiTableFlags_BordersInnerV;
+        tableFlags |= ImGuiTableFlags_Resizable;
+        tableFlags |= ImGuiTableFlags_SizingStretchSame;
+        tableFlags |= ImGuiTableFlags_ScrollX;
+        tableFlags |= ImGuiTableFlags_ScrollY;
+
+        if (!ImGui::BeginTable("assets_table", 2, tableFlags, ImGui::GetWindowSize()))
+        {
+            return;
+        }
+
+
+        ImGui::TableNextColumn();
+
+        // Directory tree
+        Nebula::RawRef<FileTree::Node*> selected = m_FileTree.ImGuiTree();
+
+        ImGui::TableNextColumn();
+
+        if (selected == nullptr)
+        {
+            ImGui::Text("Please select a file to view the contents");
+        }
+        else
+        {
+            static Nebula::RawRef<FileTree::Node*> cachedNode = nullptr;
+            static std::string cachedContents;
+
+            if (cachedNode != selected)
+            {
+                cachedNode = selected;
+                auto res = selected->File.ReadText();
+                if (res.IsErr())
+                {
+                    cachedContents = "Failed to read file: " + res.UnwrapErr();
+                }
+                else
+                {
+                    cachedContents = res.Unwrap();
+                }
+            }
+
+            ImGui::Text("%s", cachedContents.c_str());
+        }
+
+        ImGui::EndTable();
+    }
+} // namespace Pulsar

@@ -60,6 +60,13 @@ namespace Nebula
 
         Result<std::string, std::string> ReadText(bool checking = true) const;
         Result<std::vector<char>, std::string> ReadBinary(bool checking = true) const;
+
+        std::vector<File> ListFiles() const;
+
+        bool operator==(const File& other) const
+        {
+            return m_Path == other.m_Path;
+        }
     private:
         std::filesystem::path m_Path;
     };
