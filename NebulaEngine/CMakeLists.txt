@@ -311,3 +311,5 @@ if (NEBULA_FORMAT)
     )
     add_dependencies(NebulaEngine_Engine NebulaEngine_Format)
 endif()
+
+add_subdirectory(tests)
