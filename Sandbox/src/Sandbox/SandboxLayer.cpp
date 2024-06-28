@@ -1,14 +1,18 @@
 #include "SandboxLayer.hpp"
+#include "NebulaEngine/Scene/VoxelScene.hpp"
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/glm.hpp>
 
 #include "NebulaEngine/Core/Application.hpp"
 #include "NebulaEngine/Core/Log.hpp"
-#include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
-#include "NebulaEngine/Scene/TransformComponent.hpp"
+#include "NebulaEngine/Core/Time.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
-#include <random>
 
 SandboxLayer::SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Initializing"); }
 
@@ -16,60 +20,51 @@ SandboxLayer::~SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Destroyed"); }
 
 void SandboxLayer::OnAttach()
 {
-    auto& app    = Nebula::Application::Get();
+    auto& app = Nebula::Application::Get();
     NEBULA_PROFILE_SCOPE("SandboxLayer::OnAttach");
-    if (m_Renderer2D == nullptr)
+    auto viewportBounds = app.GetWindow()->GetViewportBounds();
+    if (m_Renderer == nullptr)
     {
-        m_Renderer2D = std::move(
-            Nebula::ScopedPtr<Nebula::Renderer2D>::Create(app.GetWindow(), app.GetWindow()->GetViewportBounds()));
+        m_Renderer = std::move(Nebula::ScopedPtr<Nebula::VoxelRenderer>::Create(app.GetWindow(), viewportBounds));
     }
-    m_Renderer2D->Init();
+    m_Renderer->Init();
 
-    m_Camera.SetViewMatrix(glm::translate(glm::mat4(1.0F), glm::vec3(-0.3F, 0.0F, 0.0F)));
-    m_Camera2.SetViewMatrix(glm::translate(glm::mat4(1.0F), glm::vec3(0.3F, 0.0F, 0.0F)));
+    m_Camera.SetProjectionMatrix(glm::perspective(
+        glm::radians(60.0F), static_cast<float>(viewportBounds.Width) / static_cast<float>(viewportBounds.Height), 0.1F,
+        10.0F));
+
+    m_Scene.m_Chunks.push_back({
+        {0, 0, 0},
+        {
+            Nebula::Voxel::Create({0, 0, 0}, {1.0F, 1.0F, 1.0F, 1.0F})
+        }
+    });
 }
 
 void SandboxLayer::OnDetach()
 {
     NEBULA_PROFILE_SCOPE("SandboxLayer::OnDetach");
-    m_Renderer2D->Shutdown();
+    m_Renderer->Shutdown();
 }
 
 void SandboxLayer::OnUpdate()
 {
-    m_Renderer2D->BeginFrame();
+    m_Renderer->BeginFrame();
 
     Nebula::TimePoint start = Nebula::Time::Now();
-    m_Renderer2D->RenderScene(m_Scene, m_Camera);
-    m_CpuTime = Nebula::Time::ElapsedTime<Nebula::Milliseconds>(start, Nebula::Time::Now());
+    m_Renderer->RenderScene(m_Scene, m_Camera);
+    m_CpuTime               = Nebula::Time::ElapsedTime<Nebula::Milliseconds>(start, Nebula::Time::Now());
 
-    m_Renderer2D->EndFrame();
+    m_Renderer->EndFrame();
 }
 
 void SandboxLayer::OnUIRender()
 {
     ImGui::Begin("Debug Info");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-    static float translation1 = 0.0F;
-    ImGui::SliderFloat("Translation 1", &translation1, -1.0F, 1.0F);
-    m_Camera.SetViewMatrix(glm::translate(glm::mat4(1.0F), glm::vec3(translation1, 0.0F, 0.0F)));
 
-    static int count = 0;
-    ImGui::InputInt("Count", &count);
-    if (ImGui::Button("Add Quad"))
-    {
-        std::random_device rd;
-        // Uniform dist -1 to 1
-        std::uniform_real_distribution<float> dist(-1.0F, 1.0F);
-        for (int i = 0; i < count; i++)
-        {
-            auto entity = m_Scene.CreateEntity();
-            m_Scene.AddComponent<Nebula::TransformComponent>(entity, {glm::translate(glm::mat4(1.0F), glm::vec3(dist(rd), dist(rd), 0.0F))});
-        }
-    }
-
-    auto deltaTime = Nebula::Time::DeltaTimeMillis();
-    auto gpuTime = deltaTime - m_CpuTime;
+    auto deltaTime       = Nebula::Time::DeltaTimeMillis();
+    auto gpuTime         = deltaTime - m_CpuTime;
     double gpuPercentage = (gpuTime / deltaTime) * 100.0;
     double cpuPercentage = (m_CpuTime / deltaTime) * 100.0;
     ImGui::Text("CPU Time: %.2fms (%.2f%%)", static_cast<double>(m_CpuTime), cpuPercentage);
@@ -81,7 +76,7 @@ void SandboxLayer::OnUIRender()
 
 void SandboxLayer::OnViewportResize(Nebula::WindowResizedEvent& event)
 {
-    m_Renderer2D->ResizeViewport();
+    m_Renderer->ResizeViewport();
     event.Handled = true;
 }
 

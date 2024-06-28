@@ -1,23 +1,13 @@
 #include "VoxelRenderer.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
+#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 
 namespace Nebula
 {
 
     static constexpr std::uint32_t MAX_INSTANCE_COUNT = 10'000;
-
-    struct VoxelVertex
-    {
-        glm::vec3 Position;
-    };
-
-    struct VoxelInstance
-    {
-        std::array<std::uint32_t, 3> Offset;
-
-    };
 
     const std::vector<VoxelVertex> m_Vertices = {
         {{-0.5F, -0.5F, -0.5F}},
@@ -40,8 +30,9 @@ namespace Nebula
     };
 
     VoxelRenderer::VoxelRenderer(RefPtr<Window> window, Bounds viewport) :
-        BaseRenderer(std::move(window), viewport)
-
+        BaseRenderer(std::move(window), viewport),
+        m_CameraData(),
+        m_ChunkData()
     {
     }
 
@@ -59,6 +50,7 @@ namespace Nebula
         vertexInputs[1].Instanced = true;
         vertexInputs[1].Elements  = {
             {VertexInput::VertexType::UInt, offsetof(VoxelInstance, Offset), 3, 1},
+            {VertexInput::VertexType::Float, offsetof(VoxelInstance, Color), 4, 2},
         };
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
@@ -70,7 +62,9 @@ namespace Nebula
         m_IndexBuffer->Init(m_Context, m_Indices.size());
 
         m_UniformBuffer = m_RendererAPI->CreateUniformBuffer();
-        m_UniformBuffer->Init(m_Context, sizeof(UniformBufferObject));
+        m_UniformBuffer->Init(m_Context, sizeof(CameraUniformData));
+        m_ChunkUniform = m_RendererAPI->CreateUniformBuffer();
+        m_ChunkUniform->Init(m_Context, sizeof(ChunkUniformData));
 
         /*InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
         m_TextureImage = m_RendererAPI->CreateTextureImage();
@@ -87,7 +81,8 @@ namespace Nebula
         */
 
         std::vector<BindingDescriptor> bindings = {
-            BindingDescriptor::Uniform("ViewProjection", 0, sizeof(UniformBufferObject), m_UniformBuffer),
+            BindingDescriptor::Uniform("ViewProjection", 0, sizeof(CameraUniformData), m_UniformBuffer),
+            BindingDescriptor::Uniform("ChunkUniform", 1, sizeof(ChunkUniformData), m_ChunkUniform),
             //BindingDescriptor::TextureSampler("TextureSampler", 1, m_TextureImage, m_TextureSampler),
         };
 
@@ -114,9 +109,6 @@ namespace Nebula
         m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
         m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());
 
-        m_UBO.View       = glm::mat4(1.0F);
-        m_UBO.Projection = glm::mat4(1.0F);
-
         return true;
     }
 
@@ -131,12 +123,42 @@ namespace Nebula
         //m_TextureImage->Destroy(m_Context);
         //m_TextureSampler->Destroy(m_Context);
         m_UniformBuffer->Destroy(m_Context);
+        m_ChunkUniform->Destroy(m_Context);
         m_DescriptorSets->Destroy(m_Context);
         m_DescriptorSetLayout->Destroy(m_Context);
         m_Pipeline->Destroy(m_Context);
 
         NEBULA_CORE_LOG_INFO("VoxelRenderer shutdown!");
     }
+
+    void VoxelRenderer::RenderScene(VoxelScene& scene, Camera& camera)
+    {
+        m_CameraData.View = camera.GetViewMatrix();
+        m_CameraData.Projection = camera.GetProjectionMatrix();
+        m_UniformBuffer->SetData(m_Context, &m_CameraData, sizeof(CameraUniformData), 0);
+
+        m_DescriptorSets->Bind(m_Context, m_Pipeline);
+        m_VertexBuffer->Bind(m_Context, 0);
+        m_InstanceBuffer->Bind(m_Context, 1);
+        m_IndexBuffer->Bind(m_Context);
+
+        for (auto& chunk : scene.m_Chunks)
+        {
+            m_ChunkData.Position = chunk.Position;
+            m_ChunkUniform->SetData(m_Context, &m_ChunkData, sizeof(ChunkUniformData), 0);
+
+            m_InstanceData.clear();
+            m_InstanceData.reserve(chunk.Voxels.size());
+            for (auto& voxel : chunk.Voxels)
+            {
+                m_InstanceData.emplace_back(voxel.Position, voxel.Color);
+            }
+
+            m_InstanceBuffer->SetData(m_Context, m_InstanceData.data(), m_InstanceData.size());
+
+            m_RendererAPI->DrawInstancedIndexed(m_Indices.size(), m_InstanceData.size(), 0, 0, 0);
+        }
+    };
 
     void VoxelRenderer::BeginFrame()
     {

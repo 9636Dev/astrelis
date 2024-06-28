@@ -15,7 +15,7 @@
 
 namespace Nebula
 {
-    struct UniformBufferObject
+    struct CameraUniformData
     {
         glm::mat4 Model      = glm::mat4(1.0F);
         glm::mat4 View       = glm::mat4(1.0F);
@@ -52,7 +52,7 @@ namespace Nebula
         RefPtr<VertexBuffer> m_VertexBuffer;
         RefPtr<VertexBuffer> m_InstanceBuffer;
         RefPtr<IndexBuffer> m_IndexBuffer;
-        UniformBufferObject m_UBO;
+        CameraUniformData m_UBO;
         RefPtr<DescriptorSetLayout> m_DescriptorSetLayout;
         RefPtr<DescriptorSets> m_DescriptorSets;
         RefPtr<UniformBuffer> m_UniformBuffer;

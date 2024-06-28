@@ -65,7 +65,7 @@ namespace Nebula
         m_IndexBuffer->Init(m_Context, m_Indices.size());
 
         m_UniformBuffer = m_RendererAPI->CreateUniformBuffer();
-        m_UniformBuffer->Init(m_Context, sizeof(UniformBufferObject));
+        m_UniformBuffer->Init(m_Context, sizeof(CameraUniformData));
 
         InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
         m_TextureImage = m_RendererAPI->CreateTextureImage();
@@ -81,7 +81,7 @@ namespace Nebula
         }
 
         std::vector<BindingDescriptor> bindings = {
-            BindingDescriptor::Uniform("MVP", 0, sizeof(UniformBufferObject), m_UniformBuffer),
+            BindingDescriptor::Uniform("MVP", 0, sizeof(CameraUniformData), m_UniformBuffer),
             BindingDescriptor::TextureSampler("TextureSampler", 1, m_TextureImage, m_TextureSampler),
         };
 
@@ -156,7 +156,7 @@ namespace Nebula
         m_VertexBuffer->Bind(m_Context, 0);
         m_InstanceBuffer->Bind(m_Context, 1);
         m_IndexBuffer->Bind(m_Context);
-        m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(UniformBufferObject), 0);
+        m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(CameraUniformData), 0);
         m_DescriptorSets->Bind(m_Context, m_Pipeline);
 
         for (auto entity : scene.GetComponents<TransformComponent>())
