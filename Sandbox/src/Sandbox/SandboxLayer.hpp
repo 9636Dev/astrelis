@@ -4,8 +4,8 @@
 #include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
 #include "NebulaEngine/Renderer/Camera.hpp"
-#include "NebulaEngine/Renderer/VoxelRenderer.hpp"
-#include "NebulaEngine/Scene/VoxelScene.hpp"
+#include "NebulaEngine/Renderer/Renderer2D.hpp"
+#include "NebulaEngine/Scene/Scene2D.hpp"
 
 class SandboxLayer : public Nebula::Layer
 {
@@ -26,8 +26,8 @@ public:
     void OnViewportResize(Nebula::WindowResizedEvent& event);
 private:
     Nebula::Camera m_Camera;
-    Nebula::VoxelScene m_Scene;
-    Nebula::ScopedPtr<Nebula::VoxelRenderer> m_Renderer = nullptr;
+    Nebula::Scene2D m_Scene;
+    Nebula::ScopedPtr<Nebula::Renderer2D> m_Renderer = nullptr;
 
     Nebula::Milliseconds m_CpuTime;
 };

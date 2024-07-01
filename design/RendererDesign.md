@@ -10,3 +10,6 @@ The backend is API specific, including:
 
 ## Frontend
 The frontend is API agnostic
+
+The design documents is shown below (Excalidraw):
+![[RendererArchitecture]]

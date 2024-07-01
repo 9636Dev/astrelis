@@ -21,6 +21,6 @@ namespace Nebula::Vulkan
 
         VkImageView GetHandle() const { return m_ImageView; }
 
-        VkImageView m_ImageView;
+        VkImageView m_ImageView = VK_NULL_HANDLE;
     };
 } // namespace Nebula::Vulkan

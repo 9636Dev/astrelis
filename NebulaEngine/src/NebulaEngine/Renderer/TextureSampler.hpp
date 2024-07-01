@@ -10,10 +10,10 @@ namespace Nebula
     public:
         TextureSampler()                                 = default;
         virtual ~TextureSampler()                        = default;
-        TextureSampler(const TextureSampler&)            = delete;
-        TextureSampler& operator=(const TextureSampler&) = delete;
-        TextureSampler(TextureSampler&&)                 = delete;
-        TextureSampler& operator=(TextureSampler&&)      = delete;
+        TextureSampler(const TextureSampler&)            = default;
+        TextureSampler& operator=(const TextureSampler&) = default;
+        TextureSampler(TextureSampler&&)                 = default;
+        TextureSampler& operator=(TextureSampler&&)      = default;
 
         virtual bool Init(RefPtr<GraphicsContext>& context)    = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context) = 0;

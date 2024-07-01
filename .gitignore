@@ -20,3 +20,6 @@
 # For now, don't include the docs folder
 /docs/*
 !/docs/doxygen-awesome.css
+
+# Obsidian, for editing design files
+.obsidian/

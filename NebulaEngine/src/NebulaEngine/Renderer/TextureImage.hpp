@@ -10,10 +10,10 @@ namespace Nebula
     public:
         TextureImage()                                     = default;
         virtual ~TextureImage()                            = default;
-        TextureImage(const TextureImage& other)            = delete;
-        TextureImage& operator=(const TextureImage& other) = delete;
-        TextureImage(TextureImage&& other)                 = delete;
-        TextureImage& operator=(TextureImage&& other)      = delete;
+        TextureImage(const TextureImage& other)            = default;
+        TextureImage& operator=(const TextureImage& other) = default;
+        TextureImage(TextureImage&& other)                 = default;
+        TextureImage& operator=(TextureImage&& other)      = default;
 
         virtual bool LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image) = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context)                           = 0;

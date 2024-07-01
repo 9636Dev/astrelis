@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
+#include "NebulaEngine/Renderer/TextureSampler.hpp"
 #include "VK/CommandBuffer.hpp"
 #include "VK/CommandPool.hpp"
 #include "VK/DebugMessenger.hpp"
@@ -17,6 +18,8 @@
 #include "VK/Semaphore.hpp"
 #include "VK/Surface.hpp"
 #include "VK/SwapChain.hpp"
+#include "VK/TextureImage.hpp"
+#include "VK/TextureSampler.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -39,6 +42,14 @@ namespace Nebula
         {
             Vulkan::ImageView ImageView;
             Vulkan::FrameBuffer FrameBuffer;
+
+            Vulkan::TextureImage RendererTextureImage;
+            Vulkan::ImageView RendererImageView;
+            Vulkan::FrameBuffer RendererFrameBuffer;
+
+            Vulkan::TextureImage UITextureImage;
+            Vulkan::ImageView UIImageView;
+            Vulkan::FrameBuffer UIFrameBuffer;
 
             SwapChainFrame() = default;
         };
@@ -85,9 +96,15 @@ namespace Nebula
 
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData> m_Frames;
+        Vulkan::TextureSampler m_RendererTextureSampler;
+        Vulkan::TextureSampler m_UITextureSampler;
+        VkOffset2D m_RendererOffset {0, 0};
+        VkOffset2D m_UIOffset {0, 0};
+        VkExtent2D m_RendererExtent {0, 0};
+        VkExtent2D m_UIExtent {0, 0};
 
-        std::uint32_t m_CurrentFrame = 0;
-        std::uint32_t m_ImageIndex   = 0;
+        std::uint32_t m_CurrentFrame      = 0;
+        std::uint32_t m_ImageIndex        = 0;
         std::uint32_t m_MaxFramesInFlight = 2;
 
         // Internal

@@ -74,10 +74,10 @@ namespace Nebula
     public:
         DescriptorSetLayout()                                      = default;
         virtual ~DescriptorSetLayout()                             = default;
-        DescriptorSetLayout(const DescriptorSetLayout&)            = delete;
-        DescriptorSetLayout& operator=(const DescriptorSetLayout&) = delete;
-        DescriptorSetLayout(DescriptorSetLayout&&)                 = delete;
-        DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = delete;
+        DescriptorSetLayout(const DescriptorSetLayout&)            = default;
+        DescriptorSetLayout& operator=(const DescriptorSetLayout&) = default;
+        DescriptorSetLayout(DescriptorSetLayout&&)                 = default;
+        DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = default;
 
         [[nodiscard]] virtual bool Init(RefPtr<GraphicsContext>& context,
                                         const std::vector<BindingDescriptor>& descriptors) = 0;

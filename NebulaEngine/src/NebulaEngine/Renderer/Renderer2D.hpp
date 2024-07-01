@@ -27,11 +27,11 @@ namespace Nebula
         glm::mat4 Transform;
     };
 
-        class Renderer2D : public BaseRenderer
+    class Renderer2D : public BaseRenderer
     {
     public:
         Renderer2D(RefPtr<Window> window, Bounds viewport);
-        ~Renderer2D()                            override = default;
+        ~Renderer2D() override                   = default;
         Renderer2D(const Renderer2D&)            = delete;
         Renderer2D& operator=(const Renderer2D&) = delete;
         Renderer2D(Renderer2D&&)                 = delete;

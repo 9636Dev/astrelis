@@ -52,8 +52,9 @@ namespace Nebula
 
         T* Get() const noexcept { return m_Ptr; }
 
-        bool operator==(const std::nullptr_t) const noexcept { return m_Ptr == nullptr; }
-        bool operator!=(const std::nullptr_t) const noexcept { return m_Ptr != nullptr; }
+        bool operator==(const ScopedPtr& other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const ScopedPtr& other) const noexcept { return m_Ptr != other.m_Ptr; }
 
         void Reset()
         {
@@ -160,8 +161,9 @@ namespace Nebula
 
         T* Get() const noexcept { return m_Ptr; }
 
-        bool operator==(const std::nullptr_t) const noexcept { return m_Ptr == nullptr; }
-        bool operator!=(const std::nullptr_t) const noexcept { return m_Ptr != nullptr; }
+        bool operator==(const RefPtr& other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const RefPtr& other) const noexcept { return m_Ptr != other.m_Ptr; }
 
         void Reset()
         {
@@ -266,23 +268,24 @@ namespace Nebula
 
         T operator->() const noexcept { return m_Ptr; }
 
-        bool operator==(const std::nullptr_t) const noexcept { return m_Ptr == nullptr; }
-        bool operator!=(const std::nullptr_t) const noexcept { return m_Ptr != nullptr; }
-        bool operator==(const std::remove_pointer_t<T>* const other) { return m_Ptr == other; }
-        bool operator!=(const std::remove_pointer_t<T>* const other) { return m_Ptr != other; }
-        bool operator==(const RawRef other) { return m_Ptr == other.m_Ptr; }
-        bool operator!=(const RawRef other) { return m_Ptr != other.m_Ptr; }
+        bool operator==(const std::remove_pointer_t<T>* const other) const noexcept { return m_Ptr == other; }
+
+        bool operator!=(const std::remove_pointer_t<T>* const other) const noexcept { return m_Ptr != other; }
+
+        bool operator==(const RawRef other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const RawRef other) const noexcept { return m_Ptr != other.m_Ptr; }
 
         template<typename U>
             requires std::is_convertible_v<T, U>
-        bool operator==(const std::remove_pointer_t<U>* const other)
+        bool operator==(const std::remove_pointer_t<U>* const other) const noexcept
         {
             return m_Ptr == static_cast<T>(other);
         }
 
         template<typename U>
             requires std::is_convertible_v<T, U>
-        bool operator!=(const std::remove_pointer_t<U>* const other)
+        bool operator!=(const std::remove_pointer_t<U>* const other) const noexcept
         {
             return m_Ptr != static_cast<T>(other);
         }
@@ -344,10 +347,17 @@ namespace Nebula
 
         RawRef<T> Raw() const { return RawRef(m_Ptr); }
 
-        bool operator==(const std::nullptr_t) const noexcept { return m_Ptr == nullptr; }
-        bool operator!=(const std::nullptr_t) const noexcept { return m_Ptr != nullptr; }
-        bool operator==(const std::remove_pointer_t<T>* const other) { return m_Ptr == other; }
-        bool operator==(const RawRef<T>& other) { return m_Ptr == other.m_Ptr; }
+        bool operator==(const std::remove_pointer_t<T>* const other) const noexcept { return m_Ptr == other; }
+
+        bool operator!=(const std::remove_pointer_t<T>* const other) const noexcept { return m_Ptr != other; }
+
+        bool operator==(const RawRef<T>& other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const RawRef<T>& other) const noexcept { return m_Ptr != other.m_Ptr; }
+
+        bool operator==(const OwnedPtr& other) const noexcept { return m_Ptr == other.m_Ptr; }
+
+        bool operator!=(const OwnedPtr& other) const noexcept { return m_Ptr != other.m_Ptr; }
 
         // Auto conversion for derived classes
         template<typename U>

@@ -10,14 +10,8 @@ namespace Nebula
     static constexpr std::uint32_t MAX_INSTANCE_COUNT = 10'000;
 
     const std::vector<VoxelVertex> m_Vertices = {
-        {{-0.5F, -0.5F, -0.5F}},
-        {{0.5F, -0.5F, -0.5F}},
-        {{0.5F, 0.5F, -0.5F}},
-        {{-0.5F, 0.5F, -0.5F}},
-        {{-0.5F, -0.5F, 0.5F}},
-        {{0.5F, -0.5F, 0.5F}},
-        {{0.5F, 0.5F, 0.5F}},
-        {{-0.5F, 0.5F, 0.5F}},
+        {{-0.5F, -0.5F, -0.5F}}, {{0.5F, -0.5F, -0.5F}}, {{0.5F, 0.5F, -0.5F}}, {{-0.5F, 0.5F, -0.5F}},
+        {{-0.5F, -0.5F, 0.5F}},  {{0.5F, -0.5F, 0.5F}},  {{0.5F, 0.5F, 0.5F}},  {{-0.5F, 0.5F, 0.5F}},
     };
 
     const std::vector<std::uint32_t> m_Indices = {
@@ -49,8 +43,8 @@ namespace Nebula
         vertexInputs[1].Stride    = sizeof(VoxelInstance);
         vertexInputs[1].Instanced = true;
         vertexInputs[1].Elements  = {
-            {VertexInput::VertexType::UInt, offsetof(VoxelInstance, Offset), 3, 1},
-            {VertexInput::VertexType::Float, offsetof(VoxelInstance, Color), 4, 2},
+            {VertexInput::VertexType::UInt,  offsetof(VoxelInstance, Offset), 3, 1},
+            {VertexInput::VertexType::Float, offsetof(VoxelInstance, Color),  4, 2},
         };
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
@@ -99,7 +93,7 @@ namespace Nebula
         }
 
         PipelineShaders shaders;
-        shaders.Vertex = "resources/shaders/Voxel_vert.spv";
+        shaders.Vertex   = "resources/shaders/Voxel_vert.spv";
         shaders.Fragment = "resources/shaders/Voxel_frag.spv";
 
         std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
@@ -133,7 +127,7 @@ namespace Nebula
 
     void VoxelRenderer::RenderScene(VoxelScene& scene, Camera& camera)
     {
-        m_CameraData.View = camera.GetViewMatrix();
+        m_CameraData.View       = camera.GetViewMatrix();
         m_CameraData.Projection = camera.GetProjectionMatrix();
         m_UniformBuffer->SetData(m_Context, &m_CameraData, sizeof(CameraUniformData), 0);
 
@@ -158,7 +152,7 @@ namespace Nebula
 
             m_RendererAPI->DrawInstancedIndexed(m_Indices.size(), m_InstanceData.size(), 0, 0, 0);
         }
-    };
+    }
 
     void VoxelRenderer::BeginFrame()
     {

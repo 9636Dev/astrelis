@@ -53,10 +53,10 @@ namespace Nebula
     public:
         GraphicsPipeline()                                   = default;
         virtual ~GraphicsPipeline()                          = default;
-        GraphicsPipeline(const GraphicsPipeline&)            = delete;
-        GraphicsPipeline& operator=(const GraphicsPipeline&) = delete;
-        GraphicsPipeline(GraphicsPipeline&&)                 = delete;
-        GraphicsPipeline& operator=(GraphicsPipeline&&)      = delete;
+        GraphicsPipeline(const GraphicsPipeline&)            = default;
+        GraphicsPipeline& operator=(const GraphicsPipeline&) = default;
+        GraphicsPipeline(GraphicsPipeline&&)                 = default;
+        GraphicsPipeline& operator=(GraphicsPipeline&&)      = default;
 
         virtual bool Init(RefPtr<GraphicsContext>& context,
                           PipelineShaders& shaders,

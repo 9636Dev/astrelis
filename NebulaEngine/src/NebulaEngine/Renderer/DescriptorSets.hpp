@@ -12,10 +12,10 @@ namespace Nebula
     public:
         DescriptorSets()                                       = default;
         virtual ~DescriptorSets()                              = default;
-        DescriptorSets(const DescriptorSets& other)            = delete;
-        DescriptorSets& operator=(const DescriptorSets& other) = delete;
-        DescriptorSets(DescriptorSets&& other)                 = delete;
-        DescriptorSets& operator=(DescriptorSets&& other)      = delete;
+        DescriptorSets(const DescriptorSets& other)            = default;
+        DescriptorSets& operator=(const DescriptorSets& other) = default;
+        DescriptorSets(DescriptorSets&& other)                 = default;
+        DescriptorSets& operator=(DescriptorSets&& other)      = default;
 
         [[nodiscard]] virtual bool Init(RefPtr<GraphicsContext>& context,
                                         RefPtr<DescriptorSetLayout>& layout,

@@ -76,7 +76,7 @@ else()
 endif()
 
 add_subdirectory(vendor/googletest)
-include(googletest)
+include(GoogleTest)
 add_subdirectory(NebulaEngine)
 add_library(NebulaEngine::Engine ALIAS NebulaEngine_Engine)
 #add_library(NebulaEngine::Format ALIAS NebulaEngine_Format)

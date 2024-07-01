@@ -11,8 +11,8 @@ namespace Nebula::Vulkan
     class FrameBuffer
     {
     public:
-        FrameBuffer()                                        = default;
-        ~FrameBuffer()                                       = default;
+        FrameBuffer()                              = default;
+        ~FrameBuffer()                             = default;
         FrameBuffer(const FrameBuffer&)            = delete;
         FrameBuffer& operator=(const FrameBuffer&) = delete;
         FrameBuffer(FrameBuffer&&)                 = default;
@@ -23,6 +23,6 @@ namespace Nebula::Vulkan
 
         VkFramebuffer GetHandle() const { return m_Buffer; }
 
-        VkFramebuffer m_Buffer;
+        VkFramebuffer m_Buffer = VK_NULL_HANDLE;
     };
 } // namespace Nebula::Vulkan

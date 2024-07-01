@@ -13,8 +13,8 @@ namespace Nebula::Vulkan
         ~TextureImage() override = default;
         TextureImage(const TextureImage& other) = delete;
         TextureImage& operator=(const TextureImage& other) = delete;
-        TextureImage(TextureImage&& other) = delete;
-        TextureImage& operator=(TextureImage&& other) = delete;
+        TextureImage(TextureImage&& other) = default;
+        TextureImage& operator=(TextureImage&& other) = default;
 
         bool LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image) override;
         void Destroy(RefPtr<GraphicsContext>& context) override;

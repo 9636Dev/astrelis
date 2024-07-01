@@ -8,15 +8,20 @@
 
 namespace Nebula::Vulkan
 {
+    struct RenderSubpass
+    {
+        VkPipelineBindPoint PipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        std::vector<VkAttachmentReference> Attachments;
+    };
+
     struct RenderPassInfo
     {
-        VkAttachmentLoadOp loadOp          = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        VkAttachmentStoreOp storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
-        VkAttachmentLoadOp stencilLoadOp   = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        VkAttachmentStoreOp stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        std::vector<VkAttachmentDescription> Attachments;
+        std::vector<RenderSubpass> Subpasses;
 
         RenderPassInfo() = default;
     };
+
 
     class FrameBuffer;
 
@@ -30,11 +35,13 @@ namespace Nebula::Vulkan
         RenderPass(RenderPass&&)                 = delete;
         RenderPass& operator=(RenderPass&&)      = delete;
 
-        [[nodiscard]] bool Init(LogicalDevice& device, SwapChain& swapChain, RenderPassInfo info = {});
+        [[nodiscard]] bool Init(LogicalDevice& device, RenderPassInfo info = {});
         void Destroy(LogicalDevice& device);
 
         void Begin(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent);
         void End(CommandBuffer& buffer);
+
+        [[nodiscard]] VkRenderPass GetHandle() const { return m_RenderPass; }
 
         VkRenderPass m_RenderPass = VK_NULL_HANDLE;
     };

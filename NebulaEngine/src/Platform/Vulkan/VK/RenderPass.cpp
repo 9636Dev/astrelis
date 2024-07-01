@@ -4,36 +4,31 @@
 
 #include "CommandBuffer.hpp"
 #include "FrameBuffer.hpp"
+#include <vulkan/vulkan_core.h>
 
 namespace Nebula::Vulkan
 {
-    bool RenderPass::Init(LogicalDevice& device, SwapChain& swapChain, RenderPassInfo info)
+    bool RenderPass::Init(LogicalDevice& device, RenderPassInfo info)
     {
-        VkAttachmentDescription colorAttachment {};
-        colorAttachment.format         = swapChain.GetImageFormat();
-        colorAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp         = info.loadOp;
-        colorAttachment.storeOp        = info.storeOp;
-        colorAttachment.stencilLoadOp  = info.stencilLoadOp;
-        colorAttachment.stencilStoreOp = info.stencilStoreOp;
-        colorAttachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-        VkAttachmentReference colorAttachmentRef {};
-        colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass {};
-        subpass.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments    = &colorAttachmentRef;
-
         VkRenderPassCreateInfo renderPassInfo {};
         renderPassInfo.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = 1;
-        renderPassInfo.pAttachments    = &colorAttachment;
-        renderPassInfo.subpassCount    = 1;
-        renderPassInfo.pSubpasses      = &subpass;
+        renderPassInfo.attachmentCount = static_cast<std::uint32_t>(info.Attachments.size());
+        renderPassInfo.pAttachments    = info.Attachments.data();
+        std::vector<VkSubpassDescription> subpasses(info.Subpasses.size());
+        for (size_t i = 0; i < info.Subpasses.size(); i++)
+        {
+            subpasses[i].pipelineBindPoint       = info.Subpasses[i].PipelineBindPoint;
+            subpasses[i].colorAttachmentCount    = static_cast<uint32_t>(info.Subpasses[i].Attachments.size());
+            subpasses[i].pColorAttachments       = info.Subpasses[i].Attachments.data();
+            subpasses[i].inputAttachmentCount    = 0;
+            subpasses[i].pInputAttachments       = nullptr;
+            subpasses[i].pResolveAttachments     = nullptr;
+            subpasses[i].pDepthStencilAttachment = nullptr;
+            subpasses[i].preserveAttachmentCount = 0;
+            subpasses[i].pPreserveAttachments    = nullptr;
+        }
+        renderPassInfo.subpassCount    = static_cast<uint32_t>(subpasses.size());
+        renderPassInfo.pSubpasses      = subpasses.data();
 
         VkSubpassDependency dependency {};
         dependency.srcSubpass    = VK_SUBPASS_EXTERNAL;
@@ -71,7 +66,11 @@ namespace Nebula::Vulkan
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues    = &clearColor;
 
-        vkCmdBeginRenderPass(commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        VkSubpassBeginInfo subpassBeginInfo {};
+        subpassBeginInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
+        subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;
+
+        vkCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin, const VkSubpassBeginInfo *pSubpassBeginInfo)
     }
 
     void RenderPass::End(CommandBuffer& commandBuffer) {

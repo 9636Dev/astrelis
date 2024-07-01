@@ -18,15 +18,9 @@ namespace Nebula
         return InitComponents();
     }
 
-    void BaseRenderer::InitAPI()
-    {
-        m_RendererAPI->Init();
-    }
+    void BaseRenderer::InitAPI() { m_RendererAPI->Init(); }
 
-    void BaseRenderer::Shutdown()
-    {
-        m_RendererAPI->Shutdown();
-    }
+    void BaseRenderer::Shutdown() { m_RendererAPI->Shutdown(); }
 
     void BaseRenderer::InternalBeginFrame()
     {

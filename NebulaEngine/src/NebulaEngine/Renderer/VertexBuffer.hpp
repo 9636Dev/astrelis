@@ -11,10 +11,10 @@ namespace Nebula
     public:
         VertexBuffer()                               = default;
         virtual ~VertexBuffer()                      = default;
-        VertexBuffer(const VertexBuffer&)            = delete;
-        VertexBuffer& operator=(const VertexBuffer&) = delete;
-        VertexBuffer(VertexBuffer&&)                 = delete;
-        VertexBuffer& operator=(VertexBuffer&&)      = delete;
+        VertexBuffer(const VertexBuffer&)            = default;
+        VertexBuffer& operator=(const VertexBuffer&) = default;
+        VertexBuffer(VertexBuffer&&)                 = default;
+        VertexBuffer& operator=(VertexBuffer&&)      = default;
 
         virtual bool Init(RefPtr<GraphicsContext>& context, std::size_t size) = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context)                = 0;

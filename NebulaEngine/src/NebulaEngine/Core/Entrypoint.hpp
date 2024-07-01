@@ -30,8 +30,5 @@ inline int NebulaMain(int argc, char** argv)
 
 #ifndef NEBULA_ENTRYPOINT_NO_MAIN
 // NOLINTNEXTLINE(misc-definitions-in-headers)
-int main(int argc, char** argv)
-{
-    return NebulaMain(argc, argv);
-}
+int main(int argc, char** argv) { return NebulaMain(argc, argv); }
 #endif

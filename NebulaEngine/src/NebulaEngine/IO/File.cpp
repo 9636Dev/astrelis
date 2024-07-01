@@ -77,5 +77,5 @@ namespace Nebula
         }
 
         return files;
-    };
+    }
 } // namespace Nebula

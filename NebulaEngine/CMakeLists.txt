@@ -129,6 +129,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Renderer/Renderer2D.cpp
     src/NebulaEngine/Renderer/VoxelRenderer.hpp
     src/NebulaEngine/Renderer/VoxelRenderer.cpp
+    src/NebulaEngine/Renderer/RenderSystem.hpp
+    src/NebulaEngine/Renderer/RenderSystem.cpp
 
     src/NebulaEngine/Renderer/GraphicsPipeline.hpp
     src/NebulaEngine/Renderer/VertexBuffer.hpp
@@ -182,6 +184,8 @@ set(NEBULA_ENGINE_SOURCES
         src/Platform/Vulkan/Vulkan2DRendererAPI.cpp
         src/Platform/Vulkan/VulkanImGuiBackend.hpp
         src/Platform/Vulkan/VulkanImGuiBackend.cpp
+        src/Platform/Vulkan/VulkanRenderSystem.hpp
+        src/Platform/Vulkan/VulkanRenderSystem.cpp
 
         src/Platform/Vulkan/VK/Utils.hpp
         src/Platform/Vulkan/VK/Utils.cpp

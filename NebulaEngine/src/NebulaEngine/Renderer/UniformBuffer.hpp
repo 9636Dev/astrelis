@@ -11,10 +11,10 @@ namespace Nebula
     public:
         UniformBuffer()                                = default;
         virtual ~UniformBuffer()                       = default;
-        UniformBuffer(const UniformBuffer&)            = delete;
-        UniformBuffer& operator=(const UniformBuffer&) = delete;
-        UniformBuffer(UniformBuffer&&)                 = delete;
-        UniformBuffer& operator=(UniformBuffer&&)      = delete;
+        UniformBuffer(const UniformBuffer&)            = default;
+        UniformBuffer& operator=(const UniformBuffer&) = default;
+        UniformBuffer(UniformBuffer&&)                 = default;
+        UniformBuffer& operator=(UniformBuffer&&)      = default;
 
         virtual bool Init(RefPtr<GraphicsContext>& context, uint32_t size)                                       = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context) const                                             = 0;

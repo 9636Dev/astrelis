@@ -1,18 +1,13 @@
 #include "SandboxLayer.hpp"
-#include "NebulaEngine/Scene/VoxelScene.hpp"
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/glm.hpp>
 
 #include "NebulaEngine/Core/Application.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Core/Time.hpp"
+#include "NebulaEngine/Scene/TransformComponent.hpp"
 
-#include <glm/ext/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
 SandboxLayer::SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Initializing"); }
 
@@ -25,20 +20,12 @@ void SandboxLayer::OnAttach()
     auto viewportBounds = app.GetWindow()->GetViewportBounds();
     if (m_Renderer == nullptr)
     {
-        m_Renderer = std::move(Nebula::ScopedPtr<Nebula::VoxelRenderer>::Create(app.GetWindow(), viewportBounds));
+        m_Renderer = std::move(Nebula::ScopedPtr<Nebula::Renderer2D>::Create(app.GetWindow(), viewportBounds));
     }
     m_Renderer->Init();
 
-    m_Camera.SetProjectionMatrix(glm::perspective(
-        glm::radians(60.0F), static_cast<float>(viewportBounds.Width) / static_cast<float>(viewportBounds.Height), 0.1F,
-        10.0F));
-
-    m_Scene.m_Chunks.push_back({
-        {0, 0, 0},
-        {
-            Nebula::Voxel::Create({0, 0, 0}, {1.0F, 1.0F, 1.0F, 1.0F})
-        }
-    });
+    auto entity = m_Scene.CreateEntity();
+    m_Scene.AddComponent(entity, Nebula::TransformComponent{glm::mat4(1.0F)});
 }
 
 void SandboxLayer::OnDetach()

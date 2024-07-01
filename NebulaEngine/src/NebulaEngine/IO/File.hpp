@@ -63,10 +63,7 @@ namespace Nebula
 
         std::vector<File> ListFiles() const;
 
-        bool operator==(const File& other) const
-        {
-            return m_Path == other.m_Path;
-        }
+        bool operator==(const File& other) const { return m_Path == other.m_Path; }
     private:
         std::filesystem::path m_Path;
     };

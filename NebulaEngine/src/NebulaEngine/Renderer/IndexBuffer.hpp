@@ -1,7 +1,8 @@
 #pragma once
 
+#include <cstdint>
+
 #include "GraphicsContext.hpp"
-#include <cstddef>
 
 namespace Nebula
 {
@@ -11,10 +12,10 @@ namespace Nebula
     public:
         IndexBuffer()                              = default;
         virtual ~IndexBuffer()                     = default;
-        IndexBuffer(const IndexBuffer&)            = delete;
-        IndexBuffer& operator=(const IndexBuffer&) = delete;
-        IndexBuffer(IndexBuffer&&)                 = delete;
-        IndexBuffer& operator=(IndexBuffer&&)      = delete;
+        IndexBuffer(const IndexBuffer&)            = default;
+        IndexBuffer& operator=(const IndexBuffer&) = default;
+        IndexBuffer(IndexBuffer&&)                 = default;
+        IndexBuffer& operator=(IndexBuffer&&)      = default;
 
         virtual bool Init(RefPtr<GraphicsContext>& context, std::uint32_t count)                               = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context)                                                 = 0;

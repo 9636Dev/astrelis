@@ -8,6 +8,7 @@
 - googletest
 - benchmark
 - entt
+- stb (temp. for stb_image)
 
 # These dependencies are using prebuilt binaries:
 - ImageMagick (If I manage to find out how to link it properly)
