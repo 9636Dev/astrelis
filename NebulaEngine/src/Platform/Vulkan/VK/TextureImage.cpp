@@ -7,6 +7,39 @@
 
 namespace Nebula::Vulkan
 {
+        bool TextureImage::Init(LogicalDevice& device,
+                  CommandPool& pool,
+                  PhysicalDevice& physicalDevice,
+                  VkExtent2D extent,
+                  VkFormat format,
+                  VkImageTiling tiling,
+                  VkImageUsageFlags usage,
+                  VkMemoryPropertyFlags properties)
+    {
+        // TODO: Pool to transition image layout
+        (void)pool;
+        CreateImage(physicalDevice.GetHandle(), device.GetHandle(), extent.width, extent.height, format, tiling, usage, properties, m_Image, m_ImageMemory);
+
+        VkImageViewCreateInfo viewInfo = {};
+        viewInfo.sType                 = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.image                 = m_Image;
+        viewInfo.viewType              = VK_IMAGE_VIEW_TYPE_2D;
+        viewInfo.format                = format;
+        viewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        viewInfo.subresourceRange.baseMipLevel   = 0;
+        viewInfo.subresourceRange.levelCount     = 1;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount     = 1;
+
+        if (vkCreateImageView(device.GetHandle(), &viewInfo, nullptr, &m_ImageView) != VK_SUCCESS)
+        {
+            NEBULA_CORE_LOG_ERROR("Failed to create texture image view!");
+            return false;
+        }
+
+        return true;
+    }
+
     bool TextureImage::LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image)
     {
         auto ctx = context.As<VulkanGraphicsContext>();
@@ -67,11 +100,14 @@ namespace Nebula::Vulkan
 
     void TextureImage::Destroy(RefPtr<GraphicsContext>& context)
     {
-        auto ctx = context.As<VulkanGraphicsContext>();
+        Destroy(context.As<VulkanGraphicsContext>()->m_LogicalDevice);
+    }
 
-        vkDestroyImageView(ctx->m_LogicalDevice.GetHandle(), m_ImageView, nullptr);
-        vkDestroyImage(ctx->m_LogicalDevice.GetHandle(), m_Image, nullptr);
-        vkFreeMemory(ctx->m_LogicalDevice.GetHandle(), m_ImageMemory, nullptr);
+    void TextureImage::Destroy(LogicalDevice& device)
+    {
+        vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr);
+        vkDestroyImage(device.GetHandle(), m_Image, nullptr);
+        vkFreeMemory(device.GetHandle(), m_ImageMemory, nullptr);
     }
 } // namespace Nebula::Vulkan
 

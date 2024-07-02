@@ -2,12 +2,13 @@
 
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Renderer/GraphicsContext.hpp"
 #include "Platform/Vulkan/VK/RenderPass.hpp"
 #include "VK/Utils.hpp"
 #include "VK/VulkanExt.hpp"
 
-#include <array>
 #include <GLFW/glfw3.h>
+#include <array>
 #include <vulkan/vulkan.h>
 
 namespace Nebula
@@ -51,11 +52,10 @@ namespace Nebula
                                             m_Debug ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
         INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface));
         INIT_COMPONENT(m_CommandPool.Init(m_LogicalDevice));
-        Vulkan::RenderPassInfo renderPassInfo {};
 
-        if (m_RendererExtent.width == 0 || m_RendererExtent.height == 0)
+        if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0)
         {
-            m_RendererExtent = m_SwapChain.GetExtent();
+            m_GraphicsExtent = m_SwapChain.GetExtent();
         }
 
         if (m_UIExtent.width == 0 || m_UIExtent.height == 0)
@@ -63,28 +63,105 @@ namespace Nebula
             m_UIExtent = m_SwapChain.GetExtent();
         }
 
+        m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
-        VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
-        colorAttachment.format         = m_SwapChain.GetImageFormat();
-        colorAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
-        colorAttachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        colorAttachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        {
+            // Main render pass
+            Vulkan::RenderPassInfo renderPassInfo {};
+            VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
+            colorAttachment.format                   = m_SwapChain.GetImageFormat();
+            colorAttachment.samples                  = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp                  = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout              = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 
-        renderPassInfo.Subpasses = {
-            {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
-        };
+            renderPassInfo.Subpasses = {
+                {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
+            };
 
-        INIT_COMPONENT(m_RenderPass.Init(m_LogicalDevice, renderPassInfo));
+            INIT_COMPONENT(m_RenderPass.Init(m_LogicalDevice, renderPassInfo));
+        }
+
+        {
+            for (auto& frame : m_SwapChainFrames)
+            {
+                frame.GraphicsTextureImage = RefPtr<Vulkan::TextureImage>::Create();
+                frame.GraphicsTextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_GraphicsExtent,
+                                                VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                                                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+            }
+            // Graphics render pass
+            Vulkan::RenderPassInfo renderPassInfo {};
+            VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
+            colorAttachment.format                   = VK_FORMAT_R8G8B8A8_SRGB;
+            colorAttachment.samples                  = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp                  = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout              = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            renderPassInfo.Subpasses = {
+                {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
+            };
+
+            INIT_COMPONENT(m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo));
+
+            for (auto& frame : m_SwapChainFrames)
+            {
+                if (!frame.GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, frame.GraphicsTextureImage->m_ImageView,
+                                               m_GraphicsExtent))
+                {
+                    return false;
+                }
+            }
+        }
+
+        {
+            for (auto& frame : m_SwapChainFrames)
+            {
+                frame.UITextureImage = RefPtr<Vulkan::TextureImage>::Create();
+                frame.UITextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_UIExtent,
+                                                VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                                                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+            }
+            // UI render pass
+            Vulkan::RenderPassInfo renderPassInfo {};
+            VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
+            colorAttachment.format                   = VK_FORMAT_R8G8B8A8_SRGB;
+            colorAttachment.samples                  = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachment.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp                  = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout              = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            renderPassInfo.Subpasses = {
+                {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
+            };
+
+            INIT_COMPONENT(m_UIRenderPass.Init(m_LogicalDevice, renderPassInfo));
+
+            for (auto& frame : m_SwapChainFrames)
+            {
+                if (!frame.UIFrameBuffer.Init(m_LogicalDevice, m_UIRenderPass, frame.UITextureImage->m_ImageView,
+                                               m_UIExtent))
+                {
+                    return false;
+                }
+            }
+        }
 
         // TODO: Create a descriptor pool manager, right now it is just hardcoded
         INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, 1'000));
-
-        m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
         {
@@ -92,7 +169,7 @@ namespace Nebula
             INIT_COMPONENT(
                 frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat()));
             INIT_COMPONENT(
-                frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView, m_SwapChain.GetExtent()));
+                frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView, m_SwapChain.GetExtent()));
         }
 
         m_Frames.resize(m_SwapChain.GetImageCount());
@@ -133,10 +210,16 @@ namespace Nebula
         {
             frame.ImageView.Destroy(m_LogicalDevice);
             frame.FrameBuffer.Destroy(m_LogicalDevice);
+            frame.GraphicsTextureImage->Destroy(m_LogicalDevice);
+            frame.UITextureImage->Destroy(m_LogicalDevice);
+            frame.GraphicsFrameBuffer.Destroy(m_LogicalDevice);
+            frame.UIFrameBuffer.Destroy(m_LogicalDevice);
         }
 
         m_DescriptorPool.Destroy(m_LogicalDevice);
         m_RenderPass.Destroy(m_LogicalDevice);
+        m_GraphicsRenderPass.Destroy(m_LogicalDevice);
+        m_UIRenderPass.Destroy(m_LogicalDevice);
         m_CommandPool.Destroy(m_LogicalDevice);
         m_SwapChain.Destroy(m_LogicalDevice);
         m_LogicalDevice.Destroy();
@@ -184,14 +267,11 @@ namespace Nebula
 
         frame.CommandBuffer.Reset();
         frame.CommandBuffer.Begin();
-
-        m_RenderPass.Begin(frame.CommandBuffer, m_SwapChainFrames[m_ImageIndex].FrameBuffer, m_SwapChain.GetExtent());
     }
 
     void VulkanGraphicsContext::EndFrame()
     {
         auto& frame = GetCurrentFrame();
-        m_RenderPass.End(frame.CommandBuffer);
         frame.CommandBuffer.End();
 
         if (m_SkipFrame)
@@ -260,7 +340,7 @@ namespace Nebula
 
             auto res = frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat());
             NEBULA_CORE_ASSERT(res, "Failed to recreate image view!");
-            res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView, m_SwapChain.GetExtent());
+            res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView, m_SwapChain.GetExtent());
             NEBULA_CORE_ASSERT(res, "Failed to recreate frame buffer!");
             (void)res; // For release builds
         }

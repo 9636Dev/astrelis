@@ -43,12 +43,10 @@ namespace Nebula
             Vulkan::ImageView ImageView;
             Vulkan::FrameBuffer FrameBuffer;
 
-            Vulkan::TextureImage RendererTextureImage;
-            Vulkan::ImageView RendererImageView;
-            Vulkan::FrameBuffer RendererFrameBuffer;
+            RefPtr<Vulkan::TextureImage> GraphicsTextureImage;
+            Vulkan::FrameBuffer GraphicsFrameBuffer;
 
-            Vulkan::TextureImage UITextureImage;
-            Vulkan::ImageView UIImageView;
+            RefPtr<Vulkan::TextureImage> UITextureImage;
             Vulkan::FrameBuffer UIFrameBuffer;
 
             SwapChainFrame() = default;
@@ -91,16 +89,17 @@ namespace Nebula
         Vulkan::LogicalDevice m_LogicalDevice;
         Vulkan::CommandPool m_CommandPool;
         Vulkan::SwapChain m_SwapChain;
-        Vulkan::RenderPass m_RenderPass;
         Vulkan::DescriptorPool m_DescriptorPool;
+
+        Vulkan::RenderPass m_RenderPass;
+        Vulkan::RenderPass m_GraphicsRenderPass;
+        Vulkan::RenderPass m_UIRenderPass;
 
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData> m_Frames;
-        Vulkan::TextureSampler m_RendererTextureSampler;
-        Vulkan::TextureSampler m_UITextureSampler;
-        VkOffset2D m_RendererOffset {0, 0};
+        VkOffset2D m_GraphicsOffset {0, 0};
         VkOffset2D m_UIOffset {0, 0};
-        VkExtent2D m_RendererExtent {0, 0};
+        VkExtent2D m_GraphicsExtent {0, 0};
         VkExtent2D m_UIExtent {0, 0};
 
         std::uint32_t m_CurrentFrame      = 0;

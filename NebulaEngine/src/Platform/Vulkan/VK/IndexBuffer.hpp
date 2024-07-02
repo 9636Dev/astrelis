@@ -1,6 +1,10 @@
 #pragma once
 
 #include "NebulaEngine/Renderer/IndexBuffer.hpp"
+#include "Platform/Vulkan/VK/CommandBuffer.hpp"
+#include "Platform/Vulkan/VK/CommandPool.hpp"
+#include "Platform/Vulkan/VK/LogicalDevice.hpp"
+#include "Platform/Vulkan/VK/PhysicalDevice.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -16,12 +20,18 @@ namespace Nebula::Vulkan
         IndexBuffer(IndexBuffer&&)                 = delete;
         IndexBuffer& operator=(IndexBuffer&&)      = delete;
 
+        [[nodiscard]] bool Init(LogicalDevice& device, PhysicalDevice& physicalDevice, std::uint32_t count);
         [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, std::uint32_t count) override;
         void Destroy(RefPtr<GraphicsContext>& context) override;
 
-        [[nodiscard]] bool SetData(RefPtr<GraphicsContext>& context,
-                     const std::uint32_t* data,
-                     std::uint32_t count) override;
+        [[nodiscard]] bool SetData(LogicalDevice& device,
+                                   PhysicalDevice& physicalDevice,
+                                   CommandPool& commandPool,
+                                   const std::uint32_t* data,
+                                   std::uint32_t count);
+        [[nodiscard]] bool
+            SetData(RefPtr<GraphicsContext>& context, const std::uint32_t* data, std::uint32_t count) override;
+        void Bind(CommandBuffer& buffer) const;
         void Bind(RefPtr<Nebula::GraphicsContext>& context) const override;
     private:
         VkBuffer m_Buffer             = VK_NULL_HANDLE;

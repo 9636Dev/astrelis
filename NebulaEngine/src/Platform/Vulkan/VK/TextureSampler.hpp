@@ -2,6 +2,9 @@
 
 #include "NebulaEngine/Renderer/TextureSampler.hpp"
 
+#include "LogicalDevice.hpp"
+#include "PhysicalDevice.hpp"
+
 #include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
@@ -16,6 +19,7 @@ namespace Nebula::Vulkan
         TextureSampler(TextureSampler&&) = delete;
         TextureSampler& operator=(TextureSampler&&) = delete;
 
+        bool Init(LogicalDevice& device, PhysicalDevice& physicalDevice);
         bool Init(RefPtr<GraphicsContext>& context) override;
         void Destroy(RefPtr<GraphicsContext>& context) override;
 

@@ -8,9 +8,9 @@
 namespace Nebula::Vulkan
 {
     bool FrameBuffer::Init(
-        LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, VkExtent2D extent)
+        LogicalDevice& device, RenderPass& renderPass, VkImageView imageView, VkExtent2D extent)
     {
-        std::array<VkImageView, 1> attachments = {imageView.GetHandle()};
+        std::array<VkImageView, 1> attachments = {imageView};
 
         VkFramebufferCreateInfo framebufferInfo {};
         framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

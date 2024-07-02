@@ -13,12 +13,12 @@ namespace Nebula::Vulkan
     public:
         FrameBuffer()                              = default;
         ~FrameBuffer()                             = default;
-        FrameBuffer(const FrameBuffer&)            = delete;
-        FrameBuffer& operator=(const FrameBuffer&) = delete;
+        FrameBuffer(const FrameBuffer&)            = default;
+        FrameBuffer& operator=(const FrameBuffer&) = default;
         FrameBuffer(FrameBuffer&&)                 = default;
         FrameBuffer& operator=(FrameBuffer&&)      = default;
 
-        [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, ImageView& imageView, VkExtent2D extent);
+        [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass, VkImageView imageView, VkExtent2D extent);
         void Destroy(LogicalDevice& device) const;
 
         VkFramebuffer GetHandle() const { return m_Buffer; }

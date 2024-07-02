@@ -14,12 +14,10 @@
 
 namespace Nebula::Vulkan
 {
-
-    bool VertexBuffer::Init(RefPtr<GraphicsContext>& context, std::size_t size)
+    bool VertexBuffer::Init(LogicalDevice& device, PhysicalDevice& physicalDevice, std::size_t size)
     {
-        auto ctx                = context.As<VulkanGraphicsContext>();
         VkDeviceSize bufferSize = size;
-        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), bufferSize,
+        if (!CreateBuffer(physicalDevice.GetHandle(), device.GetHandle(), bufferSize,
                           VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_Buffer,
                           m_BufferMemory))
@@ -27,9 +25,15 @@ namespace Nebula::Vulkan
             NEBULA_CORE_LOG_ERROR("Failed to create vertex buffer!");
             return false;
         }
-        vkBindBufferMemory(ctx->m_LogicalDevice.GetHandle(), m_Buffer, m_BufferMemory, 0);
+        vkBindBufferMemory(device.GetHandle(), m_Buffer, m_BufferMemory, 0);
 
         return true;
+    }
+
+    bool VertexBuffer::Init(RefPtr<GraphicsContext>& context, std::size_t size)
+    {
+        auto ctx = context.As<VulkanGraphicsContext>();
+        return Init(ctx->m_LogicalDevice, ctx->m_PhysicalDevice, size);
     }
 
     void VertexBuffer::Destroy(RefPtr<GraphicsContext>& context)
@@ -39,42 +43,54 @@ namespace Nebula::Vulkan
         vkFreeMemory(ctx->m_LogicalDevice.GetHandle(), m_BufferMemory, nullptr);
     }
 
-    bool VertexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, const void* data, std::size_t size)
+    bool VertexBuffer::SetData(LogicalDevice& device,
+                               PhysicalDevice& physicalDevice,
+                               CommandPool& commandPool,
+                               const void* data,
+                               std::size_t size)
     {
-        auto ctx                           = context.As<VulkanGraphicsContext>();
         VkBuffer stagingBuffer             = VK_NULL_HANDLE;
         VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
-        if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(), size,
-                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        if (!CreateBuffer(physicalDevice.GetHandle(), device.GetHandle(), size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
                           stagingBufferMemory))
         {
             return false;
         }
-        vkBindBufferMemory(ctx->m_LogicalDevice.GetHandle(), stagingBuffer, stagingBufferMemory, 0);
+        vkBindBufferMemory(device.GetHandle(), stagingBuffer, stagingBufferMemory, 0);
 
         void* mappedData = nullptr;
-        vkMapMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory, 0, size, 0, &mappedData);
+        vkMapMemory(device.GetHandle(), stagingBufferMemory, 0, size, 0, &mappedData);
         memcpy(mappedData, data, size);
-        vkUnmapMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory);
+        vkUnmapMemory(device.GetHandle(), stagingBufferMemory);
 
-        if (!CopyBuffer(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(),
-                        ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Buffer, size))
+        if (!CopyBuffer(device.GetHandle(), device.GetGraphicsQueue(), commandPool.GetHandle(), stagingBuffer, m_Buffer,
+                        size))
         {
             return false;
         }
 
-        vkDestroyBuffer(ctx->m_LogicalDevice.GetHandle(), stagingBuffer, nullptr);
-        vkFreeMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory, nullptr);
+        vkDestroyBuffer(device.GetHandle(), stagingBuffer, nullptr);
+        vkFreeMemory(device.GetHandle(), stagingBufferMemory, nullptr);
 
         return true;
     }
 
-    void VertexBuffer::Bind(RefPtr<GraphicsContext>& context, std::uint32_t binding) const
+    bool VertexBuffer::SetData(RefPtr<Nebula::GraphicsContext>& context, const void* data, std::size_t size)
+    {
+        auto ctx = context.As<VulkanGraphicsContext>();
+        return SetData(ctx->m_LogicalDevice, ctx->m_PhysicalDevice, ctx->m_CommandPool, data, size);
+    }
+
+    void VertexBuffer::Bind(CommandBuffer& buffer, std::uint32_t binding) const
     {
         std::array<VkBuffer, 1> buffers     = {m_Buffer};
         std::array<VkDeviceSize, 1> offsets = {0};
-        vkCmdBindVertexBuffers(context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer.GetHandle(), binding,
-                               buffers.size(), buffers.data(), offsets.data());
+        vkCmdBindVertexBuffers(buffer.GetHandle(), binding, buffers.size(), buffers.data(), offsets.data());
+    }
+
+    void VertexBuffer::Bind(RefPtr<GraphicsContext>& context, std::uint32_t binding) const
+    {
+        Bind(context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer, binding);
     }
 } // namespace Nebula::Vulkan

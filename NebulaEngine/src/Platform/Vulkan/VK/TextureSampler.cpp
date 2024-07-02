@@ -6,9 +6,9 @@
 
 namespace Nebula::Vulkan
 {
-    bool TextureSampler::Init(RefPtr<GraphicsContext>& context)
+
+    bool TextureSampler::Init(LogicalDevice& device, PhysicalDevice& physicalDevice)
     {
-        auto ctx = context.As<VulkanGraphicsContext>();
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType        = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         samplerInfo.magFilter    = VK_FILTER_LINEAR;
@@ -18,7 +18,7 @@ namespace Nebula::Vulkan
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
         samplerInfo.anisotropyEnable = VK_TRUE;
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(ctx->m_PhysicalDevice.GetHandle(), &properties);
+        vkGetPhysicalDeviceProperties(physicalDevice.GetHandle(), &properties);
         samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
         samplerInfo.borderColor   = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
@@ -29,13 +29,19 @@ namespace Nebula::Vulkan
         samplerInfo.minLod                  = 0.0F;
         samplerInfo.maxLod                  = 0.0F;
 
-        if (vkCreateSampler(ctx->m_LogicalDevice.GetHandle(), &samplerInfo, nullptr, &m_Sampler) != VK_SUCCESS)
+        if (vkCreateSampler(device.GetHandle(), &samplerInfo, nullptr, &m_Sampler) != VK_SUCCESS)
         {
             NEBULA_CORE_LOG_ERROR("Failed to create texture sampler");
             return false;
         }
 
         return true;
+    }
+
+    bool TextureSampler::Init(RefPtr<GraphicsContext>& context)
+    {
+        auto ctx = context.As<VulkanGraphicsContext>();
+        return Init(ctx->m_LogicalDevice, ctx->m_PhysicalDevice);
     }
 
     void TextureSampler::Destroy(RefPtr<GraphicsContext>& context)

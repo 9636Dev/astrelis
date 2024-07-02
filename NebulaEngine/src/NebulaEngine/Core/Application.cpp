@@ -40,6 +40,12 @@ namespace Nebula
 
         m_Window = std::move(res.Unwrap());
         m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
+        m_RenderSystem = RenderSystem::Create(m_Window);
+        if (!m_RenderSystem->Init())
+        {
+            NEBULA_LOG_ERROR("Failed to initialize RenderSystem");
+            return;
+        }
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
         OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
         m_ImGuiLayer = imguiLayer.Raw();
@@ -64,11 +70,14 @@ namespace Nebula
             lastFrameTime     = Time::Now();
             m_Window->BeginFrame();
 
+            m_RenderSystem->StartGraphicsRenderPass();
             for (auto& layer : m_LayerStack)
             {
                 layer->OnUpdate();
             }
+            m_RenderSystem->EndGraphicsRenderPass();
 
+            m_RenderSystem->StartOverlayRenderPass();
             m_ImGuiLayer->Begin();
 
             for (auto& layer : m_LayerStack)
@@ -77,6 +86,9 @@ namespace Nebula
             }
 
             m_ImGuiLayer->End();
+            m_RenderSystem->EndOverlayRenderPass();
+
+            m_RenderSystem->BlitSwapchain();
 
             m_Window->EndFrame();
             m_Window->OnUpdate();

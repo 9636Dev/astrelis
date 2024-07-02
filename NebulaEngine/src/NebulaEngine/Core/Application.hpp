@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "NebulaEngine/Core/LayerStack.hpp"
+#include "NebulaEngine/Renderer/RenderSystem.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
 #include "Pointer.hpp"
 #include "Window.hpp"
@@ -113,6 +114,7 @@ namespace Nebula
         ApplicationSpecification m_Specification;
         bool m_Running = true;
         RefPtr<Window> m_Window;
+        RefPtr<RenderSystem> m_RenderSystem;
         LayerStack m_LayerStack;
         RawRef<ImGuiLayer*> m_ImGuiLayer;
     };

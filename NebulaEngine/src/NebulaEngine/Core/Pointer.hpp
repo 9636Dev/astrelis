@@ -176,6 +176,12 @@ namespace Nebula
             m_RefCount = nullptr;
         }
 
+        void ResetNoDelete() noexcept
+        {
+            m_Ptr      = nullptr;
+            m_RefCount = nullptr;
+        }
+
         template<typename U>
             requires std::is_base_of_v<U, T>
         explicit operator RefPtr<U>() const

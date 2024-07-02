@@ -70,7 +70,7 @@ namespace Nebula::Vulkan
         subpassBeginInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
         subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;
 
-        vkCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin, const VkSubpassBeginInfo *pSubpassBeginInfo)
+        vkCmdBeginRenderPass(commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
     void RenderPass::End(CommandBuffer& commandBuffer) {

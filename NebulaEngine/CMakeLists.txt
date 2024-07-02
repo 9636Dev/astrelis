@@ -301,6 +301,8 @@ add_custom_target(NebulaEngine_Shaders
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_frag.spv
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_vert.spv
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_frag.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Blit.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Blit_vert.spv
+    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Blit.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Blit_frag.spv
 )
 add_dependencies(NebulaEngine_Engine NebulaEngine_Shaders)
 
