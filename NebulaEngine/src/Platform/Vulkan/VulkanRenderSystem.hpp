@@ -2,6 +2,8 @@
 
 #include "NebulaEngine/Renderer/RenderSystem.hpp"
 
+#include "Platform/Vulkan/VK/DescriptorSetLayout.hpp"
+#include "Platform/Vulkan/VK/DescriptorSets.hpp"
 #include "Platform/Vulkan/VK/GraphicsPipeline.hpp"
 #include "Platform/Vulkan/VK/IndexBuffer.hpp"
 #include "Platform/Vulkan/VK/TextureSampler.hpp"
@@ -43,5 +45,7 @@ namespace Nebula
         Vulkan::GraphicsPipeline m_GraphicsPipeline;
         Vulkan::VertexBuffer m_VertexBuffer;
         Vulkan::IndexBuffer m_IndexBuffer;
+        Vulkan::DescriptorSets m_DescriptorSets;
+        Vulkan::DescriptorSetLayout m_DescriptorSetLayout;
     };
 } // namespace Nebula

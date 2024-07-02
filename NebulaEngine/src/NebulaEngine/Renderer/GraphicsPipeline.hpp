@@ -48,6 +48,13 @@ namespace Nebula
         std::string Fragment;
     };
 
+    enum class PipelineType
+    {
+        Graphics,
+        Overlay,
+        Main, // Blit render pass
+    };
+
     class GraphicsPipeline
     {
     public:
@@ -61,7 +68,8 @@ namespace Nebula
         virtual bool Init(RefPtr<GraphicsContext>& context,
                           PipelineShaders& shaders,
                           std::vector<BufferBinding>& bindings,
-                          std::vector<RefPtr<DescriptorSetLayout>>& layouts) = 0;
+                          std::vector<RefPtr<DescriptorSetLayout>>& layouts,
+                          PipelineType type) = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context)               = 0;
         virtual void Bind(RefPtr<GraphicsContext>& context)                  = 0;
     };

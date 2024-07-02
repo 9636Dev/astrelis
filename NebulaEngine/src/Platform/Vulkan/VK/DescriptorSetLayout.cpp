@@ -5,7 +5,7 @@
 
 namespace Nebula::Vulkan
 {
-    bool DescriptorSetLayout::Init(RefPtr<GraphicsContext>& context, const std::vector<BindingDescriptor>& descriptors)
+    bool DescriptorSetLayout::Init(LogicalDevice& device, const std::vector<BindingDescriptor>& descriptors)
     {
         std::vector<VkDescriptorSetLayoutBinding> bindings;
         bindings.resize(descriptors.size());
@@ -43,7 +43,7 @@ namespace Nebula::Vulkan
         layoutInfo.bindingCount = static_cast<std::uint32_t>(bindings.size());
         layoutInfo.pBindings    = bindings.data();
 
-        if (vkCreateDescriptorSetLayout(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), &layoutInfo, nullptr, &m_Layout) != VK_SUCCESS)
+        if (vkCreateDescriptorSetLayout(device.GetHandle(), &layoutInfo, nullptr, &m_Layout) != VK_SUCCESS)
         {
             NEBULA_CORE_LOG_ERROR("Failed to create descriptor set layout!");
             return false;
@@ -51,8 +51,18 @@ namespace Nebula::Vulkan
         return true;
     }
 
+    bool DescriptorSetLayout::Init(RefPtr<GraphicsContext>& context, const std::vector<BindingDescriptor>& descriptors)
+    {
+        return Init(context.As<VulkanGraphicsContext>()->m_LogicalDevice, descriptors);
+    }
+
+    void DescriptorSetLayout::Destroy(LogicalDevice& device) const
+    {
+        vkDestroyDescriptorSetLayout(device.GetHandle(), m_Layout, nullptr);
+    }
+
     void DescriptorSetLayout::Destroy(RefPtr<GraphicsContext>& context) const
     {
-        vkDestroyDescriptorSetLayout(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), m_Layout, nullptr);
+        Destroy(context.As<VulkanGraphicsContext>()->m_LogicalDevice);
     }
 } // namespace Nebula::Vulkan

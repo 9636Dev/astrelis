@@ -73,6 +73,7 @@ namespace Nebula
                                           std::uint32_t firstInstance) = 0;
 
         virtual RefPtr<GraphicsPipeline> CreateGraphicsPipeline()       = 0;
+        // TODO: Maybe UI Pipeline? Distinguish between graphics and UI
         virtual RefPtr<VertexBuffer> CreateVertexBuffer()               = 0;
         virtual RefPtr<IndexBuffer> CreateIndexBuffer()                 = 0;
         virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;

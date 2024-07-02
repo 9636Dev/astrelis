@@ -87,14 +87,11 @@ namespace Nebula
         }
 
         {
-            for (auto& frame : m_SwapChainFrames)
-            {
-                frame.GraphicsTextureImage = RefPtr<Vulkan::TextureImage>::Create();
-                frame.GraphicsTextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_GraphicsExtent,
-                                                VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-                                                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            }
+            m_GraphicsTextureImage = RefPtr<Vulkan::TextureImage>::Create();
+            m_GraphicsTextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_GraphicsExtent,
+                                         VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                                         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
             // Graphics render pass
             Vulkan::RenderPassInfo renderPassInfo {};
             VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
@@ -113,25 +110,19 @@ namespace Nebula
 
             INIT_COMPONENT(m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo));
 
-            for (auto& frame : m_SwapChainFrames)
+            if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, m_GraphicsTextureImage->m_ImageView,
+                                            m_GraphicsExtent))
             {
-                if (!frame.GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, frame.GraphicsTextureImage->m_ImageView,
-                                               m_GraphicsExtent))
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
         {
-            for (auto& frame : m_SwapChainFrames)
-            {
-                frame.UITextureImage = RefPtr<Vulkan::TextureImage>::Create();
-                frame.UITextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_UIExtent,
-                                                VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-                                                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            }
+            m_UITextureImage = RefPtr<Vulkan::TextureImage>::Create();
+            m_UITextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_UIExtent,
+                                   VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                                   VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
             // UI render pass
             Vulkan::RenderPassInfo renderPassInfo {};
             VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
@@ -150,13 +141,10 @@ namespace Nebula
 
             INIT_COMPONENT(m_UIRenderPass.Init(m_LogicalDevice, renderPassInfo));
 
-            for (auto& frame : m_SwapChainFrames)
+            if (!m_UIFrameBuffer.Init(m_LogicalDevice, m_UIRenderPass, m_UITextureImage->m_ImageView,
+                                          m_UIExtent))
             {
-                if (!frame.UIFrameBuffer.Init(m_LogicalDevice, m_UIRenderPass, frame.UITextureImage->m_ImageView,
-                                               m_UIExtent))
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -168,8 +156,8 @@ namespace Nebula
             auto& frame = m_SwapChainFrames[i];
             INIT_COMPONENT(
                 frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat()));
-            INIT_COMPONENT(
-                frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView, m_SwapChain.GetExtent()));
+            INIT_COMPONENT(frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
+                                                  m_SwapChain.GetExtent()));
         }
 
         m_Frames.resize(m_SwapChain.GetImageCount());
@@ -210,11 +198,12 @@ namespace Nebula
         {
             frame.ImageView.Destroy(m_LogicalDevice);
             frame.FrameBuffer.Destroy(m_LogicalDevice);
-            frame.GraphicsTextureImage->Destroy(m_LogicalDevice);
-            frame.UITextureImage->Destroy(m_LogicalDevice);
-            frame.GraphicsFrameBuffer.Destroy(m_LogicalDevice);
-            frame.UIFrameBuffer.Destroy(m_LogicalDevice);
         }
+
+        m_GraphicsFrameBuffer.Destroy(m_LogicalDevice);
+        m_GraphicsTextureImage->Destroy(m_LogicalDevice);
+        m_UITextureImage->Destroy(m_LogicalDevice);
+        m_UIFrameBuffer.Destroy(m_LogicalDevice);
 
         m_DescriptorPool.Destroy(m_LogicalDevice);
         m_RenderPass.Destroy(m_LogicalDevice);
@@ -340,7 +329,8 @@ namespace Nebula
 
             auto res = frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat());
             NEBULA_CORE_ASSERT(res, "Failed to recreate image view!");
-            res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView, m_SwapChain.GetExtent());
+            res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
+                                         m_SwapChain.GetExtent());
             NEBULA_CORE_ASSERT(res, "Failed to recreate frame buffer!");
             (void)res; // For release builds
         }

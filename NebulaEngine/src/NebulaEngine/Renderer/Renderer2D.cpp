@@ -99,7 +99,7 @@ namespace Nebula
 
         std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
         m_Pipeline                                          = m_RendererAPI->CreateGraphicsPipeline();
-        m_Pipeline->Init(m_Context, shaders, vertexInputs, setLayouts);
+        m_Pipeline->Init(m_Context, shaders, vertexInputs, setLayouts, PipelineType::Graphics);
 
         m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
         m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());

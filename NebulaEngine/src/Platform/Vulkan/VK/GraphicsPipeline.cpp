@@ -4,7 +4,6 @@
 #include "NebulaEngine/Core/Log.hpp"
 
 #include "CommandBuffer.hpp"
-#include "DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "RenderPass.hpp"
@@ -110,16 +109,13 @@ namespace Nebula::Vulkan
         }
     }
 
-    bool GraphicsPipeline::Init(RefPtr<GraphicsContext>& context,
+    bool GraphicsPipeline::Init(LogicalDevice& device,
+                                VkExtent2D extent,
+                                RenderPass& renderPass,
                                 PipelineShaders& shaders,
                                 std::vector<BufferBinding>& bindings,
-                                std::vector<RefPtr<Nebula::DescriptorSetLayout>>& layouts)
+                                std::vector<DescriptorSetLayout>& layouts)
     {
-        auto ctx         = context.As<VulkanGraphicsContext>();
-        auto& device     = ctx->m_LogicalDevice;
-        auto& swapChain  = ctx->m_SwapChain;
-        auto& renderPass = ctx->m_RenderPass;
-
         auto vertexShaderCode   = ReadFile(shaders.Vertex);
         auto fragmentShaderCode = ReadFile(shaders.Fragment);
 
@@ -172,6 +168,7 @@ namespace Nebula::Vulkan
                 attributeDescriptions.push_back(attributeDescription);
             }
         }
+
         vertexInputInfo.vertexBindingDescriptionCount   = static_cast<uint32_t>(bindingDescriptions.size());
         vertexInputInfo.pVertexBindingDescriptions      = bindingDescriptions.data();
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -185,14 +182,14 @@ namespace Nebula::Vulkan
         VkViewport viewport {};
         viewport.x        = 0.0F;
         viewport.y        = 0.0F;
-        viewport.width    = static_cast<float>(swapChain.GetExtent().width);
-        viewport.height   = static_cast<float>(swapChain.GetExtent().height);
+        viewport.width    = static_cast<float>(extent.width);
+        viewport.height   = static_cast<float>(extent.height);
         viewport.minDepth = 0.0F;
         viewport.maxDepth = 1.0F;
 
         VkRect2D scissor {};
         scissor.offset = {0, 0};
-        scissor.extent = swapChain.GetExtent();
+        scissor.extent = extent;
 
         VkPipelineViewportStateCreateInfo viewportState {};
         viewportState.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -236,7 +233,7 @@ namespace Nebula::Vulkan
         vulkanLayouts.resize(layouts.size());
         for (std::size_t i = 0; i < vulkanLayouts.size(); i++)
         {
-            vulkanLayouts[i] = layouts[i].As<DescriptorSetLayout>()->m_Layout;
+            vulkanLayouts[i] = layouts[i].m_Layout;
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
@@ -280,6 +277,35 @@ namespace Nebula::Vulkan
         return true;
     }
 
+    static RenderPass& GetCorrectRenderPass(RefPtr<VulkanGraphicsContext>& context, PipelineType type)
+    {
+        switch (type)
+        {
+        case PipelineType::Graphics:
+            return context->m_GraphicsRenderPass;
+        case PipelineType::Overlay:
+            return context->m_UIRenderPass;
+        case PipelineType::Main:
+            return context->m_RenderPass;
+        }
+    };
+
+    bool GraphicsPipeline::Init(RefPtr<GraphicsContext>& context,
+                                PipelineShaders& shaders,
+                                std::vector<BufferBinding>& bindings,
+                                std::vector<RefPtr<Nebula::DescriptorSetLayout>>& layouts,
+                                PipelineType type)
+    {
+        auto ctx = context.As<VulkanGraphicsContext>();
+        std::vector<Vulkan::DescriptorSetLayout> vulkanLayouts;
+        vulkanLayouts.reserve(layouts.size());
+        for (auto& layout : layouts)
+        {
+            vulkanLayouts.push_back(*layout.As<DescriptorSetLayout>());
+        }
+        return Init(ctx->m_LogicalDevice, ctx->m_SwapChain.GetExtent(), GetCorrectRenderPass(ctx, type), shaders, bindings, vulkanLayouts);
+    }
+
     void GraphicsPipeline::Destroy(RefPtr<GraphicsContext>& context)
     {
         auto& device = context.As<VulkanGraphicsContext>()->m_LogicalDevice;
@@ -290,6 +316,7 @@ namespace Nebula::Vulkan
     void GraphicsPipeline::Bind(RefPtr<Nebula::GraphicsContext>& context)
     {
         auto& cBuffer = context.As<VulkanGraphicsContext>()->GetCurrentFrame().CommandBuffer;
+
         vkCmdBindPipeline(cBuffer.GetHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_Pipeline);
     }
 } // namespace Nebula::Vulkan

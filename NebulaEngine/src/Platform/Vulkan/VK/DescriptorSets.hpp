@@ -1,7 +1,10 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
+#include "DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/DescriptorSets.hpp"
+#include "Platform/Vulkan/VK/DescriptorPool.hpp"
+#include "Platform/Vulkan/VK/GraphicsPipeline.hpp"
+#include "Platform/Vulkan/VK/LogicalDevice.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -17,16 +20,23 @@ namespace Nebula::Vulkan
     class DescriptorSets : public Nebula::DescriptorSets
     {
     public:
-        DescriptorSets()                                      = default;
-        ~DescriptorSets() override                            = default;
+        DescriptorSets()                                       = default;
+        ~DescriptorSets() override                             = default;
         DescriptorSets(const DescriptorSets& other)            = delete;
         DescriptorSets& operator=(const DescriptorSets& other) = delete;
         DescriptorSets(DescriptorSets&& other)                 = delete;
         DescriptorSets& operator=(DescriptorSets&& other)      = delete;
 
-        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, RefPtr<Nebula::DescriptorSetLayout>& layout, const std::vector<BindingDescriptor>& descriptors) override;
+        bool Init(LogicalDevice& device,
+                  DescriptorPool& pool,
+                  DescriptorSetLayout& layout,
+                  const std::vector<BindingDescriptor>& descriptors);
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context,
+                                RefPtr<Nebula::DescriptorSetLayout>& layout,
+                                const std::vector<BindingDescriptor>& descriptors) override;
         void Destroy(RefPtr<GraphicsContext>& context) const override;
 
+        void Bind(CommandBuffer& buffer, GraphicsPipeline& pipeline) const;
         void Bind(RefPtr<GraphicsContext>& context, RefPtr<Nebula::GraphicsPipeline>& pipeline) const override;
 
         [[nodiscard]] VkDescriptorSet GetHandle() const { return m_DescriptorSet; }
