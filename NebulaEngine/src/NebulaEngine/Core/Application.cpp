@@ -55,6 +55,7 @@ namespace Nebula
     Application::~Application()
     {
         NEBULA_PROFILE_SCOPE("Application::~Application");
+        m_RenderSystem->Shutdown();
         for (auto& layer : m_LayerStack)
         {
             layer->OnDetach();

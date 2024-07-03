@@ -31,7 +31,7 @@ namespace Nebula
         if (!m_VertexBuffer.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice,
                                  vertices.size() * sizeof(BlitVertex)) ||
             !m_VertexBuffer.SetData(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice, m_Context->m_CommandPool,
-                                   vertices.data(), vertices.size()) ||
+                                   vertices.data(), vertices.size() * sizeof(BlitVertex)) ||
             !m_IndexBuffer.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice, indices.size()) ||
             !m_IndexBuffer.SetData(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice, m_Context->m_CommandPool,
                                   indices.data(), indices.size()))
@@ -82,11 +82,15 @@ namespace Nebula
 
     void VulkanRenderSystem::Shutdown()
     {
-        /*
-        m_GraphicsPipeline.Destroy();
-        m_VertexBuffer.Destory();
-        m_IndexBuffer.Destroy();
-        */
+        vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
+        auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
+        m_GraphicsPipeline.Destroy(ctx);
+        m_DescriptorSets.Destroy(ctx);
+        m_DescriptorSetLayout.Destroy(ctx);
+        m_GraphicsTextureSampler->Destroy(ctx);
+        m_UITextureSampler->Destroy(ctx);
+        m_VertexBuffer.Destroy(ctx);
+        m_IndexBuffer.Destroy(ctx);
     }
 
     void VulkanRenderSystem::StartGraphicsRenderPass()

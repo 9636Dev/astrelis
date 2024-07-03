@@ -69,8 +69,8 @@ namespace Nebula
                           PipelineShaders& shaders,
                           std::vector<BufferBinding>& bindings,
                           std::vector<RefPtr<DescriptorSetLayout>>& layouts,
-                          PipelineType type) = 0;
-        virtual void Destroy(RefPtr<GraphicsContext>& context)               = 0;
-        virtual void Bind(RefPtr<GraphicsContext>& context)                  = 0;
+                          PipelineType type)                   = 0;
+        virtual void Destroy(RefPtr<GraphicsContext>& context) = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& context)    = 0;
     };
 } // namespace Nebula
