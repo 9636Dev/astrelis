@@ -17,8 +17,8 @@ namespace Nebula::Vulkan
         ~TextureImage() override                           = default;
         TextureImage(const TextureImage& other)            = delete;
         TextureImage& operator=(const TextureImage& other) = delete;
-        TextureImage(TextureImage&& other)                 = default;
-        TextureImage& operator=(TextureImage&& other)      = default;
+        TextureImage(TextureImage&& other)                 = delete;
+        TextureImage& operator=(TextureImage&& other)      = delete;
 
         // Internally used
         bool Init(LogicalDevice& device,
@@ -33,6 +33,9 @@ namespace Nebula::Vulkan
         void Destroy(RefPtr<GraphicsContext>& context) override;
         void Destroy(LogicalDevice& device);
 
+        [[nodiscard]] const VkImage& GetImage() const { return m_Image; }
+        [[nodiscard]] const VkImageView& GetImageView() const { return m_ImageView; }
+    private:
         VkImage m_Image              = VK_NULL_HANDLE;
         VkDeviceMemory m_ImageMemory = VK_NULL_HANDLE;
         VkImageView m_ImageView      = VK_NULL_HANDLE;

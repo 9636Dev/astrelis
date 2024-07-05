@@ -110,7 +110,7 @@ namespace Nebula
 
             INIT_COMPONENT(m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo));
 
-            if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, m_GraphicsTextureImage->m_ImageView,
+            if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, m_GraphicsTextureImage->GetImageView(),
                                             m_GraphicsExtent))
             {
                 return false;
@@ -141,7 +141,7 @@ namespace Nebula
 
             INIT_COMPONENT(m_UIRenderPass.Init(m_LogicalDevice, renderPassInfo));
 
-            if (!m_UIFrameBuffer.Init(m_LogicalDevice, m_UIRenderPass, m_UITextureImage->m_ImageView,
+            if (!m_UIFrameBuffer.Init(m_LogicalDevice, m_UIRenderPass, m_UITextureImage->GetImageView(),
                                           m_UIExtent))
             {
                 return false;

@@ -33,37 +33,44 @@ namespace Nebula::Vulkan
         }
 
         std::vector<VkWriteDescriptorSet> descriptorWrites;
+        // We need it to persist until the end of the scope
+        std::vector<VkDescriptorBufferInfo> bufferInfos;
+        std::vector<VkDescriptorImageInfo> imageInfos;
         descriptorWrites.resize(descriptors.size());
 
-        for (std::size_t i = 0; i < descriptors.size(); ++i)
+        for (std::size_t i = 0; i < descriptorWrites.size(); i++)
         {
-            descriptorWrites[i].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[i].dstSet          = m_DescriptorSet;
-            descriptorWrites[i].dstBinding      = descriptors[i].Binding;
-            descriptorWrites[i].dstArrayElement = 0;
-            descriptorWrites[i].descriptorCount = descriptors[i].Count;
+            auto& descriptorWrite = descriptorWrites[i];
+            const auto& descriptor = descriptors[i];
+            descriptorWrite.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet          = m_DescriptorSet;
+            descriptorWrite.dstBinding      = descriptors[i].Binding;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorCount = descriptors[i].Count;
 
-            if (descriptors[i].DescriptorType == BindingDescriptor::Type::Uniform)
+            switch (descriptor.DescriptorType)
             {
-                descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                VkDescriptorBufferInfo bufferInfo {};
-                bufferInfo.buffer = descriptors[i].Buffer.As<UniformBuffer>()->m_Buffers[0].m_Buffer;
-                bufferInfo.range  = descriptors[i].Size;
-                bufferInfo.offset = 0; // TODO: Add offset support
+            case BindingDescriptor::Type::Uniform: {
+                VkDescriptorBufferInfo& bufferInfo = bufferInfos.emplace_back();
+                bufferInfo.buffer                  = descriptor.Buffer.As<UniformBuffer>()->m_Buffers[0].m_Buffer;
+                bufferInfo.range                   = descriptor.Size;
+                bufferInfo.offset                  = 0; // TODO: Add offset support
 
-                descriptorWrites[i].pBufferInfo = &bufferInfo;
+                descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptorWrite.pBufferInfo    = &bufferInfo;
+                break;
             }
-            else if (descriptors[i].DescriptorType == BindingDescriptor::Type::TextureSampler)
-            {
-                descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                VkDescriptorImageInfo imageInfo {};
-                imageInfo.imageLayout          = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView            = descriptors[i].Texture.As<TextureImage>()->m_ImageView;
-                imageInfo.sampler              = descriptors[i].Sampler.As<TextureSampler>()->m_Sampler;
-                descriptorWrites[i].pImageInfo = &imageInfo;
+            case BindingDescriptor::Type::TextureSampler: {
+                VkDescriptorImageInfo& imageInfo = imageInfos.emplace_back();
+                imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView              = descriptor.Texture.As<TextureImage>()->GetImageView();
+                imageInfo.sampler                = descriptor.Sampler.As<TextureSampler>()->m_Sampler;
+
+                descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrite.pImageInfo     = &imageInfo;
+                break;
             }
-            else
-            {
+            default:
                 NEBULA_CORE_LOG_ERROR("Unknown descriptor type!");
                 return false;
             }

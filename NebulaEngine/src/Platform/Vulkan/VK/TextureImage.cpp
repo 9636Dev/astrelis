@@ -36,6 +36,7 @@ namespace Nebula::Vulkan
             NEBULA_CORE_LOG_ERROR("Failed to create texture image view!");
             return false;
         }
+        NEBULA_CORE_LOG_DEBUG("Created image view: {}", reinterpret_cast<void*>(m_ImageView));
 
         return true;
     }
