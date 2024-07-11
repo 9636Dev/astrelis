@@ -64,8 +64,7 @@ namespace Nebula::Vulkan
         vkDestroyBuffer(ctx->m_LogicalDevice.GetHandle(), stagingBuffer, nullptr);
         vkFreeMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory, nullptr);
 
-
-        return true;
+        return m_ImageView.Init(ctx->m_LogicalDevice, m_Image, VK_FORMAT_R8G8B8A8_SRGB);
     }
 
     void TextureImage::Destroy(RefPtr<GraphicsContext>& context)

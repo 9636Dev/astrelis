@@ -69,6 +69,7 @@ namespace Nebula
 
         InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
         m_TextureImage = m_RendererAPI->CreateTextureImage();
+
         if (!m_TextureImage->LoadTexture(m_Context, image))
         {
             return false;
