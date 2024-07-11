@@ -284,7 +284,6 @@ namespace Nebula::Vulkan
         case PipelineType::Graphics:
             return context->m_GraphicsRenderPass;
         case PipelineType::Overlay:
-            return context->m_UIRenderPass;
         case PipelineType::Main:
             return context->m_RenderPass;
         }

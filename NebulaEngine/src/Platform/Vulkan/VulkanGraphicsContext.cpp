@@ -58,11 +58,6 @@ namespace Nebula
             m_GraphicsExtent = m_SwapChain.GetExtent();
         }
 
-        if (m_UIExtent.width == 0 || m_UIExtent.height == 0)
-        {
-            m_UIExtent = m_SwapChain.GetExtent();
-        }
-
         m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
         {
@@ -112,37 +107,6 @@ namespace Nebula
 
             if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, m_GraphicsTextureImage->GetImageView(),
                                             m_GraphicsExtent))
-            {
-                return false;
-            }
-        }
-
-        {
-            m_UITextureImage = RefPtr<Vulkan::TextureImage>::Create();
-            m_UITextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_UIExtent,
-                                   VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-                                   VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            // UI render pass
-            Vulkan::RenderPassInfo renderPassInfo {};
-            VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
-            colorAttachment.format                   = VK_FORMAT_R8G8B8A8_SRGB;
-            colorAttachment.samples                  = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachment.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            colorAttachment.storeOp                  = VK_ATTACHMENT_STORE_OP_STORE;
-            colorAttachment.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            colorAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorAttachment.finalLayout              = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-            renderPassInfo.Subpasses = {
-                {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
-            };
-
-            INIT_COMPONENT(m_UIRenderPass.Init(m_LogicalDevice, renderPassInfo));
-
-            if (!m_UIFrameBuffer.Init(m_LogicalDevice, m_UIRenderPass, m_UITextureImage->GetImageView(),
-                                          m_UIExtent))
             {
                 return false;
             }
@@ -202,13 +166,10 @@ namespace Nebula
 
         m_GraphicsFrameBuffer.Destroy(m_LogicalDevice);
         m_GraphicsTextureImage->Destroy(m_LogicalDevice);
-        m_UITextureImage->Destroy(m_LogicalDevice);
-        m_UIFrameBuffer.Destroy(m_LogicalDevice);
 
         m_DescriptorPool.Destroy(m_LogicalDevice);
         m_RenderPass.Destroy(m_LogicalDevice);
         m_GraphicsRenderPass.Destroy(m_LogicalDevice);
-        m_UIRenderPass.Destroy(m_LogicalDevice);
         m_CommandPool.Destroy(m_LogicalDevice);
         m_SwapChain.Destroy(m_LogicalDevice);
         m_LogicalDevice.Destroy();

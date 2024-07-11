@@ -19,9 +19,8 @@ namespace Nebula
         virtual void Shutdown()                = 0;
         virtual void StartGraphicsRenderPass() = 0;
         virtual void EndGraphicsRenderPass()   = 0;
-        virtual void StartOverlayRenderPass()  = 0;
-        virtual void EndOverlayRenderPass()    = 0;
         virtual void BlitSwapchain()           = 0;
+        virtual void EndFrame()                = 0;
 
         static RefPtr<RenderSystem> Create(RefPtr<Window>& window);
     };

@@ -51,27 +51,21 @@ namespace Nebula
         };
 
         m_GraphicsTextureSampler = RefPtr<Vulkan::TextureSampler>::Create();
-        m_UITextureSampler = RefPtr<Vulkan::TextureSampler>::Create();
         m_GraphicsTextureSampler->Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
-        m_UITextureSampler->Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
 
-
-        std::vector<BindingDescriptor> bindings = {
+        std::vector<BindingDescriptor> graphicsBindings = {
             BindingDescriptor::TextureSampler("GraphicsSampler", 0,
                                               static_cast<RefPtr<TextureImage>>(m_Context->m_GraphicsTextureImage),
                                               static_cast<RefPtr<TextureSampler>>(m_GraphicsTextureSampler)),
-            BindingDescriptor::TextureSampler("UISampler", 1,
-                                              static_cast<RefPtr<TextureImage>>(m_Context->m_UITextureImage),
-                                              static_cast<RefPtr<TextureSampler>>(m_UITextureSampler)),
         };
 
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
-        if (!m_DescriptorSetLayout.Init(ctx, bindings))
+        if (!m_DescriptorSetLayout.Init(ctx, graphicsBindings))
         {
             return false;
         }
 
-        if (!m_DescriptorSets.Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool, m_DescriptorSetLayout, bindings))
+        if (!m_DescriptorSets.Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool, m_DescriptorSetLayout, graphicsBindings))
         {
             return false;
         }
@@ -88,7 +82,6 @@ namespace Nebula
         m_DescriptorSets.Destroy(ctx);
         m_DescriptorSetLayout.Destroy(ctx);
         m_GraphicsTextureSampler->Destroy(ctx);
-        m_UITextureSampler->Destroy(ctx);
         m_VertexBuffer.Destroy(ctx);
         m_IndexBuffer.Destroy(ctx);
     }
@@ -103,17 +96,6 @@ namespace Nebula
     void VulkanRenderSystem::EndGraphicsRenderPass()
     {
         m_Context->m_GraphicsRenderPass.End(m_Context->GetCurrentFrame().CommandBuffer);
-    }
-
-    void VulkanRenderSystem::StartOverlayRenderPass()
-    {
-        auto& frame          = m_Context->GetCurrentFrame();
-        m_Context->m_UIRenderPass.Begin(frame.CommandBuffer, m_Context->m_UIFrameBuffer, m_Context->m_GraphicsExtent);
-    }
-
-    void VulkanRenderSystem::EndOverlayRenderPass()
-    {
-        m_Context->m_UIRenderPass.End(m_Context->GetCurrentFrame().CommandBuffer);
     }
 
     void VulkanRenderSystem::BlitSwapchain()
@@ -132,11 +114,11 @@ namespace Nebula
         m_IndexBuffer.Bind(frame.CommandBuffer);
         m_DescriptorSets.Bind(frame.CommandBuffer, m_GraphicsPipeline);
 
-        // Samplers setup using DescriptorSets
-
         vkCmdDrawIndexed(frame.CommandBuffer.GetHandle(), 6, 1, 0, 0, 0);
-
-        m_Context->m_RenderPass.End(frame.CommandBuffer);
     }
 
+    void VulkanRenderSystem::EndFrame()
+    {
+        m_Context->m_RenderPass.End(m_Context->GetCurrentFrame().CommandBuffer);
+    }
 } // namespace Nebula

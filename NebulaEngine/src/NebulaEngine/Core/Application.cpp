@@ -77,8 +77,8 @@ namespace Nebula
                 layer->OnUpdate();
             }
             m_RenderSystem->EndGraphicsRenderPass();
+            m_RenderSystem->BlitSwapchain();
 
-            m_RenderSystem->StartOverlayRenderPass();
             m_ImGuiLayer->Begin();
 
             for (auto& layer : m_LayerStack)
@@ -87,9 +87,8 @@ namespace Nebula
             }
 
             m_ImGuiLayer->End();
-            m_RenderSystem->EndOverlayRenderPass();
 
-            m_RenderSystem->BlitSwapchain();
+            m_RenderSystem->EndFrame();
 
             m_Window->EndFrame();
             m_Window->OnUpdate();

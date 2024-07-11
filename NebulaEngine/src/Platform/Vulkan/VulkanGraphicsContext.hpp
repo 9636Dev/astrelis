@@ -87,19 +87,14 @@ namespace Nebula
 
         Vulkan::RenderPass m_RenderPass;
         Vulkan::RenderPass m_GraphicsRenderPass;
-        Vulkan::RenderPass m_UIRenderPass;
 
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData> m_Frames;
 
         VkOffset2D m_GraphicsOffset {0, 0};
-        VkOffset2D m_UIOffset {0, 0};
         VkExtent2D m_GraphicsExtent {0, 0};
-        VkExtent2D m_UIExtent {0, 0};
         RefPtr<Vulkan::TextureImage> m_GraphicsTextureImage;
         Vulkan::FrameBuffer m_GraphicsFrameBuffer;
-        RefPtr<Vulkan::TextureImage> m_UITextureImage;
-        Vulkan::FrameBuffer m_UIFrameBuffer;
 
 
         std::uint32_t m_CurrentFrame      = 0;

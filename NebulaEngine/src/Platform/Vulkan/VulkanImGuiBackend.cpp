@@ -33,7 +33,7 @@ namespace Nebula
         initInfo.MinImageCount             = 2;
         initInfo.ImageCount                = m_Context->m_SwapChain.GetImageCount();
         initInfo.CheckVkResultFn           = nullptr;
-        initInfo.RenderPass                = m_Context->m_UIRenderPass.GetHandle();
+        initInfo.RenderPass                = m_Context->m_RenderPass.GetHandle();
 
         ImGui_ImplVulkan_Init(&initInfo);
 

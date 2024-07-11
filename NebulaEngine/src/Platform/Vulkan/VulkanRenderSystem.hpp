@@ -27,9 +27,8 @@ namespace Nebula
         void Shutdown() override;
         void StartGraphicsRenderPass() override;
         void EndGraphicsRenderPass() override;
-        void StartOverlayRenderPass() override;
-        void EndOverlayRenderPass() override;
         void BlitSwapchain() override;
+        void EndFrame() override;
 
         static RefPtr<VulkanRenderSystem> Create(RefPtr<Window>& window)
         {
@@ -40,7 +39,6 @@ namespace Nebula
         RefPtr<VulkanGraphicsContext> m_Context;
 
         RefPtr<Vulkan::TextureSampler> m_GraphicsTextureSampler;
-        RefPtr<Vulkan::TextureSampler> m_UITextureSampler;
 
         Vulkan::GraphicsPipeline m_GraphicsPipeline;
         Vulkan::VertexBuffer m_VertexBuffer;
