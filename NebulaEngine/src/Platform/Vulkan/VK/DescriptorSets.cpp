@@ -39,8 +39,8 @@ namespace Nebula::Vulkan
 
         // We reserve enough for all bufferinfos and imageinfos, to prevent errors when resizing
         descriptorWrites.resize(descriptors.size());
-        bufferInfos.reserve(descriptors.size());
-        imageInfos.reserve(descriptors.size());
+        bufferInfos.resize(descriptors.size());
+        imageInfos.resize(descriptors.size());
 
         for (std::size_t i = 0; i < descriptorWrites.size(); i++)
         {
@@ -55,7 +55,7 @@ namespace Nebula::Vulkan
             switch (descriptor.DescriptorType)
             {
             case BindingDescriptor::Type::Uniform: {
-                VkDescriptorBufferInfo& bufferInfo = bufferInfos.emplace_back();
+                VkDescriptorBufferInfo& bufferInfo = bufferInfos[i];
                 bufferInfo.buffer                  = descriptor.Buffer.As<UniformBuffer>()->m_Buffers[0].m_Buffer;
                 bufferInfo.range                   = descriptor.Size;
                 bufferInfo.offset                  = 0; // TODO: Add offset support
@@ -65,7 +65,7 @@ namespace Nebula::Vulkan
                 break;
             }
             case BindingDescriptor::Type::TextureSampler: {
-                VkDescriptorImageInfo& imageInfo = imageInfos.emplace_back();
+                VkDescriptorImageInfo& imageInfo = imageInfos[i];
                 imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView              = descriptor.Texture.As<TextureImage>()->GetImageView();
                 imageInfo.sampler                = descriptor.Sampler.As<TextureSampler>()->m_Sampler;
