@@ -36,7 +36,11 @@ namespace Nebula::Vulkan
         // We need it to persist until the end of the scope
         std::vector<VkDescriptorBufferInfo> bufferInfos;
         std::vector<VkDescriptorImageInfo> imageInfos;
+
+        // We reserve enough for all bufferinfos and imageinfos, to prevent errors when resizing
         descriptorWrites.resize(descriptors.size());
+        bufferInfos.reserve(descriptors.size());
+        imageInfos.reserve(descriptors.size());
 
         for (std::size_t i = 0; i < descriptorWrites.size(); i++)
         {

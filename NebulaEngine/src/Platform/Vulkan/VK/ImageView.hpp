@@ -19,7 +19,7 @@ namespace Nebula::Vulkan
         [[nodiscard]] bool Init(LogicalDevice& device, VkImage image, VkFormat format);
         void Destroy(LogicalDevice& device);
 
-        VkImageView GetHandle() const { return m_ImageView; }
+        const VkImageView& GetHandle() const { return m_ImageView; }
 
         VkImageView m_ImageView = VK_NULL_HANDLE;
     };

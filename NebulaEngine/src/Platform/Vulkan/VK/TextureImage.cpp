@@ -20,30 +20,15 @@ namespace Nebula::Vulkan
         (void)pool;
         CreateImage(physicalDevice.GetHandle(), device.GetHandle(), extent.width, extent.height, format, tiling, usage, properties, m_Image, m_ImageMemory);
 
-        VkImageViewCreateInfo viewInfo = {};
-        viewInfo.sType                 = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image                 = m_Image;
-        viewInfo.viewType              = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format                = format;
-        viewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        viewInfo.subresourceRange.baseMipLevel   = 0;
-        viewInfo.subresourceRange.levelCount     = 1;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount     = 1;
-
-        if (vkCreateImageView(device.GetHandle(), &viewInfo, nullptr, &m_ImageView) != VK_SUCCESS)
-        {
-            NEBULA_CORE_LOG_ERROR("Failed to create texture image view!");
-            return false;
-        }
-        NEBULA_CORE_LOG_DEBUG("Created image view: {}", reinterpret_cast<void*>(m_ImageView));
-
-        return true;
+        return m_ImageView.Init(device, m_Image, format);
     }
 
     bool TextureImage::LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image)
     {
         auto ctx = context.As<VulkanGraphicsContext>();
+
+        // Destroy
+        m_ImageView.Destroy(ctx->m_LogicalDevice);
 
         VkBuffer stagingBuffer             = VK_NULL_HANDLE;
         VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
@@ -79,22 +64,6 @@ namespace Nebula::Vulkan
         vkDestroyBuffer(ctx->m_LogicalDevice.GetHandle(), stagingBuffer, nullptr);
         vkFreeMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory, nullptr);
 
-        VkImageViewCreateInfo viewInfo = {};
-        viewInfo.sType                 = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image                 = m_Image;
-        viewInfo.viewType              = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format                = VK_FORMAT_R8G8B8A8_SRGB;
-        viewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        viewInfo.subresourceRange.baseMipLevel   = 0;
-        viewInfo.subresourceRange.levelCount     = 1;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount     = 1;
-
-        if (vkCreateImageView(ctx->m_LogicalDevice.GetHandle(), &viewInfo, nullptr, &m_ImageView) != VK_SUCCESS)
-        {
-            NEBULA_CORE_LOG_ERROR("Failed to create texture image view!");
-            return false;
-        }
 
         return true;
     }
@@ -106,7 +75,7 @@ namespace Nebula::Vulkan
 
     void TextureImage::Destroy(LogicalDevice& device)
     {
-        vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr);
+        m_ImageView.Destroy(device);
         vkDestroyImage(device.GetHandle(), m_Image, nullptr);
         vkFreeMemory(device.GetHandle(), m_ImageMemory, nullptr);
     }

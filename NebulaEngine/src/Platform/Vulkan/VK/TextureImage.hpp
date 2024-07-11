@@ -4,6 +4,7 @@
 
 #include "CommandPool.hpp"
 #include "LogicalDevice.hpp"
+#include "ImageView.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
@@ -34,10 +35,10 @@ namespace Nebula::Vulkan
         void Destroy(LogicalDevice& device);
 
         [[nodiscard]] const VkImage& GetImage() const { return m_Image; }
-        [[nodiscard]] const VkImageView& GetImageView() const { return m_ImageView; }
+        [[nodiscard]] const VkImageView& GetImageView() const { return m_ImageView.GetHandle(); }
     private:
         VkImage m_Image              = VK_NULL_HANDLE;
         VkDeviceMemory m_ImageMemory = VK_NULL_HANDLE;
-        VkImageView m_ImageView      = VK_NULL_HANDLE;
+        ImageView m_ImageView;
     };
 } // namespace Nebula::Vulkan

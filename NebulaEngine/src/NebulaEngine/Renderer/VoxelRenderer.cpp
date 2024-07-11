@@ -6,7 +6,6 @@
 
 namespace Nebula
 {
-
     static constexpr std::uint32_t MAX_INSTANCE_COUNT = 10'000;
 
     const std::vector<VoxelVertex> m_Vertices = {
