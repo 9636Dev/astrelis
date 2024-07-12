@@ -58,6 +58,11 @@ void SandboxLayer::OnUIRender()
     ImGui::Text("GPU Time: %.2fms (%.2f%%)", static_cast<double>(gpuTime), gpuPercentage);
     ImGui::Text("Total Time: %.2fms (%.1f FPS)", static_cast<double>(deltaTime), 1000.0 / deltaTime);
 
+    if (ImGui::Button("Capture Frame"))
+    {
+
+    }
+
     ImGui::End();
 }
 

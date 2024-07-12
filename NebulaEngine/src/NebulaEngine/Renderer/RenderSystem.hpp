@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
+#include "NebulaEngine/IO/Image.hpp"
 
 namespace Nebula
 {
@@ -21,6 +22,7 @@ namespace Nebula
         virtual void EndGraphicsRenderPass()   = 0;
         virtual void BlitSwapchain()           = 0;
         virtual void EndFrame()                = 0;
+        virtual InMemoryImage CaptureFrame()   = 0;
 
         static RefPtr<RenderSystem> Create(RefPtr<Window>& window);
     };

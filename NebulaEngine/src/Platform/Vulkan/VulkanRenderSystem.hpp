@@ -29,6 +29,7 @@ namespace Nebula
         void EndGraphicsRenderPass() override;
         void BlitSwapchain() override;
         void EndFrame() override;
+        InMemoryImage CaptureFrame() override;
 
         static RefPtr<VulkanRenderSystem> Create(RefPtr<Window>& window)
         {

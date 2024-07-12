@@ -11,6 +11,7 @@ namespace Nebula
     {
     public:
         explicit InMemoryImage(const File& file);
+        InMemoryImage(int width, int height, int channels, const std::vector<std::byte>& data) : m_Data(data), m_Width(width), m_Height(height), m_Channels(channels) {}
         ~InMemoryImage() = default;
         InMemoryImage(const InMemoryImage&);
         InMemoryImage& operator=(const InMemoryImage&);

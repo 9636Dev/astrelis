@@ -247,12 +247,18 @@ add_library(NebulaEngine_Engine STATIC
     ${NEBULA_ENGINE_PCH_SOURCES}
 )
 
+add_library(NebulaEngine_External STATIC
+    src/External/StbImpl.cpp
+)
+target_link_libraries(NebulaEngine_External PUBLIC stb)
+
 target_include_directories(NebulaEngine_Engine
 PUBLIC
     src/
 )
 
 target_link_libraries(NebulaEngine_Engine PUBLIC
+    NebulaEngine_External
     spdlog::spdlog
     glfw
     $<$<BOOL:${NEBULA_RENDERER_OPENGL}>:

@@ -11,6 +11,8 @@
 #include <filesystem>
 #include <utility>
 
+#include <stb_image_write.h>
+
 namespace Nebula
 {
     Application* Application::s_Instance = nullptr;
