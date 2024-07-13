@@ -21,9 +21,9 @@ namespace Nebula
         std::uint32_t Height;
         std::uint32_t FramesInFlight;
 
-        explicit WindowProps(const std::string& title = "Nebula Engine",
-                             std::uint32_t width       = 1'280,
-                             std::uint32_t height      = 720,
+        explicit WindowProps(const std::string& title     = "Nebula Engine",
+                             std::uint32_t width          = 1'280,
+                             std::uint32_t height         = 720,
                              std::uint32_t framesInFlight = 2) :
             Title(title),
             Width(width),
@@ -40,11 +40,10 @@ namespace Nebula
         std::uint32_t Height;
         WindowEventCallback EventCallback;
 
-        BaseWindowData(
-            std::string title,
-            std::uint32_t width,
-            std::uint32_t height,
-            WindowEventCallback callback = [](Event&) {}) :
+        BaseWindowData(std::string title,
+                       std::uint32_t width,
+                       std::uint32_t height,
+                       WindowEventCallback callback = [](Event&) {}) :
             Title(std::move(title)),
             Width(width),
             Height(height),

@@ -41,6 +41,7 @@ namespace Nebula
 
     bool InMemoryImage::Save(const std::string& filename) const
     {
-        return stbi_write_png(filename.c_str(), m_Width, m_Height, m_Channels, m_Data.data(), m_Width * m_Channels) != 0;
+        return stbi_write_png(filename.c_str(), m_Width, m_Height, m_Channels, m_Data.data(), m_Width * m_Channels) !=
+               0;
     }
 } // namespace Nebula

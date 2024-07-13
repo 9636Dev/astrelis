@@ -67,7 +67,9 @@ namespace Nebula
         RefPtr<Window>& GetWindow() { return m_Window; }
 
         const RefPtr<Window>& GetWindow() const { return m_Window; }
+
         RefPtr<RenderSystem>& GetRenderSystem() { return m_RenderSystem; }
+
         const RefPtr<RenderSystem>& GetRenderSystem() const { return m_RenderSystem; }
 
         /**

@@ -17,12 +17,12 @@ namespace Nebula
         RenderSystem& operator=(const RenderSystem&) = default;
         RenderSystem& operator=(RenderSystem&&)      = default;
 
-        virtual bool Init()                               = 0;
-        virtual void Shutdown()                           = 0;
-        virtual void StartGraphicsRenderPass()            = 0;
-        virtual void EndGraphicsRenderPass()              = 0;
-        virtual void BlitSwapchain()                      = 0;
-        virtual void EndFrame()                           = 0;
+        virtual bool Init()                    = 0;
+        virtual void Shutdown()                = 0;
+        virtual void StartGraphicsRenderPass() = 0;
+        virtual void EndGraphicsRenderPass()   = 0;
+        virtual void BlitSwapchain()           = 0;
+        virtual void EndFrame()                = 0;
         /**
          * @brief Capture the current frame (next finished frame) and return it as an InMemoryImage
          * @return std::future<InMemoryImage> A future that will contain the InMemoryImage when the frame is captured
