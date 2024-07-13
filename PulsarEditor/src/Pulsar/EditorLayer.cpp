@@ -1,5 +1,7 @@
 #include "EditorLayer.hpp"
 
+#include "NebulaEngine/Core/Application.hpp"
+#include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Core/Time.hpp"
 
 #include <imgui.h>
@@ -9,9 +11,12 @@
 
 namespace Pulsar
 {
+    const Nebula::Bounds renderResolution(0, 0, 1280, 720);
+
     EditorLayer::EditorLayer(std::string rootDirectory) :
         Layer("EditorLayer"),
-        m_AssetPanel(Nebula::File(std::move(rootDirectory)))
+        m_AssetPanel(Nebula::File(std::move(rootDirectory))),
+        m_GamePreview(Nebula::Application::Get().GetWindow(), renderResolution)
     {
     }
 
@@ -25,7 +30,9 @@ namespace Pulsar
 
     void EditorLayer::OnDetach() {}
 
-    void EditorLayer::OnUpdate() {}
+    void EditorLayer::OnUpdate() {
+        m_GamePreview.RenderScene();
+    }
 
     void EditorLayer::OnUIRender()
     {
@@ -45,9 +52,7 @@ namespace Pulsar
             initialized = true;
         }
 
-        ImGui::Begin("Editor");
-        ImGui::Text("FPS: %.1f (NE: %.2f)", ImGui::GetIO().Framerate, 1.0F / Nebula::Time::DeltaTime());
-        ImGui::End();
+        m_GamePreview.Render();
 
         ImGui::Begin("Inspector");
 

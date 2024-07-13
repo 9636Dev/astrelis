@@ -17,11 +17,12 @@ namespace Nebula
     {
     public:
         explicit VulkanRenderSystem(RefPtr<VulkanGraphicsContext>& context) : m_Context(context) {}
-        ~VulkanRenderSystem() override = default;
-        VulkanRenderSystem(const VulkanRenderSystem&) = delete;
-        VulkanRenderSystem(VulkanRenderSystem&&) = delete;
+
+        ~VulkanRenderSystem() override                           = default;
+        VulkanRenderSystem(const VulkanRenderSystem&)            = delete;
+        VulkanRenderSystem(VulkanRenderSystem&&)                 = delete;
         VulkanRenderSystem& operator=(const VulkanRenderSystem&) = delete;
-        VulkanRenderSystem& operator=(VulkanRenderSystem&&) = delete;
+        VulkanRenderSystem& operator=(VulkanRenderSystem&&)      = delete;
 
         bool Init() override;
         void Shutdown() override;
@@ -30,6 +31,11 @@ namespace Nebula
         void BlitSwapchain() override;
         void EndFrame() override;
         std::future<InMemoryImage> CaptureFrame() override;
+
+        void SetBlitSwapchain(bool blit) override { m_BlitSwapchain = blit; }
+
+        // This is for ImGui to render, so we need the descriptor set for Vulkan
+        void* GetGraphicsImage() override { return m_DescriptorSets.GetHandle(); }
 
         static RefPtr<VulkanRenderSystem> Create(RefPtr<Window>& window)
         {
@@ -46,5 +52,7 @@ namespace Nebula
         Vulkan::IndexBuffer m_IndexBuffer;
         Vulkan::DescriptorSets m_DescriptorSets;
         Vulkan::DescriptorSetLayout m_DescriptorSetLayout;
+
+        bool m_BlitSwapchain = true;
     };
 } // namespace Nebula

@@ -105,10 +105,17 @@ namespace Nebula
 
     void VulkanRenderSystem::BlitSwapchain()
     {
+
         auto& frame          = m_Context->GetCurrentFrame();
         auto& swapchainFrame = m_Context->m_SwapChainFrames[m_Context->m_ImageIndex];
         m_Context->m_RenderPass.Begin(frame.CommandBuffer, swapchainFrame.FrameBuffer,
                                       m_Context->m_SwapChain.GetExtent());
+
+        if (!m_BlitSwapchain)
+    {
+        return;
+    }
+
         // We just render normally, because we didn't use the blit extension
 
         vkCmdBindPipeline(frame.CommandBuffer.GetHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS,

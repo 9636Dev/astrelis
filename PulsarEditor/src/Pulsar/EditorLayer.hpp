@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Layer.hpp"
 
 #include "AssetPanel.hpp"
+#include "Pulsar/GamePreview.hpp"
 #include <string>
 
 namespace Pulsar
@@ -24,5 +25,6 @@ namespace Pulsar
         void OnEvent(Nebula::Event& event) override;
     private:
         AssetPanel m_AssetPanel;
+        GamePreview2D m_GamePreview;
     };
 } // namespace Pulsar

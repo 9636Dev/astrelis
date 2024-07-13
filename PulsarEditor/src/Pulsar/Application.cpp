@@ -12,8 +12,9 @@ namespace Pulsar
         explicit EditorApplication(const Nebula::ApplicationSpecification& spec) : Nebula::Application(spec)
         {
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-            PushOverlay(static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(
-                Nebula::OwnedPtr<EditorLayer*>::Create("resources")));
+            PushOverlay(
+                static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(Nebula::OwnedPtr<EditorLayer*>::Create("resources")));
+            m_RenderSystem->SetBlitSwapchain(false);
         }
     };
 } // namespace Pulsar
