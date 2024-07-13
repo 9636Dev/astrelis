@@ -118,73 +118,26 @@ namespace Nebula
         m_IndexBuffer.Bind(frame.CommandBuffer);
         m_DescriptorSets.Bind(frame.CommandBuffer, m_GraphicsPipeline);
 
+        // Dynamic state
+        VkViewport viewport{};
+        viewport.x        = 0.0F;
+        viewport.y        = 0.0F;
+        viewport.width    = static_cast<float>(m_Context->m_SwapChain.GetExtent().width);
+        viewport.height   = static_cast<float>(m_Context->m_SwapChain.GetExtent().height);
+
+        vkCmdSetViewport(frame.CommandBuffer.GetHandle(), 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.extent = m_Context->m_SwapChain.GetExtent();
+
+        vkCmdSetScissor(frame.CommandBuffer.GetHandle(), 0, 1, &scissor);
+
         vkCmdDrawIndexed(frame.CommandBuffer.GetHandle(), 6, 1, 0, 0, 0);
     }
 
     void VulkanRenderSystem::EndFrame() { m_Context->m_RenderPass.End(m_Context->GetCurrentFrame().CommandBuffer); }
-
-    InMemoryImage VulkanRenderSystem::CaptureFrame()
-    {
-        // First create an image with the same extent as the swapchain and VK_IMAGE_USAGE_TRANSFER_DST_BIT
-        VkImage image {};
-        VkDeviceMemory imageMemory {};
-        Vulkan::CreateImage(
-            m_Context->m_PhysicalDevice.GetHandle(), m_Context->m_LogicalDevice.GetHandle(),
-            m_Context->m_SwapChain.GetExtent().width, m_Context->m_SwapChain.GetExtent().height,
-            m_Context->m_SwapChain.GetImageFormat(), VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, image, imageMemory);
-
-        // Transition the image layout to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-        Vulkan::TransitionImageLayout(
-            m_Context->m_LogicalDevice.GetHandle(), m_Context->m_LogicalDevice.GetGraphicsQueue(),
-            m_Context->m_CommandPool.GetHandle(), image, m_Context->m_SwapChain.GetImageFormat(),
-            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-        // Transition swapchain to VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-        Vulkan::TransitionImageLayout(
-            m_Context->m_LogicalDevice.GetHandle(), m_Context->m_LogicalDevice.GetGraphicsQueue(),
-            m_Context->m_CommandPool.GetHandle(), m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex],
-            m_Context->m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-
-
-        // Copy the swapchain image to the new image
-        VkImageCopy copyRegion{};
-        copyRegion.srcSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        copyRegion.srcSubresource.layerCount     = 1;
-        copyRegion.dstSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        copyRegion.dstSubresource.layerCount     = 1;
-        copyRegion.extent.width                  = m_Context->m_SwapChain.GetExtent().width;
-        copyRegion.extent.height                 = m_Context->m_SwapChain.GetExtent().height;
-        copyRegion.extent.depth                  = 1;
-        auto *cmdBuffer = Vulkan::BeginSingleTimeCommands(m_Context->m_LogicalDevice.GetHandle(), m_Context->m_CommandPool.GetHandle());
-        vkCmdCopyImage(cmdBuffer,
-                       m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex], VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, image,
-                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
-        Vulkan::EndSingleTimeCommands(m_Context->m_LogicalDevice.GetHandle(), m_Context->m_LogicalDevice.GetGraphicsQueue(),
-                                      m_Context->m_CommandPool.GetHandle(), cmdBuffer);
-
-        // Transition the image layout to VK_IMAGE_LAYOUT_GENERAL
-        Vulkan::TransitionImageLayout(
-            m_Context->m_LogicalDevice.GetHandle(), m_Context->m_LogicalDevice.GetGraphicsQueue(),
-            m_Context->m_CommandPool.GetHandle(), image, m_Context->m_SwapChain.GetImageFormat(),
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
-        // Map the image memory and copy the data to an InMemoryImage
-        void* data = nullptr;
-        vkMapMemory(m_Context->m_LogicalDevice.GetHandle(), imageMemory, 0,
-                    m_Context->m_SwapChain.GetExtent().width * m_Context->m_SwapChain.GetExtent().height * 4, 0, &data);
-
-        std::vector<std::byte> imageData(static_cast<std::size_t>(m_Context->m_SwapChain.GetExtent().width * m_Context->m_SwapChain.GetExtent().height * 4));
-        std::memcpy(imageData.data(), data, imageData.size());
-        // Cleanup
-        vkUnmapMemory(m_Context->m_LogicalDevice.GetHandle(), imageMemory);
-        vkDestroyImage(m_Context->m_LogicalDevice.GetHandle(), image, nullptr);
-        vkFreeMemory(m_Context->m_LogicalDevice.GetHandle(), imageMemory, nullptr);
-
-        Vulkan::TransitionImageLayout(
-            m_Context->m_LogicalDevice.GetHandle(), m_Context->m_LogicalDevice.GetGraphicsQueue(),
-            m_Context->m_CommandPool.GetHandle(), m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex],
-            m_Context->m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-
-        return InMemoryImage(m_Context->m_SwapChain.GetExtent().width, m_Context->m_SwapChain.GetExtent().height, 4, imageData);
+    std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame() {
+        m_Context->m_CaptureNextFrame = true;
+        return m_Context->m_CapturePromise.get_future();
     }
 } // namespace Nebula

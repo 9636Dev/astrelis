@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NebulaEngine/Core/Pointer.hpp"
+#include "NebulaEngine/IO/Image.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
 #include "NebulaEngine/Renderer/TextureSampler.hpp"
@@ -22,6 +23,7 @@
 #include "VK/TextureSampler.hpp"
 
 #include <GLFW/glfw3.h>
+#include <future>
 
 namespace Nebula
 {
@@ -31,7 +33,7 @@ namespace Nebula
         friend class Vulkan2DRendererAPI;
         friend class Vulkan3DRendererAPI;
         friend class VulkanRayTracerRendererAPI;
-        explicit VulkanGraphicsContext(RawRef<GLFWwindow*> window);
+        explicit VulkanGraphicsContext(RawRef<GLFWwindow*> window, ContextProps props = {});
         ~VulkanGraphicsContext() override;
         VulkanGraphicsContext(const VulkanGraphicsContext&)            = delete;
         VulkanGraphicsContext& operator=(const VulkanGraphicsContext&) = delete;
@@ -67,13 +69,15 @@ namespace Nebula
 
         bool IsInitialized() const override { return m_IsInitialized; }
 
+        InMemoryImage CaptureScreen() const;
+
         std::uint32_t GetCurrentFrameIndex() const override { return m_CurrentFrame; }
 
         std::uint32_t GetImageIndex() const override { return m_ImageIndex; }
 
         FrameData& GetCurrentFrame() { return m_Frames[m_CurrentFrame]; }
 
-        static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window);
+        static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window, ContextProps props);
 
         RawRef<GLFWwindow*> m_Window;
         Vulkan::Instance m_Instance;
@@ -96,10 +100,14 @@ namespace Nebula
         RefPtr<Vulkan::TextureImage> m_GraphicsTextureImage;
         Vulkan::FrameBuffer m_GraphicsFrameBuffer;
 
+        // For screenshotting
+        bool m_CaptureNextFrame = false;
+        std::promise<InMemoryImage> m_CapturePromise;
+
 
         std::uint32_t m_CurrentFrame      = 0;
         std::uint32_t m_ImageIndex        = 0;
-        std::uint32_t m_MaxFramesInFlight = 2;
+        std::uint32_t m_MaxFramesInFlight;
 
         // Internal
         VkSwapchainKHR m_OldSwapChain = VK_NULL_HANDLE;

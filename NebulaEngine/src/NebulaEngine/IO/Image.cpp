@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Log.hpp"
 
 #include <stb_image.h>
+#include <stb_image_write.h>
 
 namespace Nebula
 {
@@ -36,5 +37,10 @@ namespace Nebula
         {
             NEBULA_LOG_ERROR("Failed to load image: {0}", file.GetPath().string());
         }
+    }
+
+    bool InMemoryImage::Save(const std::string& filename) const
+    {
+        return stbi_write_png(filename.c_str(), m_Width, m_Height, m_Channels, m_Data.data(), m_Width * m_Channels) != 0;
     }
 } // namespace Nebula

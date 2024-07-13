@@ -17,15 +17,18 @@ namespace Nebula
     struct WindowProps
     {
         std::string Title;
-        unsigned int Width;
-        unsigned int Height;
+        std::uint32_t Width;
+        std::uint32_t Height;
+        std::uint32_t FramesInFlight;
 
         explicit WindowProps(const std::string& title = "Nebula Engine",
-                             unsigned int width       = 1'280,
-                             unsigned int height      = 720) :
+                             std::uint32_t width       = 1'280,
+                             std::uint32_t height      = 720,
+                             std::uint32_t framesInFlight = 2) :
             Title(title),
             Width(width),
-            Height(height)
+            Height(height),
+            FramesInFlight(framesInFlight)
         {
         }
     };

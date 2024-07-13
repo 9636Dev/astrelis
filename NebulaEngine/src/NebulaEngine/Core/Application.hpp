@@ -67,6 +67,8 @@ namespace Nebula
         RefPtr<Window>& GetWindow() { return m_Window; }
 
         const RefPtr<Window>& GetWindow() const { return m_Window; }
+        RefPtr<RenderSystem>& GetRenderSystem() { return m_RenderSystem; }
+        const RefPtr<RenderSystem>& GetRenderSystem() const { return m_RenderSystem; }
 
         /**
          * Gets the application instance, which should be a singleton. The program will crash and throw an error if more than 1 application is created and not destroyed.

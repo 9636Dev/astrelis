@@ -13,6 +13,7 @@ namespace Nebula
         Scene& operator=(const Scene& other) = delete;
         Scene(Scene&& other)                 = delete;
         Scene& operator=(Scene&& other)      = delete;
+
     private:
         entt::registry m_Registry;
     };

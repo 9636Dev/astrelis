@@ -8,7 +8,7 @@
 
 namespace Nebula
 {
-    RefPtr<GraphicsContext> GraphicsContext::Create(RawRef<GLFWwindow*> window)
+    RefPtr<GraphicsContext> GraphicsContext::Create(RawRef<GLFWwindow*> window, ContextProps props)
     {
         switch (RendererAPI::GetAPI())
         {
@@ -16,7 +16,7 @@ namespace Nebula
             NEBULA_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
         case RendererAPI::API::Vulkan:
-            return static_cast<RefPtr<GraphicsContext>>(VulkanGraphicsContext::Create(std::move(window)));
+            return static_cast<RefPtr<GraphicsContext>>(VulkanGraphicsContext::Create(std::move(window), props));
         };
     }
 } // namespace Nebula

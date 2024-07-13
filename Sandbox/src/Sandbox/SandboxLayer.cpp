@@ -7,6 +7,7 @@
 #include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 
+#include <future>
 #include <glm/glm.hpp>
 
 SandboxLayer::SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Initializing"); }
@@ -58,8 +59,15 @@ void SandboxLayer::OnUIRender()
     ImGui::Text("GPU Time: %.2fms (%.2f%%)", static_cast<double>(gpuTime), gpuPercentage);
     ImGui::Text("Total Time: %.2fms (%.1f FPS)", static_cast<double>(deltaTime), 1000.0 / deltaTime);
 
+    if (m_ImageCapture.valid() && m_ImageCapture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+    {
+        auto image = m_ImageCapture.get();
+        image.Save("capture.png");
+    }
+
     if (ImGui::Button("Capture Frame"))
     {
+        m_ImageCapture = Nebula::Application::Get().GetRenderSystem()->CaptureFrame();
 
     }
 

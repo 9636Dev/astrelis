@@ -8,6 +8,12 @@ struct GLFWwindow;
 
 namespace Nebula
 {
+
+    struct ContextProps
+    {
+        std::uint32_t MaxFramesInFlight = 2;
+    };
+
     /**
     * @brief Per window graphics context, contains per window rendering state and resources.
     */
@@ -31,6 +37,6 @@ namespace Nebula
         virtual std::uint32_t GetCurrentFrameIndex() const = 0;
         virtual std::uint32_t GetImageIndex() const        = 0;
 
-        static RefPtr<GraphicsContext> Create(RawRef<GLFWwindow*> window);
+        static RefPtr<GraphicsContext> Create(RawRef<GLFWwindow*> window, ContextProps props = {});
     };
 } // namespace Nebula

@@ -11,9 +11,12 @@
 #include <array>
 #include <vulkan/vulkan.h>
 
+// TODO: Remove
+#include <stb_image_write.h>
+
 namespace Nebula
 {
-    VulkanGraphicsContext::VulkanGraphicsContext(RawRef<GLFWwindow*> window) : m_Window(std::move(window)) {}
+    VulkanGraphicsContext::VulkanGraphicsContext(RawRef<GLFWwindow*> window, ContextProps props) : m_Window(std::move(window)), m_MaxFramesInFlight(props.MaxFramesInFlight) {}
 
     VulkanGraphicsContext::~VulkanGraphicsContext() = default;
 
@@ -106,8 +109,8 @@ namespace Nebula
 
             INIT_COMPONENT(m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo));
 
-            if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass, m_GraphicsTextureImage->GetImageView(),
-                                            m_GraphicsExtent))
+            if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass,
+                                            m_GraphicsTextureImage->GetImageView(), m_GraphicsExtent))
             {
                 return false;
             }
@@ -183,6 +186,13 @@ namespace Nebula
     {
         auto& frame = GetCurrentFrame();
         frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
+
+        if (m_CaptureNextFrame)
+        {
+            m_CaptureNextFrame = false;
+            m_CapturePromise.set_value(CaptureScreen());
+        }
+
         VkResult result = vkAcquireNextImageKHR(
             m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
             frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
@@ -300,8 +310,80 @@ namespace Nebula
         m_NeedsResize = false;
     }
 
-    RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window)
+    InMemoryImage VulkanGraphicsContext::CaptureScreen() const
     {
-        return RefPtr<VulkanGraphicsContext>::Create(window);
+        constexpr VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
+        VkImage image {};
+        VkDeviceMemory imageMemory {};
+        Vulkan::CreateImage(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(), m_SwapChain.GetExtent().width,
+                            m_SwapChain.GetExtent().height, format, VK_IMAGE_TILING_LINEAR,
+                            VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, image,
+                            imageMemory);
+
+        // Transition the image layout to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+        Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
+                                      m_CommandPool.GetHandle(), image, m_SwapChain.GetImageFormat(),
+                                      VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+        // Transition swapchain to VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+        Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
+                                      m_CommandPool.GetHandle(), m_SwapChain.GetImages()[m_ImageIndex],
+                                      m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+
+        // Blit the image to the output
+        auto* cmdBuffer = Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
+
+        VkImageBlit blit {};
+        blit.srcOffsets[0] = {0, 0, 0};
+        blit.srcOffsets[1] = {static_cast<int32_t>(m_SwapChain.GetExtent().width), static_cast<int32_t>(m_SwapChain.GetExtent().height), 1};
+        blit.srcSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        blit.srcSubresource.mipLevel       = 0;
+        blit.srcSubresource.baseArrayLayer  = 0;
+        blit.srcSubresource.layerCount      = 1;
+        blit.dstOffsets[0] = {0, 0, 0};
+        blit.dstOffsets[1] = {static_cast<int32_t>(m_SwapChain.GetExtent().width), static_cast<int32_t>(m_SwapChain.GetExtent().height), 1};
+        blit.dstSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        blit.dstSubresource.mipLevel       = 0;
+        blit.dstSubresource.baseArrayLayer  = 0;
+        blit.dstSubresource.layerCount      = 1;
+        // TODO(MetalDrawableWarning): Blitting a drawable on MoltenVK returns a metal warning
+        vkCmdBlitImage(cmdBuffer, m_SwapChain.GetImages()[m_ImageIndex], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
+                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
+
+        Vulkan::EndSingleTimeCommands(m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
+                                      m_CommandPool.GetHandle(), cmdBuffer);
+
+        // Transition the image layout to VK_IMAGE_LAYOUT_GENERAL
+        Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
+                                      m_CommandPool.GetHandle(), image, m_SwapChain.GetImageFormat(),
+                                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
+
+        // Map the image memory and copy the data to an InMemoryImage
+        void* data = nullptr;
+        vkMapMemory(m_LogicalDevice.GetHandle(), imageMemory, 0,
+                    m_SwapChain.GetExtent().width * m_SwapChain.GetExtent().height * 4, 0, &data);
+
+        std::vector<std::byte> imageData(
+            static_cast<std::size_t>(m_SwapChain.GetExtent().width * m_SwapChain.GetExtent().height * 4));
+        std::memcpy(imageData.data(), data, imageData.size());
+        // Cleanup
+        vkUnmapMemory(m_LogicalDevice.GetHandle(), imageMemory);
+        vkDestroyImage(m_LogicalDevice.GetHandle(), image, nullptr);
+        vkFreeMemory(m_LogicalDevice.GetHandle(), imageMemory, nullptr);
+
+        Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
+                                      m_CommandPool.GetHandle(), m_SwapChain.GetImages()[m_ImageIndex],
+                                      m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+        return InMemoryImage(m_SwapChain.GetExtent().width, m_SwapChain.GetExtent().height, 4, imageData);
+    }
+
+    RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window, ContextProps props)
+    {
+        return RefPtr<VulkanGraphicsContext>::Create(window, props);
     }
 } // namespace Nebula
