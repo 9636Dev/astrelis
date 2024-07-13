@@ -131,6 +131,8 @@ namespace Nebula
         viewport.y        = 0.0F;
         viewport.width    = static_cast<float>(m_Context->m_SwapChain.GetExtent().width);
         viewport.height   = static_cast<float>(m_Context->m_SwapChain.GetExtent().height);
+        viewport.minDepth = 0.0F;
+        viewport.maxDepth = 0.0F; // It only needs to be 0.0F
 
         vkCmdSetViewport(frame.CommandBuffer.GetHandle(), 0, 1, &viewport);
 
