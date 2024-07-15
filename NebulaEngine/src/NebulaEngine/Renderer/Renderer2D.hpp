@@ -17,7 +17,6 @@ namespace Nebula
 {
     struct CameraUniformData
     {
-        glm::mat4 Model      = glm::mat4(1.0F);
         glm::mat4 View       = glm::mat4(1.0F);
         glm::mat4 Projection = glm::mat4(1.0F);
     };

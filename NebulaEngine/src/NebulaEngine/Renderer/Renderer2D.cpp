@@ -105,15 +105,8 @@ namespace Nebula
         m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
         m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());
 
-        m_UBO.Model      = glm::mat4(1.0F);
         m_UBO.View       = glm::mat4(1.0F);
         m_UBO.Projection = glm::mat4(1.0F);
-
-        std::vector<InstanceData> instanceData = {
-            {glm::translate(glm::mat4(1.0F), glm::vec3(-0.5F, -0.5F, 0.0F))},
-            {glm::translate(glm::mat4(1.0F), glm::vec3(0.5F, 0.5F, 0.0F))},
-        };
-        m_InstanceBuffer->SetData(m_Context, instanceData.data(), sizeof(InstanceData) * 2);
 
         return true;
     }
@@ -147,7 +140,6 @@ namespace Nebula
         NEBULA_PROFILE_SCOPE("Renderer2D::RenderScene");
         m_Instances.clear();
 
-        m_UBO.Model        = glm::rotate(m_UBO.Model, glm::radians(0.1F), glm::vec3(0.0F, 0.0F, 1.0F));
         m_UBO.View         = camera.GetViewMatrix();
         Bounds surfaceSize = m_RendererAPI->GetSurfaceSize();
         float aspectRatio  = static_cast<float>(surfaceSize.Width) / static_cast<float>(surfaceSize.Height);
