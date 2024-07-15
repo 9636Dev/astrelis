@@ -11,8 +11,8 @@
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 #include "Vertex.hpp"
 
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 namespace Nebula
 {
@@ -143,7 +143,7 @@ namespace Nebula
         m_UBO.View         = camera.GetViewMatrix();
         Bounds surfaceSize = m_RendererAPI->GetSurfaceSize();
         float aspectRatio  = static_cast<float>(surfaceSize.Width) / static_cast<float>(surfaceSize.Height);
-        m_UBO.Projection   = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F, -1.0F, 1.0F);
+        m_UBO.Projection   = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F);
         m_RendererAPI->CorrectProjection(m_UBO.Projection);
 
         m_VertexBuffer->Bind(m_Context, 0);
@@ -176,6 +176,4 @@ namespace Nebula
     }
 
     void Renderer2D::EndFrame() { NEBULA_PROFILE_SCOPE("Renderer2D::EndFrame"); }
-
-
 } // namespace Nebula

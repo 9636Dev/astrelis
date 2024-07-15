@@ -8,6 +8,7 @@
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 
 #include <future>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
 SandboxLayer::SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Initializing"); }
@@ -26,7 +27,8 @@ void SandboxLayer::OnAttach()
     m_Renderer->Init();
 
     auto entity = m_Scene.CreateEntity();
-    m_Scene.AddComponent(entity, Nebula::TransformComponent{glm::mat4(1.0F)});
+    m_Scene.AddComponent(entity,
+                         Nebula::TransformComponent {glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, 0.0F, 0.1F))});
 }
 
 void SandboxLayer::OnDetach()
@@ -41,7 +43,7 @@ void SandboxLayer::OnUpdate()
 
     Nebula::TimePoint start = Nebula::Time::Now();
     m_Renderer->RenderScene(m_Scene, m_Camera);
-    m_CpuTime               = Nebula::Time::ElapsedTime<Nebula::Milliseconds>(start, Nebula::Time::Now());
+    m_CpuTime = Nebula::Time::ElapsedTime<Nebula::Milliseconds>(start, Nebula::Time::Now());
 
     m_Renderer->EndFrame();
 }
@@ -68,7 +70,6 @@ void SandboxLayer::OnUIRender()
     if (ImGui::Button("Capture Frame"))
     {
         m_ImageCapture = Nebula::Application::Get().GetRenderSystem()->CaptureFrame();
-
     }
 
     ImGui::End();

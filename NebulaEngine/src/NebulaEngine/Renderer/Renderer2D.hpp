@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "NebulaEngine/Core/Bounds.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
@@ -9,9 +11,6 @@
 
 #include "Camera.hpp"
 #include "VertexBuffer.hpp"
-
-#include <chrono>
-#include <glm/glm.hpp>
 
 namespace Nebula
 {
