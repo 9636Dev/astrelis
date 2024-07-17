@@ -19,9 +19,9 @@
 [submodule "NebulaEngine/vendor/entt"]
 	path = NebulaEngine/vendor/entt
 	url = https://github.com/skypjack/entt
-[submodule "NebulaEngine/vendor/glm"]
-	path = NebulaEngine/vendor/glm
-	url = https://github.com/g-truc/glm
 [submodule "NebulaEngine/vendor/stb"]
 	path = NebulaEngine/vendor/stb
 	url = https://github.com/nothings/stb
+[submodule "NebulaEngine/vendor/glm"]
+	path = NebulaEngine/vendor/glm
+	url = https://github.com/g-truc/glm

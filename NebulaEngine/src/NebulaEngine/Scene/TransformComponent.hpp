@@ -7,6 +7,6 @@ namespace Nebula
     // TODO: Find some way to efficiently store this data, and translation, rotation, and scale
     struct TransformComponent
     {
-        mat4 Transform = mat4(1.0F);
+        Mat4f Transform = Mat4f(1.0F);
     };
 } // namespace Nebula

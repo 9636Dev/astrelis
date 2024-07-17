@@ -26,6 +26,7 @@ namespace Nebula
     {
         NEBULA_PROFILE_SCOPE("Application::Application");
         Nebula::Log::Init();
+        Nebula::Profiling::Init();
         NEBULA_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
 
@@ -77,6 +78,8 @@ namespace Nebula
         {
             layer->OnDetach();
         }
+        // Deinit logger
+        Log::SetInitialized(false);
     }
 
     void Application::Run()

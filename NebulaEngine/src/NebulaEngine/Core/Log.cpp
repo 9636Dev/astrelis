@@ -6,6 +6,7 @@
 
 namespace Nebula
 {
+    bool Log::s_Initialized = false;
     std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
     std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 
@@ -33,6 +34,7 @@ namespace Nebula
             s_CoreLogger->set_level(logLevel);
             s_ClientLogger->set_level(logLevel);
 
+            s_Initialized = true;
             return true;
         }
         catch (const spdlog::spdlog_ex& e)
@@ -45,6 +47,17 @@ namespace Nebula
     std::shared_ptr<spdlog::logger>& Log::GetCoreLogger() { return s_CoreLogger; }
 
     std::shared_ptr<spdlog::logger>& Log::GetClientLogger() { return s_ClientLogger; }
+
+    void Log::AddCoreSink(const std::shared_ptr<spdlog::sinks::sink>& sink) { s_CoreLogger->sinks().push_back(sink); }
+
+    void Log::RemoveCoreSink(const std::shared_ptr<spdlog::sinks::sink>& sink)
+    {
+        auto iter = std::find(s_CoreLogger->sinks().begin(), s_CoreLogger->sinks().end(), sink);
+        if (iter != s_CoreLogger->sinks().end())
+        {
+            s_CoreLogger->sinks().erase(iter);
+        }
+    }
 
     void Log::AddClientSink(const std::shared_ptr<spdlog::sinks::sink>& sink)
     {

@@ -9,17 +9,17 @@ namespace Nebula
     public:
         Camera() = default;
 
-        explicit Camera(const glm::mat4& projectionMatrix) : m_ProjectionMatrix(projectionMatrix) {}
+        explicit Camera(const Mat4f& projectionMatrix) : m_ProjectionMatrix(projectionMatrix) {}
 
-        void SetProjectionMatrix(const glm::mat4& projectionMatrix) { m_ProjectionMatrix = projectionMatrix; }
+        void SetProjectionMatrix(const Mat4f& projectionMatrix) { m_ProjectionMatrix = projectionMatrix; }
 
-        void SetViewMatrix(const glm::mat4& viewMatrix) { m_ViewMatrix = viewMatrix; }
+        void SetViewMatrix(const Mat4f& viewMatrix) { m_ViewMatrix = viewMatrix; }
 
-        const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+        const Mat4f& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 
-        const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
+        const Mat4f& GetViewMatrix() const { return m_ViewMatrix; }
     private:
-        glm::mat4 m_ViewMatrix       = glm::mat4(1.0F);
-        glm::mat4 m_ProjectionMatrix = glm::mat4(1.0F);
+        Mat4f m_ViewMatrix       = Mat4f(1.0F);
+        Mat4f m_ProjectionMatrix = Mat4f(1.0F);
     };
 } // namespace Nebula

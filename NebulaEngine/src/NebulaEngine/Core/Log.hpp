@@ -27,9 +27,16 @@ namespace Nebula
         static std::shared_ptr<spdlog::logger>& GetCoreLogger();
         static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
+        static bool IsInitialized() { return s_Initialized; }
+
+        static void SetInitialized(bool initialized) { s_Initialized = initialized; }
+
+        static void AddCoreSink(const std::shared_ptr<spdlog::sinks::sink>& sink);
+        static void RemoveCoreSink(const std::shared_ptr<spdlog::sinks::sink>& sink);
         static void AddClientSink(const std::shared_ptr<spdlog::sinks::sink>& sink);
         static void RemoveClientSink(const std::shared_ptr<spdlog::sinks::sink>& sink);
     private:
+        static bool s_Initialized;
         static std::shared_ptr<spdlog::logger> s_CoreLogger;
         static std::shared_ptr<spdlog::logger> s_ClientLogger;
     };

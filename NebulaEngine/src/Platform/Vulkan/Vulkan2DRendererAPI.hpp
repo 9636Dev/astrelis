@@ -29,7 +29,7 @@ namespace Nebula
 
         void ResizeViewport() override { m_Context->m_NeedsResize = true; }
         bool NeedsResize() const override { return m_Context->m_NeedsResize; }
-        void CorrectProjection(glm::mat4& projection) override;
+        void CorrectProjection(Mat4f& projection) override;
 
         RefPtr<GraphicsPipeline> CreateGraphicsPipeline() override;
         RefPtr<VertexBuffer> CreateVertexBuffer() override;

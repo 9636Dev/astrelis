@@ -5,47 +5,49 @@
 
 #pragma once
 
-#include "glm/ext/matrix_clip_space.hpp"
 #define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
 namespace Nebula
 {
-    using vec2  = glm::vec2;
-    using vec3  = glm::vec3;
-    using vec4  = glm::vec4;
-    using ivec2 = glm::ivec2;
-    using ivec3 = glm::ivec3;
-    using ivec4 = glm::ivec4;
-    using mat4  = glm::mat4;
+    using Vec2f = glm::vec<2, float, glm::defaultp>;
+    using Vec3f = glm::vec<3, float, glm::defaultp>;
+    using Vec4f = glm::vec<4, float, glm::defaultp>;
+    using Vec2i = glm::vec<2, std::int32_t, glm::defaultp>;
+    using Vec3i = glm::vec<3, std::int32_t, glm::defaultp>;
+    using Vec4i = glm::vec<4, std::int32_t, glm::defaultp>;
+    using Vec2u = glm::vec<2, std::uint32_t, glm::defaultp>;
+    using Vec3u = glm::vec<3, std::uint32_t, glm::defaultp>;
+    using Vec4u = glm::vec<4, std::uint32_t, glm::defaultp>;
+    using Mat4f = glm::mat<4, 4, float, glm::defaultp>;
 
     namespace Math
     {
-        inline mat4 Translate(const mat4& matrix, const vec3& translation)
+        inline Mat4f Translate(const Mat4f& matrix, const Vec3f& translation)
         {
             return glm::translate(matrix, translation);
         }
 
-        inline mat4 Rotate(const mat4& matrix, float angle, const vec3& axis)
+        inline Mat4f Rotate(const Mat4f& matrix, float angle, const Vec3f& axis)
         {
             return glm::rotate(matrix, angle, axis);
         }
 
-        inline mat4 Scale(const mat4& matrix, const vec3& scale) { return glm::scale(matrix, scale); }
+        inline Mat4f Scale(const Mat4f& matrix, const Vec3f& scale) { return glm::scale(matrix, scale); }
 
-        inline mat4 Orthographic(float left, float right, float bottom, float top, float near, float far)
+        inline Mat4f Orthographic(float left, float right, float bottom, float top, float near, float far)
         {
-            return glm::ortho(left, right, bottom, top, near, far);
+            return glm::orthoRH_ZO(left, right, bottom, top, near, far);
         }
 
-        inline mat4 Perspective(float fov, float aspect, float near, float far)
+        inline Mat4f Perspective(float fov, float aspect, float near, float far)
         {
             return glm::perspective(fov, aspect, near, far);
         }
 
-        inline mat4 LookAt(const vec3& eye, const vec3& center, const vec3& upDir)
+        inline Mat4f LookAt(const Vec3f& eye, const Vec3f& center, const Vec3f& upDir)
         {
             return glm::lookAt(eye, center, upDir);
         }

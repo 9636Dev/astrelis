@@ -82,9 +82,9 @@ namespace Nebula
         virtual void SetViewport(Viewport& viewport) = 0;
         virtual void SetScissor(Bounds& scissor)     = 0;
 
-        virtual void WaitDeviceIdle()                         = 0;
-        virtual Bounds GetSurfaceSize()                       = 0;
-        virtual void CorrectProjection(glm::mat4& projection) = 0;
+        virtual void WaitDeviceIdle()                     = 0;
+        virtual Bounds GetSurfaceSize()                   = 0;
+        virtual void CorrectProjection(Mat4f& projection) = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
         virtual void ResizeViewport()    = 0;

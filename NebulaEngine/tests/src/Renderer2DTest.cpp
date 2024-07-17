@@ -11,7 +11,6 @@
 #include "NebulaEngine/Renderer/RenderSystem.hpp"
 #include "NebulaEngine/Renderer/Renderer2D.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
-#include "glm/ext/matrix_transform.hpp"
 
 using Nebula::RefPtr;
 
@@ -124,43 +123,42 @@ TEST_P(Renderer2DTest, TestDrawScene)
     ASSERT_TRUE(image == referenceImage);
 }
 
-INSTANTIATE_TEST_SUITE_P(Renderer2DTest,
-                         Renderer2DTest,
-                         ::testing::Values(Renderer2DTestParams {"EmptyScene", RefPtr<Nebula::Scene2D>::Create()},
-                                           Renderer2DTestParams {"SingleSprite",
-                                                                 []() {
-                                                                     auto scene  = RefPtr<Nebula::Scene2D>::Create();
-                                                                     auto entity = scene->CreateEntity();
-                                                                     scene->AddComponent(entity,
-                                                                                         Nebula::TransformComponent());
-                                                                     return scene;
-                                                                 }()},
-                                           Renderer2DTestParams {"MultipleSprites", []() {
-                                                                     auto scene = RefPtr<Nebula::Scene2D>::Create();
-                                                                     for (int i = 0; i < 10; i++)
-                                                                     {
-                                                                         auto entity = scene->CreateEntity();
-                                                                         Nebula::TransformComponent transform;
-                                                                         transform.Transform = glm::translate(
-                                                                             glm::mat4(1.0F),
-                                                                             glm::vec3((i - 5) * 0.1F, 0.0F, 0.0F));
-                                                                         scene->AddComponent(entity, transform);
-                                                                     }
-                                                                     return scene;
-                                                                 }()},
-                                           Renderer2DTestParams {"DepthTest", []() {
-                                                                     auto scene = RefPtr<Nebula::Scene2D>::Create();
-                                                                     for (int i = 0; i < 10; i++)
-                                                                     {
-                                                                         auto entity = scene->CreateEntity();
-                                                                         Nebula::TransformComponent transform;
-                                                                         transform.Transform = glm::translate(
-                                                                             glm::mat4(1.0F),
-                                                                             glm::vec3((i - 5) * 0.1F, 0.0F, -1 + 0.1F * i));
-                                                                         scene->AddComponent(entity, transform);
-                                                                     }
-                                                                     return scene;
-                                                                 }()}
-                                           ));
+INSTANTIATE_TEST_SUITE_P(
+    Renderer2DTest,
+    Renderer2DTest,
+    ::testing::Values(Renderer2DTestParams {"EmptyScene", RefPtr<Nebula::Scene2D>::Create()},
+                      Renderer2DTestParams {"SingleSprite",
+                                            []() {
+                                                auto scene  = RefPtr<Nebula::Scene2D>::Create();
+                                                auto entity = scene->CreateEntity();
+                                                scene->AddComponent(entity, Nebula::TransformComponent());
+                                                return scene;
+                                            }()},
+                      Renderer2DTestParams {"MultipleSprites",
+                                            []() {
+                                                auto scene = RefPtr<Nebula::Scene2D>::Create();
+                                                for (int i = 0; i < 10; i++)
+                                                {
+                                                    auto entity = scene->CreateEntity();
+                                                    Nebula::TransformComponent transform;
+                                                    transform.Transform = Nebula::Math::Translate(
+                                                        Nebula::Mat4f(1.0F), Nebula::Vec3f((i - 5) * 0.1F, 0.0F, 0.0F));
+                                                    scene->AddComponent(entity, transform);
+                                                }
+                                                return scene;
+                                            }()},
+                      Renderer2DTestParams {"DepthTest", []() {
+                                                auto scene = RefPtr<Nebula::Scene2D>::Create();
+                                                for (int i = 0; i < 10; i++)
+                                                {
+                                                    auto entity = scene->CreateEntity();
+                                                    Nebula::TransformComponent transform;
+                                                    transform.Transform = Nebula::Math::Translate(
+                                                        Nebula::Mat4f(1.0F),
+                                                        Nebula::Vec3f((i - 5) * 0.1F, 0.0F, -1 + 0.1F * i));
+                                                    scene->AddComponent(entity, transform);
+                                                }
+                                                return scene;
+                                            }()}));
 
 

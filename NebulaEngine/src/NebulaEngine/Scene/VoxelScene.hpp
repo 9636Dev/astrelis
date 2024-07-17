@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Math.hpp"
 
 #include <cstddef>
+#include <utility>
 
 namespace Nebula
 {
@@ -15,9 +16,9 @@ namespace Nebula
         // 6 * 3 = 24 < 32
         std::uint32_t Position;
         static_assert(sizeof(Position) * 8 >= static_cast<std::uint64_t>(BITS_PER_POSITION * 3));
-        vec4 Color;
+        Vec4f Color;
 
-        constexpr ivec3 GetPosition() const
+        Vec3u GetPosition() const
         {
             return {
                 (Position >> (BITS_PER_POSITION * 2)) & POSITION_BITMASK,
@@ -26,12 +27,15 @@ namespace Nebula
             };
         }
 
-        constexpr static std::uint32_t GetPackedPosition(ivec3 position)
+        static std::uint32_t GetPackedPosition(Vec3u position)
         {
             return (position.x << (BITS_PER_POSITION * 2)) | (position.y << BITS_PER_POSITION) | position.z;
         }
 
-        constexpr static Voxel Create(glm::ivec3 offset, glm::vec4 color) { return {GetPackedPosition(offset), color}; }
+        static Voxel Create(Vec3u offset, Vec4f color)
+        {
+            return {GetPackedPosition(std::move(offset)), std::move(color)};
+        }
     };
 
     class VoxelScene
@@ -47,7 +51,7 @@ namespace Nebula
 
         struct Chunk
         {
-            ivec3 Position;
+            Vec3i Position;
             std::vector<Voxel> Voxels;
         };
 

@@ -4,15 +4,13 @@
 
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/IO/Image.hpp"
 #include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 #include "Vertex.hpp"
-
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 
 namespace Nebula
 {
@@ -105,8 +103,8 @@ namespace Nebula
         m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
         m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());
 
-        m_UBO.View       = glm::mat4(1.0F);
-        m_UBO.Projection = glm::mat4(1.0F);
+        m_UBO.View       = Mat4f(1.0F);
+        m_UBO.Projection = Mat4f(1.0F);
 
         return true;
     }
@@ -143,8 +141,7 @@ namespace Nebula
         m_UBO.View         = camera.GetViewMatrix();
         Bounds surfaceSize = m_RendererAPI->GetSurfaceSize();
         float aspectRatio  = static_cast<float>(surfaceSize.Width) / static_cast<float>(surfaceSize.Height);
-        //m_UBO.Projection   = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F, 0.0F, 1.0F);
-        m_UBO.Projection = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F);
+        m_UBO.Projection   = Math::Orthographic(-aspectRatio, aspectRatio, -1.0F, 1.0F, 0.0F, 1.0F);
         m_RendererAPI->CorrectProjection(m_UBO.Projection);
 
         m_VertexBuffer->Bind(m_Context, 0);

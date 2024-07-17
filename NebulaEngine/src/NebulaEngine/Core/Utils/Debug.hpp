@@ -5,9 +5,8 @@
         switch (0)                   \
         {                            \
         default: {                   \
-            \ __VA_ARGS__;           \
+            __VA_ARGS__;             \
         }                            \
-            \                        \
         }
 #else
     #define NEBULA_RUN_IF_DEBUG(...)

@@ -25,8 +25,8 @@ void SandboxLayer::OnAttach()
     m_Renderer->Init();
 
     auto entity = m_Scene.CreateEntity();
-    m_Scene.AddComponent(entity,
-                         Nebula::TransformComponent {glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, 0.0F, -0.1F))});
+    m_Scene.AddComponent(entity, Nebula::TransformComponent {
+                                     Nebula::Math::Translate(Nebula::Mat4f(1.0F), Nebula::Vec3f(0.0F, 0.0F, -0.1F))});
 }
 
 void SandboxLayer::OnDetach()

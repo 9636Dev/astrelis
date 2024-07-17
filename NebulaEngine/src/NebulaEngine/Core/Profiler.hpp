@@ -10,3 +10,11 @@
 #define NEBULA_PROFILE_END_SESSION()                 QPROFILE_END_SESSION()
 #define NEBULA_PROFILE_SCOPE(name)                   QPROFILE_SCOPE(name)
 
+namespace Nebula
+{
+    class Profiling
+    {
+    public:
+        static bool Init();
+    };
+} // namespace Nebula

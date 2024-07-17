@@ -15,7 +15,7 @@ namespace Nebula
 {
     struct BlitVertex
     {
-        glm::vec2 PosAndTex;
+        Vec2f PosAndTex;
     };
 
     bool VulkanRenderSystem::Init()

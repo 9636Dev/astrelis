@@ -1,6 +1,5 @@
 #include "Window.hpp"
 
-#include "NebulaEngine/Core/Log.hpp"
 #include "PlatformDetection.hpp"
 
 #ifdef NEBULA_PLATFORM_LINUX

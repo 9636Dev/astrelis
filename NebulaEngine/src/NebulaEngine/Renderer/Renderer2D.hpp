@@ -15,13 +15,13 @@ namespace Nebula
 {
     struct CameraUniformData
     {
-        glm::mat4 View       = glm::mat4(1.0F);
-        glm::mat4 Projection = glm::mat4(1.0F);
+        Mat4f View       = Mat4f(1.0F);
+        Mat4f Projection = Mat4f(1.0F);
     };
 
     struct InstanceData
     {
-        glm::mat4 Transform;
+        Mat4f Transform;
     };
 
     class Renderer2D : public BaseRenderer

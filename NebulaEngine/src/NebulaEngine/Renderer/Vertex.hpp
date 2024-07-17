@@ -6,8 +6,8 @@ namespace Nebula
 {
     struct Vertex2D
     {
-        glm::vec3 Position;
-        glm::vec3 Color;
-        glm::vec2 TexCoord;
+        Vec3f Position;
+        Vec3f Color;
+        Vec2f TexCoord;
     };
 } // namespace Nebula

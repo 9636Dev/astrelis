@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NebulaEngine/Core/Bounds.hpp"
+#include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/Renderer/Camera.hpp"
@@ -10,33 +11,30 @@
 #include "TextureImage.hpp"
 #include "VertexBuffer.hpp"
 
-#include <chrono>
-#include <glm/glm.hpp>
-
 namespace Nebula
 {
     struct CameraUniformData
     {
-        glm::mat4 View;
-        glm::mat4 Projection;
+        Mat4f View;
+        Mat4f Projection;
     };
 
     struct ChunkUniformData
     {
-        glm::ivec3 Position;
+        Vec3i Position;
     };
 
     struct VoxelVertex
     {
-        glm::vec3 Position;
+        Vec3f Position;
     };
 
     struct VoxelInstance
     {
         std::uint32_t Offset;
-        glm::vec4 Color;
+        Vec4f Color;
 
-        VoxelInstance(std::uint32_t offset, glm::vec4 color) : Offset(offset), Color(color) {}
+        VoxelInstance(std::uint32_t offset, Vec4f color) : Offset(offset), Color(color) {}
     };
 
     class VoxelRenderer : public BaseRenderer

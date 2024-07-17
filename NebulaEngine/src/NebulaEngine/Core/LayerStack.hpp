@@ -19,8 +19,8 @@ namespace Nebula
 
         void PushLayer(OwnedPtr<Layer*> layer);
         void PushOverlay(OwnedPtr<Layer*> overlay);
-        OwnedPtr<Layer*> PopLayer(RawRef<Layer*> layer);
-        OwnedPtr<Layer*> PopOverlay(RawRef<Layer*> overlay);
+        OwnedPtr<Layer*> PopLayer(RawRef<Layer*>&& layer);
+        OwnedPtr<Layer*> PopOverlay(RawRef<Layer*>&& overlay);
 
         std::vector<OwnedPtr<Layer*>>::iterator begin() { return m_Layers.begin(); }
 

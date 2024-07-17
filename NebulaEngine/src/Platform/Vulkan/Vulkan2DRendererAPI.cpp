@@ -82,7 +82,7 @@ namespace Nebula
         return Bounds(0, 0, static_cast<std::int32_t>(extent.width), static_cast<std::int32_t>(extent.height));
     }
 
-    void Vulkan2DRendererAPI::CorrectProjection(glm::mat4& projection) { projection[1][1] *= -1.0F; }
+    void Vulkan2DRendererAPI::CorrectProjection(Mat4f& projection) { projection[1][1] *= -1.0F; }
 
     RefPtr<GraphicsPipeline> Vulkan2DRendererAPI::CreateGraphicsPipeline()
     {
