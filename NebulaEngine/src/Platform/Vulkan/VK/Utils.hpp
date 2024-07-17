@@ -119,4 +119,14 @@ namespace Nebula::Vulkan
     };
 
     SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+
+    class Utils
+    {
+    public:
+        Utils() = delete;
+
+        static std::string VkFormatToString(VkFormat format);
+        static std::string VkColorSpaceToString(VkColorSpaceKHR colorSpace);
+        static std::string VkPresentModeToString(VkPresentModeKHR presentMode);
+    };
 } // namespace Nebula::Vulkan

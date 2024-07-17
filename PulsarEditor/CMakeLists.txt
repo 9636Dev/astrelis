@@ -14,6 +14,8 @@ set(PULSAR_EDITOR_SOURCES
     src/Pulsar/FileTree.cpp
     src/Pulsar/GamePreview.hpp
     src/Pulsar/GamePreview.cpp
+    src/Pulsar/Console.hpp
+    src/Pulsar/Console.cpp
 )
 
 add_executable(PulsarEditor ${PULSAR_EDITOR_SOURCES})

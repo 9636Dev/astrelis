@@ -2,7 +2,9 @@
 
 #include "NebulaEngine/Core/Application.hpp"
 #include "NebulaEngine/Core/Bounds.hpp"
+#include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Time.hpp"
+#include "NebulaEngine/Scene/TransformComponent.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -11,7 +13,7 @@
 
 namespace Pulsar
 {
-    const Nebula::Bounds renderResolution(0, 0, 1280, 720);
+    const Nebula::Bounds renderResolution(0, 0, 1'280, 720);
 
     EditorLayer::EditorLayer(std::string rootDirectory) :
         Layer("EditorLayer"),
@@ -26,13 +28,13 @@ namespace Pulsar
     {
         // Don't store imgui.ini settings
         ImGui::GetIO().IniFilename = nullptr;
+        auto entity = m_Scene.CreateEntity();
+        m_Scene.AddComponent(entity, Nebula::TransformComponent());
     }
 
     void EditorLayer::OnDetach() {}
 
-    void EditorLayer::OnUpdate() {
-        m_GamePreview.RenderScene();
-    }
+    void EditorLayer::OnUpdate() { m_GamePreview.RenderScene(m_Scene); }
 
     void EditorLayer::OnUIRender()
     {
@@ -62,16 +64,7 @@ namespace Pulsar
 
         m_AssetPanel.Draw();
 
-        ImGui::Begin("Console");
-
-        // Scrollable text area
-        ImGui::BeginChild("ConsoleScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-        ImGui::TextUnformatted("Hello, world!");
-
-        ImGui::EndChild();
-
-        ImGui::End();
+        m_Console.Render();
 
         ImGui::Begin("Hierarchy");
 

@@ -35,6 +35,8 @@ namespace Nebula
             ImGuiStyle& style                 = ImGui::GetStyle();
             style.WindowRounding              = 0.0F;
             style.Colors[ImGuiCol_WindowBg].w = 1.0F;
+            // Gamma correction
+            imguiIO.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
         }
 
         if (m_Backend != nullptr)

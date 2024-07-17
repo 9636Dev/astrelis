@@ -8,8 +8,6 @@
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 
 #include <future>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/glm.hpp>
 
 SandboxLayer::SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Initializing"); }
 
@@ -28,7 +26,7 @@ void SandboxLayer::OnAttach()
 
     auto entity = m_Scene.CreateEntity();
     m_Scene.AddComponent(entity,
-                         Nebula::TransformComponent {glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, 0.0F, 0.1F))});
+                         Nebula::TransformComponent {glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, 0.0F, -0.1F))});
 }
 
 void SandboxLayer::OnDetach()

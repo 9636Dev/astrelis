@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "NebulaEngine/Core/Utils/Function.hpp"
 #include "NebulaEngine/Events/Event.hpp"
 
 namespace Nebula
@@ -28,7 +27,7 @@ namespace Nebula
         * @brief Called when an event is dispatched to the layer.
         * @param event The event that was dispatched.
         */
-        virtual void OnEvent(Event& event) { NEBULA_UNUSED(event); }
+        virtual void OnEvent(Event& event);
 
         virtual void OnUIRender() {}
 

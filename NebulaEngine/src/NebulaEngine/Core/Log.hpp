@@ -7,10 +7,28 @@ namespace Nebula
     class Log
     {
     public:
-        static bool Init();
+        enum class LogMode : uint8_t
+        {
+            None        = 0,
+            CoreOnly    = 1,
+            ClientOnly  = 2,
+            FullLogging = 3,
+        };
+        static bool Init(LogMode mode = LogMode::FullLogging,
+                         spdlog::level::level_enum logLevel =
+#ifdef NEBULA_DEBUG
+                             spdlog::level::trace
+#else
+                             spdlog::level::info
+#endif
+
+        );
 
         static std::shared_ptr<spdlog::logger>& GetCoreLogger();
         static std::shared_ptr<spdlog::logger>& GetClientLogger();
+
+        static void AddClientSink(const std::shared_ptr<spdlog::sinks::sink>& sink);
+        static void RemoveClientSink(const std::shared_ptr<spdlog::sinks::sink>& sink);
     private:
         static std::shared_ptr<spdlog::logger> s_CoreLogger;
         static std::shared_ptr<spdlog::logger> s_ClientLogger;

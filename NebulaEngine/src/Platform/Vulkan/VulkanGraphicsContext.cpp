@@ -2,7 +2,9 @@
 
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Core/Utils/Function.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
+#include "NebulaEngine/Renderer/RendererAPI.hpp"
 #include "Platform/Vulkan/VK/RenderPass.hpp"
 #include "VK/Utils.hpp"
 #include "VK/VulkanExt.hpp"
@@ -16,7 +18,11 @@
 
 namespace Nebula
 {
-    VulkanGraphicsContext::VulkanGraphicsContext(RawRef<GLFWwindow*> window, ContextProps props) : m_Window(std::move(window)), m_MaxFramesInFlight(props.MaxFramesInFlight) {}
+    VulkanGraphicsContext::VulkanGraphicsContext(RawRef<GLFWwindow*> window) :
+        m_Window(std::move(window)),
+        m_MaxFramesInFlight(RendererAPI::GetBufferingCount())
+    {
+    }
 
     VulkanGraphicsContext::~VulkanGraphicsContext() = default;
 
@@ -53,7 +59,13 @@ namespace Nebula
         INIT_COMPONENT(m_PhysicalDevice.IsFound());
         INIT_COMPONENT(m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
                                             m_Debug ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
-        INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface));
+        std::uint32_t frameCount = m_MaxFramesInFlight;
+        INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount));
+        if (frameCount != m_MaxFramesInFlight)
+        {
+            NEBULA_CORE_LOG_WARN("Requested frame count is not supported, using {0} (instead of {1})", frameCount,
+                                 m_MaxFramesInFlight);
+        }
         INIT_COMPONENT(m_CommandPool.Init(m_LogicalDevice));
 
         if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0)
@@ -291,9 +303,10 @@ namespace Nebula
 
         vkDestroySwapchainKHR(m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), nullptr);
 
-        auto result = m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface);
-        (void)result; // For release builds
-        NEBULA_CORE_ASSERT(result, "Failed to recreate swap chain!");
+        std::uint32_t frameCount = m_MaxFramesInFlight;
+        auto result              = m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount);
+        (void)result; // TODO: Better error handling here
+        NEBULA_CORE_VERIFY(result, "Failed to recreate swap chain!");
 
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
         {
@@ -315,11 +328,10 @@ namespace Nebula
         constexpr VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
         VkImage image {};
         VkDeviceMemory imageMemory {};
-        Vulkan::CreateImage(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(), m_SwapChain.GetExtent().width,
-                            m_SwapChain.GetExtent().height, format, VK_IMAGE_TILING_LINEAR,
-                            VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, image,
-                            imageMemory);
+        Vulkan::CreateImage(
+            m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(), m_SwapChain.GetExtent().width,
+            m_SwapChain.GetExtent().height, format, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, image, imageMemory);
 
         // Transition the image layout to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
         Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
@@ -337,18 +349,20 @@ namespace Nebula
         auto* cmdBuffer = Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
 
         VkImageBlit blit {};
-        blit.srcOffsets[0] = {0, 0, 0};
-        blit.srcOffsets[1] = {static_cast<int32_t>(m_SwapChain.GetExtent().width), static_cast<int32_t>(m_SwapChain.GetExtent().height), 1};
+        blit.srcOffsets[0]                 = {0, 0, 0};
+        blit.srcOffsets[1]                 = {static_cast<int32_t>(m_SwapChain.GetExtent().width),
+                                              static_cast<int32_t>(m_SwapChain.GetExtent().height), 1};
         blit.srcSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.srcSubresource.mipLevel       = 0;
-        blit.srcSubresource.baseArrayLayer  = 0;
-        blit.srcSubresource.layerCount      = 1;
-        blit.dstOffsets[0] = {0, 0, 0};
-        blit.dstOffsets[1] = {static_cast<int32_t>(m_SwapChain.GetExtent().width), static_cast<int32_t>(m_SwapChain.GetExtent().height), 1};
+        blit.srcSubresource.baseArrayLayer = 0;
+        blit.srcSubresource.layerCount     = 1;
+        blit.dstOffsets[0]                 = {0, 0, 0};
+        blit.dstOffsets[1]                 = {static_cast<int32_t>(m_SwapChain.GetExtent().width),
+                                              static_cast<int32_t>(m_SwapChain.GetExtent().height), 1};
         blit.dstSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.dstSubresource.mipLevel       = 0;
-        blit.dstSubresource.baseArrayLayer  = 0;
-        blit.dstSubresource.layerCount      = 1;
+        blit.dstSubresource.baseArrayLayer = 0;
+        blit.dstSubresource.layerCount     = 1;
         // TODO(MetalDrawableWarning): Blitting a drawable on MoltenVK returns a metal warning
         vkCmdBlitImage(cmdBuffer, m_SwapChain.GetImages()[m_ImageIndex], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
@@ -384,6 +398,7 @@ namespace Nebula
 
     RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window, ContextProps props)
     {
-        return RefPtr<VulkanGraphicsContext>::Create(window, props);
+        NEBULA_UNUSED(props);
+        return RefPtr<VulkanGraphicsContext>::Create(window);
     }
 } // namespace Nebula

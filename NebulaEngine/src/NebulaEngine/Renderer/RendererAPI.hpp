@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NebulaEngine/Core/Bounds.hpp"
+#include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 
 #include "DescriptorSetLayout.hpp"
@@ -13,8 +14,6 @@
 #include "UniformBuffer.hpp"
 #include "VertexBuffer.hpp"
 #include "Viewport.hpp"
-
-#include <glm/glm.hpp>
 
 namespace Nebula
 {
@@ -32,8 +31,37 @@ namespace Nebula
             Renderer3D,
             RayTracer,
         };
+        enum class BufferingMode
+        {
+            Single,
+            Double,
+            Triple,
+        };
 
         static API GetAPI() { return s_API; }
+
+        /**
+        * @brief Set the API to be used by the renderer, only works before the App is created
+        */
+        static void SetAPI(API api) { s_API = api; }
+
+        static BufferingMode GetBufferingMode() { return s_BufferingMode; }
+
+        static std::uint32_t GetBufferingCount()
+        {
+            switch (s_BufferingMode)
+            {
+            case BufferingMode::Single:
+                return 1;
+            case BufferingMode::Double:
+                return 2;
+            case BufferingMode::Triple:
+                return 3;
+            }
+            return 0;
+        }
+
+        static void SetBufferingMode(BufferingMode mode) { s_BufferingMode = mode; }
 
         RendererAPI()                              = default;
         virtual ~RendererAPI()                     = default;
@@ -86,6 +114,7 @@ namespace Nebula
             Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);
     private:
         static API s_API;
+        static BufferingMode s_BufferingMode;
     };
 
 } // namespace Nebula

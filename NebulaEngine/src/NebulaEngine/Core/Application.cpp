@@ -1,23 +1,25 @@
 #include "Application.hpp"
 
-#include "Base.hpp"
-#include "NebulaEngine/Events/WindowEvent.hpp"
-#include "NebulaEngine/UI/ImGui/ImGuiBackend.hpp"
-#include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
+#include "Assert.hpp"
+#include "Log.hpp"
 #include "Profiler.hpp"
 #include "Time.hpp"
+#include "Utils/Function.hpp"
 #include "Window.hpp"
+
+#include "NebulaEngine/Events/WindowEvent.hpp"
+#include "NebulaEngine/IO/File.hpp"
+#include "NebulaEngine/UI/ImGui/ImGuiBackend.hpp"
+#include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
 
 #include <filesystem>
 #include <utility>
-
-#include <stb_image_write.h>
 
 namespace Nebula
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(ApplicationSpecification specification) :
+    Application::Application(ApplicationSpecification specification, CreationStatus& status) :
         m_Specification(std::move(specification)),
         m_Window(nullptr),
         m_ImGuiLayer(nullptr)
@@ -30,13 +32,24 @@ namespace Nebula
         // First we chdir into the working directory
         if (!m_Specification.WorkingDirectory.empty())
         {
-            std::filesystem::current_path(m_Specification.WorkingDirectory);
+            File workingDir(m_Specification.WorkingDirectory);
+            if (workingDir.Exists())
+            {
+                NEBULA_CORE_LOG_DEBUG("Application changed into working directory: {}",
+                                      workingDir.GetAbsolutePath().string());
+                std::filesystem::current_path(m_Specification.WorkingDirectory);
+            }
+            else
+            {
+                NEBULA_CORE_LOG_WARN("Working directory does not exist! (Did not change)");
+            }
         }
 
         auto res = Window::Create();
         if (res.IsErr())
         {
             NEBULA_LOG_ERROR("Failed to create window: {0}", res.UnwrapErr());
+            status = CreationStatus::WINDOW_CREATION_FAILED;
             return;
         }
 
@@ -46,12 +59,14 @@ namespace Nebula
         if (!m_RenderSystem->Init())
         {
             NEBULA_LOG_ERROR("Failed to initialize RenderSystem");
+            status = CreationStatus::RENDER_SYSTEM_CREATION_FAILED;
             return;
         }
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
         OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
         m_ImGuiLayer = imguiLayer.Raw();
         PushOverlay(static_cast<OwnedPtr<Layer*>>(imguiLayer)); // Ownership transferred to LayerStack
+        status = CreationStatus::SUCCESS;
     }
 
     Application::~Application()
@@ -122,13 +137,7 @@ namespace Nebula
 
     bool Application::OnViewportResize(ViewportResizedEvent& event)
     {
-        if (event.GetWidth() == 0 || event.GetHeight() == 0)
-        {
-            return false;
-        }
-
-        // TODO(6/20/24) Resize the framebuffers for other libraries, like OpenGL
-
+        NEBULA_UNUSED(this, event);
         return false;
     }
 

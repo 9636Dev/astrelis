@@ -33,7 +33,7 @@ namespace Nebula
         friend class Vulkan2DRendererAPI;
         friend class Vulkan3DRendererAPI;
         friend class VulkanRayTracerRendererAPI;
-        explicit VulkanGraphicsContext(RawRef<GLFWwindow*> window, ContextProps props = {});
+        explicit VulkanGraphicsContext(RawRef<GLFWwindow*> window);
         ~VulkanGraphicsContext() override;
         VulkanGraphicsContext(const VulkanGraphicsContext&)            = delete;
         VulkanGraphicsContext& operator=(const VulkanGraphicsContext&) = delete;
@@ -107,7 +107,7 @@ namespace Nebula
 
         std::uint32_t m_CurrentFrame      = 0;
         std::uint32_t m_ImageIndex        = 0;
-        std::uint32_t m_MaxFramesInFlight;
+        const std::uint32_t m_MaxFramesInFlight;
 
         // Internal
         VkSwapchainKHR m_OldSwapChain = VK_NULL_HANDLE;

@@ -5,7 +5,7 @@
 class SandboxApplication : public Nebula::Application
 {
 public:
-    explicit SandboxApplication(Nebula::ApplicationSpecification spec);
+    explicit SandboxApplication(Nebula::ApplicationSpecification spec, Nebula::CreationStatus& status);
     ~SandboxApplication() override;
     SandboxApplication(const SandboxApplication&) = delete;
     SandboxApplication& operator=(const SandboxApplication&) = delete;

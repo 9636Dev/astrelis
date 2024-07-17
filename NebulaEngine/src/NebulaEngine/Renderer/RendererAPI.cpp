@@ -9,7 +9,12 @@
 
 namespace Nebula
 {
+#ifdef NEBULA_RENDERER_VULKAN
     RendererAPI::API RendererAPI::s_API = RendererAPI::API::Vulkan;
+#else
+    RendererAPI::API RendererAPI::s_API = RendererAPI::API::None;
+#endif
+    RendererAPI::BufferingMode RendererAPI::s_BufferingMode = RendererAPI::BufferingMode::Double;
 
     RefPtr<RendererAPI> RendererAPI::Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type)
     {

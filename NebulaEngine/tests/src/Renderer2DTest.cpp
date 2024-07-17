@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "NebulaEngine/Core/GlobalConfig.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
@@ -26,7 +27,9 @@ class Renderer2DTest : public ::testing::TestWithParam<Renderer2DTestParams>
 public:
     Renderer2DTest()
     {
-        Nebula::Log::Init();
+        Nebula::Log::Init(Nebula::Log::LogMode::CoreOnly, spdlog::level::err);
+        Nebula::GlobalConfig::SetDebugMode(false);
+        Nebula::RendererAPI::SetBufferingMode(Nebula::RendererAPI::BufferingMode::Single);
         Nebula::WindowProps props("TestWindow", 100, 100, 1);
         auto res = Nebula::Window::Create(props);
         if (res.IsErr())
@@ -153,7 +156,7 @@ INSTANTIATE_TEST_SUITE_P(Renderer2DTest,
                                                                          Nebula::TransformComponent transform;
                                                                          transform.Transform = glm::translate(
                                                                              glm::mat4(1.0F),
-                                                                             glm::vec3((i - 5) * 0.1F, 0.0F, 0.1F * i));
+                                                                             glm::vec3((i - 5) * 0.1F, 0.0F, -1 + 0.1F * i));
                                                                          scene->AddComponent(entity, transform);
                                                                      }
                                                                      return scene;

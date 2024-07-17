@@ -1,7 +1,8 @@
 #pragma once
 
+#include "NebulaEngine/Core/Math.hpp"
+
 #include <cstddef>
-#include <glm/glm.hpp>
 
 namespace Nebula
 {
@@ -14,9 +15,9 @@ namespace Nebula
         // 6 * 3 = 24 < 32
         std::uint32_t Position;
         static_assert(sizeof(Position) * 8 >= static_cast<std::uint64_t>(BITS_PER_POSITION * 3));
-        glm::vec4 Color;
+        vec4 Color;
 
-        constexpr glm::ivec3 GetPosition() const
+        constexpr ivec3 GetPosition() const
         {
             return {
                 (Position >> (BITS_PER_POSITION * 2)) & POSITION_BITMASK,
@@ -25,7 +26,7 @@ namespace Nebula
             };
         }
 
-        constexpr static std::uint32_t GetPackedPosition(glm::ivec3 position)
+        constexpr static std::uint32_t GetPackedPosition(ivec3 position)
         {
             return (position.x << (BITS_PER_POSITION * 2)) | (position.y << BITS_PER_POSITION) | position.z;
         }
@@ -46,7 +47,7 @@ namespace Nebula
 
         struct Chunk
         {
-            glm::ivec3 Position;
+            ivec3 Position;
             std::vector<Voxel> Voxels;
         };
 

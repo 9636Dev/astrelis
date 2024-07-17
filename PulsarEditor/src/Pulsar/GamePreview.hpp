@@ -16,12 +16,11 @@ namespace Pulsar
         GamePreview2D(GamePreview2D&&) noexcept      = delete;
         GamePreview2D& operator=(GamePreview2D&&) noexcept = delete;
 
-        void RenderScene();
+        void RenderScene(Nebula::Scene2D& scene);
         void Render();
 
     private:
         Nebula::Renderer2D m_Renderer;
-        Nebula::Scene2D m_Scene;
         Nebula::Camera m_Camera;
 
         Nebula::Bounds m_Viewport;

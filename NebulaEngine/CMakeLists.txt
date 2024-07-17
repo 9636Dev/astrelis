@@ -110,6 +110,8 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/Core/LayerStack.cpp
     src/NebulaEngine/Core/Time.hpp
     src/NebulaEngine/Core/Time.cpp
+    src/NebulaEngine/Core/GlobalConfig.hpp
+    src/NebulaEngine/Core/GlobalConfig.cpp
 
     # IO
     src/NebulaEngine/IO/File.hpp

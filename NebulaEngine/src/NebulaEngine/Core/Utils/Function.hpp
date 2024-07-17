@@ -1,7 +1,6 @@
 #pragma once
 
-#define NEBULA_UNUSED(...) (void)(__VA_ARGS__)
-#define NEBULA_IGNORE_RETURN(...) (void)(__VA_ARGS__
+template<typename... Args> constexpr inline void NEBULA_UNUSED([[maybe_unused]] Args&&... args) {}
 
 // Optimization macros
 #ifdef __clang__

@@ -11,7 +11,7 @@ namespace Nebula
         std::int32_t Width;
         std::int32_t Height;
 
-        Bounds(std::int32_t paramX, std::int32_t paramY, std::int32_t width, std::int32_t height) :
+        constexpr Bounds(std::int32_t paramX, std::int32_t paramY, std::int32_t width, std::int32_t height) noexcept :
             X(paramX),
             Y(paramY),
             Width(width),

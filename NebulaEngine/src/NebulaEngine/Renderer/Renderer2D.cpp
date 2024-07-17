@@ -143,7 +143,8 @@ namespace Nebula
         m_UBO.View         = camera.GetViewMatrix();
         Bounds surfaceSize = m_RendererAPI->GetSurfaceSize();
         float aspectRatio  = static_cast<float>(surfaceSize.Width) / static_cast<float>(surfaceSize.Height);
-        m_UBO.Projection   = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F);
+        //m_UBO.Projection   = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F, 0.0F, 1.0F);
+        m_UBO.Projection = glm::ortho(-aspectRatio, aspectRatio, -1.0F, 1.0F);
         m_RendererAPI->CorrectProjection(m_UBO.Projection);
 
         m_VertexBuffer->Bind(m_Context, 0);

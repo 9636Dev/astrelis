@@ -1,4 +1,5 @@
 #include "VulkanRenderSystem.hpp"
+#include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "NebulaEngine/Renderer/TextureImage.hpp"
@@ -7,7 +8,6 @@
 #include "Platform/Vulkan/VK/Utils.hpp"
 
 #include <cstddef>
-#include <glm/glm.hpp>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
@@ -105,16 +105,15 @@ namespace Nebula
 
     void VulkanRenderSystem::BlitSwapchain()
     {
-
         auto& frame          = m_Context->GetCurrentFrame();
         auto& swapchainFrame = m_Context->m_SwapChainFrames[m_Context->m_ImageIndex];
         m_Context->m_RenderPass.Begin(frame.CommandBuffer, swapchainFrame.FrameBuffer,
                                       m_Context->m_SwapChain.GetExtent());
 
         if (!m_BlitSwapchain)
-    {
-        return;
-    }
+        {
+            return;
+        }
 
         // We just render normally, because we didn't use the blit extension
 
@@ -126,7 +125,7 @@ namespace Nebula
         m_DescriptorSets.Bind(frame.CommandBuffer, m_GraphicsPipeline);
 
         // Dynamic state
-        VkViewport viewport{};
+        VkViewport viewport {};
         viewport.x        = 0.0F;
         viewport.y        = 0.0F;
         viewport.width    = static_cast<float>(m_Context->m_SwapChain.GetExtent().width);
@@ -136,7 +135,7 @@ namespace Nebula
 
         vkCmdSetViewport(frame.CommandBuffer.GetHandle(), 0, 1, &viewport);
 
-        VkRect2D scissor{};
+        VkRect2D scissor {};
         scissor.extent = m_Context->m_SwapChain.GetExtent();
 
         vkCmdSetScissor(frame.CommandBuffer.GetHandle(), 0, 1, &scissor);
@@ -145,7 +144,9 @@ namespace Nebula
     }
 
     void VulkanRenderSystem::EndFrame() { m_Context->m_RenderPass.End(m_Context->GetCurrentFrame().CommandBuffer); }
-    std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame() {
+
+    std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame()
+    {
         m_Context->m_CaptureNextFrame = true;
         return m_Context->m_CapturePromise.get_future();
     }

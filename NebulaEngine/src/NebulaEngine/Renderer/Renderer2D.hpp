@@ -1,8 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "NebulaEngine/Core/Bounds.hpp"
+#include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/Renderer/BaseRenderer.hpp"

@@ -50,6 +50,13 @@ namespace Nebula
         CommandLineArguments Arguments;
     };
 
+    enum class CreationStatus : std::uint16_t
+    {
+        SUCCESS                       = 0,
+        WINDOW_CREATION_FAILED        = 1,
+        RENDER_SYSTEM_CREATION_FAILED = 2
+    };
+
     /**
     * The main application of NebulaEngine, including the core logic of the engine, and window lifetimes
     */
@@ -57,7 +64,7 @@ namespace Nebula
     {
     public:
         friend int ::NebulaMain(int argc, char** argv);
-        explicit Application(ApplicationSpecification specification);
+        explicit Application(ApplicationSpecification specification, CreationStatus& status);
         virtual ~Application();
         Application(const Application&)            = delete;
         Application& operator=(const Application&) = delete;
@@ -126,5 +133,5 @@ namespace Nebula
     /**
     * @brief Define this function in your application to create an instance of your Application class, extending the base class
     */
-    extern ScopedPtr<Application> CreateApplication(CommandLineArguments args);
+    extern ScopedPtr<Application> CreateApplication(CommandLineArguments args, CreationStatus& status);
 } // namespace Nebula

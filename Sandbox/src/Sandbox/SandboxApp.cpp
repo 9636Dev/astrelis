@@ -5,12 +5,12 @@
 #include "NebulaEngine/Core/Entrypoint.hpp"
 #include "NebulaEngine/Core/Application.hpp"
 
-Nebula::ScopedPtr<Nebula::Application> Nebula::CreateApplication(CommandLineArguments args)
+Nebula::ScopedPtr<Nebula::Application> Nebula::CreateApplication(CommandLineArguments args, Nebula::CreationStatus& status)
 {
     Nebula::ApplicationSpecification spec;
     spec.Name = "Sandbox";
     spec.Arguments = std::move(args);
     spec.WorkingDirectory = "./run";
 
-    return static_cast<Nebula::ScopedPtr<Nebula::Application>>(Nebula::ScopedPtr<SandboxApplication>::Create(spec));
+    return static_cast<Nebula::ScopedPtr<Nebula::Application>>(Nebula::ScopedPtr<SandboxApplication>::Create(spec, status));
 }
