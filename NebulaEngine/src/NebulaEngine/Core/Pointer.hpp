@@ -349,7 +349,11 @@ namespace Nebula
 
         T Get() const noexcept { return m_Ptr; }
 
-        void Reset() { delete m_Ptr; }
+        void Reset()
+        {
+            delete m_Ptr;
+            m_Ptr = nullptr;
+        }
 
         RawRef<T> Raw() const { return RawRef(m_Ptr); }
 

@@ -39,6 +39,11 @@ namespace Nebula::Vulkan
                                VkQueue queue,
                                VkCommandPool commandPool,
                                VkCommandBuffer commandBuffer);
+    void TransitionImageLayout(VkCommandBuffer commandBuffer,
+                               VkImage image,
+                               VkFormat format,
+                               VkImageLayout oldLayout,
+                               VkImageLayout newLayout);
     void TransitionImageLayout(VkDevice logicalDevice,
                                VkQueue queue,
                                VkCommandPool commandPool,

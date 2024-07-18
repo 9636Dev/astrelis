@@ -112,7 +112,6 @@ namespace Nebula
         bool m_CaptureNextFrame = false;
         std::promise<InMemoryImage> m_CapturePromise;
 
-
         std::uint32_t m_CurrentFrame = 0;
         std::uint32_t m_ImageIndex   = 0;
         bool m_VSync                 = true;
@@ -121,7 +120,6 @@ namespace Nebula
         // Internal
         VkSwapchainKHR m_OldSwapChain = VK_NULL_HANDLE;
 
-        bool m_Debug         = true;
         bool m_IsInitialized = false;
         bool m_SwapchainRecreation   = false;
         bool m_SkipFrame     = false;

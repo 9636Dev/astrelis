@@ -150,6 +150,8 @@ namespace Nebula
 
     std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame()
     {
+        // Reset capture promise
+        m_Context->m_CapturePromise = std::promise<InMemoryImage>();
         m_Context->m_CaptureNextFrame = true;
         return m_Context->m_CapturePromise.get_future();
     }

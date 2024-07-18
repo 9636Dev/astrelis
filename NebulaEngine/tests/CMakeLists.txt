@@ -2,6 +2,7 @@ enable_testing()
 
 add_executable(NebulaEngine_EngineTests
     src/PointerTest.cpp
+    src/ResultTest.cpp
     src/Renderer2DTest.cpp
 )
 

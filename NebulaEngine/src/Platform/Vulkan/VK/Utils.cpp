@@ -119,17 +119,13 @@ namespace Nebula::Vulkan
         vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
     }
 
-    void TransitionImageLayout(VkDevice logicalDevice,
-                               VkQueue queue,
-                               VkCommandPool commandPool,
+    void TransitionImageLayout(VkCommandBuffer commandBuffer,
                                VkImage image,
                                VkFormat format,
                                VkImageLayout oldLayout,
                                VkImageLayout newLayout)
-    {
+{
         (void)format;
-        VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
-
         VkImageMemoryBarrier barrier {};
         barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.oldLayout                       = oldLayout;
@@ -152,6 +148,14 @@ namespace Nebula::Vulkan
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        }
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+        {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+            sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
         else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL)
@@ -214,10 +218,23 @@ namespace Nebula::Vulkan
         }
         else
         {
-            throw std::invalid_argument("unsupported layout transition!");
+            throw std::invalid_argument("Unsupported layout transition!");
         }
 
         vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+}
+    void TransitionImageLayout(VkDevice logicalDevice,
+                               VkQueue queue,
+                               VkCommandPool commandPool,
+                               VkImage image,
+                               VkFormat format,
+                               VkImageLayout oldLayout,
+                               VkImageLayout newLayout)
+    {
+        VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
+
+        TransitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
 
         EndSingleTimeCommands(logicalDevice, queue, commandPool, commandBuffer);
     }

@@ -3,6 +3,7 @@
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
+#include "NebulaEngine/Core/GlobalConfig.hpp"
 #include "NebulaEngine/Core/Utils/Function.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
@@ -42,7 +43,7 @@ namespace Nebula
         }
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
-        if (m_Debug)
+        if (GlobalConfig::IsDebugMode())
         {
             if (!Vulkan::CheckValidationLayerSupport())
             {
@@ -54,13 +55,13 @@ namespace Nebula
         }
 
         INIT_COMPONENT(m_Instance.Init("Nebula", "Nebula Engine", Vulkan::APIVersion(1, 0),
-                                       Vulkan::GetRequiredExtensions(m_Debug), Vulkan::GetValidationLayers(),
+                                       Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()), GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>(),
                                        &debugCreateInfo));
         INIT_COMPONENT(m_Surface.Init(m_Instance, m_Window));
         m_PhysicalDevice.PickBestDevice(m_Instance, m_Surface.GetHandle());
         INIT_COMPONENT(m_PhysicalDevice.IsFound());
         INIT_COMPONENT(m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
-                                            m_Debug ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
+                                            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
         std::uint32_t frameCount = m_MaxFramesInFlight;
         INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync));
         if (frameCount != m_MaxFramesInFlight)
@@ -202,12 +203,6 @@ namespace Nebula
         auto& frame = GetCurrentFrame();
         frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
 
-        if (m_CaptureNextFrame)
-        {
-            m_CaptureNextFrame = false;
-            m_CapturePromise.set_value(CaptureScreen());
-        }
-
         VkResult result = vkAcquireNextImageKHR(
             m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
             frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
@@ -269,6 +264,14 @@ namespace Nebula
         presentInfo.swapchainCount                       = static_cast<std::uint32_t>(swapChains.size());
         presentInfo.pSwapchains                          = swapChains.data();
         presentInfo.pImageIndices                        = &m_ImageIndex;
+
+        if (m_CaptureNextFrame)
+        {
+            frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
+
+            m_CapturePromise.set_value(CaptureScreen());
+            m_CaptureNextFrame = false;
+        }
 
         auto result = vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_SwapchainRecreation)

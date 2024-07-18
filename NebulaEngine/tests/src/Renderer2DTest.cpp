@@ -82,23 +82,11 @@ TEST_P(Renderer2DTest, TestDrawScene)
 {
     const auto& params = GetParam();
 
+    auto future = m_RenderSystem->CaptureFrame();
     m_Window->BeginFrame();
     m_RenderSystem->StartGraphicsRenderPass();
     m_Renderer2D->BeginFrame();
     Nebula::Camera camera;
-    m_Renderer2D->RenderScene(*params.Scene, camera);
-    m_Renderer2D->EndFrame();
-    m_RenderSystem->EndGraphicsRenderPass();
-    m_RenderSystem->BlitSwapchain();
-    m_RenderSystem->EndFrame();
-    m_Window->EndFrame();
-    m_Window->OnUpdate();
-    auto future = m_RenderSystem->CaptureFrame();
-
-    // 1 frame in flight, just render next frame
-    m_Window->BeginFrame();
-    m_RenderSystem->StartGraphicsRenderPass();
-    m_Renderer2D->BeginFrame();
     m_Renderer2D->RenderScene(*params.Scene, camera);
     m_Renderer2D->EndFrame();
     m_RenderSystem->EndGraphicsRenderPass();
