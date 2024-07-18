@@ -11,7 +11,7 @@ namespace Nebula
 
     struct ContextProps
     {
-        std::uint32_t MaxFramesInFlight = 2;
+        bool VSync = true;
     };
 
     /**
@@ -33,6 +33,9 @@ namespace Nebula
         virtual void BeginFrame()          = 0;
         virtual void EndFrame()            = 0;
         virtual bool SkipFrame()           = 0;
+
+        virtual bool IsVSync() const        = 0;
+        virtual void SetVSync(bool enabled) = 0;
 
         virtual std::uint32_t GetCurrentFrameIndex() const = 0;
         virtual std::uint32_t GetImageIndex() const        = 0;

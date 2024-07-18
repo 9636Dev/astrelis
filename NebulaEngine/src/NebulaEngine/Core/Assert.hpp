@@ -70,7 +70,6 @@
             if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)          \
             {                                                                  \
                 NEBULA_CORE_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
-                ;                                                              \
             }                                                                  \
         }
 #endif

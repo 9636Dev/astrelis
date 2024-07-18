@@ -75,6 +75,8 @@ namespace Nebula
 
         virtual RefPtr<GraphicsContext> GetGraphicsContext() const = 0;
         virtual void* GetNativeWindow() const                      = 0;
+        virtual void SetVSync(bool enabled)                        = 0;
+        virtual bool IsVSync() const                               = 0;
 
         static Result<RefPtr<Window>, std::string> Create(const WindowProps& props = WindowProps());
     };

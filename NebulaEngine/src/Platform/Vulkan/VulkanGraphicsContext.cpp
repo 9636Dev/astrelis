@@ -60,7 +60,7 @@ namespace Nebula
         INIT_COMPONENT(m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
                                             m_Debug ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
         std::uint32_t frameCount = m_MaxFramesInFlight;
-        INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount));
+        INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync));
         if (frameCount != m_MaxFramesInFlight)
         {
             NEBULA_CORE_LOG_WARN("Requested frame count is not supported, using {0} (instead of {1})", frameCount,
@@ -209,7 +209,7 @@ namespace Nebula
             m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
             frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
 
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || m_NeedsResize)
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || m_SwapchainRecreation)
         {
             VkSubmitInfo submitInfo                        = {};
             submitInfo.sType                               = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -268,7 +268,7 @@ namespace Nebula
         presentInfo.pImageIndices                        = &m_ImageIndex;
 
         auto result = vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_NeedsResize)
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_SwapchainRecreation)
         {
             RecreateSwapChain();
         }
@@ -304,7 +304,7 @@ namespace Nebula
         vkDestroySwapchainKHR(m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), nullptr);
 
         std::uint32_t frameCount = m_MaxFramesInFlight;
-        auto result              = m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount);
+        auto result = m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync);
         (void)result; // TODO: Better error handling here
         NEBULA_CORE_VERIFY(result, "Failed to recreate swap chain!");
 
@@ -320,7 +320,7 @@ namespace Nebula
             (void)res; // For release builds
         }
 
-        m_NeedsResize = false;
+        m_SwapchainRecreation = false;
     }
 
     InMemoryImage VulkanGraphicsContext::CaptureScreen() const
@@ -398,7 +398,8 @@ namespace Nebula
 
     RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window, ContextProps props)
     {
-        NEBULA_UNUSED(props);
-        return RefPtr<VulkanGraphicsContext>::Create(window);
+        auto context     = RefPtr<VulkanGraphicsContext>::Create(window);
+        context->m_VSync = props.VSync;
+        return context;
     }
 } // namespace Nebula

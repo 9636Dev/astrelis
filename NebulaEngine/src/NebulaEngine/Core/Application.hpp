@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "NebulaEngine/Core/LayerStack.hpp"
+#include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Renderer/RenderSystem.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
 #include "Pointer.hpp"
@@ -24,6 +25,7 @@ namespace Nebula
 
         static CommandLineArguments Parse(int argc, char** argv)
         {
+            NEBULA_PROFILE_SCOPE("CommandLineArguments::Parse");
             CommandLineArguments result;
             for (int i = 1; i < argc; i++)
             {

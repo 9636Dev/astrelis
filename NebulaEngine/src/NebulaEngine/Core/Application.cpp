@@ -25,8 +25,8 @@ namespace Nebula
         m_ImGuiLayer(nullptr)
     {
         NEBULA_PROFILE_SCOPE("Application::Application");
-        Nebula::Log::Init();
-        Nebula::Profiling::Init();
+        NEBULA_VERIFY(Nebula::Log::Init(), "Logger failed to initialize");
+        NEBULA_VERIFY(Nebula::Profiling::Init(), "Profiler failed to initialize");
         NEBULA_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
 
@@ -46,28 +46,38 @@ namespace Nebula
             }
         }
 
-        auto res = Window::Create();
-        if (res.IsErr())
         {
-            NEBULA_LOG_ERROR("Failed to create window: {0}", res.UnwrapErr());
-            status = CreationStatus::WINDOW_CREATION_FAILED;
-            return;
+            NEBULA_PROFILE_SCOPE("Application::Application::SetupWindow");
+            auto res = Window::Create();
+            if (res.IsErr())
+            {
+                NEBULA_LOG_ERROR("Failed to create window: {0}", res.UnwrapErr());
+                status = CreationStatus::WINDOW_CREATION_FAILED;
+                return;
+            }
+
+            m_Window = std::move(res.Unwrap());
+            m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
+        }
+        {
+            NEBULA_PROFILE_SCOPE("Application::Application::SetupRenderSystem");
+            m_RenderSystem = RenderSystem::Create(m_Window);
+            if (!m_RenderSystem->Init())
+            {
+                NEBULA_LOG_ERROR("Failed to initialize RenderSystem");
+                status = CreationStatus::RENDER_SYSTEM_CREATION_FAILED;
+                return;
+            }
         }
 
-        m_Window = std::move(res.Unwrap());
-        m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
-        m_RenderSystem = RenderSystem::Create(m_Window);
-        if (!m_RenderSystem->Init())
         {
-            NEBULA_LOG_ERROR("Failed to initialize RenderSystem");
-            status = CreationStatus::RENDER_SYSTEM_CREATION_FAILED;
-            return;
+            NEBULA_PROFILE_SCOPE("Application::Application::SetupImGui");
+            // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+            OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
+            m_ImGuiLayer = imguiLayer.Raw();
+            PushOverlay(static_cast<OwnedPtr<Layer*>>(imguiLayer)); // Ownership transferred to LayerStack
+            status = CreationStatus::SUCCESS;
         }
-        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-        OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
-        m_ImGuiLayer = imguiLayer.Raw();
-        PushOverlay(static_cast<OwnedPtr<Layer*>>(imguiLayer)); // Ownership transferred to LayerStack
-        status = CreationStatus::SUCCESS;
     }
 
     Application::~Application()
@@ -92,18 +102,24 @@ namespace Nebula
             m_Window->BeginFrame();
 
             m_RenderSystem->StartGraphicsRenderPass();
-            for (auto& layer : m_LayerStack)
             {
-                layer->OnUpdate();
+                NEBULA_PROFILE_SCOPE("Application::Run::UpdateLayers");
+                for (auto& layer : m_LayerStack)
+                {
+                    layer->OnUpdate();
+                }
             }
             m_RenderSystem->EndGraphicsRenderPass();
             m_RenderSystem->BlitSwapchain();
 
             m_ImGuiLayer->Begin();
 
-            for (auto& layer : m_LayerStack)
             {
-                layer->OnUIRender();
+                NEBULA_PROFILE_SCOPE("Application::Run::UpdateUI");
+                for (auto& layer : m_LayerStack)
+                {
+                    layer->OnUIRender();
+                }
             }
 
             m_ImGuiLayer->End();

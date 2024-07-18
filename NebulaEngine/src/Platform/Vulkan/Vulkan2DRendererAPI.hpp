@@ -27,8 +27,8 @@ namespace Nebula
         void DrawInstancedIndexed(std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
         Bounds GetSurfaceSize() override;
 
-        void ResizeViewport() override { m_Context->m_NeedsResize = true; }
-        bool NeedsResize() const override { return m_Context->m_NeedsResize; }
+        void ResizeViewport() override { m_Context->m_SwapchainRecreation = true; }
+        bool NeedsResize() const override { return m_Context->m_SwapchainRecreation; }
         void CorrectProjection(Mat4f& projection) override;
 
         RefPtr<GraphicsPipeline> CreateGraphicsPipeline() override;

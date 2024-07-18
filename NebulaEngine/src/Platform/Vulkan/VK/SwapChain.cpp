@@ -13,13 +13,14 @@ namespace Nebula::Vulkan
                          LogicalDevice& logicalDevice,
                          Surface& surface,
                          std::uint32_t& imageCount,
+                         bool vsync,
                          VkSwapchainKHR oldSwapchain)
     {
         SwapChainSupportDetails swapChainSupport =
             QuerySwapChainSupport(physicalDevice.GetHandle(), surface.GetHandle());
 
         VkSurfaceFormatKHR surfaceFormat = swapChainSupport.ChooseSwapSurfaceFormat();
-        VkPresentModeKHR presentMode     = swapChainSupport.ChooseSwapPresentMode();
+        VkPresentModeKHR presentMode     = vsync ? swapChainSupport.ChooseSwapPresentMode() : VK_PRESENT_MODE_IMMEDIATE_KHR;
         VkExtent2D extent                = swapChainSupport.ChooseExtent(window);
 
         if (GlobalConfig::IsDebugMode())

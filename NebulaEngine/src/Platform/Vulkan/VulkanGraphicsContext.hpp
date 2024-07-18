@@ -71,13 +71,21 @@ namespace Nebula
 
         InMemoryImage CaptureScreen() const;
 
-        std::uint32_t GetCurrentFrameIndex() const override { return m_CurrentFrame; }
-
-        std::uint32_t GetImageIndex() const override { return m_ImageIndex; }
-
         FrameData& GetCurrentFrame() { return m_Frames[m_CurrentFrame]; }
 
         static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window, ContextProps props);
+
+        bool IsVSync() const override { return m_VSync; }
+
+        void SetVSync(bool enabled) override
+        {
+            m_VSync = enabled;
+            m_SwapchainRecreation = true;
+        }
+
+        std::uint32_t GetCurrentFrameIndex() const override { return m_CurrentFrame; }
+
+        std::uint32_t GetImageIndex() const override { return m_ImageIndex; }
 
         RawRef<GLFWwindow*> m_Window;
         Vulkan::Instance m_Instance;
@@ -105,8 +113,9 @@ namespace Nebula
         std::promise<InMemoryImage> m_CapturePromise;
 
 
-        std::uint32_t m_CurrentFrame      = 0;
-        std::uint32_t m_ImageIndex        = 0;
+        std::uint32_t m_CurrentFrame = 0;
+        std::uint32_t m_ImageIndex   = 0;
+        bool m_VSync                 = true;
         const std::uint32_t m_MaxFramesInFlight;
 
         // Internal
@@ -114,7 +123,7 @@ namespace Nebula
 
         bool m_Debug         = true;
         bool m_IsInitialized = false;
-        bool m_NeedsResize   = false;
+        bool m_SwapchainRecreation   = false;
         bool m_SkipFrame     = false;
     };
 } // namespace Nebula

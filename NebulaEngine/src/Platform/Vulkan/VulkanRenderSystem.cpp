@@ -1,5 +1,6 @@
 #include "VulkanRenderSystem.hpp"
 #include "NebulaEngine/Core/Math.hpp"
+#include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "NebulaEngine/Renderer/TextureImage.hpp"
@@ -20,6 +21,7 @@ namespace Nebula
 
     bool VulkanRenderSystem::Init()
     {
+        NEBULA_PROFILE_SCOPE("VulkanRenderSystem::Init");
         std::array<BlitVertex, 4> vertices = {
             BlitVertex {{-1.0F, -1.0F}},
             BlitVertex {{1.0F, -1.0F}},
@@ -81,6 +83,7 @@ namespace Nebula
 
     void VulkanRenderSystem::Shutdown()
     {
+        NEBULA_PROFILE_SCOPE("VulkanRenderSystem::Shutdown");
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
         m_GraphicsPipeline.Destroy(ctx);

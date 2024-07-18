@@ -26,7 +26,7 @@ void SandboxLayer::OnAttach()
 
     auto entity = m_Scene.CreateEntity();
     m_Scene.AddComponent(entity, Nebula::TransformComponent {
-                                     Nebula::Math::Translate(Nebula::Mat4f(1.0F), Nebula::Vec3f(0.0F, 0.0F, -0.1F))});
+                                     Nebula::Math::Translate(Nebula::Mat4f(1.0F), Nebula::Vec3f(0.0F, 0.0F, 0.1F))});
 }
 
 void SandboxLayer::OnDetach()
@@ -68,6 +68,22 @@ void SandboxLayer::OnUIRender()
     if (ImGui::Button("Capture Frame"))
     {
         m_ImageCapture = Nebula::Application::Get().GetRenderSystem()->CaptureFrame();
+    }
+
+    auto& window = Nebula::Application::Get().GetWindow();
+    if (window->IsVSync())
+    {
+        if (ImGui::Button("Disable VSync"))
+        {
+            window->SetVSync(false);
+        }
+    }
+    else
+    {
+        if (ImGui::Button("Enable VSync"))
+        {
+            window->SetVSync(true);
+        }
     }
 
     ImGui::End();
