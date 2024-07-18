@@ -15,7 +15,7 @@ namespace Nebula
 
     MacOSWindow::~MacOSWindow()
     {
-        NEBULA_PROFILE_SCOPE("MacOSWindow::~MacOSWindow");
+        NEBULA_PROFILE_SCOPE("Nebula::MacOSWindow::~MacOSWindow");
         m_Context->Shutdown();
         GLFWWindowHelper::DestroyWindow(std::move(m_Window));
     }
@@ -39,7 +39,7 @@ namespace Nebula
 
     Result<RefPtr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps& props)
     {
-        NEBULA_PROFILE_SCOPE("MacOSWindow::Create");
+        NEBULA_PROFILE_SCOPE("Nebula::MacOSWindow::Create");
         Result<GLFWwindow*, std::string> windowRes("No Window API selected");
 
         switch (RendererAPI::GetAPI())

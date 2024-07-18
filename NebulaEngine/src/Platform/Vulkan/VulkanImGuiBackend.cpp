@@ -20,7 +20,7 @@ namespace Nebula
 
     void VulkanImGuiBackend::Init()
     {
-        NEBULA_PROFILE_SCOPE("VulkanImGuiBackend::Init");
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanImGuiBackend::Init");
         ImGui_ImplGlfw_InitForVulkan(reinterpret_cast<GLFWwindow*>(m_Window->GetNativeWindow()), true);
 
         ImGui_ImplVulkan_InitInfo initInfo = {};
@@ -44,7 +44,7 @@ namespace Nebula
 
     void VulkanImGuiBackend::Shutdown()
     {
-        NEBULA_PROFILE_SCOPE("VulkanImGuiBackend::Shutdown");
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanImGuiBackend::Shutdown");
         m_API->WaitDeviceIdle();
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();

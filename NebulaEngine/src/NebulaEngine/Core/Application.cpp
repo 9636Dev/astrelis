@@ -24,7 +24,7 @@ namespace Nebula
         m_Window(nullptr),
         m_ImGuiLayer(nullptr)
     {
-        NEBULA_PROFILE_SCOPE("Application::Application");
+        NEBULA_PROFILE_SCOPE("Nebula::Application::Application");
         NEBULA_VERIFY(Nebula::Log::Init(), "Logger failed to initialize");
         NEBULA_VERIFY(Nebula::Profiling::Init(), "Profiler failed to initialize");
         NEBULA_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
@@ -47,7 +47,7 @@ namespace Nebula
         }
 
         {
-            NEBULA_PROFILE_SCOPE("Application::Application::SetupWindow");
+            NEBULA_PROFILE_SCOPE("Nebula::Application::Application::SetupWindow");
             auto res = Window::Create();
             if (res.IsErr())
             {
@@ -60,7 +60,7 @@ namespace Nebula
             m_Window->SetEventCallback(NEBULA_BIND_EVENT_FN(Application::OnEvent));
         }
         {
-            NEBULA_PROFILE_SCOPE("Application::Application::SetupRenderSystem");
+            NEBULA_PROFILE_SCOPE("Nebula::Application::Application::SetupRenderSystem");
             m_RenderSystem = RenderSystem::Create(m_Window);
             if (!m_RenderSystem->Init())
             {
@@ -71,7 +71,7 @@ namespace Nebula
         }
 
         {
-            NEBULA_PROFILE_SCOPE("Application::Application::SetupImGui");
+            NEBULA_PROFILE_SCOPE("Nebula::Application::Application::SetupImGui");
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
             OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
             m_ImGuiLayer = imguiLayer.Raw();
@@ -82,7 +82,7 @@ namespace Nebula
 
     Application::~Application()
     {
-        NEBULA_PROFILE_SCOPE("Application::~Application");
+        NEBULA_PROFILE_SCOPE("Nebula::Application::~Application");
         m_RenderSystem->Shutdown();
         for (auto& layer : m_LayerStack)
         {
@@ -97,13 +97,14 @@ namespace Nebula
         TimePoint lastFrameTime = Time::Now();
         while (m_Running)
         {
+            NEBULA_PROFILE_SCOPE("Nebula::Application::Run::Frame");
             Time::s_DeltaTime = Time::ElapsedTime<Milliseconds>(lastFrameTime, Time::Now());
             lastFrameTime     = Time::Now();
             m_Window->BeginFrame();
 
             m_RenderSystem->StartGraphicsRenderPass();
             {
-                NEBULA_PROFILE_SCOPE("Application::Run::UpdateLayers");
+                NEBULA_PROFILE_SCOPE("Nebula::Application::Run::UpdateLayers");
                 for (auto& layer : m_LayerStack)
                 {
                     layer->OnUpdate();
@@ -115,7 +116,7 @@ namespace Nebula
             m_ImGuiLayer->Begin();
 
             {
-                NEBULA_PROFILE_SCOPE("Application::Run::UpdateUI");
+                NEBULA_PROFILE_SCOPE("Nebula::Application::Run::UpdateUI");
                 for (auto& layer : m_LayerStack)
                 {
                     layer->OnUIRender();
@@ -162,24 +163,28 @@ namespace Nebula
 
     void Application::PushLayer(OwnedPtr<Layer*> layer)
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Application::PushLayer");
         layer->OnAttach();
         m_LayerStack.PushLayer(std::move(layer));
     }
 
     void Application::PushOverlay(OwnedPtr<Layer*> overlay)
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Application::PushOverlay");
         overlay->OnAttach();
         m_LayerStack.PushOverlay(std::move(overlay));
     }
 
     OwnedPtr<Layer*> Application::PopLayer(RawRef<Layer*> layer)
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Application::PopLayer");
         layer->OnDetach();
         return m_LayerStack.PopLayer(std::move(layer));
     }
 
     OwnedPtr<Layer*> Application::PopOverlay(RawRef<Layer*> overlay)
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Application::PopOverlay");
         overlay->OnDetach();
         return m_LayerStack.PopOverlay(std::move(overlay));
     }

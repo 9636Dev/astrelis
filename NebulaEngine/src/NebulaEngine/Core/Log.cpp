@@ -1,8 +1,9 @@
 #include "Log.hpp"
 
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "NebulaEngine/Core/Profiler.hpp"
 
 #include <iostream>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Nebula
 {
@@ -12,6 +13,12 @@ namespace Nebula
 
     bool Log::Init(Log::LogMode mode, spdlog::level::level_enum logLevel)
     {
+        if (s_Initialized)
+        {
+            return true;
+        }
+
+        NEBULA_PROFILE_SCOPE("Nebula::Log::Init");
         auto modeValue = static_cast<std::uint8_t>(mode);
         try
         {

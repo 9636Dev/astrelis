@@ -2,6 +2,7 @@
 
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Core/Utils/Function.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
@@ -28,6 +29,7 @@ namespace Nebula
 
     bool VulkanGraphicsContext::Init()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::Init");
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define INIT_COMPONENT(...) \
     if (!__VA_ARGS__)       \
@@ -158,6 +160,7 @@ namespace Nebula
 
     void VulkanGraphicsContext::Shutdown()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::Shutdown");
         vkDeviceWaitIdle(m_LogicalDevice.GetHandle());
 
         if (!m_IsInitialized)

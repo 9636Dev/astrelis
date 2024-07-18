@@ -21,7 +21,7 @@ namespace Nebula
 
     bool VulkanRenderSystem::Init()
     {
-        NEBULA_PROFILE_SCOPE("VulkanRenderSystem::Init");
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanRenderSystem::Init");
         std::array<BlitVertex, 4> vertices = {
             BlitVertex {{-1.0F, -1.0F}},
             BlitVertex {{1.0F, -1.0F}},
@@ -83,7 +83,7 @@ namespace Nebula
 
     void VulkanRenderSystem::Shutdown()
     {
-        NEBULA_PROFILE_SCOPE("VulkanRenderSystem::Shutdown");
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanRenderSystem::Shutdown");
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
         m_GraphicsPipeline.Destroy(ctx);

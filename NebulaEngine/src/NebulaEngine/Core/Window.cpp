@@ -1,6 +1,7 @@
 #include "Window.hpp"
 
 #include "PlatformDetection.hpp"
+#include "Profiler.hpp"
 
 #ifdef NEBULA_PLATFORM_LINUX
     #include "Platform/Linux/LinuxWindow.hpp"
@@ -14,6 +15,7 @@ namespace Nebula
 {
     Result<RefPtr<Window>, std::string> Window::Create(const WindowProps& props)
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Window::Create");
 #ifdef NEBULA_PLATFORM_LINUX
         return LinuxWindow::Create(props).MapMove(
             [](RefPtr<LinuxWindow>&& window) { return static_cast<RefPtr<Window>>(window); });

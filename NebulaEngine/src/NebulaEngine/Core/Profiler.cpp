@@ -43,6 +43,7 @@ namespace Nebula
 
     bool Profiling::Init()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Profiling::Init");
         QProfile::Log::s_LogFunction = ProfilerLogFunction;
         return true;
     }
