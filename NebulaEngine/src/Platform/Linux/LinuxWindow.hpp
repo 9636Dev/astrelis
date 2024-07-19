@@ -39,6 +39,9 @@ namespace Nebula
         std::uint32_t GetHeight() const override { return m_Data.Height; }
         void* GetNativeWindow() const override { return m_Window.Get(); }
 
+        bool IsVSync() const override { return m_Context->IsVSync(); }
+        void SetVSync(bool enabled) override { m_Context->SetVSync(enabled); }
+
         static Result<RefPtr<LinuxWindow>, std::string> Create(const WindowProps& props);
     private:
         OwnedPtr<GLFWwindow*> m_Window;

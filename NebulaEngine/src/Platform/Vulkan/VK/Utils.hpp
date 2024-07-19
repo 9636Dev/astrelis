@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 #include <vulkan/vulkan.h>
 #define GLFW_INCLUDE_NONE
