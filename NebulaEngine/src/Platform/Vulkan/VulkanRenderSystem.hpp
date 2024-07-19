@@ -37,6 +37,12 @@ namespace Nebula
         // This is for ImGui to render, so we need the descriptor set for Vulkan
         void* GetGraphicsImage() override { return m_DescriptorSets.GetHandle(); }
 
+        Bounds GetRenderBounds() override
+        {
+            return Bounds {0, 0, static_cast<int32_t>(m_Context->m_SwapChain.GetExtent().width),
+                           static_cast<int32_t>(m_Context->m_SwapChain.GetExtent().height)};
+        }
+
         static RefPtr<VulkanRenderSystem> Create(RefPtr<Window>& window)
         {
             auto ctx = window->GetGraphicsContext().As<VulkanGraphicsContext>();

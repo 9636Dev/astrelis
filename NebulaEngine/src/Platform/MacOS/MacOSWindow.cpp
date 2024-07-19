@@ -56,7 +56,7 @@ namespace Nebula
         }
 
         auto window =
-            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Width, props.Height), props.VSync);
+            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Width, props.Height));
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
         ContextProps ctxProps;
         ctxProps.VSync = props.VSync;

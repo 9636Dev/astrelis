@@ -51,5 +51,15 @@ namespace Nebula
         {
             return glm::lookAt(eye, center, upDir);
         }
+
+        template<typename T> inline T Mean(const std::vector<T>& values)
+        {
+            T sum = static_cast<T>(0);
+            for (const auto& value : values)
+            {
+                sum += value;
+            }
+            return sum / static_cast<T>(values.size());
+        }
     } // namespace Math
 } // namespace Nebula

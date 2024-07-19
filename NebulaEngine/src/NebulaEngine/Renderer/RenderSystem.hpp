@@ -32,6 +32,7 @@ namespace Nebula
 
         virtual void SetBlitSwapchain(bool blit) = 0;
         virtual void* GetGraphicsImage()         = 0;
+        virtual Bounds GetRenderBounds()         = 0;
 
         /**
          * @brief Capture the current frame (next finished frame) and return it as an InMemoryImage

@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <gtest/gtest.h>
 
 #include <iostream>
@@ -20,32 +21,6 @@ struct Renderer2DTestParams
     mutable RefPtr<Nebula::Scene2D> Scene;
 };
 
-void CompareImages(const Nebula::InMemoryImage& actual, const Nebula::InMemoryImage& expected)
-{
-    ASSERT_EQ(actual.GetWidth(), expected.GetWidth());
-    ASSERT_EQ(actual.GetHeight(), expected.GetHeight());
-    ASSERT_EQ(actual.GetChannels(), expected.GetChannels());
-
-    // Here we check pixel by pixel
-    for (std::uint32_t y = 0; y < actual.GetHeight(); y++)
-    {
-        for (std::uint32_t x = 0; x < actual.GetWidth(); x++)
-        {
-            for (std::uint32_t c = 0; c < actual.GetChannels(); c++)
-            {
-                auto actualPixel   = actual.GetData()[(y * actual.GetWidth() + x) * actual.GetChannels() + c];
-                auto expectedPixel = expected.GetData()[(y * expected.GetWidth() + x) * expected.GetChannels() + c];
-                if (actualPixel != expectedPixel)
-                {
-                    FAIL() << "Pixel mismatch at (" << x << ", " << y << ", " << c
-                           << "): " << "actual=" << static_cast<int>(actualPixel)
-                           << ", expected=" << static_cast<int>(expectedPixel);
-                }
-            }
-        }
-    }
-}
-
 Nebula::RefPtr<Nebula::Window> g_Window;
 
 // Parameterized test fixture
@@ -67,6 +42,7 @@ public:
                 throw std::runtime_error("Failed to create Window");
             }
             g_Window    = res.Unwrap();
+
             initialized = true;
         }
         m_Window       = g_Window;
@@ -75,6 +51,19 @@ public:
         {
             throw std::runtime_error("Failed to initialize RenderSystem");
         }
+
+        float windowHeight = 100.0F;
+        float renderableHeight = static_cast<float>(m_RenderSystem->GetRenderBounds().Height);
+
+        if (renderableHeight < windowHeight)
+        {
+            m_PixelThreshold = static_cast<std::int32_t>(renderableHeight / windowHeight * 25.0F);
+        }
+        else
+        {
+            m_PixelThreshold = static_cast<std::int32_t>(windowHeight / renderableHeight * 25.0F);
+        }
+
     }
 
     ~Renderer2DTest() override {
@@ -104,18 +93,32 @@ public:
     // These persist for the entire test suite
     RefPtr<Nebula::Window> m_Window;
     RefPtr<Nebula::RenderSystem> m_RenderSystem;
+    std::int32_t m_PixelThreshold;
 
     // These persist for each test case
     RefPtr<Nebula::Renderer2D> m_Renderer2D;
 };
+
+void CompareImages(const Nebula::InMemoryImage& actual, const Nebula::InMemoryImage& expected, std::int32_t threshold)
+{
+    ASSERT_EQ(actual.GetWidth(), expected.GetWidth());
+    ASSERT_EQ(actual.GetHeight(), expected.GetHeight());
+    ASSERT_EQ(actual.GetChannels(), expected.GetChannels());
+
+    // We use a SSIM threshold of 0.80 to compare the images
+    float similarity = actual.Similarity(expected, Nebula::InMemoryImage::CompareMethod::SSIM);
+
+    // In the future we will write our own CPU downscaler and avoid using Vulkan blit, for more accurate downscaling, and higher SSIM threshold
+    EXPECT_GE(similarity, 0.80F) << "Images are not similar enough, SSIM: " << similarity;
+}
+
 
 // Parameterized test case
 TEST_P(Renderer2DTest, TestDrawScene)
 {
     const auto& params = GetParam();
 
-    //Nebula::FrameCaptureProps props { 100, 100 };
-    Nebula::FrameCaptureProps props {0, 0};
+    Nebula::FrameCaptureProps props { 100, 100 };
     auto future = m_RenderSystem->CaptureFrame(props);
     m_Window->BeginFrame();
     m_RenderSystem->StartGraphicsRenderPass();
@@ -142,7 +145,7 @@ TEST_P(Renderer2DTest, TestDrawScene)
     }
 
     Nebula::InMemoryImage referenceImage = Nebula::InMemoryImage(file);
-    CompareImages(image, referenceImage);
+    CompareImages(image, referenceImage, m_PixelThreshold);
 }
 
 INSTANTIATE_TEST_SUITE_P(
