@@ -19,16 +19,16 @@ namespace Nebula
         std::string Title;
         std::uint32_t Width;
         std::uint32_t Height;
-        std::uint32_t FramesInFlight;
+        bool VSync;
 
-        explicit WindowProps(const std::string& title     = "Nebula Engine",
-                             std::uint32_t width          = 1'280,
-                             std::uint32_t height         = 720,
-                             std::uint32_t framesInFlight = 2) :
+        explicit WindowProps(const std::string& title = "Nebula Engine",
+                             std::uint32_t width      = 1'280,
+                             std::uint32_t height     = 720,
+                             bool vsync               = true) :
             Title(title),
             Width(width),
             Height(height),
-            FramesInFlight(framesInFlight)
+            VSync(vsync)
         {
         }
     };

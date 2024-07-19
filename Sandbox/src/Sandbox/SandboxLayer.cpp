@@ -5,6 +5,7 @@
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Core/Time.hpp"
+#include "NebulaEngine/Renderer/RenderSystem.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 
 #include <future>
@@ -67,7 +68,8 @@ void SandboxLayer::OnUIRender()
 
     if (ImGui::Button("Capture Frame"))
     {
-        m_ImageCapture = Nebula::Application::Get().GetRenderSystem()->CaptureFrame();
+        Nebula::FrameCaptureProps props { 0, 0 };
+        m_ImageCapture = Nebula::Application::Get().GetRenderSystem()->CaptureFrame(props);
     }
 
     auto& window = Nebula::Application::Get().GetWindow();

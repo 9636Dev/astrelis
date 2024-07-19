@@ -111,6 +111,7 @@ namespace Nebula
         // For screenshotting
         bool m_CaptureNextFrame = false;
         std::promise<InMemoryImage> m_CapturePromise;
+        VkExtent2D m_CaptureOutputExtent {0, 0};
 
         std::uint32_t m_CurrentFrame = 0;
         std::uint32_t m_ImageIndex   = 0;

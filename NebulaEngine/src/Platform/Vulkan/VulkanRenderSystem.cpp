@@ -148,11 +148,13 @@ namespace Nebula
 
     void VulkanRenderSystem::EndFrame() { m_Context->m_RenderPass.End(m_Context->GetCurrentFrame().CommandBuffer); }
 
-    std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame()
+    std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame(const FrameCaptureProps& props)
     {
         // Reset capture promise
         m_Context->m_CapturePromise = std::promise<InMemoryImage>();
         m_Context->m_CaptureNextFrame = true;
+        m_Context->m_CaptureOutputExtent.width = props.Width;
+        m_Context->m_CaptureOutputExtent.height = props.Height;
         return m_Context->m_CapturePromise.get_future();
     }
 } // namespace Nebula

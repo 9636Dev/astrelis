@@ -7,6 +7,12 @@
 
 namespace Nebula
 {
+    struct FrameCaptureProps
+    {
+        std::uint32_t Width;
+        std::uint32_t Height;
+    };
+
     class RenderSystem
     {
     public:
@@ -31,7 +37,7 @@ namespace Nebula
          * @brief Capture the current frame (next finished frame) and return it as an InMemoryImage
          * @return std::future<InMemoryImage> A future that will contain the InMemoryImage when the frame is captured
         */
-        virtual std::future<InMemoryImage> CaptureFrame() = 0;
+        virtual std::future<InMemoryImage> CaptureFrame(const FrameCaptureProps& props) = 0;
 
         static RefPtr<RenderSystem> Create(RefPtr<Window>& window);
     };

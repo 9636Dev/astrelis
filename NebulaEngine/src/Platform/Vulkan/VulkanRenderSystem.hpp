@@ -30,7 +30,7 @@ namespace Nebula
         void EndGraphicsRenderPass() override;
         void BlitSwapchain() override;
         void EndFrame() override;
-        std::future<InMemoryImage> CaptureFrame() override;
+        std::future<InMemoryImage> CaptureFrame(const FrameCaptureProps& props) override;
 
         void SetBlitSwapchain(bool blit) override { m_BlitSwapchain = blit; }
 

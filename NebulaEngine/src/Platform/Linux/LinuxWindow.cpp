@@ -55,7 +55,9 @@ namespace Nebula
         auto window =
             RefPtr<LinuxWindow>::Create(windowRes.Unwrap(), LinuxWindowData(props.Title, props.Width, props.Height));
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
-        window->m_Context = GraphicsContext::Create(window->m_Window.Raw());
+        ContextProps ctxProps;
+        ctxProps.VSync    = props.VSync;
+        window->m_Context = GraphicsContext::Create(window->m_Window.Raw(), ctxProps);
         if (!window->m_Context->Init())
         {
             return "Failed to initialize context!";

@@ -56,9 +56,11 @@ namespace Nebula
         }
 
         auto window =
-            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Width, props.Height));
+            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Width, props.Height), props.VSync);
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
-        window->m_Context = GraphicsContext::Create(window->m_Window.Raw());
+        ContextProps ctxProps;
+        ctxProps.VSync = props.VSync;
+        window->m_Context = GraphicsContext::Create(window->m_Window.Raw(), ctxProps);
         if (!window->m_Context->Init())
         {
             return "Failed to initialize context!";

@@ -20,22 +20,56 @@ struct Renderer2DTestParams
     mutable RefPtr<Nebula::Scene2D> Scene;
 };
 
+void CompareImages(const Nebula::InMemoryImage& actual, const Nebula::InMemoryImage& expected)
+{
+    ASSERT_EQ(actual.GetWidth(), expected.GetWidth());
+    ASSERT_EQ(actual.GetHeight(), expected.GetHeight());
+    ASSERT_EQ(actual.GetChannels(), expected.GetChannels());
+
+    // Here we check pixel by pixel
+    for (std::uint32_t y = 0; y < actual.GetHeight(); y++)
+    {
+        for (std::uint32_t x = 0; x < actual.GetWidth(); x++)
+        {
+            for (std::uint32_t c = 0; c < actual.GetChannels(); c++)
+            {
+                auto actualPixel   = actual.GetData()[(y * actual.GetWidth() + x) * actual.GetChannels() + c];
+                auto expectedPixel = expected.GetData()[(y * expected.GetWidth() + x) * expected.GetChannels() + c];
+                if (actualPixel != expectedPixel)
+                {
+                    FAIL() << "Pixel mismatch at (" << x << ", " << y << ", " << c
+                           << "): " << "actual=" << static_cast<int>(actualPixel)
+                           << ", expected=" << static_cast<int>(expectedPixel);
+                }
+            }
+        }
+    }
+}
+
+Nebula::RefPtr<Nebula::Window> g_Window;
+
 // Parameterized test fixture
 class Renderer2DTest : public ::testing::TestWithParam<Renderer2DTestParams>
 {
 public:
     Renderer2DTest()
     {
-        Nebula::Log::Init(Nebula::Log::LogMode::CoreOnly, spdlog::level::err);
-        Nebula::GlobalConfig::SetDebugMode(false);
-        Nebula::RendererAPI::SetBufferingMode(Nebula::RendererAPI::BufferingMode::Single);
-        Nebula::WindowProps props("TestWindow", 100, 100, 1);
-        auto res = Nebula::Window::Create(props);
-        if (res.IsErr())
+        static bool initialized = false;
+        if (!initialized)
         {
-            throw std::runtime_error("Failed to create Window");
+            Nebula::Log::Init(Nebula::Log::LogMode::CoreOnly, spdlog::level::err);
+            Nebula::GlobalConfig::SetDebugMode(false);
+            Nebula::RendererAPI::SetBufferingMode(Nebula::RendererAPI::BufferingMode::Single);
+            Nebula::WindowProps props("TestWindow", 100, 100, false);
+            auto res = Nebula::Window::Create(props);
+            if (res.IsErr())
+            {
+                throw std::runtime_error("Failed to create Window");
+            }
+            g_Window    = res.Unwrap();
+            initialized = true;
         }
-        m_Window       = res.Unwrap();
+        m_Window       = g_Window;
         m_RenderSystem = Nebula::RenderSystem::Create(m_Window);
         if (!m_RenderSystem->Init())
         {
@@ -43,10 +77,8 @@ public:
         }
     }
 
-    ~Renderer2DTest() override
-    {
+    ~Renderer2DTest() override {
         m_RenderSystem->Shutdown();
-        m_Window.Reset();
     }
 
     Renderer2DTest(const Renderer2DTest&)            = delete;
@@ -82,7 +114,9 @@ TEST_P(Renderer2DTest, TestDrawScene)
 {
     const auto& params = GetParam();
 
-    auto future = m_RenderSystem->CaptureFrame();
+    //Nebula::FrameCaptureProps props { 100, 100 };
+    Nebula::FrameCaptureProps props {0, 0};
+    auto future = m_RenderSystem->CaptureFrame(props);
     m_Window->BeginFrame();
     m_RenderSystem->StartGraphicsRenderPass();
     m_Renderer2D->BeginFrame();
@@ -108,7 +142,7 @@ TEST_P(Renderer2DTest, TestDrawScene)
     }
 
     Nebula::InMemoryImage referenceImage = Nebula::InMemoryImage(file);
-    ASSERT_TRUE(image == referenceImage);
+    CompareImages(image, referenceImage);
 }
 
 INSTANTIATE_TEST_SUITE_P(
