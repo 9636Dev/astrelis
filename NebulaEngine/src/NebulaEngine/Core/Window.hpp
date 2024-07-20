@@ -4,11 +4,12 @@
 #include <string>
 #include <utility>
 
-#include "NebulaEngine/Core/Bounds.hpp"
-#include "NebulaEngine/Events/Event.hpp"
-#include "NebulaEngine/Renderer/GraphicsContext.hpp"
+#include "Geometry.hpp"
 #include "Pointer.hpp"
 #include "Result.hpp"
+
+#include "NebulaEngine/Events/Event.hpp"
+#include "NebulaEngine/Renderer/GraphicsContext.hpp"
 
 namespace Nebula
 {
@@ -17,17 +18,14 @@ namespace Nebula
     struct WindowProps
     {
         std::string Title;
-        std::uint32_t Width;
-        std::uint32_t Height;
+        Dimension2Du Dimensions;
         bool VSync;
 
         explicit WindowProps(const std::string& title = "Nebula Engine",
-                             std::uint32_t width      = 1'280,
-                             std::uint32_t height     = 720,
+                             Dimension2Du dimensions  = {1'280, 720},
                              bool vsync               = true) :
             Title(title),
-            Width(width),
-            Height(height),
+            Dimensions(dimensions),
             VSync(vsync)
         {
         }
@@ -36,17 +34,12 @@ namespace Nebula
     struct BaseWindowData
     {
         std::string Title;
-        std::uint32_t Width;
-        std::uint32_t Height;
+        Dimension2Du Dimensions;
         WindowEventCallback EventCallback;
 
-        BaseWindowData(std::string title,
-                       std::uint32_t width,
-                       std::uint32_t height,
-                       WindowEventCallback callback = [](Event&) {}) :
+        BaseWindowData(std::string title, Dimension2Du dimensions, WindowEventCallback callback = [](Event&) {}) :
             Title(std::move(title)),
-            Width(width),
-            Height(height),
+            Dimensions(dimensions),
             EventCallback(std::move(callback))
         {
         }
@@ -68,7 +61,7 @@ namespace Nebula
 
         virtual void WaitForEvents()                                       = 0;
         virtual void SetEventCallback(const WindowEventCallback& callback) = 0;
-        virtual Bounds GetViewportBounds() const                           = 0;
+        virtual Rect2Di GetViewportBounds() const                          = 0;
 
         virtual std::uint32_t GetWidth() const  = 0;
         virtual std::uint32_t GetHeight() const = 0;

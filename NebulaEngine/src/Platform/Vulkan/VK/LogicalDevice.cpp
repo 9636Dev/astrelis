@@ -1,8 +1,8 @@
 #include "LogicalDevice.hpp"
 
-#include "NebulaEngine/Core/Log.hpp"
-
 #include <set>
+
+#include "NebulaEngine/Core/Log.hpp"
 
 namespace Nebula::Vulkan
 {
@@ -43,7 +43,10 @@ namespace Nebula::Vulkan
         return indices;
     }
 
-    bool LogicalDevice::Init(PhysicalDevice& physicalDevice, Surface& surface, const std::vector<const char*>& deviceExtensions, const std::vector<const char*>& validationLayers)
+    bool LogicalDevice::Init(PhysicalDevice& physicalDevice,
+                             Surface& surface,
+                             const std::vector<const char*>& deviceExtensions,
+                             const std::vector<const char*>& validationLayers)
     {
         m_QueueFamilyIndices = FindQueueFamilies(physicalDevice.GetHandle(), surface.GetHandle());
 
@@ -54,7 +57,8 @@ namespace Nebula::Vulkan
         }
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-        std::set<uint32_t> uniqueQueueFamilies = {m_QueueFamilyIndices.graphicsFamily.value(), m_QueueFamilyIndices.presentFamily.value()};
+        std::set<uint32_t> uniqueQueueFamilies = {m_QueueFamilyIndices.graphicsFamily.value(),
+                                                  m_QueueFamilyIndices.presentFamily.value()};
 
         float queuePriority = 1.0F;
         for (uint32_t queueFamily : uniqueQueueFamilies)

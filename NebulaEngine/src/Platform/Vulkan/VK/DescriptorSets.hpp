@@ -1,12 +1,13 @@
 #pragma once
 
-#include "DescriptorSetLayout.hpp"
-#include "NebulaEngine/Renderer/DescriptorSets.hpp"
-#include "Platform/Vulkan/VK/DescriptorPool.hpp"
-#include "Platform/Vulkan/VK/GraphicsPipeline.hpp"
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-
 #include <vulkan/vulkan.h>
+
+#include "DescriptorPool.hpp"
+#include "DescriptorSetLayout.hpp"
+#include "GraphicsPipeline.hpp"
+#include "LogicalDevice.hpp"
+
+#include "NebulaEngine/Renderer/DescriptorSets.hpp"
 
 namespace Nebula::Vulkan
 {

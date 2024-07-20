@@ -1,15 +1,17 @@
 #include "BaseRenderer.hpp"
-#include "NebulaEngine/Core/Assert.hpp"
 
 #include <utility>
 
+#include "NebulaEngine/Core/Assert.hpp"
+
 namespace Nebula
 {
-    BaseRenderer::BaseRenderer(RefPtr<Window> window, Bounds viewport) :
+    BaseRenderer::BaseRenderer(RefPtr<Window> window, Rect2Di viewport) :
         m_Window(std::move(window)),
         m_Context(m_Window->GetGraphicsContext()),
-        m_RendererAPI(RendererAPI::Create(m_Context, viewport, RendererAPI::Type::Renderer2D))
+        m_RendererAPI(RendererAPI::Create(m_Context, RendererAPI::Type::Renderer2D))
     {
+        (void)viewport;
     }
 
     bool BaseRenderer::Init()
@@ -26,8 +28,10 @@ namespace Nebula
     {
         NEBULA_CORE_ASSERT(m_Pipeline != nullptr, "m_Pipeline is null, did you initialize it in 'Init()'?")
         m_Pipeline->Bind(m_Context);
-        Bounds scissor = m_RendererAPI->GetSurfaceSize();
-        Viewport viewport(0.0F, 0.0F, static_cast<float>(scissor.Width), static_cast<float>(scissor.Height));
+        Rect2D scissor = m_RendererAPI->GetSurfaceSize();
+        // TODO: 0 - 1 is only for Vulkan, need to change this to be more generic
+        Rect3Df viewport(0.0F, 0.0F, 0.0F, static_cast<float>(scissor.Width()), static_cast<float>(scissor.Height()),
+                         1.0F);
         m_RendererAPI->SetViewport(viewport);
         m_RendererAPI->SetScissor(scissor);
     }

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <vulkan/vulkan.h>
+
 #include "CommandPool.hpp"
 #include "Fence.hpp"
 #include "LogicalDevice.hpp"
 #include "Semaphore.hpp"
-
-#include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {

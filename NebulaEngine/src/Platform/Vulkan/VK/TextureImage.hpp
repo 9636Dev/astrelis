@@ -1,13 +1,13 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/TextureImage.hpp"
+#include <vulkan/vulkan.h>
 
 #include "CommandPool.hpp"
 #include "LogicalDevice.hpp"
 #include "ImageView.hpp"
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
+#include "NebulaEngine/Renderer/TextureImage.hpp"
+
 
 namespace Nebula::Vulkan
 {

@@ -2,13 +2,14 @@
 
 #include <utility>
 
+#include "DescriptorSetLayout.hpp"
+#include "GraphicsPipeline.hpp"
+
 #include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/IO/Image.hpp"
-#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
-#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
 #include "Vertex.hpp"
 
@@ -22,9 +23,9 @@ namespace Nebula
         {{0.5F, 0.5F, 0.0F},   {0.0F, 0.0F, 1.0F}, {1.0F, 1.0F}},
         {{-0.5F, 0.5F, 0.0F},  {1.0F, 1.0F, 1.0F}, {0.0F, 1.0F}}
     };
-    const std::vector<std::uint32_t> m_Indices = {0, 1, 2, 2, 3, 0};
+    const std::array<std::uint32_t, 6> m_Indices = {0, 1, 2, 2, 3, 0};
 
-    Renderer2D::Renderer2D(RefPtr<Window> window, Bounds viewport) : BaseRenderer(std::move(window), viewport)
+    Renderer2D::Renderer2D(RefPtr<Window> window, Rect2Di viewport) : BaseRenderer(std::move(window), viewport)
     {
         m_Instances.reserve(MAX_INSTANCE_COUNT);
     }
@@ -50,9 +51,11 @@ namespace Nebula
             {VertexInput::VertexType::Float, 12 * sizeof(float), 4, 6},
         };
 
-        PipelineShaders shaders;
-        shaders.Vertex   = "resources/shaders/Basic_vert.spv";
-        shaders.Fragment = "resources/shaders/Basic_frag.spv";
+        File vertexShader("resources/shaders/Basic_vert.spv");
+        File fragmentShader("resources/shaders/Basic_frag.spv");
+        NEBULA_VERIFY(vertexShader.Exists(), "Vertex shader does not exist!");
+        NEBULA_VERIFY(fragmentShader.Exists(), "Fragment shader does not exist!");
+        PipelineShaders shaders(vertexShader, fragmentShader);
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
         auto vertexBufferSize = sizeof(Vertex2D) * m_Vertices.size();
@@ -139,8 +142,8 @@ namespace Nebula
         m_Instances.clear();
 
         m_UBO.View         = camera.GetViewMatrix();
-        Bounds surfaceSize = m_RendererAPI->GetSurfaceSize();
-        float aspectRatio  = static_cast<float>(surfaceSize.Width) / static_cast<float>(surfaceSize.Height);
+        Rect2D surfaceSize = m_RendererAPI->GetSurfaceSize();
+        float aspectRatio  = static_cast<float>(surfaceSize.Width() / static_cast<float>(surfaceSize.Height()));
         m_UBO.Projection   = Math::Orthographic(-aspectRatio, aspectRatio, -1.0F, 1.0F, -1.0F, 1.0F);
         m_RendererAPI->CorrectProjection(m_UBO.Projection);
 

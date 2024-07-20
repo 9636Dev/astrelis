@@ -1,8 +1,8 @@
 #include "Profiler.hpp"
 
-#include "Log.hpp"
+#include <QProfile/Log.hpp>
 
-#include "QProfile/Log.hpp"
+#include "Log.hpp"
 
 namespace Nebula
 {

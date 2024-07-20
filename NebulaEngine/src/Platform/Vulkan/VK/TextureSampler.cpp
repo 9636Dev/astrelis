@@ -1,7 +1,6 @@
 #include "TextureSampler.hpp"
 
 #include "NebulaEngine/Core/Log.hpp"
-
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula::Vulkan

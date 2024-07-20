@@ -1,20 +1,18 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
+#include <vulkan/vulkan.h>
 
+#include "DescriptorSetLayout.hpp"
 #include "LogicalDevice.hpp"
 #include "RenderPass.hpp"
-#include "DescriptorSetLayout.hpp"
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 
 namespace Nebula::Vulkan
 {
     class GraphicsPipeline : public Nebula::GraphicsPipeline
     {
     public:
-
         GraphicsPipeline()                                   = default;
         ~GraphicsPipeline() override                         = default;
         GraphicsPipeline(const GraphicsPipeline&)            = delete;

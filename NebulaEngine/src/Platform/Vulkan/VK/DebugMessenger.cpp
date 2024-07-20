@@ -1,9 +1,8 @@
 #include "DebugMessenger.hpp"
 
-#include <stdexcept>
+#include "VulkanExt.hpp"
 
 #include "NebulaEngine/Core/Log.hpp"
-#include "VulkanExt.hpp"
 
 namespace Nebula::Vulkan
 {

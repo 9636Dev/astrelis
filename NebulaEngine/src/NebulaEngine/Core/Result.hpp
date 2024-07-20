@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <type_traits>
 #include <variant>
 
@@ -307,6 +308,42 @@ namespace Nebula
             {
                 return ResultType(E(std::forward<Args>(args)...));
             }
+        }
+
+        T& Expect(const std::string& message)
+        {
+            if (IsOk())
+            {
+                return Unwrap();
+            }
+            throw std::runtime_error(message);
+        }
+
+        const T& Expect(const std::string& message) const
+        {
+            if (IsOk())
+            {
+                return Unwrap();
+            }
+            throw std::runtime_error(message);
+        }
+
+        E& ExpectErr(const std::string& message)
+        {
+            if (IsErr())
+            {
+                return UnwrapErr();
+            }
+            throw std::runtime_error(message);
+        }
+
+        const E& ExpectErr(const std::string& message) const
+        {
+            if (IsErr())
+            {
+                return UnwrapErr();
+            }
+            throw std::runtime_error(message);
         }
     private:
         Type m_Value;

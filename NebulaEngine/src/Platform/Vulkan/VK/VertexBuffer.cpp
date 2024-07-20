@@ -1,6 +1,9 @@
 #include "VertexBuffer.hpp"
 
+#include <array>
 #include <cstring>
+
+#include <vulkan/vulkan.h>
 
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
@@ -8,9 +11,6 @@
 
 #include "NebulaEngine/Core/Log.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
-
-#include <array>
-#include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {

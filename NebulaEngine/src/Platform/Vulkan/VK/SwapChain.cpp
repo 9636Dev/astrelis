@@ -1,10 +1,11 @@
 #include "SwapChain.hpp"
 
+#include "Utils.hpp"
+
 #include <array>
 
 #include "NebulaEngine/Core/GlobalConfig.hpp"
 #include "NebulaEngine/Core/Log.hpp"
-#include "Platform/Vulkan/VK/Utils.hpp"
 
 namespace Nebula::Vulkan
 {

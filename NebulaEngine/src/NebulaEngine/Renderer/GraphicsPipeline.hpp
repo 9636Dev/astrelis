@@ -1,11 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "NebulaEngine/Core/Pointer.hpp"
 
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsContext.hpp"
-
-#include <vector>
 
 namespace Nebula
 {
@@ -43,9 +43,10 @@ namespace Nebula
 
     struct PipelineShaders
     {
-        // TODO: Something better than this, current just paths to the files.
-        std::string Vertex;
-        std::string Fragment;
+        File Vertex;
+        File Fragment;
+
+        PipelineShaders(File vertex, File fragment) : Vertex(std::move(vertex)), Fragment(std::move(fragment)) {}
     };
 
     enum class PipelineType

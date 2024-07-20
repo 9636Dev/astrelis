@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Layer.hpp"
-#include "NebulaEngine/Core/Pointer.hpp"
+#include "Pointer.hpp"
 
 namespace Nebula
 {

@@ -16,7 +16,7 @@ namespace Nebula
 #endif
     RendererAPI::BufferingMode RendererAPI::s_BufferingMode = RendererAPI::BufferingMode::Double;
 
-    RefPtr<RendererAPI> RendererAPI::Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type)
+    RefPtr<RendererAPI> RendererAPI::Create(RefPtr<GraphicsContext> context, Type type)
     {
         switch (GetAPI())
         {
@@ -25,7 +25,7 @@ namespace Nebula
             return nullptr;
         case RendererAPI::API::Vulkan:
 #ifdef NEBULA_RENDERER_VULKAN
-            return VulkanRendererHelper::CreateAPI(std::move(context), viewport, type);
+            return VulkanRendererHelper::CreateAPI(std::move(context), type);
 #else
             NEBULA_CORE_ASSERT(false, "RendererAPI::Vulkan was not configured to be included in the build!");
             return nullptr;

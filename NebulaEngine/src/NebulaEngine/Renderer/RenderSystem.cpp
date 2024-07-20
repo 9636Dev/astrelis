@@ -1,8 +1,8 @@
 #include "RenderSystem.hpp"
 
-#include "NebulaEngine/Core/Assert.hpp"
-#include "NebulaEngine/Renderer/RendererAPI.hpp"
+#include "RendererAPI.hpp"
 
+#include "NebulaEngine/Core/Assert.hpp"
 #ifdef NEBULA_RENDERER_VULKAN
     #include "Platform/Vulkan/VulkanRenderSystem.hpp"
 #endif

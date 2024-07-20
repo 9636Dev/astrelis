@@ -1,9 +1,9 @@
 #pragma once
 
-#include "NebulaEngine/Core/Math.hpp"
-
 #include <cstddef>
 #include <utility>
+
+#include "NebulaEngine/Core/Math.hpp"
 
 namespace Nebula
 {

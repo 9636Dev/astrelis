@@ -1,17 +1,17 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
 #include "NebulaEngine/Core/Result.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
-
-#include <GLFW/glfw3.h>
 
 namespace Nebula
 {
     struct MacOSWindowData : public BaseWindowData
     {
-        explicit MacOSWindowData(std::string title, std::uint32_t width, std::uint32_t height) :
-            BaseWindowData(std::move(title), width, height)
+        explicit MacOSWindowData(std::string title, Dimension2Du dimensions) :
+            BaseWindowData(std::move(title), dimensions)
         {
         }
     };
@@ -34,9 +34,9 @@ namespace Nebula
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
         RefPtr<GraphicsContext> GetGraphicsContext() const override { return m_Context; }
-        Bounds GetViewportBounds() const override;
-        std::uint32_t GetWidth() const override { return m_Data.Width; }
-        std::uint32_t GetHeight() const override { return m_Data.Height; }
+        Rect2Di GetViewportBounds() const override;
+        std::uint32_t GetWidth() const override { return m_Data.Dimensions.Width; }
+        std::uint32_t GetHeight() const override { return m_Data.Dimensions.Height; }
         void* GetNativeWindow() const override { return m_Window.Get(); }
 
         void SetVSync(bool enabled) override { m_Context->SetVSync(enabled); }

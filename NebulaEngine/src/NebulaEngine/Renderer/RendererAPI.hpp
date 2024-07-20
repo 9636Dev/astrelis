@@ -1,9 +1,5 @@
 #pragma once
 
-#include "NebulaEngine/Core/Bounds.hpp"
-#include "NebulaEngine/Core/Math.hpp"
-#include "NebulaEngine/Core/Pointer.hpp"
-
 #include "DescriptorSetLayout.hpp"
 #include "DescriptorSets.hpp"
 #include "GraphicsContext.hpp"
@@ -13,7 +9,10 @@
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
 #include "VertexBuffer.hpp"
-#include "Viewport.hpp"
+
+#include "NebulaEngine/Core/Geometry.hpp"
+#include "NebulaEngine/Core/Math.hpp"
+#include "NebulaEngine/Core/Pointer.hpp"
 
 namespace Nebula
 {
@@ -79,11 +78,11 @@ namespace Nebula
             std::vector<RefPtr<DescriptorSetLayout>> DescriptorSetLayouts;
         };
 
-        virtual void SetViewport(Viewport& viewport) = 0;
-        virtual void SetScissor(Bounds& scissor)     = 0;
+        virtual void SetViewport(Rect3Df& viewport) = 0;
+        virtual void SetScissor(Rect2Di& scissor)   = 0;
 
         virtual void WaitDeviceIdle()                     = 0;
-        virtual Bounds GetSurfaceSize()                   = 0;
+        virtual Rect2Di GetSurfaceSize()                  = 0;
         virtual void CorrectProjection(Mat4f& projection) = 0;
 
         // Probably need to recreate a lot of things, so we need to pass in the storage
@@ -100,8 +99,7 @@ namespace Nebula
                                           std::uint32_t vertexOffset,
                                           std::uint32_t firstInstance) = 0;
 
-        virtual RefPtr<GraphicsPipeline> CreateGraphicsPipeline() = 0;
-        // TODO: Maybe UI Pipeline? Distinguish between graphics and UI
+        virtual RefPtr<GraphicsPipeline> CreateGraphicsPipeline()       = 0;
         virtual RefPtr<VertexBuffer> CreateVertexBuffer()               = 0;
         virtual RefPtr<IndexBuffer> CreateIndexBuffer()                 = 0;
         virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;
@@ -110,8 +108,7 @@ namespace Nebula
         virtual RefPtr<TextureImage> CreateTextureImage()               = 0;
         virtual RefPtr<TextureSampler> CreateTextureSampler()           = 0;
 
-        static RefPtr<RendererAPI>
-            Create(RefPtr<GraphicsContext> context, Bounds viewport, Type type = Type::Renderer2D);
+        static RefPtr<RendererAPI> Create(RefPtr<GraphicsContext> context, Type type = Type::Renderer2D);
     private:
         static API s_API;
         static BufferingMode s_BufferingMode;

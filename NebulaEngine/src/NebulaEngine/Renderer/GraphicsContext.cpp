@@ -3,7 +3,6 @@
 #include "RendererAPI.hpp"
 
 #include "NebulaEngine/Core/Assert.hpp"
-
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula

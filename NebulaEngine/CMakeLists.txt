@@ -88,32 +88,32 @@ add_subdirectory(vendor)
 
 set(NEBULA_ENGINE_SOURCES
     # Core
-    src/NebulaEngine/Core/PlatformDetection.hpp
-    src/NebulaEngine/Core/Log.hpp
-    src/NebulaEngine/Core/Log.cpp
+    src/NebulaEngine/Core/Application.cpp
+    src/NebulaEngine/Core/Application.hpp
     src/NebulaEngine/Core/Assert.hpp
     src/NebulaEngine/Core/Base.hpp
-    src/NebulaEngine/Core/Result.hpp
-    src/NebulaEngine/Core/Pointer.hpp
-    src/NebulaEngine/Core/Bounds.hpp
-    src/NebulaEngine/Core/Application.hpp
-    src/NebulaEngine/Core/Application.cpp
     src/NebulaEngine/Core/Entrypoint.hpp
-    src/NebulaEngine/Core/Window.hpp
-    src/NebulaEngine/Core/Window.cpp
-    src/NebulaEngine/Core/Utils/Function.hpp
-    src/NebulaEngine/Core/Utils/Defer.hpp
-    src/NebulaEngine/Core/Utils/Debug.hpp
-    src/NebulaEngine/Core/Layer.hpp
-    src/NebulaEngine/Core/Layer.cpp
-    src/NebulaEngine/Core/LayerStack.hpp
-    src/NebulaEngine/Core/LayerStack.cpp
-    src/NebulaEngine/Core/Time.hpp
-    src/NebulaEngine/Core/Time.cpp
-    src/NebulaEngine/Core/GlobalConfig.hpp
+    src/NebulaEngine/Core/Geometry.hpp
     src/NebulaEngine/Core/GlobalConfig.cpp
-    src/NebulaEngine/Core/Profiler.hpp
+    src/NebulaEngine/Core/GlobalConfig.hpp
+    src/NebulaEngine/Core/Layer.cpp
+    src/NebulaEngine/Core/Layer.hpp
+    src/NebulaEngine/Core/LayerStack.cpp
+    src/NebulaEngine/Core/LayerStack.hpp
+    src/NebulaEngine/Core/Log.cpp
+    src/NebulaEngine/Core/Log.hpp
+    src/NebulaEngine/Core/PlatformDetection.hpp
+    src/NebulaEngine/Core/Pointer.hpp
     src/NebulaEngine/Core/Profiler.cpp
+    src/NebulaEngine/Core/Profiler.hpp
+    src/NebulaEngine/Core/Result.hpp
+    src/NebulaEngine/Core/Time.cpp
+    src/NebulaEngine/Core/Time.hpp
+    src/NebulaEngine/Core/Types.hpp
+    src/NebulaEngine/Core/Utils/Defer.hpp
+    src/NebulaEngine/Core/Utils/Function.hpp
+    src/NebulaEngine/Core/Window.cpp
+    src/NebulaEngine/Core/Window.hpp
 
     # IO
     src/NebulaEngine/IO/File.hpp
@@ -122,34 +122,33 @@ set(NEBULA_ENGINE_SOURCES
     src/NebulaEngine/IO/Image.cpp
 
     # Renderer
-    src/NebulaEngine/Renderer/Viewport.hpp
-    src/NebulaEngine/Renderer/RendererAPI.hpp
-    src/NebulaEngine/Renderer/RendererAPI.cpp
-    src/NebulaEngine/Renderer/GraphicsContext.hpp
-    src/NebulaEngine/Renderer/GraphicsContext.cpp
-    src/NebulaEngine/Renderer/BaseRenderer.hpp
     src/NebulaEngine/Renderer/BaseRenderer.cpp
-    src/NebulaEngine/Renderer/Renderer2D.hpp
-    src/NebulaEngine/Renderer/Renderer2D.cpp
-    src/NebulaEngine/Renderer/VoxelRenderer.hpp
-    src/NebulaEngine/Renderer/VoxelRenderer.cpp
-    src/NebulaEngine/Renderer/RenderSystem.hpp
+    src/NebulaEngine/Renderer/BaseRenderer.hpp
+    src/NebulaEngine/Renderer/GraphicsContext.cpp
+    src/NebulaEngine/Renderer/GraphicsContext.hpp
     src/NebulaEngine/Renderer/RenderSystem.cpp
+    src/NebulaEngine/Renderer/RenderSystem.hpp
+    src/NebulaEngine/Renderer/Renderer2D.cpp
+    src/NebulaEngine/Renderer/Renderer2D.hpp
+    src/NebulaEngine/Renderer/RendererAPI.cpp
+    src/NebulaEngine/Renderer/RendererAPI.hpp
+    src/NebulaEngine/Renderer/VoxelRenderer.cpp
+    src/NebulaEngine/Renderer/VoxelRenderer.hpp
 
-    src/NebulaEngine/Renderer/GraphicsPipeline.hpp
-    src/NebulaEngine/Renderer/VertexBuffer.hpp
-    src/NebulaEngine/Renderer/IndexBuffer.hpp
     src/NebulaEngine/Renderer/DescriptorSetLayout.hpp
     src/NebulaEngine/Renderer/DescriptorSets.hpp
-    src/NebulaEngine/Renderer/UniformBuffer.hpp
+    src/NebulaEngine/Renderer/GraphicsPipeline.hpp
+    src/NebulaEngine/Renderer/IndexBuffer.hpp
     src/NebulaEngine/Renderer/TextureImage.hpp
     src/NebulaEngine/Renderer/TextureSampler.hpp
+    src/NebulaEngine/Renderer/UniformBuffer.hpp
+    src/NebulaEngine/Renderer/VertexBuffer.hpp
 
     # UI
-    src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
-    src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp
     src/NebulaEngine/UI/ImGui/ImGuiBackend.hpp
     src/NebulaEngine/UI/ImGui/ImGuiBackend.cpp
+    src/NebulaEngine/UI/ImGui/ImGuiLayer.hpp
+    src/NebulaEngine/UI/ImGui/ImGuiLayer.cpp
 
     # Scene
     src/NebulaEngine/Scene/Scene.hpp
@@ -180,16 +179,16 @@ set(NEBULA_ENGINE_SOURCES
     >
 
     $<$<BOOL:${NEBULA_RENDERER_VULKAN}>:
-        src/Platform/Vulkan/VulkanRendererHelper.hpp
-        src/Platform/Vulkan/VulkanRendererHelper.cpp
-        src/Platform/Vulkan/VulkanGraphicsContext.hpp
-        src/Platform/Vulkan/VulkanGraphicsContext.cpp
-        src/Platform/Vulkan/Vulkan2DRendererAPI.hpp
         src/Platform/Vulkan/Vulkan2DRendererAPI.cpp
-        src/Platform/Vulkan/VulkanImGuiBackend.hpp
+        src/Platform/Vulkan/Vulkan2DRendererAPI.hpp
+        src/Platform/Vulkan/VulkanGraphicsContext.cpp
+        src/Platform/Vulkan/VulkanGraphicsContext.hpp
         src/Platform/Vulkan/VulkanImGuiBackend.cpp
-        src/Platform/Vulkan/VulkanRenderSystem.hpp
+        src/Platform/Vulkan/VulkanImGuiBackend.hpp
         src/Platform/Vulkan/VulkanRenderSystem.cpp
+        src/Platform/Vulkan/VulkanRenderSystem.hpp
+        src/Platform/Vulkan/VulkanRendererHelper.cpp
+        src/Platform/Vulkan/VulkanRendererHelper.hpp
 
         src/Platform/Vulkan/VK/Utils.hpp
         src/Platform/Vulkan/VK/Utils.cpp

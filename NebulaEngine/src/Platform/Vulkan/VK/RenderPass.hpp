@@ -1,10 +1,9 @@
 #pragma once
 
+#include <vulkan/vulkan.h>
+
 #include "CommandBuffer.hpp"
 #include "LogicalDevice.hpp"
-#include "SwapChain.hpp"
-
-#include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {

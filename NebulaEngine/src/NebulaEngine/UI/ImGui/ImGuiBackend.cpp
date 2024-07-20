@@ -18,8 +18,8 @@ namespace Nebula
             return nullptr;
         case RendererAPI::API::Vulkan:
 #ifdef NEBULA_RENDERER_VULKAN
-            return static_cast<RefPtr<ImGuiBackend>>(RefPtr<VulkanImGuiBackend>::Create(
-                window, RendererAPI::Create(window->GetGraphicsContext(), window->GetViewportBounds())));
+            return static_cast<RefPtr<ImGuiBackend>>(
+                RefPtr<VulkanImGuiBackend>::Create(window, RendererAPI::Create(window->GetGraphicsContext())));
 #else
             NEBULA_CORE_ASSERT(false, "RendererAPI::Vulkan is currently not supported!");
             return nullptr;

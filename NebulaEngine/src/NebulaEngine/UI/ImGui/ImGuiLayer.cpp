@@ -1,15 +1,12 @@
 #include "ImGuiLayer.hpp"
 
-#include "NebulaEngine/Core/Application.hpp"
-#include "NebulaEngine/Core/Log.hpp"
-#include "NebulaEngine/Core/PlatformDetection.hpp"
-#include "NebulaEngine/Events/Event.hpp"
-#include "NebulaEngine/UI/ImGui/ImGuiBackend.hpp"
-
 #include <GLFW/glfw3.h>
-
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+
+#include "ImGuiBackend.hpp"
+
+#include "NebulaEngine/Events/Event.hpp"
 
 namespace Nebula
 {

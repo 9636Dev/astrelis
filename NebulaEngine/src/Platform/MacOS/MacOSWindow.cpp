@@ -1,8 +1,8 @@
 #include "MacOSWindow.hpp"
 
-#include "../GLFW/GLFWWindowHelper.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
+#include "Platform/GLFW/GLFWWindowHelper.hpp"
 
 namespace Nebula
 {
@@ -28,13 +28,13 @@ namespace Nebula
 
     void MacOSWindow::WaitForEvents() { glfwWaitEvents(); }
 
-    Bounds MacOSWindow::GetViewportBounds() const
+    Rect2Di MacOSWindow::GetViewportBounds() const
     {
         // Get size using GLFW
         std::int32_t width  = 0;
         std::int32_t height = 0;
         glfwGetFramebufferSize(m_Window.Raw(), &width, &height);
-        return Bounds(0, 0, width, height);
+        return Rect2Di(0, 0, width, height);
     }
 
     Result<RefPtr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps& props)
@@ -56,7 +56,7 @@ namespace Nebula
         }
 
         auto window =
-            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Width, props.Height));
+            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Dimensions));
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
         ContextProps ctxProps;
         ctxProps.VSync = props.VSync;

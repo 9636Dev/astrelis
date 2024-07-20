@@ -1,8 +1,8 @@
 #include "LayerStack.hpp"
 
-#include "NebulaEngine/Core/Profiler.hpp"
-
 #include <algorithm>
+
+#include "Profiler.hpp"
 
 namespace Nebula
 {

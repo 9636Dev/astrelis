@@ -1,9 +1,10 @@
 #pragma once
 
+#include <future>
+
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/IO/Image.hpp"
-#include <future>
 
 namespace Nebula
 {
@@ -32,7 +33,7 @@ namespace Nebula
 
         virtual void SetBlitSwapchain(bool blit) = 0;
         virtual void* GetGraphicsImage()         = 0;
-        virtual Bounds GetRenderBounds()         = 0;
+        virtual Rect2Di GetRenderBounds()        = 0;
 
         /**
          * @brief Capture the current frame (next finished frame) and return it as an InMemoryImage

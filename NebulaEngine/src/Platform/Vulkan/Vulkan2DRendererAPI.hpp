@@ -10,7 +10,7 @@ namespace Nebula
     class Vulkan2DRendererAPI : public RendererAPI
     {
     public:
-        Vulkan2DRendererAPI(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
+        explicit Vulkan2DRendererAPI(RefPtr<VulkanGraphicsContext> context);
         ~Vulkan2DRendererAPI() override                            = default;
         Vulkan2DRendererAPI(const Vulkan2DRendererAPI&)            = delete;
         Vulkan2DRendererAPI& operator=(const Vulkan2DRendererAPI&) = delete;
@@ -20,12 +20,12 @@ namespace Nebula
         void Init() override;
         void Shutdown() override;
 
-        void SetViewport(Viewport& viewport) override;
-        void SetScissor(Bounds& scissor) override;
+        void SetViewport(Rect3Df& viewport) override;
+        void SetScissor(Rect2Di& scissor) override;
         void WaitDeviceIdle() override;
         void DrawInstanced(std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
         void DrawInstancedIndexed(std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
-        Bounds GetSurfaceSize() override;
+        Rect2Di GetSurfaceSize() override;
 
         void ResizeViewport() override { m_Context->m_SwapchainRecreation = true; }
         bool NeedsResize() const override { return m_Context->m_SwapchainRecreation; }
@@ -40,10 +40,8 @@ namespace Nebula
         RefPtr<TextureImage> CreateTextureImage() override;
         RefPtr<TextureSampler> CreateTextureSampler() override;
 
-        static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport);
+        static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context);
     private:
         RefPtr<VulkanGraphicsContext> m_Context;
-
-        Bounds m_Viewport;
     };
 } // namespace Nebula

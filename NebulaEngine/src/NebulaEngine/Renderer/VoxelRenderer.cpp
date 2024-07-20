@@ -1,8 +1,10 @@
 #include "VoxelRenderer.hpp"
+
+#include "DescriptorSetLayout.hpp"
+#include "GraphicsPipeline.hpp"
+
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
-#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
-#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 
 namespace Nebula
 {
@@ -22,7 +24,7 @@ namespace Nebula
         0, 1, 5, 5, 4, 0, // Bottom
     };
 
-    VoxelRenderer::VoxelRenderer(RefPtr<Window> window, Bounds viewport) :
+    VoxelRenderer::VoxelRenderer(RefPtr<Window> window, Rect2Di viewport) :
         BaseRenderer(std::move(window), viewport),
         m_CameraData(),
         m_ChunkData()
@@ -91,9 +93,9 @@ namespace Nebula
             return false;
         }
 
-        PipelineShaders shaders;
-        shaders.Vertex   = "resources/shaders/Voxel_vert.spv";
-        shaders.Fragment = "resources/shaders/Voxel_frag.spv";
+        File vertexShader("resources/shaders/Voxel_vert.spv");
+        File fragmentShader("resources/shaders/Voxel_frag.spv");
+        PipelineShaders shaders(vertexShader, fragmentShader);
 
         std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
         m_Pipeline                                          = m_RendererAPI->CreateGraphicsPipeline();

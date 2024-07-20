@@ -1,9 +1,10 @@
 #include "FrameBuffer.hpp"
 
-#include "NebulaEngine/Core/Log.hpp"
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-
 #include <array>
+
+#include "LogicalDevice.hpp"
+
+#include "NebulaEngine/Core/Log.hpp"
 
 namespace Nebula::Vulkan
 {

@@ -1,10 +1,10 @@
 #include "Image.hpp"
 
-#include "NebulaEngine/Core/Log.hpp"
-#include "NebulaEngine/Core/Math.hpp"
-
 #include <stb_image.h>
 #include <stb_image_write.h>
+
+#include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Core/Math.hpp"
 
 namespace Nebula
 {

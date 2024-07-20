@@ -1,7 +1,7 @@
 #include "EditorLayer.hpp"
 
 #include "NebulaEngine/Core/Application.hpp"
-#include "NebulaEngine/Core/Bounds.hpp"
+#include "NebulaEngine/Core/Geometry.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
@@ -13,7 +13,7 @@
 
 namespace Pulsar
 {
-    const Nebula::Bounds renderResolution(0, 0, 1'280, 720);
+    const Nebula::Rect2D renderResolution(0, 0, 1'280, 720);
 
     EditorLayer::EditorLayer(std::string rootDirectory) :
         Layer("EditorLayer"),

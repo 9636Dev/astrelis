@@ -7,6 +7,6 @@ namespace Nebula
     class VulkanRendererHelper
     {
     public:
-        static RefPtr<RendererAPI> CreateAPI(RefPtr<GraphicsContext> context, Bounds viewport, RendererAPI::Type type);
+        static RefPtr<RendererAPI> CreateAPI(RefPtr<GraphicsContext> context, RendererAPI::Type type);
     };
 } // namespace Nebula

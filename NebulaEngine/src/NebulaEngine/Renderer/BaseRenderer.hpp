@@ -2,15 +2,16 @@
 
 #include "GraphicsContext.hpp"
 #include "GraphicsPipeline.hpp"
-#include "NebulaEngine/Core/Window.hpp"
 #include "RendererAPI.hpp"
+
+#include "NebulaEngine/Core/Window.hpp"
 
 namespace Nebula
 {
     class BaseRenderer
     {
     public:
-        BaseRenderer(RefPtr<Window> window, Bounds viewport);
+        BaseRenderer(RefPtr<Window> window, Rect2Di viewport);
         virtual ~BaseRenderer()                      = default;
         BaseRenderer(const BaseRenderer&)            = delete;
         BaseRenderer& operator=(const BaseRenderer&) = delete;

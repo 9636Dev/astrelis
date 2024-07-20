@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NebulaEngine/Core/Bounds.hpp"
+#include "NebulaEngine/Core/Geometry.hpp"
 #include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
@@ -27,7 +27,7 @@ namespace Nebula
     class Renderer2D : public BaseRenderer
     {
     public:
-        Renderer2D(RefPtr<Window> window, Bounds viewport);
+        Renderer2D(RefPtr<Window> window, Rect2Di viewport);
         ~Renderer2D() override                   = default;
         Renderer2D(const Renderer2D&)            = delete;
         Renderer2D& operator=(const Renderer2D&) = delete;

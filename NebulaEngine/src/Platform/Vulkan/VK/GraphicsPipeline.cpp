@@ -1,38 +1,17 @@
 #include "GraphicsPipeline.hpp"
 
-#include "NebulaEngine/Core/Assert.hpp"
-#include "NebulaEngine/Core/Log.hpp"
+#include <array>
 
 #include "CommandBuffer.hpp"
-#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "RenderPass.hpp"
 
-#include <fstream>
-#include <vulkan/vulkan_core.h>
-
-#include <array>
+#include "NebulaEngine/Core/Assert.hpp"
+#include "NebulaEngine/Core/Log.hpp"
+#include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula::Vulkan
 {
-    static std::vector<char> ReadFile(const std::string& filename)
-    {
-        std::ifstream file(filename, std::ios::ate | std::ios::binary);
-        if (!file.is_open())
-        {
-            NEBULA_CORE_LOG_ERROR("Failed to open file: {0}", filename);
-            return {};
-        }
-
-        size_t fileSize = (size_t)file.tellg();
-        std::vector<char> buffer(fileSize);
-        file.seekg(0);
-        file.read(buffer.data(), static_cast<std::int64_t>(fileSize));
-        file.close();
-
-        return buffer;
-    }
-
     static VkShaderModule CreateShaderModule(VkDevice device, const std::vector<char>& code)
     {
         VkShaderModuleCreateInfo createInfo {};
@@ -116,8 +95,8 @@ namespace Nebula::Vulkan
                                 std::vector<BufferBinding>& bindings,
                                 std::vector<DescriptorSetLayout>& layouts)
     {
-        auto vertexShaderCode   = ReadFile(shaders.Vertex);
-        auto fragmentShaderCode = ReadFile(shaders.Fragment);
+        auto vertexShaderCode   = shaders.Vertex.ReadBinary().Expect("Failed to read vertex shader!");
+        auto fragmentShaderCode = shaders.Fragment.ReadBinary().Expect("Failed to read fragment shader!");
 
         VkShaderModule vertexShaderModule   = CreateShaderModule(device.GetHandle(), vertexShaderCode);
         VkShaderModule fragmentShaderModule = CreateShaderModule(device.GetHandle(), fragmentShaderCode);

@@ -1,12 +1,13 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/IndexBuffer.hpp"
-#include "Platform/Vulkan/VK/CommandBuffer.hpp"
-#include "Platform/Vulkan/VK/CommandPool.hpp"
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-#include "Platform/Vulkan/VK/PhysicalDevice.hpp"
-
 #include <vulkan/vulkan.h>
+
+#include "CommandBuffer.hpp"
+#include "CommandPool.hpp"
+#include "LogicalDevice.hpp"
+#include "PhysicalDevice.hpp"
+
+#include "NebulaEngine/Renderer/IndexBuffer.hpp"
 
 namespace Nebula::Vulkan
 {

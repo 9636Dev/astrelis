@@ -1,10 +1,10 @@
 #pragma once
 
+#include <cstdint>
+
+#include <vulkan/vulkan.h>
 
 #include "LogicalDevice.hpp"
-
-#include <cstdint>
-#include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {

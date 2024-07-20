@@ -43,8 +43,6 @@ if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
     message(FATAL_ERROR "In-source builds are not allowed. Please create a build directory and run 'cmake path_to_source'")
 endif()
 
-
-
 project(NebulaEngine VERSION 0.0.1)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -59,7 +57,6 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 else()
     message(FATAL_ERROR "NebulaEngine: Unsupported compiler - '${CMAKE_CXX_COMPILER_ID}'")
 endif()
-
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

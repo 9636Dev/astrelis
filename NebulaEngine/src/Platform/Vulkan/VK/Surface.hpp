@@ -1,9 +1,10 @@
 #pragma once
 
-#include "NebulaEngine/Core/Pointer.hpp"
-#include "Platform/Vulkan/VK/Instance.hpp"
-
 #include <vulkan/vulkan.h>
+
+#include "Instance.hpp"
+
+#include "NebulaEngine/Core/Pointer.hpp"
 
 struct GLFWwindow;
 

@@ -21,7 +21,7 @@ namespace Nebula
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         // Create the window
-        if (props.Width > std::numeric_limits<int>::max() || props.Height > std::numeric_limits<int>::max())
+        if (props.Dimensions.Width > std::numeric_limits<int>::max() || props.Dimensions.Height > std::numeric_limits<int>::max())
         {
             TerminateGLFW();
             return Result<GLFWwindow*, std::string>::Err("Window width and height must be less than or equal to " +
@@ -29,7 +29,7 @@ namespace Nebula
         }
 
         GLFWwindow* window =
-            glfwCreateWindow(static_cast<std::int32_t>(props.Width), static_cast<std::int32_t>(props.Height),
+            glfwCreateWindow(static_cast<std::int32_t>(props.Dimensions.Width), static_cast<std::int32_t>(props.Dimensions.Height),
                              props.Title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
@@ -51,7 +51,7 @@ namespace Nebula
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         // Create the window
-        if (props.Width > std::numeric_limits<int>::max() || props.Height > std::numeric_limits<int>::max())
+        if (props.Dimensions.Width > std::numeric_limits<int>::max() || props.Dimensions.Height > std::numeric_limits<int>::max())
         {
             TerminateGLFW();
             return Result<GLFWwindow*, std::string>::Err("Window width and height must be less than or equal to " +
@@ -59,7 +59,7 @@ namespace Nebula
         }
 
         GLFWwindow* window =
-            glfwCreateWindow(static_cast<std::int32_t>(props.Width), static_cast<std::int32_t>(props.Height),
+            glfwCreateWindow(static_cast<std::int32_t>(props.Dimensions.Width), static_cast<std::int32_t>(props.Dimensions.Height),
                              props.Title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
@@ -261,8 +261,8 @@ namespace Nebula
             auto& data = GLFWWindowHelper::GetUserData<BaseWindowData>(window);
             NEBULA_CORE_ASSERT(data.EventCallback, "EventCallback is not set");
             WindowResizedEvent event(width, height);
-            data.Width  = width;
-            data.Height = height;
+            data.Dimensions.Width  = width;
+            data.Dimensions.Height = height;
             data.EventCallback(event);
         });
 

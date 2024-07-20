@@ -1,7 +1,7 @@
-#include <cstdlib>
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <cstdlib>
 
 #include "NebulaEngine/Core/GlobalConfig.hpp"
 #include "NebulaEngine/Core/Log.hpp"
@@ -35,7 +35,7 @@ public:
             Nebula::Log::Init(Nebula::Log::LogMode::CoreOnly, spdlog::level::err);
             Nebula::GlobalConfig::SetDebugMode(false);
             Nebula::RendererAPI::SetBufferingMode(Nebula::RendererAPI::BufferingMode::Single);
-            Nebula::WindowProps props("TestWindow", 100, 100, false);
+            Nebula::WindowProps props("TestWindow", {100, 100}, false);
             auto res = Nebula::Window::Create(props);
             if (res.IsErr())
             {
@@ -53,7 +53,7 @@ public:
         }
 
         float windowHeight = 100.0F;
-        float renderableHeight = static_cast<float>(m_RenderSystem->GetRenderBounds().Height);
+        float renderableHeight = static_cast<float>(m_RenderSystem->GetRenderBounds().Height());
 
         if (renderableHeight < windowHeight)
         {

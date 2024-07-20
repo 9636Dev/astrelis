@@ -1,7 +1,7 @@
 #include "LinuxWindow.hpp"
 
-#include "../GLFW/GLFWWindowHelper.hpp"
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
+#include "Platform/GLFW/GLFWWindowHelper.hpp"
 
 namespace Nebula
 {
@@ -26,13 +26,13 @@ namespace Nebula
 
     void LinuxWindow::EndFrame() { m_Context->EndFrame(); }
 
-    Bounds LinuxWindow::GetViewportBounds() const
+    Rect2Di LinuxWindow::GetViewportBounds() const
     {
         // Get size using GLFW
         std::int32_t width  = 0;
         std::int32_t height = 0;
         glfwGetFramebufferSize(m_Window.Raw(), &width, &height);
-        return Bounds(0, 0, width, height);
+        return Rect2Di(0, 0, width, height);
     }
 
     Result<RefPtr<LinuxWindow>, std::string> LinuxWindow::Create(const WindowProps& props)
@@ -53,7 +53,7 @@ namespace Nebula
         }
 
         auto window =
-            RefPtr<LinuxWindow>::Create(windowRes.Unwrap(), LinuxWindowData(props.Title, props.Width, props.Height));
+            RefPtr<LinuxWindow>::Create(windowRes.Unwrap(), LinuxWindowData(props.Title, props.Dimensions));
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
         ContextProps ctxProps;
         ctxProps.VSync    = props.VSync;

@@ -1,15 +1,14 @@
 #pragma once
 
-#include "NebulaEngine/Core/Bounds.hpp"
+#include "BaseRenderer.hpp"
+#include "VertexBuffer.hpp"
+
+#include "NebulaEngine/Core/Geometry.hpp"
 #include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Core/Window.hpp"
 #include "NebulaEngine/Renderer/Camera.hpp"
 #include "NebulaEngine/Scene/VoxelScene.hpp"
-
-#include "BaseRenderer.hpp"
-#include "TextureImage.hpp"
-#include "VertexBuffer.hpp"
 
 namespace Nebula
 {
@@ -40,7 +39,7 @@ namespace Nebula
     class VoxelRenderer : public BaseRenderer
     {
     public:
-        VoxelRenderer(RefPtr<Window> window, Bounds viewport);
+        VoxelRenderer(RefPtr<Window> window, Rect2Di viewport);
         ~VoxelRenderer() override                      = default;
         VoxelRenderer(const VoxelRenderer&)            = delete;
         VoxelRenderer& operator=(const VoxelRenderer&) = delete;

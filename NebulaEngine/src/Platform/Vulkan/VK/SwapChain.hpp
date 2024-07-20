@@ -1,10 +1,10 @@
 #pragma once
 
+#include <vulkan/vulkan.h>
+
 #include "LogicalDevice.hpp"
 #include "PhysicalDevice.hpp"
 #include "Surface.hpp"
-
-#include <vulkan/vulkan.h>
 
 namespace Nebula::Vulkan
 {

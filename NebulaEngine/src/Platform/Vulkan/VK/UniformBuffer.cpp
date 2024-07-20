@@ -1,11 +1,12 @@
 #include "UniformBuffer.hpp"
 
+#include "Utils.hpp"
+
 #include <cstring>
 
 #include "NebulaEngine/Core/Log.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
-#include "Utils.hpp"
 
 namespace Nebula::Vulkan
 {

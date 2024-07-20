@@ -1,5 +1,6 @@
 #include "VulkanExt.hpp"
-#include <iostream>
+
+#include "NebulaEngine/Core/Log.hpp"
 
 namespace Nebula::Vulkan
 {
@@ -8,7 +9,14 @@ namespace Nebula::Vulkan
                                       const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                       [[maybe_unused]] void* pUserData)
     {
-        std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
+        if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+        {
+            NEBULA_CORE_LOG_WARN("Validation layer: {0}", pCallbackData->pMessage);
+        }
+        else
+        {
+            NEBULA_CORE_LOG_INFO("Validation layer: {0}", pCallbackData->pMessage);
+        }
         return VK_FALSE;
     }
 

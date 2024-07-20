@@ -1,3 +1,8 @@
+/**
+ * @file Assert.hpp
+ * Contains asserting macros. Only the client used macros are documented.
+ */
+
 #pragma once
 
 #include "Debug.hpp"
@@ -5,6 +10,11 @@
 
 #ifdef NEBULA_DEBUG
     #define NEBULA_INTERNAL_BUILD_TYPE 0
+    /**
+     * @def NEBULA_ASSERT(x, message)
+     * @brief Asserts that the expression is true, if not, it will log an error and break the debugger
+     * This is only available in debug builds
+     */
     #define NEBULA_ASSERT(x, ...)                                       \
         {                                                               \
             if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)   \
@@ -31,6 +41,11 @@
         #define NEBULA_INTERNAL_BUILD_TYPE 1
     #endif
 
+    /**
+     * @def NEBULA_VERIFY(x, message)
+     * @brief Verifies that the expression is true, if not, it will log an error and break the debugger
+     * This is available in release (internal) and debug builds
+     */
     #define NEBULA_VERIFY(x, ...)                                          \
         {                                                                  \
             if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)      \
@@ -58,6 +73,12 @@
     #endif
 
     // TODO(9636Dev): Requirement will throw a Nebula::RequirementFailed exception
+
+    /**
+     * @def NEBULA_REQUIRE(x, message)
+     * @brief Requires that the expression is true, if not, it will log an error
+     * This is available in all builds
+     */
     #define NEBULA_REQUIRE(x, ...)                                        \
         {                                                                 \
             if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)     \

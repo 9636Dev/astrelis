@@ -1,8 +1,10 @@
 #pragma once
 
-#include "GraphicsContext.hpp"
-#include "NebulaEngine/Core/Pointer.hpp"
 #include <cstddef>
+
+#include "GraphicsContext.hpp"
+
+#include "NebulaEngine/Core/Pointer.hpp"
 
 namespace Nebula
 {

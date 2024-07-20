@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-
 #include <vulkan/vulkan.h>
+
+#include "LogicalDevice.hpp"
 
 namespace Nebula::Vulkan
 {

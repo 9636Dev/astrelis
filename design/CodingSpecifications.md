@@ -70,6 +70,16 @@ Optional features have to always be 'opt-in' by the user, unless it matches thes
 ## STL containers
 - All STL containers that allow a custom allocator must have a explicit allocator (`Nebula::Allocator`)
 
+## Include order
+Includes are ordered in blocks, which should be in this order:
+- Precompiled headers
+- Current file header (for classes with .cpp files)
+- Standard library includes / System includes
+- Includes from libraries (angle brackets)
+- Includes in the same directory
+- Includes from Nebula
+
+
 ---
 
 By following these guidelines, we can ensure that the codebase is maintainable, and easy to work with. This will also help us avoid common pitfalls, and make the codebase more robust.

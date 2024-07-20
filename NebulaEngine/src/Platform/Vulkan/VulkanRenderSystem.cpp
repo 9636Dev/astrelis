@@ -44,9 +44,9 @@ namespace Nebula
             return false;
         }
 
-        PipelineShaders shaders;
-        shaders.Vertex   = "resources/shaders/Blit_vert.spv";
-        shaders.Fragment = "resources/shaders/Blit_frag.spv";
+        File vertexShader("resources/shaders/Blit_vert.spv");
+        File fragmentShader("resources/shaders/Blit_frag.spv");
+        PipelineShaders shaders(vertexShader, fragmentShader);
 
         std::vector<BufferBinding> inputs(1);
         inputs[0].Binding  = 0;

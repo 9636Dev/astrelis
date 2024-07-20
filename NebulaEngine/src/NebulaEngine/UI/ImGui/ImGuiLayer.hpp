@@ -1,12 +1,12 @@
 #pragma once
 
-#include "NebulaEngine/Core/Layer.hpp"
+#include <imgui.h>
 
 #include "ImGuiBackend.hpp"
+
+#include "NebulaEngine/Core/Layer.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
-
-#include <imgui.h>
 
 namespace Nebula
 {

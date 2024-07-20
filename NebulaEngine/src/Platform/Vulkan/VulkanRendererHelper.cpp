@@ -7,13 +7,13 @@
 namespace Nebula
 {
     RefPtr<RendererAPI>
-        VulkanRendererHelper::CreateAPI(RefPtr<GraphicsContext> context, Bounds viewport, RendererAPI::Type type)
+        VulkanRendererHelper::CreateAPI(RefPtr<GraphicsContext> context, RendererAPI::Type type)
     {
         switch (type)
         {
         case RendererAPI::Type::Renderer2D:
             return static_cast<RefPtr<RendererAPI>>(
-                Vulkan2DRendererAPI::Create(context.DynamicCast<VulkanGraphicsContext>(), viewport));
+                Vulkan2DRendererAPI::Create(context.DynamicCast<VulkanGraphicsContext>()));
         case RendererAPI::Type::Renderer3D:
         case RendererAPI::Type::RayTracer:
             NEBULA_CORE_ASSERT(false, "RendererAPI::Type is currently not supported!");

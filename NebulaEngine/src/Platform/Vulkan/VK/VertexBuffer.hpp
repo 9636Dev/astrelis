@@ -1,11 +1,11 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/VertexBuffer.hpp"
-
+#include "CommandBuffer.hpp"
+#include "CommandPool.hpp"
 #include "LogicalDevice.hpp"
-#include "Platform/Vulkan/VK/CommandBuffer.hpp"
-#include "Platform/Vulkan/VK/CommandPool.hpp"
-#include "Platform/Vulkan/VK/PhysicalDevice.hpp"
+#include "PhysicalDevice.hpp"
+
+#include "NebulaEngine/Renderer/VertexBuffer.hpp"
 
 //#include <vulkan/vulkan.h>
 

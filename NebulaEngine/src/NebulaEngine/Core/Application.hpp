@@ -3,14 +3,14 @@
 #include <string>
 #include <vector>
 
-#include "NebulaEngine/Core/LayerStack.hpp"
-#include "NebulaEngine/Core/Profiler.hpp"
-#include "NebulaEngine/Renderer/RenderSystem.hpp"
-#include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
+#include "LayerStack.hpp"
 #include "Pointer.hpp"
+#include "Profiler.hpp"
 #include "Window.hpp"
 
 #include "NebulaEngine/Events/WindowEvent.hpp"
+#include "NebulaEngine/Renderer/RenderSystem.hpp"
+#include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
 
 int NebulaMain(int argc, char** argv);
 
@@ -61,11 +61,26 @@ namespace Nebula
 
     /**
     * The main application of NebulaEngine, including the core logic of the engine, and window lifetimes
+    * It stores basic state information:
+    * - m_IsRunning - Whether the application is running
+    * - m_Specification - The application specification
+    * - m_LayerStack - The layer stack of the application, @see LayerStack
+    * And also per window state information:
+    * - m_Window - The window of the application, see @see Window
+    *  @note You can create your own windows in your own layers, but the application is designed to have a main window, with a render system, @see RenderSystem
+    * - m_RenderSystem - A window specific render system, you can create your own renderers, that render into different frame buffers, etc..
+    * @note Initializing another Application after one is terminated is undefined behaviour. The application be the entire program, and should be a singleton.
     */
     class Application
     {
     public:
         friend int ::NebulaMain(int argc, char** argv);
+        /**
+         * @brief Creates an application with the given specification
+         * @param specification The specification of the application
+         * @param status The status of the creation, if the creation was successful, or if it failed
+         * @note You should call this in the Nebula::CreateApplication function, which should be defined in your application
+         */
         explicit Application(ApplicationSpecification specification, CreationStatus& status);
         virtual ~Application();
         Application(const Application&)            = delete;

@@ -3,8 +3,9 @@
 #include <array>
 
 #include "Fence.hpp"
-#include "NebulaEngine/Core/Log.hpp"
 #include "Semaphore.hpp"
+
+#include "NebulaEngine/Core/Log.hpp"
 
 namespace Nebula::Vulkan
 {

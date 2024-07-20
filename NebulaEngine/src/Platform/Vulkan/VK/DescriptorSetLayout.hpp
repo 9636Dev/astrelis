@@ -1,9 +1,10 @@
 #pragma once
 
-#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
-#include "Platform/Vulkan/VK/LogicalDevice.hpp"
-
 #include <vulkan/vulkan.h>
+
+#include "LogicalDevice.hpp"
+
+#include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 
 namespace Nebula::Vulkan
 {

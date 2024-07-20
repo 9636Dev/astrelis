@@ -8,7 +8,7 @@
 
 namespace Pulsar
 {
-    GamePreview2D::GamePreview2D(Nebula::RefPtr<Nebula::Window> window, Nebula::Bounds bounds) :
+    GamePreview2D::GamePreview2D(Nebula::RefPtr<Nebula::Window> window, Nebula::Rect2Di bounds) :
         m_Renderer(std::move(window), bounds),
         m_Viewport(bounds)
     {

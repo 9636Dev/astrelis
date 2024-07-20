@@ -2,10 +2,11 @@
 
 #include <cstdint>
 #include <optional>
+
 #include <vulkan/vulkan.h>
 
-#include "Platform/Vulkan/VK/PhysicalDevice.hpp"
-#include "Platform/Vulkan/VK/Surface.hpp"
+#include "PhysicalDevice.hpp"
+#include "Surface.hpp"
 
 namespace Nebula::Vulkan
 {

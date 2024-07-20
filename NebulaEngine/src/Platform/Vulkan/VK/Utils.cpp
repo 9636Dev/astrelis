@@ -1,10 +1,11 @@
 #include "Utils.hpp"
 
-#include <GLFW/glfw3.h>
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <stdexcept>
+
+#include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 
 #ifdef NEBULA_PLATFORM_MACOS

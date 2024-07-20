@@ -1,9 +1,9 @@
 #include "TextureImage.hpp"
 
-#include "NebulaEngine/Core/Assert.hpp"
-
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "Utils.hpp"
+
+#include "NebulaEngine/Core/Assert.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Nebula::Vulkan
 {

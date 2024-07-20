@@ -1,5 +1,8 @@
 #include "Application.hpp"
 
+#include <filesystem>
+#include <utility>
+
 #include "Assert.hpp"
 #include "Log.hpp"
 #include "Profiler.hpp"
@@ -11,9 +14,6 @@
 #include "NebulaEngine/IO/File.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiBackend.hpp"
 #include "NebulaEngine/UI/ImGui/ImGuiLayer.hpp"
-
-#include <filesystem>
-#include <utility>
 
 namespace Nebula
 {
@@ -88,7 +88,7 @@ namespace Nebula
         {
             layer->OnDetach();
         }
-        // Deinit logger
+        // Deinit logger, restarting the app is undefined behaviour
         Log::SetInitialized(false);
     }
 

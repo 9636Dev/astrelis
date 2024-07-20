@@ -1,7 +1,6 @@
 #include "Vulkan2DRendererAPI.hpp"
 
 #include "NebulaEngine/Core/Assert.hpp"
-#include "NebulaEngine/Core/Bounds.hpp"
 
 #include "Platform/Vulkan/VK/DescriptorSets.hpp"
 #include "Platform/Vulkan/VK/TextureSampler.hpp"
@@ -17,9 +16,8 @@
 
 namespace Nebula
 {
-    Vulkan2DRendererAPI::Vulkan2DRendererAPI(RefPtr<VulkanGraphicsContext> context, Bounds viewport) :
-        m_Context(std::move(context)),
-        m_Viewport(viewport)
+    Vulkan2DRendererAPI::Vulkan2DRendererAPI(RefPtr<VulkanGraphicsContext> context) :
+        m_Context(std::move(context))
     {
     }
 
@@ -33,24 +31,24 @@ namespace Nebula
         NEBULA_CORE_ASSERT(m_Context->IsInitialized(), "RendererAPI should be destroyed before GraphicsContext!");
     }
 
-    void Vulkan2DRendererAPI::SetViewport(Viewport& viewport)
+    void Vulkan2DRendererAPI::SetViewport(Rect3Df& viewport)
     {
         VkViewport vkViewport {};
-        vkViewport.x        = viewport.X;
-        vkViewport.y        = viewport.Y;
-        vkViewport.width    = viewport.Width;
-        vkViewport.height   = viewport.Height;
-        vkViewport.minDepth = viewport.MinDepth;
-        vkViewport.maxDepth = viewport.MaxDepth;
+        vkViewport.x        = viewport.X();
+        vkViewport.y        = viewport.Y();
+        vkViewport.width    = viewport.Width();
+        vkViewport.height   = viewport.Height();
+        vkViewport.minDepth = viewport.Z();
+        vkViewport.maxDepth = viewport.Depth();
 
         vkCmdSetViewport(m_Context->GetCurrentFrame().CommandBuffer.GetHandle(), 0, 1, &vkViewport);
     }
 
-    void Vulkan2DRendererAPI::SetScissor(Bounds& scissor)
+    void Vulkan2DRendererAPI::SetScissor(Rect2Di& scissor)
     {
         VkRect2D vkScissor {};
-        vkScissor.offset = {scissor.X, scissor.Y};
-        vkScissor.extent = {static_cast<std::uint32_t>(scissor.Width), static_cast<std::uint32_t>(scissor.Height)};
+        vkScissor.offset = {scissor.X(), scissor.Y()};
+        vkScissor.extent = {static_cast<std::uint32_t>(scissor.Width()), static_cast<std::uint32_t>(scissor.Height())};
 
         vkCmdSetScissor(m_Context->GetCurrentFrame().CommandBuffer.GetHandle(), 0, 1, &vkScissor);
     }
@@ -76,10 +74,10 @@ namespace Nebula
                          static_cast<std::int32_t>(vertexOffset), firstInstance);
     }
 
-    Bounds Vulkan2DRendererAPI::GetSurfaceSize()
+    Rect2Di Vulkan2DRendererAPI::GetSurfaceSize()
     {
         VkExtent2D extent = m_Context->m_SwapChain.GetExtent();
-        return Bounds(0, 0, static_cast<std::int32_t>(extent.width), static_cast<std::int32_t>(extent.height));
+        return Rect2Di(0, 0, static_cast<std::int32_t>(extent.width), static_cast<std::int32_t>(extent.height));
     }
 
     void Vulkan2DRendererAPI::CorrectProjection(Mat4f& projection) { projection[1][1] *= -1.0F; }
@@ -124,8 +122,8 @@ namespace Nebula
         return static_cast<RefPtr<TextureSampler>>(RefPtr<Vulkan::TextureSampler>::Create());
     }
 
-    RefPtr<Vulkan2DRendererAPI> Vulkan2DRendererAPI::Create(RefPtr<VulkanGraphicsContext> context, Bounds viewport)
+    RefPtr<Vulkan2DRendererAPI> Vulkan2DRendererAPI::Create(RefPtr<VulkanGraphicsContext> context)
     {
-        return RefPtr<Vulkan2DRendererAPI>::Create(context, viewport);
+        return RefPtr<Vulkan2DRendererAPI>::Create(context);
     }
 } // namespace Nebula
