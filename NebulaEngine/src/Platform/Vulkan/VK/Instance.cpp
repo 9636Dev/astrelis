@@ -16,8 +16,7 @@ namespace Nebula::Vulkan
                         std::string_view engineName,
                         APIVersion version,
                         const std::vector<const char*>& extensions,
-                        const std::vector<const char*>& layers,
-                        VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo)
+                        const std::vector<const char*>& layers)
     {
         VkApplicationInfo appInfo {};
         appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -35,7 +34,6 @@ namespace Nebula::Vulkan
         createInfo.ppEnabledExtensionNames = extensions.data();
         createInfo.enabledLayerCount       = static_cast<uint32_t>(layers.size());
         createInfo.ppEnabledLayerNames     = layers.data();
-        createInfo.pNext                   = debugCreateInfo;
 #ifdef __APPLE__
         createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif

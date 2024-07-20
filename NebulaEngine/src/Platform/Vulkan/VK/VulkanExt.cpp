@@ -1,5 +1,6 @@
 #include "VulkanExt.hpp"
 
+#include "NebulaEngine/Core/Assert.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 
 namespace Nebula::Vulkan
@@ -20,33 +21,32 @@ namespace Nebula::Vulkan
         return VK_FALSE;
     }
 
-    VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,
-                                          const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-                                          const VkAllocationCallbacks* pAllocator,
-                                          VkDebugUtilsMessengerEXT* pDebugMessenger)
+    PFN_vkCreateDebugUtilsMessengerEXT Ext::CreateDebugUtilsMessengerEXT   = nullptr;
+    PFN_vkDestroyDebugUtilsMessengerEXT Ext::DestroyDebugUtilsMessengerEXT = nullptr;
+    PFN_vkCmdBeginDebugUtilsLabelEXT Ext::CmdBeginDebugUtilsLabelEXT       = nullptr;
+    PFN_vkCmdEndDebugUtilsLabelEXT Ext::CmdEndDebugUtilsLabelEXT           = nullptr;
+    PFN_vkCmdInsertDebugUtilsLabelEXT Ext::CmdInsertDebugUtilsLabelEXT     = nullptr;
+
+    void Ext::Init(VkInstance instance)
     {
-        auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+        CreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
             vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
-        if (func != nullptr)
-        {
-            return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-        }
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
-    void DestroyDebugUtilsMessengerEXT(VkInstance instance,
-                                       VkDebugUtilsMessengerEXT debugMessenger,
-                                       const VkAllocationCallbacks* pAllocator)
-    {
-        auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+        NEBULA_CORE_ASSERT(CreateDebugUtilsMessengerEXT, "Failed to load vkCreateDebugUtilsMessengerEXT");
+        DestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
             vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
-        if (func != nullptr)
-        {
-            func(instance, debugMessenger, pAllocator);
-        }
+        NEBULA_CORE_ASSERT(DestroyDebugUtilsMessengerEXT, "Failed to load vkDestroyDebugUtilsMessengerEXT");
+        CmdBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(
+            vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT"));
+        NEBULA_CORE_ASSERT(CmdBeginDebugUtilsLabelEXT, "Failed to load vkCmdBeginDebugUtilsLabelEXT");
+        CmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(
+            vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT"));
+        NEBULA_CORE_ASSERT(CmdEndDebugUtilsLabelEXT, "Failed to load vkCmdEndDebugUtilsLabelEXT");
+        CmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(
+            vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT"));
+        NEBULA_CORE_ASSERT(CmdInsertDebugUtilsLabelEXT, "Failed to load vkCmdInsertDebugUtilsLabelEXT");
     }
 
-    void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+    void Ext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
     {
         createInfo                 = {};
         createInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -60,4 +60,30 @@ namespace Nebula::Vulkan
         createInfo.pUserData       = nullptr;
     }
 
+    void Ext::BeginDebugLabel(VkCommandBuffer commandBuffer, const char* label, std::array<float, 4> color)
+    {
+        VkDebugUtilsLabelEXT labelInfo = {};
+        labelInfo.sType                = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+        labelInfo.pLabelName           = label;
+        labelInfo.color[0]             = color[0];
+        labelInfo.color[1]             = color[1];
+        labelInfo.color[2]             = color[2];
+        labelInfo.color[3]             = color[3];
+
+        CmdBeginDebugUtilsLabelEXT(commandBuffer, &labelInfo);
+    }
+
+    void Ext::EndDebugLabel(VkCommandBuffer commandBuffer) { CmdEndDebugUtilsLabelEXT(commandBuffer); }
+
+    void Ext::InsertDebugLabel(VkCommandBuffer commandBuffer, const char* label, std::array<float, 4> color)
+    {
+        VkDebugUtilsLabelEXT labelInfo = {};
+        labelInfo.sType                = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+        labelInfo.pLabelName           = label;
+        labelInfo.color[0]             = color[0];
+        labelInfo.color[1]             = color[1];
+        labelInfo.color[2]             = color[2];
+        labelInfo.color[3]             = color[3];
+        CmdInsertDebugUtilsLabelEXT(commandBuffer, &labelInfo);
+    }
 } // namespace Nebula::Vulkan

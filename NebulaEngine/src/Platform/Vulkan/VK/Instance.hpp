@@ -32,8 +32,7 @@ namespace Nebula::Vulkan
                                 std::string_view engineName,
                                 APIVersion apiVersion,
                                 const std::vector<const char*>& extensions,
-                                const std::vector<const char*>& layers,
-                                VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo = nullptr);
+                                const std::vector<const char*>& layers);
 
         void Destroy();
 

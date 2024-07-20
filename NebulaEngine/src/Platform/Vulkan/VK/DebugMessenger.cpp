@@ -9,9 +9,10 @@ namespace Nebula::Vulkan
     bool DebugMessenger::Init(Instance& instance)
     {
         VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-        PopulateDebugMessengerCreateInfo(createInfo);
+        Ext::PopulateDebugMessengerCreateInfo(createInfo);
 
-        if (CreateDebugUtilsMessengerEXT(instance.GetHandle(), &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
+        if (Ext::CreateDebugUtilsMessengerEXT(instance.GetHandle(), &createInfo, nullptr, &m_DebugMessenger) !=
+            VK_SUCCESS)
         {
             NEBULA_CORE_LOG_ERROR("Failed to set up debug messenger");
             return false;
@@ -21,6 +22,6 @@ namespace Nebula::Vulkan
 
     void DebugMessenger::Destroy(Instance& instance)
     {
-        DestroyDebugUtilsMessengerEXT(instance.GetHandle(), m_DebugMessenger, nullptr);
+        Ext::DestroyDebugUtilsMessengerEXT(instance.GetHandle(), m_DebugMessenger, nullptr);
     }
 } // namespace Nebula::Vulkan

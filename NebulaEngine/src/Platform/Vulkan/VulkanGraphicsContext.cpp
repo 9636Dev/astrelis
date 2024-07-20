@@ -42,23 +42,25 @@ namespace Nebula
             return false;
         }
 
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
+        INIT_COMPONENT(
+            m_Instance.Init("Nebula", "Nebula Engine", Vulkan::APIVersion(1, 0),
+                            Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
+                            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
         if (GlobalConfig::IsDebugMode())
         {
+            Vulkan::Ext::Init(m_Instance);
             if (!Vulkan::CheckValidationLayerSupport())
             {
                 NEBULA_CORE_LOG_ERROR("Validation layers requested, but not available!");
                 return false;
             }
 
-            Vulkan::PopulateDebugMessengerCreateInfo(debugCreateInfo);
+            if (!m_DebugMessenger.Init(m_Instance))
+            {
+                return false;
+            }
         }
 
-        INIT_COMPONENT(
-            m_Instance.Init("Nebula", "Nebula Engine", Vulkan::APIVersion(1, 0),
-                            Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
-                            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>(),
-                            &debugCreateInfo));
         INIT_COMPONENT(m_Surface.Init(m_Instance, m_Window));
         m_PhysicalDevice.PickBestDevice(m_Instance, m_Surface.GetHandle());
         INIT_COMPONENT(m_PhysicalDevice.IsFound());
@@ -198,6 +200,10 @@ namespace Nebula
         m_LogicalDevice.Destroy();
         m_Surface.Destroy(m_Instance);
         // Physical device doesn't need to be destroyed
+        if (GlobalConfig::IsDebugMode())
+        {
+            m_DebugMessenger.Destroy(m_Instance);
+        }
         m_Instance.Destroy();
     }
 
@@ -334,10 +340,10 @@ namespace Nebula
 
     InMemoryImage VulkanGraphicsContext::CaptureScreen() const
     {
-        constexpr VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
+        constexpr VkFormat format           = VK_FORMAT_R8G8B8A8_SRGB;
         constexpr std::size_t bytesPerPixel = 4;
-        std::int32_t dstWidth     = static_cast<std::int32_t>(m_CaptureOutputExtent.width);
-        std::int32_t dstHeight    = static_cast<std::int32_t>(m_CaptureOutputExtent.height);
+        std::int32_t dstWidth               = static_cast<std::int32_t>(m_CaptureOutputExtent.width);
+        std::int32_t dstHeight              = static_cast<std::int32_t>(m_CaptureOutputExtent.height);
         if (dstWidth <= 0 || dstHeight <= 0)
         {
             dstWidth  = static_cast<std::int32_t>(m_SwapChain.GetExtent().width);
@@ -405,14 +411,13 @@ namespace Nebula
         void* data = nullptr;
         vkMapMemory(m_LogicalDevice.GetHandle(), imageMemory, 0, VK_WHOLE_SIZE, 0, &data);
 
-        std::vector<std::byte> imageData(
-            bytesPerPixel * m_SwapChain.GetExtent().width * m_SwapChain.GetExtent().height);
+        std::vector<std::byte> imageData(bytesPerPixel * m_SwapChain.GetExtent().width *
+                                         m_SwapChain.GetExtent().height);
 
         for (std::uint32_t row = 0; row < static_cast<std::uint32_t>(dstHeight); ++row)
         {
             std::memcpy(imageData.data() + bytesPerPixel * row * dstWidth,
-                        static_cast<std::byte*>(data) + row * subResourceLayout.rowPitch,
-                        bytesPerPixel * dstWidth);
+                        static_cast<std::byte*>(data) + row * subResourceLayout.rowPitch, bytesPerPixel * dstWidth);
         }
 
         // Cleanup

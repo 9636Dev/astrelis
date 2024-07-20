@@ -1,16 +1,19 @@
 #include "VulkanRenderSystem.hpp"
+
+#include <cstddef>
+#include <vulkan/vulkan.h>
+
+#include "Platform/Vulkan/VK/DescriptorSetLayout.hpp"
+#include "Platform/Vulkan/VK/TextureSampler.hpp"
+#include "Platform/Vulkan/VK/Utils.hpp"
+#include "Platform/Vulkan/VK/VulkanExt.hpp"
+
+#include "NebulaEngine/Core/GlobalConfig.hpp"
 #include "NebulaEngine/Core/Math.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
 #include "NebulaEngine/Renderer/DescriptorSetLayout.hpp"
 #include "NebulaEngine/Renderer/GraphicsPipeline.hpp"
 #include "NebulaEngine/Renderer/TextureImage.hpp"
-#include "Platform/Vulkan/VK/DescriptorSetLayout.hpp"
-#include "Platform/Vulkan/VK/TextureSampler.hpp"
-#include "Platform/Vulkan/VK/Utils.hpp"
-
-#include <cstddef>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
 
 namespace Nebula
 {
@@ -97,6 +100,12 @@ namespace Nebula
     void VulkanRenderSystem::StartGraphicsRenderPass()
     {
         auto& frame = m_Context->GetCurrentFrame();
+#ifdef NEBULA_DEBUG
+        if (GlobalConfig::IsDebugMode())
+        {
+            Vulkan::Ext::BeginDebugLabel(frame.CommandBuffer.GetHandle(), "GraphicsRender", {0.0F, 1.0F, 0.0F, 1.0F});
+        }
+#endif
         m_Context->m_GraphicsRenderPass.Begin(frame.CommandBuffer, m_Context->m_GraphicsFrameBuffer,
                                               m_Context->m_GraphicsExtent);
     }
@@ -104,12 +113,24 @@ namespace Nebula
     void VulkanRenderSystem::EndGraphicsRenderPass()
     {
         m_Context->m_GraphicsRenderPass.End(m_Context->GetCurrentFrame().CommandBuffer);
+#ifdef NEBULA_DEBUG
+        if (GlobalConfig::IsDebugMode())
+        {
+            Vulkan::Ext::EndDebugLabel(m_Context->GetCurrentFrame().CommandBuffer.GetHandle());
+        }
+#endif
     }
 
     void VulkanRenderSystem::BlitSwapchain()
     {
         auto& frame          = m_Context->GetCurrentFrame();
         auto& swapchainFrame = m_Context->m_SwapChainFrames[m_Context->m_ImageIndex];
+#ifdef NEBULA_DEBUG
+        if (GlobalConfig::IsDebugMode())
+        {
+            Vulkan::Ext::BeginDebugLabel(frame.CommandBuffer.GetHandle(), "BlitSwapchain", {0.0F, 1.0F, 0.0F, 1.0F});
+        }
+#endif
         m_Context->m_RenderPass.Begin(frame.CommandBuffer, swapchainFrame.FrameBuffer,
                                       m_Context->m_SwapChain.GetExtent());
 
@@ -144,6 +165,13 @@ namespace Nebula
         vkCmdSetScissor(frame.CommandBuffer.GetHandle(), 0, 1, &scissor);
 
         vkCmdDrawIndexed(frame.CommandBuffer.GetHandle(), 6, 1, 0, 0, 0);
+
+#ifdef NEBULA_DEBUG
+        if (GlobalConfig::IsDebugMode())
+        {
+            Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());
+        }
+#endif
     }
 
     void VulkanRenderSystem::EndFrame() { m_Context->m_RenderPass.End(m_Context->GetCurrentFrame().CommandBuffer); }
@@ -151,9 +179,9 @@ namespace Nebula
     std::future<InMemoryImage> VulkanRenderSystem::CaptureFrame(const FrameCaptureProps& props)
     {
         // Reset capture promise
-        m_Context->m_CapturePromise = std::promise<InMemoryImage>();
-        m_Context->m_CaptureNextFrame = true;
-        m_Context->m_CaptureOutputExtent.width = props.Width;
+        m_Context->m_CapturePromise             = std::promise<InMemoryImage>();
+        m_Context->m_CaptureNextFrame           = true;
+        m_Context->m_CaptureOutputExtent.width  = props.Width;
         m_Context->m_CaptureOutputExtent.height = props.Height;
         return m_Context->m_CapturePromise.get_future();
     }
