@@ -1,5 +1,7 @@
 #pragma once
 
+#include <future>
+
 #include "NebulaEngine/Core/Layer.hpp"
 #include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Events/WindowEvent.hpp"
@@ -7,8 +9,6 @@
 #include "NebulaEngine/Renderer/Camera.hpp"
 #include "NebulaEngine/Renderer/Renderer2D.hpp"
 #include "NebulaEngine/Scene/Scene2D.hpp"
-
-#include <future>
 
 class SandboxLayer : public Nebula::Layer
 {

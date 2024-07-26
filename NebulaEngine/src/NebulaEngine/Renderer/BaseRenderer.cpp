@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "NebulaEngine/Core/Assert.hpp"
+#include "NebulaEngine/Core/Profiler.hpp"
 
 namespace Nebula
 {
@@ -26,6 +27,7 @@ namespace Nebula
 
     void BaseRenderer::InternalBeginFrame()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::BaseRenderer::InternalBeginFrame()");
         NEBULA_CORE_ASSERT(m_Pipeline != nullptr, "m_Pipeline is null, did you initialize it in 'Init()'?")
         m_Pipeline->Bind(m_Context);
         Rect2D scissor = m_RendererAPI->GetSurfaceSize();

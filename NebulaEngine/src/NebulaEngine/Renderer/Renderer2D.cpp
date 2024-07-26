@@ -32,6 +32,7 @@ namespace Nebula
 
     bool Renderer2D::InitComponents()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::InitComponents");
         std::vector<BufferBinding> vertexInputs(2);
         vertexInputs[0].Binding   = 0;
         vertexInputs[0].Stride    = sizeof(Vertex2D);
@@ -114,6 +115,7 @@ namespace Nebula
 
     void Renderer2D::Shutdown()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::Shutdown");
         m_RendererAPI->WaitDeviceIdle();
 
         m_VertexBuffer->Destroy(m_Context);
@@ -132,34 +134,43 @@ namespace Nebula
 
     void Renderer2D::BeginFrame()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::BeginFrame");
         InternalBeginFrame();
-        NEBULA_PROFILE_SCOPE("Renderer2D::BeginFrame");
     }
 
     void Renderer2D::RenderScene(Scene2D& scene, Camera& camera)
     {
-        NEBULA_PROFILE_SCOPE("Renderer2D::RenderScene");
+        NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::RenderScene");
         m_Instances.clear();
 
-        m_UBO.View         = camera.GetViewMatrix();
-        Rect2D surfaceSize = m_RendererAPI->GetSurfaceSize();
-        float aspectRatio  = static_cast<float>(surfaceSize.Width() / static_cast<float>(surfaceSize.Height()));
-        m_UBO.Projection   = Math::Orthographic(-aspectRatio, aspectRatio, -1.0F, 1.0F, -1.0F, 1.0F);
-        m_RendererAPI->CorrectProjection(m_UBO.Projection);
-
-        m_VertexBuffer->Bind(m_Context, 0);
-        m_InstanceBuffer->Bind(m_Context, 1);
-        m_IndexBuffer->Bind(m_Context);
-        m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(CameraUniformData), 0);
-        m_DescriptorSets->Bind(m_Context, m_Pipeline);
-
-        for (auto entity : scene.GetComponents<TransformComponent>())
         {
-            m_Instances.push_back({scene.GetComponent<TransformComponent>(entity).Transform});
-            if (m_Instances.size() >= MAX_INSTANCE_COUNT)
+            NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::RenderScene::SetupCamera");
+            m_UBO.View         = camera.GetViewMatrix();
+            Rect2D surfaceSize = m_RendererAPI->GetSurfaceSize();
+            float aspectRatio  = static_cast<float>(surfaceSize.Width() / static_cast<float>(surfaceSize.Height()));
+            m_UBO.Projection   = Math::Orthographic(-aspectRatio, aspectRatio, -1.0F, 1.0F, -1.0F, 1.0F);
+            m_RendererAPI->CorrectProjection(m_UBO.Projection);
+        }
+
+        {
+            NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::RenderScene::SetupPipeline");
+            m_VertexBuffer->Bind(m_Context, 0);
+            m_InstanceBuffer->Bind(m_Context, 1);
+            m_IndexBuffer->Bind(m_Context);
+            m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(CameraUniformData), 0);
+            m_DescriptorSets->Bind(m_Context, m_Pipeline);
+        }
+
+        {
+            NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::RenderScene::UpdateEntities");
+            for (auto entity : scene.GetComponents<TransformComponent>())
             {
-                DrawInstances();
-                m_Instances.clear();
+                m_Instances.push_back({scene.GetComponent<TransformComponent>(entity).Transform});
+                if (m_Instances.size() >= MAX_INSTANCE_COUNT)
+                {
+                    DrawInstances();
+                    m_Instances.clear();
+                }
             }
         }
 
@@ -168,6 +179,7 @@ namespace Nebula
 
     void Renderer2D::DrawInstances()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::DrawInstances");
         if (m_Instances.empty())
         {
             return;
@@ -176,5 +188,5 @@ namespace Nebula
         m_RendererAPI->DrawInstancedIndexed(static_cast<std::uint32_t>(m_Indices.size()), m_Instances.size(), 0, 0, 0);
     }
 
-    void Renderer2D::EndFrame() { NEBULA_PROFILE_SCOPE("Renderer2D::EndFrame"); }
+    void Renderer2D::EndFrame() { NEBULA_PROFILE_SCOPE("Nebula::Renderer2D::EndFrame"); }
 } // namespace Nebula

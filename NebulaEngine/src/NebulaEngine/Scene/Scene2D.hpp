@@ -15,6 +15,10 @@ namespace Nebula
 
         void DestroyEntity(Entity entity) { m_Registry.destroy(entity); }
 
+        bool IsDirty() const { return m_Dirty; }
+
+        void SetDirty(bool dirty) { m_Dirty = dirty; }
+
         template<typename T> void AddComponent(Entity entity, T component) { m_Registry.emplace<T>(entity, component); }
 
         template<typename T> void RemoveComponent(Entity entity) { m_Registry.remove<T>(entity); }
@@ -24,5 +28,6 @@ namespace Nebula
         template<typename T> auto GetComponents() { return m_Registry.view<T>(); }
     private:
         entt::registry m_Registry;
+        bool m_Dirty = false;
     };
 } // namespace Nebula

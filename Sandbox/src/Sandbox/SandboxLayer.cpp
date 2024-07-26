@@ -1,5 +1,7 @@
 #include "SandboxLayer.hpp"
 
+#include <future>
+
 #include "NebulaEngine/Core/Application.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Pointer.hpp"
@@ -7,8 +9,6 @@
 #include "NebulaEngine/Core/Time.hpp"
 #include "NebulaEngine/Renderer/RenderSystem.hpp"
 #include "NebulaEngine/Scene/TransformComponent.hpp"
-
-#include <future>
 
 SandboxLayer::SandboxLayer() { NEBULA_LOG_INFO("Sandbox Layer Initializing"); }
 
@@ -28,6 +28,7 @@ void SandboxLayer::OnAttach()
     auto entity = m_Scene.CreateEntity();
     m_Scene.AddComponent(entity, Nebula::TransformComponent {
                                      Nebula::Math::Translate(Nebula::Mat4f(1.0F), Nebula::Vec3f(0.0F, 0.0F, 0.1F))});
+    m_Scene.SetDirty(true);
 }
 
 void SandboxLayer::OnDetach()
@@ -68,7 +69,7 @@ void SandboxLayer::OnUIRender()
 
     if (ImGui::Button("Capture Frame"))
     {
-        Nebula::FrameCaptureProps props { 0, 0 };
+        Nebula::FrameCaptureProps props {0, 0};
         m_ImageCapture = Nebula::Application::Get().GetRenderSystem()->CaptureFrame(props);
     }
 

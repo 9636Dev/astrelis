@@ -4,7 +4,6 @@
 #include "NebulaEngine/Core/GlobalConfig.hpp"
 #include "NebulaEngine/Core/Log.hpp"
 #include "NebulaEngine/Core/Profiler.hpp"
-#include "NebulaEngine/Core/Utils/Function.hpp"
 #include "NebulaEngine/Renderer/GraphicsContext.hpp"
 #include "NebulaEngine/Renderer/RendererAPI.hpp"
 #include "Platform/Vulkan/VK/RenderPass.hpp"
@@ -28,6 +27,7 @@ namespace Nebula
 
     VulkanGraphicsContext::~VulkanGraphicsContext() = default;
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     bool VulkanGraphicsContext::Init()
     {
         NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::Init");
@@ -209,40 +209,48 @@ namespace Nebula
 
     void VulkanGraphicsContext::BeginFrame()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::BeginFrame");
         auto& frame = GetCurrentFrame();
-        frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
 
-        VkResult result = vkAcquireNextImageKHR(
-            m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
-            frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
-
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || m_SwapchainRecreation)
         {
-            VkSubmitInfo submitInfo                        = {};
-            submitInfo.sType                               = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            std::array<VkSemaphore, 1> waitSemaphores      = {frame.ImageAvailableSemaphore.GetHandle()};
-            submitInfo.waitSemaphoreCount                  = static_cast<std::uint32_t>(waitSemaphores.size());
-            submitInfo.pWaitSemaphores                     = waitSemaphores.data();
-            std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-            static_assert(waitSemaphores.size() == waitStages.size());
-            submitInfo.pWaitDstStageMask    = waitStages.data();
-            submitInfo.commandBufferCount   = 0;
-            submitInfo.pCommandBuffers      = nullptr;
-            submitInfo.signalSemaphoreCount = 0;
-            submitInfo.pSignalSemaphores    = nullptr;
-            vkQueueSubmit(m_LogicalDevice.GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-            vkQueueWaitIdle(m_LogicalDevice.GetGraphicsQueue());
-
-            m_SkipFrame = true;
-            RecreateSwapChain();
+            NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::BeginFrame::WaitForFence");
+            frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
         }
-        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+
         {
-            NEBULA_CORE_LOG_ERROR("Failed to acquire swap chain image!");
-        }
-        else
-        {
-            frame.InFlightFence.Reset(m_LogicalDevice);
+            NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::BeginFrame::AcquireNextImage");
+            VkResult result = vkAcquireNextImageKHR(
+                m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
+                frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
+
+            if (result == VK_ERROR_OUT_OF_DATE_KHR || m_SwapchainRecreation)
+            {
+                VkSubmitInfo submitInfo                        = {};
+                submitInfo.sType                               = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+                std::array<VkSemaphore, 1> waitSemaphores      = {frame.ImageAvailableSemaphore.GetHandle()};
+                submitInfo.waitSemaphoreCount                  = static_cast<std::uint32_t>(waitSemaphores.size());
+                submitInfo.pWaitSemaphores                     = waitSemaphores.data();
+                std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+                static_assert(waitSemaphores.size() == waitStages.size());
+                submitInfo.pWaitDstStageMask    = waitStages.data();
+                submitInfo.commandBufferCount   = 0;
+                submitInfo.pCommandBuffers      = nullptr;
+                submitInfo.signalSemaphoreCount = 0;
+                submitInfo.pSignalSemaphores    = nullptr;
+                vkQueueSubmit(m_LogicalDevice.GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+                vkQueueWaitIdle(m_LogicalDevice.GetGraphicsQueue());
+
+                m_SkipFrame = true;
+                RecreateSwapChain();
+            }
+            else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+            {
+                NEBULA_CORE_LOG_ERROR("Failed to acquire swap chain image!");
+            }
+            else
+            {
+                frame.InFlightFence.Reset(m_LogicalDevice);
+            }
         }
 
         frame.CommandBuffer.Reset();
@@ -251,6 +259,7 @@ namespace Nebula
 
     void VulkanGraphicsContext::EndFrame()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::EndFrame");
         auto& frame = GetCurrentFrame();
         frame.CommandBuffer.End();
 
@@ -261,35 +270,42 @@ namespace Nebula
             return;
         }
 
-        frame.CommandBuffer.Submit(m_LogicalDevice, m_LogicalDevice.GetGraphicsQueue(), frame.ImageAvailableSemaphore,
-                                   frame.RenderFinishedSemaphore, frame.InFlightFence);
-
-        std::array<VkSemaphore, 1> presentWaitSemaphores = {frame.RenderFinishedSemaphore.GetHandle()};
-        std::array<VkSwapchainKHR, 1> swapChains         = {m_SwapChain.GetHandle()};
-        VkPresentInfoKHR presentInfo                     = {};
-        presentInfo.sType                                = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.waitSemaphoreCount                   = 1;
-        presentInfo.pWaitSemaphores                      = presentWaitSemaphores.data();
-        presentInfo.swapchainCount                       = static_cast<std::uint32_t>(swapChains.size());
-        presentInfo.pSwapchains                          = swapChains.data();
-        presentInfo.pImageIndices                        = &m_ImageIndex;
-
-        if (m_CaptureNextFrame)
         {
-            frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
-
-            m_CapturePromise.set_value(CaptureScreen());
-            m_CaptureNextFrame = false;
+            NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::EndFrame::SubmitCommandBuffer");
+            frame.CommandBuffer.Submit(m_LogicalDevice, m_LogicalDevice.GetGraphicsQueue(),
+                                       frame.ImageAvailableSemaphore, frame.RenderFinishedSemaphore,
+                                       frame.InFlightFence);
         }
 
-        auto result = vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_SwapchainRecreation)
         {
-            RecreateSwapChain();
-        }
-        else if (result != VK_SUCCESS)
-        {
-            NEBULA_CORE_LOG_ERROR("Failed to present swap chain image!");
+            NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::EndFrame::Present");
+            std::array<VkSemaphore, 1> presentWaitSemaphores = {frame.RenderFinishedSemaphore.GetHandle()};
+            std::array<VkSwapchainKHR, 1> swapChains         = {m_SwapChain.GetHandle()};
+            VkPresentInfoKHR presentInfo                     = {};
+            presentInfo.sType                                = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+            presentInfo.waitSemaphoreCount                   = 1;
+            presentInfo.pWaitSemaphores                      = presentWaitSemaphores.data();
+            presentInfo.swapchainCount                       = static_cast<std::uint32_t>(swapChains.size());
+            presentInfo.pSwapchains                          = swapChains.data();
+            presentInfo.pImageIndices                        = &m_ImageIndex;
+
+            if (m_CaptureNextFrame)
+            {
+                frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
+
+                m_CapturePromise.set_value(CaptureScreen());
+                m_CaptureNextFrame = false;
+            }
+
+            auto result = vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
+            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_SwapchainRecreation)
+            {
+                RecreateSwapChain();
+            }
+            else if (result != VK_SUCCESS)
+            {
+                NEBULA_CORE_LOG_ERROR("Failed to present swap chain image!");
+            }
         }
 
         m_CurrentFrame = (m_CurrentFrame + 1) % m_MaxFramesInFlight;
@@ -297,6 +313,7 @@ namespace Nebula
 
     void VulkanGraphicsContext::RecreateSwapChain()
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::RecreateSwapChain");
         int width  = 0;
         int height = 0;
         glfwGetFramebufferSize(m_Window, &width, &height);
@@ -320,7 +337,6 @@ namespace Nebula
 
         std::uint32_t frameCount = m_MaxFramesInFlight;
         auto result = m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync);
-        (void)result; // TODO: Better error handling here
         NEBULA_CORE_VERIFY(result, "Failed to recreate swap chain!");
 
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
@@ -340,6 +356,7 @@ namespace Nebula
 
     InMemoryImage VulkanGraphicsContext::CaptureScreen() const
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::CaptureScreen");
         constexpr VkFormat format           = VK_FORMAT_R8G8B8A8_SRGB;
         constexpr std::size_t bytesPerPixel = 4;
         std::int32_t dstWidth               = static_cast<std::int32_t>(m_CaptureOutputExtent.width);
@@ -435,6 +452,8 @@ namespace Nebula
 
     RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window, ContextProps props)
     {
+        NEBULA_PROFILE_SCOPE("Nebula::VulkanGraphicsContext::Create");
+        NEBULA_CORE_ASSERT(window, "Window is nullptr!");
         auto context     = RefPtr<VulkanGraphicsContext>::Create(window);
         context->m_VSync = props.VSync;
         return context;

@@ -9,8 +9,6 @@ set(NEBULA_SANDOX_SOURCES
     src/Sandbox/SandboxApplication.cpp
     src/Sandbox/SandboxLayer.hpp
     src/Sandbox/SandboxLayer.cpp
-    src/Sandbox/DebugLayer.hpp
-    src/Sandbox/DebugLayer.cpp
 )
 add_executable(NebulaEngine_Sandbox ${NEBULA_SANDOX_SOURCES})
 

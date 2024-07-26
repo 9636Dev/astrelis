@@ -20,11 +20,21 @@ namespace Nebula
         GLFWWindowHelper::DestroyWindow(std::move(m_Window));
     }
 
-    void MacOSWindow::BeginFrame() { m_Context->BeginFrame(); }
+    void MacOSWindow::BeginFrame()
+    {
+        NEBULA_PROFILE_SCOPE("Nebula::MacOSWindow::BeginFrame");
+        m_Context->BeginFrame();
+    }
 
-    void MacOSWindow::EndFrame() { m_Context->EndFrame(); }
+    void MacOSWindow::EndFrame() {
+        NEBULA_PROFILE_SCOPE("Nebula::MacOSWindow::EndFrame");
+        m_Context->EndFrame();
+    }
 
-    void MacOSWindow::OnUpdate() { glfwPollEvents(); }
+    void MacOSWindow::OnUpdate() {
+        NEBULA_PROFILE_SCOPE("Nebula::MacOSWindow::OnUpdate");
+        glfwPollEvents();
+    }
 
     void MacOSWindow::WaitForEvents() { glfwWaitEvents(); }
 
@@ -55,11 +65,10 @@ namespace Nebula
             return windowRes.UnwrapErr();
         }
 
-        auto window =
-            RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Dimensions));
+        auto window = RefPtr<MacOSWindow>::Create(windowRes.Unwrap(), MacOSWindowData(props.Title, props.Dimensions));
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
         ContextProps ctxProps;
-        ctxProps.VSync = props.VSync;
+        ctxProps.VSync    = props.VSync;
         window->m_Context = GraphicsContext::Create(window->m_Window.Raw(), ctxProps);
         if (!window->m_Context->Init())
         {
