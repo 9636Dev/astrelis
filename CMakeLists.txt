@@ -72,7 +72,9 @@ else()
     option(NEBULA_FORMAT "Enable clang-format" ON)
 endif()
 
-add_subdirectory(vendor/googletest)
+find_package(GTest)
+find_package(benchmark)
+
 include(GoogleTest)
 add_subdirectory(NebulaEngine)
 add_library(NebulaEngine::Engine ALIAS NebulaEngine_Engine)
