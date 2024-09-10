@@ -2,23 +2,23 @@
 	path = vendor/benchmark
 	url = https://github.com/google/benchmark
 [submodule "Core/vendor/spdlog"]
-	path = NebulaEngine/vendor/spdlog
+	path = Engine/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "Renderer/vendor/glfw"]
-	path = NebulaEngine/vendor/glfw
+	path = Engine/vendor/glfw
 	url = https://github.com/glfw/glfw
 [submodule "Renderer/vendor/imgui"]
-	path = NebulaEngine/vendor/imgui
+	path = Engine/vendor/imgui
 	url = https://github.com/ocornut/imgui
-[submodule "NebulaEngine/vendor/qprofile"]
-	path = NebulaEngine/vendor/qprofile
-	url = https://github.com/HW9636/qprofilecpp
 [submodule "NebulaEngine/vendor/entt"]
-	path = NebulaEngine/vendor/entt
+	path = Engine/vendor/entt
 	url = https://github.com/skypjack/entt
 [submodule "NebulaEngine/vendor/stb"]
-	path = NebulaEngine/vendor/stb
+	path = Engine/vendor/stb
 	url = https://github.com/nothings/stb
 [submodule "NebulaEngine/vendor/glm"]
-	path = NebulaEngine/vendor/glm
+	path = Engine/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Engine/vendor/tracy"]
+	path = Engine/vendor/tracy
+	url = https://github.com/wolfpld/tracy

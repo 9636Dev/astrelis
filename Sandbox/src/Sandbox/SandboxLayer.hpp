@@ -2,15 +2,15 @@
 
 #include <future>
 
-#include "NebulaEngine/Core/Layer.hpp"
-#include "NebulaEngine/Core/Time.hpp"
-#include "NebulaEngine/Events/WindowEvent.hpp"
-#include "NebulaEngine/IO/Image.hpp"
-#include "NebulaEngine/Renderer/Camera.hpp"
-#include "NebulaEngine/Renderer/Renderer2D.hpp"
-#include "NebulaEngine/Scene/Scene2D.hpp"
+#include "Astrelis/Core/Layer.hpp"
+#include "Astrelis/Core/Time.hpp"
+#include "Astrelis/Events/WindowEvent.hpp"
+#include "Astrelis/IO/Image.hpp"
+#include "Astrelis/Renderer/Camera.hpp"
+#include "Astrelis/Renderer/Renderer2D.hpp"
+#include "Astrelis/Scene/Scene2D.hpp"
 
-class SandboxLayer : public Nebula::Layer
+class SandboxLayer : public Astrelis::Layer
 {
 public:
     SandboxLayer();
@@ -24,15 +24,15 @@ public:
     void OnDetach() override;
     void OnUpdate() override;
     void OnUIRender() override;
-    void OnEvent(Nebula::Event& event) override;
+    void OnEvent(Astrelis::Event& event) override;
 
-    void OnViewportResize(Nebula::WindowResizedEvent& event);
+    void OnViewportResize(Astrelis::WindowResizedEvent& event);
 private:
-    Nebula::Camera m_Camera;
-    Nebula::Scene2D m_Scene;
-    Nebula::ScopedPtr<Nebula::Renderer2D> m_Renderer = nullptr;
+    Astrelis::Camera m_Camera;
+    Astrelis::Scene2D m_Scene;
+    Astrelis::ScopedPtr<Astrelis::Renderer2D> m_Renderer = nullptr;
 
-    Nebula::Milliseconds m_CpuTime;
+    Astrelis::Milliseconds m_CpuTime;
 
-    std::future<Nebula::InMemoryImage> m_ImageCapture;
+    std::future<Astrelis::InMemoryImage> m_ImageCapture;
 };

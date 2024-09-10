@@ -4,16 +4,16 @@
 
 #include "SandboxLayer.hpp"
 
-#include "NebulaEngine/Core/Application.hpp"
-#include "NebulaEngine/Core/Log.hpp"
-#include "NebulaEngine/Core/Pointer.hpp"
-#include "NebulaEngine/Core/Profiler.hpp"
+#include "Astrelis/Core/Application.hpp"
+#include "Astrelis/Core/Log.hpp"
+#include "Astrelis/Core/Pointer.hpp"
+#include "Astrelis/Core/Profiler.hpp"
 
-SandboxApplication::SandboxApplication(Nebula::ApplicationSpecification spec, Nebula::CreationStatus& status) :
-    Nebula::Application(std::move(spec), status)
+SandboxApplication::SandboxApplication(Astrelis::ApplicationSpecification spec, Astrelis::CreationStatus& status) :
+    Astrelis::Application(std::move(spec), status)
 {
-    NEBULA_PROFILE_SCOPE("SandboxApplication::SandboxApplication");
-    PushLayer(static_cast<Nebula::OwnedPtr<Nebula::Layer*>>(Nebula::OwnedPtr<SandboxLayer*>::Create()));
+    ASTRELIS_PROFILE_SCOPE("SandboxApplication::SandboxApplication");
+    PushLayer(static_cast<Astrelis::OwnedPtr<Astrelis::Layer*>>(Astrelis::OwnedPtr<SandboxLayer*>::Create()));
 }
 
-SandboxApplication::~SandboxApplication() { NEBULA_LOG_INFO("Sandbox Application Destroyed"); }
+SandboxApplication::~SandboxApplication() { ASTRELIS_LOG_INFO("Sandbox Application Destroyed"); }

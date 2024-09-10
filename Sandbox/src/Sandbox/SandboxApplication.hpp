@@ -1,11 +1,11 @@
 #pragma once
 
-#include "NebulaEngine/Core/Application.hpp"
+#include "Astrelis/Core/Application.hpp"
 
-class SandboxApplication : public Nebula::Application
+class SandboxApplication : public Astrelis::Application
 {
 public:
-    explicit SandboxApplication(Nebula::ApplicationSpecification spec, Nebula::CreationStatus& status);
+    explicit SandboxApplication(Astrelis::ApplicationSpecification spec, Astrelis::CreationStatus& status);
     ~SandboxApplication() override;
     SandboxApplication(const SandboxApplication&)            = delete;
     SandboxApplication& operator=(const SandboxApplication&) = delete;

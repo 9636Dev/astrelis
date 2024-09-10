@@ -1,21 +1,21 @@
 #include <utility>
 
-#include "NebulaEngine/Renderer/RendererAPI.hpp"
+#include "Astrelis/Renderer/RendererAPI.hpp"
 #include "SandboxApplication.hpp"
 
-#include "NebulaEngine/Core/Application.hpp"
-#include "NebulaEngine/Core/Entrypoint.hpp"
+#include "Astrelis/Core/Application.hpp"
+#include "Astrelis/Core/Entrypoint.hpp"
 
-Nebula::ScopedPtr<Nebula::Application> Nebula::CreateApplication(CommandLineArguments args,
-                                                                 Nebula::CreationStatus& status)
+Astrelis::ScopedPtr<Astrelis::Application> Astrelis::CreateApplication(CommandLineArguments args,
+                                                                 Astrelis::CreationStatus& status)
 {
-    Nebula::ApplicationSpecification spec;
+    Astrelis::ApplicationSpecification spec;
     spec.Name             = "Sandbox";
     spec.Arguments        = std::move(args);
     spec.WorkingDirectory = "./run";
 
-    Nebula::RendererAPI::SetBufferingMode(Nebula::RendererAPI::BufferingMode::Triple);
+    Astrelis::RendererAPI::SetBufferingMode(Astrelis::RendererAPI::BufferingMode::Triple);
 
-    return static_cast<Nebula::ScopedPtr<Nebula::Application>>(
-        Nebula::ScopedPtr<SandboxApplication>::Create(spec, status));
+    return static_cast<Astrelis::ScopedPtr<Astrelis::Application>>(
+        Astrelis::ScopedPtr<SandboxApplication>::Create(spec, status));
 }

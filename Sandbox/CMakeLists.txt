@@ -10,6 +10,6 @@ set(NEBULA_SANDOX_SOURCES
     src/Sandbox/SandboxLayer.hpp
     src/Sandbox/SandboxLayer.cpp
 )
-add_executable(NebulaEngine_Sandbox ${NEBULA_SANDOX_SOURCES})
+add_executable(Astrelis_Sandbox ${NEBULA_SANDOX_SOURCES})
 
-target_link_libraries(NebulaEngine_Sandbox NebulaEngine::Engine)
+target_link_libraries(Astrelis_Sandbox Astrelis::Engine)
