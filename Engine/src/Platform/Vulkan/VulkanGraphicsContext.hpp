@@ -97,16 +97,17 @@ namespace Astrelis
         Vulkan::SwapChain m_SwapChain;
         Vulkan::DescriptorPool m_DescriptorPool;
 
-        Vulkan::RenderPass m_RenderPass;
-        Vulkan::RenderPass m_GraphicsRenderPass;
-
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData> m_Frames;
-
+    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         VkOffset2D m_GraphicsOffset {0, 0};
         VkExtent2D m_GraphicsExtent {0, 0};
         RefPtr<Vulkan::TextureImage> m_GraphicsTextureImage;
         Vulkan::FrameBuffer m_GraphicsFrameBuffer;
+        Vulkan::RenderPass m_GraphicsRenderPass;
+    #endif
+        Vulkan::RenderPass m_RenderPass;
+
 
         // For screenshotting
         bool m_CaptureNextFrame = false;

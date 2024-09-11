@@ -1,9 +1,7 @@
 #include "VulkanGraphicsContext.hpp"
+#include "Astrelis/Core/Base.hpp"
 
-#include "Astrelis/Core/Assert.hpp"
 #include "Astrelis/Core/GlobalConfig.hpp"
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Profiler.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
 #include "Platform/Vulkan/VK/RenderPass.hpp"
@@ -11,7 +9,6 @@
 #include "VK/VulkanExt.hpp"
 
 #include <GLFW/glfw3.h>
-#include <array>
 #include <vulkan/vulkan.h>
 
 // TODO: Remove
@@ -76,12 +73,14 @@ namespace Astrelis
         }
         INIT_COMPONENT(m_CommandPool.Init(m_LogicalDevice));
 
+        m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
+
+    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0)
         {
             m_GraphicsExtent = m_SwapChain.GetExtent();
         }
-
-        m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
+    #endif
 
         {
             // Main render pass
@@ -104,6 +103,7 @@ namespace Astrelis
             INIT_COMPONENT(m_RenderPass.Init(m_LogicalDevice, renderPassInfo));
         }
 
+    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         {
             m_GraphicsTextureImage = RefPtr<Vulkan::TextureImage>::Create();
             m_GraphicsTextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_GraphicsExtent,
@@ -135,6 +135,7 @@ namespace Astrelis
                 return false;
             }
         }
+    #endif
 
         // TODO: Create a descriptor pool manager, right now it is just hardcoded
         INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, 1'000));
@@ -189,12 +190,16 @@ namespace Astrelis
             frame.FrameBuffer.Destroy(m_LogicalDevice);
         }
 
+    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsFrameBuffer.Destroy(m_LogicalDevice);
         m_GraphicsTextureImage->Destroy(m_LogicalDevice);
+    #endif
 
         m_DescriptorPool.Destroy(m_LogicalDevice);
         m_RenderPass.Destroy(m_LogicalDevice);
+    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsRenderPass.Destroy(m_LogicalDevice);
+    #endif
         m_CommandPool.Destroy(m_LogicalDevice);
         m_SwapChain.Destroy(m_LogicalDevice);
         m_LogicalDevice.Destroy();

@@ -1,10 +1,8 @@
 #include "VoxelRenderer.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsPipeline.hpp"
-
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Profiler.hpp"
 
 namespace Astrelis
 {

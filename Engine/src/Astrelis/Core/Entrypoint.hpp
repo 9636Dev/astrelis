@@ -7,7 +7,7 @@
 
 #include "Application.hpp"
 #include "Log.hpp"
-#include "Profiler.hpp"
+#include "Utils/Profiling.hpp"
 
 //extern Astrelis::Ptr<Astrelis::Application> Astrelis::CreateApplication(CommandLineArguments args);
 

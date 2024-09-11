@@ -3,7 +3,6 @@
 #include <imgui.h>
 
 #include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Utils/Defer.hpp"
 
 namespace Pulsar
 {
@@ -12,7 +11,6 @@ namespace Pulsar
     void AssetPanel::Draw()
     {
         ImGui::Begin("Assets");
-        Astrelis::Deferred deferredImGuiEnd([]() { ImGui::End(); });
 
         ImGuiTableFlags tableFlags = ImGuiTableFlags_None;
         tableFlags |= ImGuiTableFlags_BordersInnerV;
@@ -23,6 +21,7 @@ namespace Pulsar
 
         if (!ImGui::BeginTable("assets_table", 2, tableFlags, ImGui::GetWindowSize()))
         {
+            ImGui::End();
             return;
         }
 
@@ -61,5 +60,6 @@ namespace Pulsar
         }
 
         ImGui::EndTable();
+        ImGui::End();
     }
 } // namespace Pulsar

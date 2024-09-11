@@ -1,10 +1,8 @@
 #include "Log.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include <iostream>
-
 #include <spdlog/sinks/stdout_color_sinks.h>
-
-#include "Astrelis/Core/Profiler.hpp"
 
 namespace Astrelis
 {

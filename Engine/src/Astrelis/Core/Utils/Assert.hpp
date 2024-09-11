@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include "Astrelis/Core/Log.hpp"
 #include "Debug.hpp"
-#include "Log.hpp"
 
 #ifdef ASTRELIS_DEBUG
     #define ASTRELIS_INTERNAL_BUILD_TYPE 0

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <atomic>
 #include <string>
 #include <vector>
 
 #include "LayerStack.hpp"
 #include "Pointer.hpp"
-#include "Profiler.hpp"
 #include "Window.hpp"
 
 #include "Astrelis/Events/WindowEvent.hpp"
@@ -25,7 +25,6 @@ namespace Astrelis
 
         static CommandLineArguments Parse(int argc, char** argv)
         {
-            ASTRELIS_PROFILE_SCOPE("CommandLineArguments::Parse");
             CommandLineArguments result;
             for (int i = 1; i < argc; i++)
             {
@@ -75,6 +74,7 @@ namespace Astrelis
     {
     public:
         friend int ::AstrelisMain(int argc, char** argv);
+        friend void SignalHandler(int signal);
         /**
          * @brief Creates an application with the given specification
          * @param specification The specification of the application
@@ -140,7 +140,7 @@ namespace Astrelis
 
         static Application* s_Instance;
         ApplicationSpecification m_Specification;
-        bool m_Running = true;
+        std::atomic_bool m_Running = true;
         RefPtr<Window> m_Window;
         RefPtr<RenderSystem> m_RenderSystem;
         LayerStack m_LayerStack;
@@ -152,3 +152,4 @@ namespace Astrelis
     */
     extern ScopedPtr<Application> CreateApplication(CommandLineArguments args, CreationStatus& status);
 } // namespace Astrelis
+

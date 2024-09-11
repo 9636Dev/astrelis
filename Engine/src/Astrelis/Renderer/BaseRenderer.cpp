@@ -1,9 +1,5 @@
 #include "BaseRenderer.hpp"
-
-#include <utility>
-
-#include "Astrelis/Core/Assert.hpp"
-#include "Astrelis/Core/Profiler.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis
 {

@@ -1,16 +1,10 @@
 #include "Renderer2D.hpp"
+#include "Astrelis/Core/Base.hpp"
 
-#include <utility>
-
-#include "DescriptorSetLayout.hpp"
-#include "GraphicsPipeline.hpp"
-
-#include "Astrelis/Core/Assert.hpp"
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Math.hpp"
-#include "Astrelis/Core/Profiler.hpp"
 #include "Astrelis/IO/Image.hpp"
 #include "Astrelis/Scene/TransformComponent.hpp"
+#include "DescriptorSetLayout.hpp"
+#include "GraphicsPipeline.hpp"
 #include "Vertex.hpp"
 
 namespace Astrelis

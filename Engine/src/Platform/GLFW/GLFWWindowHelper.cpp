@@ -1,7 +1,6 @@
 #include "GLFWWindowHelper.hpp"
+#include "Astrelis/Core/Base.hpp"
 
-#include "Astrelis/Core/Assert.hpp"
-#include "Astrelis/Core/Result.hpp"
 #include "Astrelis/Events/KeyEvent.hpp"
 #include "Astrelis/Events/MouseEvent.hpp"
 #include "Astrelis/Events/WindowEvent.hpp"

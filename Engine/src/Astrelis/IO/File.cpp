@@ -1,4 +1,5 @@
 #include "File.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include <filesystem>
 #include <fstream>

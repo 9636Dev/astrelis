@@ -8,7 +8,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "Astrelis/Core/PlatformDetection.hpp"
+#include "Astrelis/Core/Utils/PlatformDetection.hpp"
 #include "Astrelis/Core/Pointer.hpp"
 
 namespace Astrelis::Vulkan

@@ -32,10 +32,23 @@ namespace Astrelis
         void EndFrame() override;
         std::future<InMemoryImage> CaptureFrame(const FrameCaptureProps& props) override;
 
-        void SetBlitSwapchain(bool blit) override { m_BlitSwapchain = blit; }
+        void SetBlitSwapchain(bool blit) override {
+        #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+            m_BlitSwapchain = blit;
+        #else
+            ASTRELIS_UNUSED(blit);
+        #endif
+        }
 
         // This is for ImGui to render, so we need the descriptor set for Vulkan
-        void* GetGraphicsImage() override { return m_DescriptorSets.GetHandle(); }
+        void* GetGraphicsImage() override {
+        #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+            return m_DescriptorSets.GetHandle();
+        #else
+            ASTRELIS_ASSERT(false, "Framebuffer is not enabled");
+            return nullptr;
+        #endif
+        }
 
         Rect2Di GetRenderBounds() override
         {
@@ -51,14 +64,16 @@ namespace Astrelis
     private:
         RefPtr<VulkanGraphicsContext> m_Context;
 
-        RefPtr<Vulkan::TextureSampler> m_GraphicsTextureSampler;
-
+    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         Vulkan::GraphicsPipeline m_GraphicsPipeline;
+        RefPtr<Vulkan::TextureSampler> m_GraphicsTextureSampler;
         Vulkan::VertexBuffer m_VertexBuffer;
         Vulkan::IndexBuffer m_IndexBuffer;
         Vulkan::DescriptorSets m_DescriptorSets;
         Vulkan::DescriptorSetLayout m_DescriptorSetLayout;
 
         bool m_BlitSwapchain = true;
+    #endif
+
     };
 } // namespace Astrelis

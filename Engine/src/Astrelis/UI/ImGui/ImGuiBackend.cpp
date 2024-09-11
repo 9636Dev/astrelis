@@ -1,6 +1,6 @@
 #include "ImGuiBackend.hpp"
+#include "Astrelis/Core/Base.hpp"
 
-#include "Astrelis/Core/Assert.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
 
 #ifdef ASTRELIS_RENDERER_VULKAN

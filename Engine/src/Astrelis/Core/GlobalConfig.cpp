@@ -1,4 +1,5 @@
 #include "GlobalConfig.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis
 {

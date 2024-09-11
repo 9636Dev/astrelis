@@ -1,10 +1,8 @@
 #include "Image.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include <stb_image.h>
 #include <stb_image_write.h>
-
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Math.hpp"
 
 namespace Astrelis
 {

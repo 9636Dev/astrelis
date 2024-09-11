@@ -1,8 +1,8 @@
 #include "TextureImage.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include "Utils.hpp"
 
-#include "Astrelis/Core/Assert.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Astrelis::Vulkan

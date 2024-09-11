@@ -1,8 +1,8 @@
 #include "GraphicsContext.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include "RendererAPI.hpp"
 
-#include "Astrelis/Core/Assert.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Astrelis

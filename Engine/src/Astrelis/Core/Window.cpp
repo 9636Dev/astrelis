@@ -1,7 +1,5 @@
 #include "Window.hpp"
-
-#include "PlatformDetection.hpp"
-#include "Profiler.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #ifdef ASTRELIS_PLATFORM_LINUX
     #include "Platform/Linux/LinuxWindow.hpp"

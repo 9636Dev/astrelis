@@ -1,4 +1,5 @@
 #include "VulkanRenderSystem.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include <cstddef>
 #include <vulkan/vulkan.h>
@@ -9,8 +10,6 @@
 #include "Platform/Vulkan/VK/VulkanExt.hpp"
 
 #include "Astrelis/Core/GlobalConfig.hpp"
-#include "Astrelis/Core/Math.hpp"
-#include "Astrelis/Core/Profiler.hpp"
 #include "Astrelis/Renderer/DescriptorSetLayout.hpp"
 #include "Astrelis/Renderer/GraphicsPipeline.hpp"
 #include "Astrelis/Renderer/TextureImage.hpp"
@@ -25,6 +24,7 @@ namespace Astrelis
     bool VulkanRenderSystem::Init()
     {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Init");
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         std::array<BlitVertex, 4> vertices = {
             BlitVertex {{-1.0F, -1.0F}},
             BlitVertex {{1.0F, -1.0F}},
@@ -80,14 +80,19 @@ namespace Astrelis
         }
 
         std::vector<Vulkan::DescriptorSetLayout> layouts = {m_DescriptorSetLayout};
+
         return m_GraphicsPipeline.Init(m_Context->m_LogicalDevice, m_Context->m_SwapChain.GetExtent(),
                                        m_Context->m_RenderPass, shaders, inputs, layouts);
+#else
+        return true;
+#endif
     }
 
     void VulkanRenderSystem::Shutdown()
     {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Shutdown");
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
         m_GraphicsPipeline.Destroy(ctx);
         m_DescriptorSets.Destroy(ctx);
@@ -95,42 +100,50 @@ namespace Astrelis
         m_GraphicsTextureSampler->Destroy(ctx);
         m_VertexBuffer.Destroy(ctx);
         m_IndexBuffer.Destroy(ctx);
+#endif
     }
 
     void VulkanRenderSystem::StartGraphicsRenderPass()
     {
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto& frame = m_Context->GetCurrentFrame();
-#ifdef ASTRELIS_DEBUG
+    #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode())
         {
             Vulkan::Ext::BeginDebugLabel(frame.CommandBuffer.GetHandle(), "GraphicsRender", {0.0F, 1.0F, 0.0F, 1.0F});
         }
-#endif
+    #endif
         m_Context->m_GraphicsRenderPass.Begin(frame.CommandBuffer, m_Context->m_GraphicsFrameBuffer,
                                               m_Context->m_GraphicsExtent);
+#else
+        m_Context->m_RenderPass.Begin(m_Context->GetCurrentFrame().CommandBuffer, m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer, m_Context->m_SwapChain.GetExtent());
+#endif
     }
 
     void VulkanRenderSystem::EndGraphicsRenderPass()
     {
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_Context->m_GraphicsRenderPass.End(m_Context->GetCurrentFrame().CommandBuffer);
-#ifdef ASTRELIS_DEBUG
+    #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode())
         {
             Vulkan::Ext::EndDebugLabel(m_Context->GetCurrentFrame().CommandBuffer.GetHandle());
         }
+    #endif
 #endif
     }
 
     void VulkanRenderSystem::BlitSwapchain()
     {
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto& frame          = m_Context->GetCurrentFrame();
         auto& swapchainFrame = m_Context->m_SwapChainFrames[m_Context->m_ImageIndex];
-#ifdef ASTRELIS_DEBUG
+    #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode())
         {
             Vulkan::Ext::BeginDebugLabel(frame.CommandBuffer.GetHandle(), "BlitSwapchain", {0.0F, 1.0F, 0.0F, 1.0F});
         }
-#endif
+    #endif
         m_Context->m_RenderPass.Begin(frame.CommandBuffer, swapchainFrame.FrameBuffer,
                                       m_Context->m_SwapChain.GetExtent());
 
@@ -166,11 +179,12 @@ namespace Astrelis
 
         vkCmdDrawIndexed(frame.CommandBuffer.GetHandle(), 6, 1, 0, 0, 0);
 
-#ifdef ASTRELIS_DEBUG
+    #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode())
         {
             Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());
         }
+    #endif
 #endif
     }
 

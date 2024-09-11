@@ -1,12 +1,9 @@
 #include "GraphicsPipeline.hpp"
-
-#include <array>
+#include "Astrelis/Core/Base.hpp"
 
 #include "CommandBuffer.hpp"
 #include "RenderPass.hpp"
 
-#include "Astrelis/Core/Assert.hpp"
-#include "Astrelis/Core/Log.hpp"
 #include "Astrelis/Renderer/GraphicsPipeline.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
@@ -261,12 +258,14 @@ namespace Astrelis::Vulkan
         switch (type)
         {
         case PipelineType::Graphics:
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
             return context->m_GraphicsRenderPass;
+#endif
         case PipelineType::Overlay:
         case PipelineType::Main:
             return context->m_RenderPass;
         }
-    };
+    }
 
     bool GraphicsPipeline::Init(RefPtr<GraphicsContext>& context,
                                 PipelineShaders& shaders,
@@ -281,7 +280,8 @@ namespace Astrelis::Vulkan
         {
             vulkanLayouts.push_back(*layout.As<DescriptorSetLayout>());
         }
-        return Init(ctx->m_LogicalDevice, ctx->m_SwapChain.GetExtent(), GetCorrectRenderPass(ctx, type), shaders, bindings, vulkanLayouts);
+        return Init(ctx->m_LogicalDevice, ctx->m_SwapChain.GetExtent(), GetCorrectRenderPass(ctx, type), shaders,
+                    bindings, vulkanLayouts);
     }
 
     void GraphicsPipeline::Destroy(RefPtr<GraphicsContext>& context)

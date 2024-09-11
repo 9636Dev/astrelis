@@ -1,13 +1,11 @@
 #include "Application.hpp"
+#include "Astrelis/Core/Base.hpp"
 
+#include <csignal>
 #include <filesystem>
 #include <utility>
 
-#include "Assert.hpp"
-#include "Log.hpp"
-#include "Profiler.hpp"
 #include "Time.hpp"
-#include "Utils/Function.hpp"
 #include "Window.hpp"
 
 #include "Astrelis/Events/WindowEvent.hpp"
@@ -17,6 +15,12 @@
 
 namespace Astrelis
 {
+    void SignalHandler(int signal)
+    {
+        ASTRELIS_LOG_DEBUG("Signal received: {0}", signal);
+        Application::Get().m_Running = false;
+    }
+
     Application* Application::s_Instance = nullptr;
 
     Application::Application(ApplicationSpecification specification, CreationStatus& status) :
@@ -28,6 +32,23 @@ namespace Astrelis
         ASTRELIS_VERIFY(Astrelis::Log::Init(), "Logger failed to initialize");
         ASTRELIS_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
+
+        // Register signal handler
+        if (std::signal(SIGINT, SignalHandler) == SIG_ERR)
+        {
+            ASTRELIS_LOG_ERROR("Failed to register signal handler for SIGINT");
+        }
+        if (std::signal(SIGTERM, SignalHandler) == SIG_ERR)
+        {
+            ASTRELIS_LOG_ERROR("Failed to register signal handler for SIGTERM");
+        }
+#ifdef ASTRELIS_PLATFORM_WINDOWS
+        if (std::signal(SIGBREAK, SignalHandler) == SIG_ERR)
+        {
+            ASTRELIS_LOG_ERROR("Failed to register signal handler for SIGBREAK");
+        }
+#endif
+
 
         // First we chdir into the working directory
         if (!m_Specification.WorkingDirectory.empty())
@@ -128,6 +149,7 @@ namespace Astrelis
 
             m_Window->EndFrame();
             m_Window->OnUpdate();
+            ASTRELIS_PROFILE_END_FRAME();
         }
     }
 

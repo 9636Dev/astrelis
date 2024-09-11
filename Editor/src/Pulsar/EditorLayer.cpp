@@ -2,9 +2,6 @@
 
 #include "Astrelis/Core/Application.hpp"
 #include "Astrelis/Core/Geometry.hpp"
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Time.hpp"
-#include "Astrelis/Scene/TransformComponent.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -28,13 +25,14 @@ namespace Pulsar
     {
         // Don't store imgui.ini settings
         ImGui::GetIO().IniFilename = nullptr;
-        auto entity = m_Scene.CreateEntity();
-        m_Scene.AddComponent(entity, Astrelis::TransformComponent());
     }
 
     void EditorLayer::OnDetach() {}
 
-    void EditorLayer::OnUpdate() { m_GamePreview.RenderScene(m_Scene); }
+    void EditorLayer::OnUpdate()
+    {
+        //m_GamePreview.RenderScene(m_Scene);
+    }
 
     void EditorLayer::OnUIRender()
     {

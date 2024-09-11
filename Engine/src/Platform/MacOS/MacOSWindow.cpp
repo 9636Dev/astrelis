@@ -1,6 +1,6 @@
 #include "MacOSWindow.hpp"
+#include "Astrelis/Core/Base.hpp"
 
-#include "Astrelis/Core/Profiler.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
 #include "Platform/GLFW/GLFWWindowHelper.hpp"
 

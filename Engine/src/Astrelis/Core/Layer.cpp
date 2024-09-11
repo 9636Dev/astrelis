@@ -1,6 +1,5 @@
 #include "Layer.hpp"
-
-#include "Utils/Function.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis
 {

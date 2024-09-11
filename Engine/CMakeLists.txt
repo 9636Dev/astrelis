@@ -57,6 +57,9 @@ endif()
 option(ASTRELIS_PEDANTIC_WARNINGS "Enable pedantic warnings" ON)
 option(ASTRELIS_PROFILE "Enable profiling" ON)
 
+# Feature Options
+option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" OFF)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -88,10 +91,9 @@ add_subdirectory(vendor)
 
 set(ASTRELIS_ENGINE_SOURCES
     # Core
+    src/Astrelis/Core/Base.hpp
     src/Astrelis/Core/Application.cpp
     src/Astrelis/Core/Application.hpp
-    src/Astrelis/Core/Assert.hpp
-    src/Astrelis/Core/Base.hpp
     src/Astrelis/Core/Entrypoint.hpp
     src/Astrelis/Core/Geometry.hpp
     src/Astrelis/Core/GlobalConfig.cpp
@@ -102,17 +104,19 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Core/LayerStack.hpp
     src/Astrelis/Core/Log.cpp
     src/Astrelis/Core/Log.hpp
-    src/Astrelis/Core/PlatformDetection.hpp
     src/Astrelis/Core/Pointer.hpp
-    src/Astrelis/Core/Profiler.hpp
     src/Astrelis/Core/Result.hpp
     src/Astrelis/Core/Time.cpp
     src/Astrelis/Core/Time.hpp
     src/Astrelis/Core/Types.hpp
-    src/Astrelis/Core/Utils/Defer.hpp
-    src/Astrelis/Core/Utils/Function.hpp
     src/Astrelis/Core/Window.cpp
     src/Astrelis/Core/Window.hpp
+    src/Astrelis/Core/Utils/Assert.hpp
+    src/Astrelis/Core/Utils/Debug.hpp
+    src/Astrelis/Core/Utils/Function.hpp
+    src/Astrelis/Core/Utils/Profiling.hpp
+    src/Astrelis/Core/Utils/Profiling.cpp
+    src/Astrelis/Core/Utils/PlatformDetection.hpp
 
     # IO
     src/Astrelis/IO/File.hpp
@@ -254,11 +258,16 @@ add_library(Astrelis_External STATIC
 )
 target_link_libraries(Astrelis_External PUBLIC stb)
 
+target_precompile_headers(Astrelis_Engine PRIVATE
+    src/Astrelis/Core/Base.hpp
+)
+
 target_include_directories(Astrelis_Engine
 PUBLIC
     src/
     vendor/tracy/Public
 )
+
 
 target_link_libraries(Astrelis_Engine PUBLIC
     Astrelis_External
@@ -292,6 +301,8 @@ PUBLIC
     $<$<BOOL:${ASTRELIS_RENDERER_OPENGL}>:ASTRELIS_RENDERER_OPENGL>
     $<$<BOOL:${ASTRELIS_RENDERER_METAL}>:ASTRELIS_RENDERER_METAL>
     $<$<BOOL:${ASTRELIS_RENDERER_VULKAN}>:ASTRELIS_RENDERER_VULKAN>
+
+    $<$<BOOL:${ASTRELIS_FEATURE_FRAMEBUFFER}>:ASTRELIS_FEATURE_FRAMEBUFFER>
 )
 
 # Module Definition

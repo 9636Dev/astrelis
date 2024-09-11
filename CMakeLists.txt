@@ -80,6 +80,6 @@ add_subdirectory(Engine)
 add_library(Astrelis::Engine ALIAS Astrelis_Engine)
 #add_library(Astrelis::Format ALIAS Astrelis_Format)
 add_subdirectory(Sandbox)
-add_subdirectory(Editor) # Editor
-add_executable(Astrelis::Editor ALIAS Astrelis_Editor)
+#add_subdirectory(Editor) # Editor
+#add_executable(Astrelis::Editor ALIAS Astrelis_Editor)
 

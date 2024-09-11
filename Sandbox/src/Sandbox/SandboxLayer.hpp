@@ -28,11 +28,5 @@ public:
 
     void OnViewportResize(Astrelis::WindowResizedEvent& event);
 private:
-    Astrelis::Camera m_Camera;
-    Astrelis::Scene2D m_Scene;
-    Astrelis::ScopedPtr<Astrelis::Renderer2D> m_Renderer = nullptr;
-
     Astrelis::Milliseconds m_CpuTime;
-
-    std::future<Astrelis::InMemoryImage> m_ImageCapture;
 };

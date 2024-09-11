@@ -29,6 +29,5 @@ namespace Pulsar
         Console m_Console;
         AssetPanel m_AssetPanel;
         GamePreview2D m_GamePreview;
-        Astrelis::Scene2D m_Scene;
     };
 } // namespace Pulsar

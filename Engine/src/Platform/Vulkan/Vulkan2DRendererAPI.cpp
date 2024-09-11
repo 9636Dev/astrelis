@@ -1,6 +1,5 @@
 #include "Vulkan2DRendererAPI.hpp"
-
-#include "Astrelis/Core/Assert.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include "Platform/Vulkan/VK/DescriptorSets.hpp"
 #include "Platform/Vulkan/VK/TextureSampler.hpp"
@@ -11,8 +10,6 @@
 #include "VK/UniformBuffer.hpp"
 #include "VK/VertexBuffer.hpp"
 #include "VulkanGraphicsContext.hpp"
-
-#include <utility>
 
 namespace Astrelis
 {

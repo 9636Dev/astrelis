@@ -1,6 +1,5 @@
 #include "RendererAPI.hpp"
-
-#include "Astrelis/Core/Assert.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #ifdef ASTRELIS_RENDERER_VULKAN
     #include "Platform/Vulkan/VulkanRendererHelper.hpp"

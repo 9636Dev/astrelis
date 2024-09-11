@@ -1,7 +1,5 @@
 #include "VulkanExt.hpp"
-
-#include "Astrelis/Core/Assert.hpp"
-#include "Astrelis/Core/Log.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis::Vulkan
 {
