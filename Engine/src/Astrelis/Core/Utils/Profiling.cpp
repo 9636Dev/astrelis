@@ -1,6 +1,7 @@
 #include "Profiling.hpp"
 
 #ifdef TRACY_ENABLE
+    #ifdef ASTRELIS_PROFILE_MEMORY
 void* operator new(size_t size)
 {
     // NOLINTNEXTLINE
@@ -15,4 +16,5 @@ void operator delete(void* ptr) noexcept
     // NOLINTNEXTLINE
     free(ptr);
 }
+    #endif
 #endif

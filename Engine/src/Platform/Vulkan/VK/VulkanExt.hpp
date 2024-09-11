@@ -2,6 +2,7 @@
 
 #include <array>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 namespace Astrelis::Vulkan
 {
@@ -27,5 +28,8 @@ namespace Astrelis::Vulkan
         static PFN_vkCmdBeginDebugUtilsLabelEXT CmdBeginDebugUtilsLabelEXT;
         static PFN_vkCmdEndDebugUtilsLabelEXT CmdEndDebugUtilsLabelEXT;
         static PFN_vkCmdInsertDebugUtilsLabelEXT CmdInsertDebugUtilsLabelEXT;
+    #ifdef ASTRELIS_PROFILE
+        static PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT GetPhysicalDeviceCalibrateableTimeDomainsEXT;
+    #endif
     };
 } // namespace Astrelis::Vulkan

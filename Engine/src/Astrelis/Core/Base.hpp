@@ -7,7 +7,9 @@
 #include "Astrelis/Core/Utils/Assert.hpp"
 #include "Astrelis/Core/Utils/Debug.hpp"
 #include "Astrelis/Core/Utils/Function.hpp"
+#include "Astrelis/Core/Utils/Platform.hpp"
 #include "Astrelis/Core/Utils/Profiling.hpp"
+#include "Astrelis/Core/Utils/Renderer.hpp"
 
 #include <algorithm>
 #include <array>

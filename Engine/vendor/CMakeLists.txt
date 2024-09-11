@@ -40,6 +40,10 @@ target_include_directories(stb INTERFACE stb)
 
 # Tracy
 if (ASTRELIS_PROFILE)
-add_definitions(-DTRACY_ENABLE)
+    message(STATUS "Astrelis: Enabling Tracy")
+    set(TRACY_ENABLE ON CACHE BOOL "Enable Tracy" FORCE)
+else()
+    message(STATUS "Astrelis: Disabling Tracy")
+    set(TRACY_ENABLE OFF CACHE BOOL "Enable Tracy" FORCE)
 endif()
 add_subdirectory(tracy)

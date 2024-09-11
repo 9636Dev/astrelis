@@ -24,6 +24,11 @@
 
 #include <GLFW/glfw3.h>
 #include <future>
+#include <vulkan/vulkan.h>
+
+#ifdef ASTRELIS_PROFILE_GPU
+    #include <tracy/TracyVulkan.hpp>
+#endif
 
 namespace Astrelis
 {
@@ -79,7 +84,7 @@ namespace Astrelis
 
         void SetVSync(bool enabled) override
         {
-            m_VSync = enabled;
+            m_VSync               = enabled;
             m_SwapchainRecreation = true;
         }
 
@@ -99,15 +104,17 @@ namespace Astrelis
 
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData> m_Frames;
-    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         VkOffset2D m_GraphicsOffset {0, 0};
         VkExtent2D m_GraphicsExtent {0, 0};
         RefPtr<Vulkan::TextureImage> m_GraphicsTextureImage;
         Vulkan::FrameBuffer m_GraphicsFrameBuffer;
         Vulkan::RenderPass m_GraphicsRenderPass;
-    #endif
+#endif
         Vulkan::RenderPass m_RenderPass;
 
+
+        ASTRELIS_PROFILE_VULKAN(Vulkan::CommandBuffer m_ProfileCommandBuffer; TracyVkCtx m_TracyVkCtx = nullptr;)
 
         // For screenshotting
         bool m_CaptureNextFrame = false;
@@ -122,8 +129,8 @@ namespace Astrelis
         // Internal
         VkSwapchainKHR m_OldSwapChain = VK_NULL_HANDLE;
 
-        bool m_IsInitialized = false;
-        bool m_SwapchainRecreation   = false;
-        bool m_SkipFrame     = false;
+        bool m_IsInitialized       = false;
+        bool m_SwapchainRecreation = false;
+        bool m_SkipFrame           = false;
     };
 } // namespace Astrelis

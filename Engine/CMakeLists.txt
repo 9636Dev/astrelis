@@ -54,8 +54,31 @@ elseif(ASTRELIS_BUILD_TYPE STREQUAL "Dist")
     endif()
 endif()
 
+# O2 for Release, O3 for Dist
+if (ASTRELIS_BUILD_TYPE STREQUAL "Release")
+    if (ASTRELIS_COMPILER STREQUAL "CLANG" OR ASTRELIS_COMPILER STREQUAL "GCC")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+    else()
+        message(WARNING "Unknown compiler, can't set optimization level")
+    endif()
+elseif (ASTRELIS_BUILD_TYPE STREQUAL "Dist")
+    if (ASTRELIS_COMPILER STREQUAL "CLANG" OR ASTRELIS_COMPILER STREQUAL "GCC")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    else()
+        message(WARNING "Unknown compiler, can't set optimization level")
+    endif()
+endif()
+
 option(ASTRELIS_PEDANTIC_WARNINGS "Enable pedantic warnings" ON)
-option(ASTRELIS_PROFILE "Enable profiling" ON)
+option(ASTRELIS_PROFILE "Enable profiling" OFF)
+option(ASTRELIS_PROFILE_MEMORY "Enable memory profiling" OFF)
+option(ASTRELIS_PROFILE_GPU "Enable GPU profiling" OFF)
+
+if (NOT ASTRELIS_PROFILE)
+    message(NOTICE "Profiling is disabled")
+    set(ASTRELIS_PROFILE_MEMORY OFF)
+    set(ASTRELIS_PROFILE_GPU OFF)
+endif()
 
 # Feature Options
 option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" OFF)
@@ -297,11 +320,18 @@ PUBLIC
     $<$<STREQUAL:${ASTRELIS_BUILD_TYPE},Debug>:ASTRELIS_DEBUG>
     $<$<STREQUAL:${ASTRELIS_BUILD_TYPE},Release>:ASTRELIS_RELEASE>
     $<$<STREQUAL:${ASTRELIS_BUILD_TYPE},Dist>:ASTRELIS_DIST>
+
+    # Profiling
     $<$<BOOL:${ASTRELIS_PROFILE}>:ASTRELIS_PROFILE>
+    $<$<BOOL:${ASTRELIS_PROFILE_MEMORY}>:ASTRELIS_PROFILE_MEMORY>
+    $<$<BOOL:${ASTRELIS_PROFILE_GPU}>:ASTRELIS_PROFILE_GPU>
+
+    # Renderer
     $<$<BOOL:${ASTRELIS_RENDERER_OPENGL}>:ASTRELIS_RENDERER_OPENGL>
     $<$<BOOL:${ASTRELIS_RENDERER_METAL}>:ASTRELIS_RENDERER_METAL>
     $<$<BOOL:${ASTRELIS_RENDERER_VULKAN}>:ASTRELIS_RENDERER_VULKAN>
 
+    # Features
     $<$<BOOL:${ASTRELIS_FEATURE_FRAMEBUFFER}>:ASTRELIS_FEATURE_FRAMEBUFFER>
 )
 

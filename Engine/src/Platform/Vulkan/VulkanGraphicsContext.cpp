@@ -27,7 +27,7 @@ namespace Astrelis
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     bool VulkanGraphicsContext::Init()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::Init");
+        ASTRELIS_PROFILE_FUNCTION();
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define INIT_COMPONENT(...) \
     if (!__VA_ARGS__)       \
@@ -69,18 +69,18 @@ namespace Astrelis
         if (frameCount != m_MaxFramesInFlight)
         {
             ASTRELIS_CORE_LOG_WARN("Requested frame count is not supported, using {0} (instead of {1})", frameCount,
-                                 m_MaxFramesInFlight);
+                                   m_MaxFramesInFlight);
         }
         INIT_COMPONENT(m_CommandPool.Init(m_LogicalDevice));
 
         m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
-    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0)
         {
             m_GraphicsExtent = m_SwapChain.GetExtent();
         }
-    #endif
+#endif
 
         {
             // Main render pass
@@ -103,7 +103,7 @@ namespace Astrelis
             INIT_COMPONENT(m_RenderPass.Init(m_LogicalDevice, renderPassInfo));
         }
 
-    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         {
             m_GraphicsTextureImage = RefPtr<Vulkan::TextureImage>::Create();
             m_GraphicsTextureImage->Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice, m_GraphicsExtent,
@@ -135,7 +135,7 @@ namespace Astrelis
                 return false;
             }
         }
-    #endif
+#endif
 
         // TODO: Create a descriptor pool manager, right now it is just hardcoded
         INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, 1'000));
@@ -161,14 +161,23 @@ namespace Astrelis
 
         ASTRELIS_CORE_LOG_INFO("Vulkan Graphics Context initialized!");
         m_IsInitialized = true;
+
+        ASTRELIS_PROFILE_VULKAN(if (m_ProfileCommandBuffer.Init(m_LogicalDevice, m_CommandPool)) {
+            // TODO: More than one if GraphicsQueue != PresentQueue
+            m_TracyVkCtx = TracyVkContext(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(),
+                                          m_LogicalDevice.GetGraphicsQueue(), m_ProfileCommandBuffer.GetHandle());
+        } else { ASTRELIS_CORE_LOG_WARN("Failed to initialize command buffer for Profiling!"); })
+
         return true;
 #undef INIT_COMPONENT
     }
 
     void VulkanGraphicsContext::Shutdown()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::Shutdown");
+        ASTRELIS_PROFILE_FUNCTION();
         vkDeviceWaitIdle(m_LogicalDevice.GetHandle());
+
+        ASTRELIS_PROFILE_VULKAN(TracyVkDestroy(m_TracyVkCtx);)
 
         if (!m_IsInitialized)
         {
@@ -190,16 +199,16 @@ namespace Astrelis
             frame.FrameBuffer.Destroy(m_LogicalDevice);
         }
 
-    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsFrameBuffer.Destroy(m_LogicalDevice);
         m_GraphicsTextureImage->Destroy(m_LogicalDevice);
-    #endif
+#endif
 
         m_DescriptorPool.Destroy(m_LogicalDevice);
         m_RenderPass.Destroy(m_LogicalDevice);
-    #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsRenderPass.Destroy(m_LogicalDevice);
-    #endif
+#endif
         m_CommandPool.Destroy(m_LogicalDevice);
         m_SwapChain.Destroy(m_LogicalDevice);
         m_LogicalDevice.Destroy();
@@ -214,16 +223,16 @@ namespace Astrelis
 
     void VulkanGraphicsContext::BeginFrame()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::BeginFrame");
+        ASTRELIS_PROFILE_FUNCTION();
         auto& frame = GetCurrentFrame();
 
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::BeginFrame::WaitForFence");
+            ASTRELIS_PROFILE_SCOPE("Wait for frame");
             frame.InFlightFence.Wait(m_LogicalDevice, std::numeric_limits<std::uint64_t>::max());
         }
 
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::BeginFrame::AcquireNextImage");
+            ASTRELIS_PROFILE_SCOPE("Acquire next image");
             VkResult result = vkAcquireNextImageKHR(
                 m_LogicalDevice.GetHandle(), m_SwapChain.GetHandle(), std::numeric_limits<std::uint64_t>::max(),
                 frame.ImageAvailableSemaphore.GetHandle(), VK_NULL_HANDLE, &m_ImageIndex);
@@ -260,12 +269,14 @@ namespace Astrelis
 
         frame.CommandBuffer.Reset();
         frame.CommandBuffer.Begin();
+        ASTRELIS_PROFILE_VULKAN(TracyVkZone(m_TracyVkCtx, frame.CommandBuffer.GetHandle(), "Frame");)
     }
 
     void VulkanGraphicsContext::EndFrame()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::EndFrame");
+        ASTRELIS_PROFILE_FUNCTION();
         auto& frame = GetCurrentFrame();
+        ASTRELIS_PROFILE_VULKAN(TracyVkCollect(m_TracyVkCtx, frame.CommandBuffer.GetHandle());)
         frame.CommandBuffer.End();
 
         if (m_SkipFrame)
@@ -276,14 +287,14 @@ namespace Astrelis
         }
 
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::EndFrame::SubmitCommandBuffer");
+            ASTRELIS_PROFILE_SCOPE("Submit frame");
             frame.CommandBuffer.Submit(m_LogicalDevice, m_LogicalDevice.GetGraphicsQueue(),
                                        frame.ImageAvailableSemaphore, frame.RenderFinishedSemaphore,
                                        frame.InFlightFence);
         }
 
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::EndFrame::Present");
+            ASTRELIS_PROFILE_SCOPE("Present frame");
             std::array<VkSemaphore, 1> presentWaitSemaphores = {frame.RenderFinishedSemaphore.GetHandle()};
             std::array<VkSwapchainKHR, 1> swapChains         = {m_SwapChain.GetHandle()};
             VkPresentInfoKHR presentInfo                     = {};
@@ -318,7 +329,7 @@ namespace Astrelis
 
     void VulkanGraphicsContext::RecreateSwapChain()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::RecreateSwapChain");
+        ASTRELIS_PROFILE_FUNCTION();
         int width  = 0;
         int height = 0;
         glfwGetFramebufferSize(m_Window, &width, &height);
@@ -361,7 +372,7 @@ namespace Astrelis
 
     InMemoryImage VulkanGraphicsContext::CaptureScreen() const
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::CaptureScreen");
+        ASTRELIS_PROFILE_FUNCTION();
         constexpr VkFormat format           = VK_FORMAT_R8G8B8A8_SRGB;
         constexpr std::size_t bytesPerPixel = 4;
         std::int32_t dstWidth               = static_cast<std::int32_t>(m_CaptureOutputExtent.width);
@@ -457,7 +468,7 @@ namespace Astrelis
 
     RefPtr<VulkanGraphicsContext> VulkanGraphicsContext::Create(RawRef<GLFWwindow*> window, ContextProps props)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanGraphicsContext::Create");
+        ASTRELIS_PROFILE_FUNCTION();
         ASTRELIS_CORE_ASSERT(window, "Window is nullptr!");
         auto context     = RefPtr<VulkanGraphicsContext>::Create(window);
         context->m_VSync = props.VSync;
