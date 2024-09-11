@@ -1,26 +1,23 @@
 #include "DescriptorPool.hpp"
-
-#include <array>
-
-#include "Astrelis/Core/Log.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis::Vulkan
 {
-    bool DescriptorPool::Init(LogicalDevice& device, std::uint32_t size)
+    bool DescriptorPool::Init(LogicalDevice& device, const DescriptorPoolCreateInfo& createInfo)
     {
-        // TODO: Make this more flexible
-        std::array<VkDescriptorPoolSize, 2> poolSizes {};
-        poolSizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = size;
-        poolSizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = size;
+        std::vector<VkDescriptorPoolSize> poolSizes(createInfo.poolSizes.size());
+        for (std::size_t i = 0; i < createInfo.poolSizes.size(); ++i)
+        {
+            poolSizes[i].type            = createInfo.poolSizes[i].type;
+            poolSizes[i].descriptorCount = createInfo.poolSizes[i].descriptorCount;
+        }
 
         VkDescriptorPoolCreateInfo poolInfo {};
         poolInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = static_cast<std::uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes    = poolSizes.data();
-        poolInfo.maxSets       = size;
-        poolInfo.flags         = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        poolInfo.maxSets       = createInfo.maxSets;
+        poolInfo.flags         = createInfo.flags;
 
         if (vkCreateDescriptorPool(device.GetHandle(), &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS)
         {

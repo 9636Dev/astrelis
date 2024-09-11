@@ -33,7 +33,8 @@ namespace Astrelis::Vulkan
         VkBuffer stagingBuffer             = VK_NULL_HANDLE;
         VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
 
-        // TODO: Maybe check to ensure that channels are 4
+        ASTRELIS_REQUIRE(image.GetData().size() > 0, "Image data is empty!");
+        ASTRELIS_REQUIRE(image.GetChannels() == 4, "Image channels are not 4!");
         VkDeviceSize imageSize = 4UL * image.GetWidth() * image.GetHeight();
         ASTRELIS_CORE_ASSERT(imageSize == image.GetData().size(), "Image size does not match data size!");
 

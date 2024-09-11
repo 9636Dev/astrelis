@@ -6,6 +6,19 @@
 
 namespace Astrelis::Vulkan
 {
+    struct DescriptorPoolSize
+    {
+        VkDescriptorType type;
+        std::uint32_t descriptorCount;
+    };
+
+    struct DescriptorPoolCreateInfo
+    {
+        std::vector<DescriptorPoolSize> poolSizes;
+        std::uint32_t maxSets = 0;
+        VkDescriptorPoolCreateFlags flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    };
+
     class DescriptorPool
     {
     public:
@@ -16,7 +29,7 @@ namespace Astrelis::Vulkan
         DescriptorPool(DescriptorPool &&other) = delete;
         DescriptorPool &operator=(DescriptorPool &&other) = delete;
 
-        [[nodiscard]] bool Init(LogicalDevice& device, std::uint32_t size);
+        [[nodiscard]] bool Init(LogicalDevice& device, const DescriptorPoolCreateInfo& createInfo);
         void Destroy(LogicalDevice& device);
 
         [[nodiscard]] VkDescriptorPool GetHandle() const { return m_DescriptorPool; }

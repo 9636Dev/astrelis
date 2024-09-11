@@ -7,7 +7,6 @@
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Core/Time.hpp"
 #include "Astrelis/Renderer/RenderSystem.hpp"
-#include "Astrelis/Scene/TransformComponent.hpp"
 
 SandboxLayer::SandboxLayer() { ASTRELIS_LOG_INFO("Sandbox Layer Initializing"); }
 
@@ -46,6 +45,18 @@ void SandboxLayer::OnUIRender()
         {
             window->SetVSync(true);
         }
+    }
+
+    if (m_ImageFuture.valid() && m_ImageFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+    {
+        auto image = std::move(m_ImageFuture.get());
+        image.Save("capture.png");
+    }
+
+    if (ImGui::Button("Capture Frame"))
+    {
+        Astrelis::FrameCaptureProps props {0, 0};
+        m_ImageFuture = Astrelis::Application::Get().GetRenderSystem()->CaptureFrame(props);
     }
 
     ImGui::End();

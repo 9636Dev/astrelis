@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 #include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/Core/Log.hpp"
@@ -11,14 +11,13 @@
 #include "Astrelis/Renderer/Camera.hpp"
 #include "Astrelis/Renderer/RenderSystem.hpp"
 #include "Astrelis/Renderer/Renderer2D.hpp"
-#include "Astrelis/Scene/TransformComponent.hpp"
 
 using Astrelis::RefPtr;
 
 struct Renderer2DTestParams
 {
     std::string Name;
-    mutable RefPtr<Astrelis::Scene2D> Scene;
+    //mutable RefPtr<Astrelis::Scene2D> Scene;
 };
 
 Astrelis::RefPtr<Astrelis::Window> g_Window;
@@ -41,7 +40,7 @@ public:
             {
                 throw std::runtime_error("Failed to create Window");
             }
-            g_Window    = res.Unwrap();
+            g_Window = res.Unwrap();
 
             initialized = true;
         }
@@ -52,7 +51,7 @@ public:
             throw std::runtime_error("Failed to initialize RenderSystem");
         }
 
-        float windowHeight = 100.0F;
+        float windowHeight     = 100.0F;
         float renderableHeight = static_cast<float>(m_RenderSystem->GetRenderBounds().Height());
 
         if (renderableHeight < windowHeight)
@@ -63,12 +62,9 @@ public:
         {
             m_PixelThreshold = static_cast<std::int32_t>(windowHeight / renderableHeight * 25.0F);
         }
-
     }
 
-    ~Renderer2DTest() override {
-        m_RenderSystem->Shutdown();
-    }
+    ~Renderer2DTest() override { m_RenderSystem->Shutdown(); }
 
     Renderer2DTest(const Renderer2DTest&)            = delete;
     Renderer2DTest& operator=(const Renderer2DTest&) = delete;
@@ -99,8 +95,11 @@ public:
     RefPtr<Astrelis::Renderer2D> m_Renderer2D;
 };
 
-void CompareImages(const Astrelis::InMemoryImage& actual, const Astrelis::InMemoryImage& expected, std::int32_t threshold)
+void CompareImages(const Astrelis::InMemoryImage& actual,
+                   const Astrelis::InMemoryImage& expected,
+                   std::int32_t threshold)
 {
+    (void)threshold;
     ASSERT_EQ(actual.GetWidth(), expected.GetWidth());
     ASSERT_EQ(actual.GetHeight(), expected.GetHeight());
     ASSERT_EQ(actual.GetChannels(), expected.GetChannels());
@@ -112,19 +111,17 @@ void CompareImages(const Astrelis::InMemoryImage& actual, const Astrelis::InMemo
     EXPECT_GE(similarity, 0.80F) << "Images are not similar enough, SSIM: " << similarity;
 }
 
-
 // Parameterized test case
 TEST_P(Renderer2DTest, TestDrawScene)
 {
     const auto& params = GetParam();
 
-    Astrelis::FrameCaptureProps props { 100, 100 };
+    Astrelis::FrameCaptureProps props {100, 100};
     auto future = m_RenderSystem->CaptureFrame(props);
     m_Window->BeginFrame();
     m_RenderSystem->StartGraphicsRenderPass();
     m_Renderer2D->BeginFrame();
     Astrelis::Camera camera;
-    m_Renderer2D->RenderScene(*params.Scene, camera);
     m_Renderer2D->EndFrame();
     m_RenderSystem->EndGraphicsRenderPass();
     m_RenderSystem->BlitSwapchain();
@@ -148,42 +145,11 @@ TEST_P(Renderer2DTest, TestDrawScene)
     CompareImages(image, referenceImage, m_PixelThreshold);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    Renderer2DTest,
-    Renderer2DTest,
-    ::testing::Values(Renderer2DTestParams {"EmptyScene", RefPtr<Astrelis::Scene2D>::Create()},
-                      Renderer2DTestParams {"SingleSprite",
-                                            []() {
-                                                auto scene  = RefPtr<Astrelis::Scene2D>::Create();
-                                                auto entity = scene->CreateEntity();
-                                                scene->AddComponent(entity, Astrelis::TransformComponent());
-                                                return scene;
-                                            }()},
-                      Renderer2DTestParams {"MultipleSprites",
-                                            []() {
-                                                auto scene = RefPtr<Astrelis::Scene2D>::Create();
-                                                for (int i = 0; i < 10; i++)
-                                                {
-                                                    auto entity = scene->CreateEntity();
-                                                    Astrelis::TransformComponent transform;
-                                                    transform.Transform = Astrelis::Math::Translate(
-                                                        Astrelis::Mat4f(1.0F), Astrelis::Vec3f((i - 5) * 0.1F, 0.0F, 0.0F));
-                                                    scene->AddComponent(entity, transform);
-                                                }
-                                                return scene;
-                                            }()},
-                      Renderer2DTestParams {"DepthTest", []() {
-                                                auto scene = RefPtr<Astrelis::Scene2D>::Create();
-                                                for (int i = 0; i < 10; i++)
-                                                {
-                                                    auto entity = scene->CreateEntity();
-                                                    Astrelis::TransformComponent transform;
-                                                    transform.Transform = Astrelis::Math::Translate(
-                                                        Astrelis::Mat4f(1.0F),
-                                                        Astrelis::Vec3f((i - 5) * 0.1F, 0.0F, -1 + 0.1F * i));
-                                                    scene->AddComponent(entity, transform);
-                                                }
-                                                return scene;
-                                            }()}));
+INSTANTIATE_TEST_SUITE_P(Renderer2DTest,
+                         Renderer2DTest,
+                         ::testing::Values(Renderer2DTestParams {"EmptyScene"},
+                                           Renderer2DTestParams {"SingleSprite"},
+                                           Renderer2DTestParams {"MultipleSprites"},
+                                           Renderer2DTestParams {"DepthTest"}));
 
 

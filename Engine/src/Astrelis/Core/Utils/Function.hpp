@@ -8,10 +8,9 @@ template<typename... Args> constexpr inline void ASTRELIS_UNUSED([[maybe_unused]
     #define ASTRELIS_NEVER_INLINE  __attribute__((noinline))
     #define ASTRELIS_UNREACHABLE   __builtin_unreachable()
 #elif _MSC_VER
-    //  TODO: implement
-    #define ASTRELIS_ALWAYS_INLINE
-    #define ASTRELIS_NEVER_INLINE
-    #define ASTRELIS_UNREACHABLE
+    #define ASTRELIS_ALWAYS_INLINE __forceinline
+    #define ASTRELIS_NEVER_INLINE  __declspec(noinline)
+    #define ASTRELIS_UNREACHABLE   __assume(0)
 #else
     #error "Compiler not supported"
 #endif

@@ -6,9 +6,6 @@
 #include "Astrelis/Core/Time.hpp"
 #include "Astrelis/Events/WindowEvent.hpp"
 #include "Astrelis/IO/Image.hpp"
-#include "Astrelis/Renderer/Camera.hpp"
-#include "Astrelis/Renderer/Renderer2D.hpp"
-#include "Astrelis/Scene/Scene2D.hpp"
 
 class SandboxLayer : public Astrelis::Layer
 {
@@ -29,4 +26,6 @@ public:
     void OnViewportResize(Astrelis::WindowResizedEvent& event);
 private:
     Astrelis::Milliseconds m_CpuTime;
+
+    std::future<Astrelis::InMemoryImage> m_ImageFuture;
 };

@@ -72,8 +72,6 @@
         #define ASTRELIS_INTERNAL_BUILD_TYPE 2
     #endif
 
-    // TODO(9636Dev): Requirement will throw a Astrelis::RequirementFailed exception
-
     /**
      * @def ASTRELIS_REQUIRE(x, message)
      * @brief Requires that the expression is true, if not, it will log an error

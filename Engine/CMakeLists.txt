@@ -92,7 +92,6 @@ if (ASTRELIS_PLATFORM STREQUAL "Linux")
     set(ASTRELIS_RENDERER_METAL OFF)
     set(ASTRELIS_RENDERER_VULKAN ON)
 elseif (ASTRELIS_PLATFORM STREQUAL "MacOS")
-    # TODO: Add Metal renderer, and disable OpenGL
     set(ASTRELIS_RENDERER_OPENGL OFF)
     set(ASTRELIS_RENDERER_METAL OFF)
     set(ASTRELIS_RENDERER_VULKAN ON)
@@ -158,8 +157,6 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Renderer/Renderer2D.hpp
     src/Astrelis/Renderer/RendererAPI.cpp
     src/Astrelis/Renderer/RendererAPI.hpp
-    src/Astrelis/Renderer/VoxelRenderer.cpp
-    src/Astrelis/Renderer/VoxelRenderer.hpp
 
     src/Astrelis/Renderer/DescriptorSetLayout.hpp
     src/Astrelis/Renderer/DescriptorSets.hpp
@@ -175,12 +172,6 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/UI/ImGui/ImGuiBackend.cpp
     src/Astrelis/UI/ImGui/ImGuiLayer.hpp
     src/Astrelis/UI/ImGui/ImGuiLayer.cpp
-
-    # Scene
-    src/Astrelis/Scene/Scene.hpp
-    src/Astrelis/Scene/Scene.cpp
-    src/Astrelis/Scene/Scene2D.hpp
-    src/Astrelis/Scene/Scene2D.cpp
 
     # Platform
     $<$<STREQUAL:${ASTRELIS_PLATFORM},Linux>:

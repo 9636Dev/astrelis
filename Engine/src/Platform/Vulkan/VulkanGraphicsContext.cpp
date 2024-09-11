@@ -11,9 +11,6 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
-// TODO: Remove
-#include <stb_image_write.h>
-
 namespace Astrelis
 {
     VulkanGraphicsContext::VulkanGraphicsContext(RawRef<GLFWwindow*> window) :
@@ -137,8 +134,13 @@ namespace Astrelis
         }
 #endif
 
-        // TODO: Create a descriptor pool manager, right now it is just hardcoded
-        INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, 1'000));
+        Vulkan::DescriptorPoolCreateInfo descriptorPoolCreateInfo;
+        descriptorPoolCreateInfo.poolSizes = {
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10},
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10},
+        };
+        descriptorPoolCreateInfo.maxSets = 10;
+        INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, descriptorPoolCreateInfo));
 
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
         {
@@ -419,7 +421,6 @@ namespace Astrelis
         blit.dstSubresource.layerCount     = 1;
 
         auto* cmdBuffer = Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
-        // TODO(MetalDrawableWarning): Blitting a drawable on MoltenVK returns a metal warning
         vkCmdBlitImage(cmdBuffer, m_SwapChain.GetImages()[m_ImageIndex], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
 

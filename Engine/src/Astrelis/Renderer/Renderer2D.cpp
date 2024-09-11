@@ -2,7 +2,6 @@
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/IO/Image.hpp"
-#include "Astrelis/Scene/TransformComponent.hpp"
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsPipeline.hpp"
 #include "Vertex.hpp"
@@ -130,45 +129,6 @@ namespace Astrelis
     {
         ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::BeginFrame");
         InternalBeginFrame();
-    }
-
-    void Renderer2D::RenderScene(Scene2D& scene, Camera& camera)
-    {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::RenderScene");
-        m_Instances.clear();
-
-        {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::RenderScene::SetupCamera");
-            m_UBO.View         = camera.GetViewMatrix();
-            Rect2D surfaceSize = m_RendererAPI->GetSurfaceSize();
-            float aspectRatio  = static_cast<float>(surfaceSize.Width() / static_cast<float>(surfaceSize.Height()));
-            m_UBO.Projection   = Math::Orthographic(-aspectRatio, aspectRatio, -1.0F, 1.0F, -1.0F, 1.0F);
-            m_RendererAPI->CorrectProjection(m_UBO.Projection);
-        }
-
-        {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::RenderScene::SetupPipeline");
-            m_VertexBuffer->Bind(m_Context, 0);
-            m_InstanceBuffer->Bind(m_Context, 1);
-            m_IndexBuffer->Bind(m_Context);
-            m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(CameraUniformData), 0);
-            m_DescriptorSets->Bind(m_Context, m_Pipeline);
-        }
-
-        {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::RenderScene::UpdateEntities");
-            for (auto entity : scene.GetComponents<TransformComponent>())
-            {
-                m_Instances.push_back({scene.GetComponent<TransformComponent>(entity).Transform});
-                if (m_Instances.size() >= MAX_INSTANCE_COUNT)
-                {
-                    DrawInstances();
-                    m_Instances.clear();
-                }
-            }
-        }
-
-        DrawInstances();
     }
 
     void Renderer2D::DrawInstances()

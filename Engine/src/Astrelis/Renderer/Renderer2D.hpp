@@ -6,7 +6,6 @@
 #include "Astrelis/Core/Window.hpp"
 #include "Astrelis/Renderer/BaseRenderer.hpp"
 #include "Astrelis/Renderer/TextureImage.hpp"
-#include "Astrelis/Scene/Scene2D.hpp"
 
 #include "Camera.hpp"
 #include "VertexBuffer.hpp"
@@ -38,7 +37,6 @@ namespace Astrelis
         void Shutdown() override;
 
         void BeginFrame() override;
-        void RenderScene(Scene2D& scene, Camera& camera);
         void EndFrame() override;
     private:
         void DrawInstances();
