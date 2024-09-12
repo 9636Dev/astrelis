@@ -19,7 +19,7 @@ namespace Astrelis
 
     void VulkanImGuiBackend::Init()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanImGuiBackend::Init");
+        ASTRELIS_PROFILE_FUNCTION();
         ImGui_ImplGlfw_InitForVulkan(reinterpret_cast<GLFWwindow*>(m_Window->GetNativeWindow()), true);
 
         ImGui_ImplVulkan_InitInfo initInfo = {};
@@ -43,7 +43,7 @@ namespace Astrelis
 
     void VulkanImGuiBackend::Shutdown()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanImGuiBackend::Shutdown");
+        ASTRELIS_PROFILE_FUNCTION();
         m_API->WaitDeviceIdle();
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -51,12 +51,14 @@ namespace Astrelis
 
     void VulkanImGuiBackend::Begin()
     {
+        ASTRELIS_PROFILE_FUNCTION();
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
     }
 
     void VulkanImGuiBackend::End()
     {
+        ASTRELIS_PROFILE_FUNCTION();
         ImDrawData* drawData = ImGui::GetDrawData();
 
         VkCommandBuffer commandBuffer = m_Context->GetCurrentFrame().CommandBuffer.GetHandle();
@@ -65,8 +67,8 @@ namespace Astrelis
 
     void VulkanImGuiBackend::Resize(std::int32_t width, std::int32_t height)
     {
-        (void)width;
-        (void)height;
+        ASTRELIS_PROFILE_FUNCTION();
+        ASTRELIS_UNUSED(width, height);
         m_API->ResizeViewport();
     }
 } // namespace Astrelis

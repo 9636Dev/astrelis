@@ -110,7 +110,6 @@ endif()
 
 add_subdirectory(vendor)
 
-
 set(ASTRELIS_ENGINE_SOURCES
     # Core
     src/Astrelis/Core/Base.hpp

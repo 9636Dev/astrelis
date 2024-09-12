@@ -1,4 +1,5 @@
 #include "Instance.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/Log.hpp"
 
@@ -12,19 +13,19 @@ namespace Astrelis::Vulkan
         }
     }
 
-    bool Instance::Init(std::string_view appName,
-                        std::string_view engineName,
-                        APIVersion version,
-                        const std::vector<const char*>& extensions,
-                        const std::vector<const char*>& layers)
+    bool Instance::Init(CString appName,
+                        Version appVersion,
+                        Version apiVersion,
+                        const std::vector<CString>& extensions,
+                        const std::vector<CString>& layers)
     {
         VkApplicationInfo appInfo {};
         appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName   = appName.data();
-        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName        = engineName.data();
+        appInfo.pApplicationName   = appName;
+        appInfo.applicationVersion = appVersion.VulkanVersion;
+        appInfo.pEngineName        = "Astrelis";
         appInfo.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion         = VK_MAKE_VERSION(version.major, version.minor, 0);
+        appInfo.apiVersion         = apiVersion.VulkanVersion;
 
         VkInstanceCreateInfo createInfo {};
         createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;

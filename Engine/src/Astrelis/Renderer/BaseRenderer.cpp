@@ -23,7 +23,7 @@ namespace Astrelis
 
     void BaseRenderer::InternalBeginFrame()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::BaseRenderer::InternalBeginFrame()");
+        ASTRELIS_PROFILE_FUNCTION();
         ASTRELIS_CORE_ASSERT(m_Pipeline != nullptr, "m_Pipeline is null, did you initialize it in 'Init()'?")
         m_Pipeline->Bind(m_Context);
         Rect2Di scissor = m_RendererAPI->GetSurfaceSize();

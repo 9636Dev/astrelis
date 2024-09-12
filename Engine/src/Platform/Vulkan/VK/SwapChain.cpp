@@ -21,27 +21,33 @@ namespace Astrelis::Vulkan
             QuerySwapChainSupport(physicalDevice.GetHandle(), surface.GetHandle());
 
         VkSurfaceFormatKHR surfaceFormat = swapChainSupport.ChooseSwapSurfaceFormat();
-        VkPresentModeKHR presentMode     = vsync ? swapChainSupport.ChooseSwapPresentMode() : VK_PRESENT_MODE_IMMEDIATE_KHR;
-        VkExtent2D extent                = swapChainSupport.ChooseExtent(window);
+        VkPresentModeKHR presentMode = vsync ? swapChainSupport.ChooseSwapPresentMode() : VK_PRESENT_MODE_IMMEDIATE_KHR;
+        VkExtent2D extent            = swapChainSupport.ChooseExtent(window);
 
         if (GlobalConfig::IsDebugMode())
         {
-            ASTRELIS_CORE_LOG_INFO("Swap chain support details:");
-            ASTRELIS_CORE_LOG_INFO("Surface formats:");
-            for (const auto& format : swapChainSupport.formats)
+            static bool firstInit = true;
+            if (firstInit)
             {
-                ASTRELIS_CORE_LOG_INFO("\tFormat: {0}, Color space: {1}", Utils::VkFormatToString(format.format),
-                                     Utils::VkColorSpaceToString(format.colorSpace));
+                firstInit = false;
+                ASTRELIS_CORE_LOG_INFO("Swap chain support details:");
+                ASTRELIS_CORE_LOG_INFO("Surface formats:");
+                for (const auto& format : swapChainSupport.formats)
+                {
+                    ASTRELIS_CORE_LOG_INFO("\tFormat: {0}, Color space: {1}", Utils::VkFormatToString(format.format),
+                                           Utils::VkColorSpaceToString(format.colorSpace));
+                }
+
+                ASTRELIS_CORE_LOG_INFO("Present modes:");
+                for (const auto& mode : swapChainSupport.presentModes)
+                {
+                    ASTRELIS_CORE_LOG_INFO("\t{0}", Utils::VkPresentModeToString(mode));
+                }
             }
 
-            ASTRELIS_CORE_LOG_INFO("Present modes:");
-            for (const auto& mode : swapChainSupport.presentModes)
-            {
-                ASTRELIS_CORE_LOG_INFO("\t{0}", Utils::VkPresentModeToString(mode));
-            }
-
-            ASTRELIS_CORE_LOG_INFO("Surface format: {0}, Color space: {1}", Utils::VkFormatToString(surfaceFormat.format),
-                                 Utils::VkColorSpaceToString(surfaceFormat.colorSpace));
+            ASTRELIS_CORE_LOG_INFO("Surface format: {0}, Color space: {1}",
+                                   Utils::VkFormatToString(surfaceFormat.format),
+                                   Utils::VkColorSpaceToString(surfaceFormat.colorSpace));
             ASTRELIS_CORE_LOG_INFO("Present mode: {0}", Utils::VkPresentModeToString(presentMode));
             ASTRELIS_CORE_LOG_INFO("Extent: {0}x{1}", extent.width, extent.height);
         }

@@ -13,7 +13,7 @@ namespace Astrelis
 {
     Result<RefPtr<Window>, std::string> Window::Create(const WindowProps& props)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Window::Create");
+        ASTRELIS_PROFILE_FUNCTION();
 #ifdef ASTRELIS_PLATFORM_LINUX
         return LinuxWindow::Create(props).MapMove(
             [](RefPtr<LinuxWindow>&& window) { return static_cast<RefPtr<Window>>(window); });

@@ -1,21 +1,24 @@
 #pragma once
 
-#include <cstdint>
-#include <string_view>
-#include <vector>
+#include "Astrelis/Core/Types.hpp"
 
+#include <cstdint>
+#include <vector>
 #include <vulkan/vulkan.h>
 
 namespace Astrelis::Vulkan
 {
-    struct APIVersion
+    struct Version
     {
-        std::uint32_t major = 1;
-        std::uint32_t minor = 0;
+        std::uint32_t VulkanVersion = VK_VERSION_1_0;
 
-        APIVersion() = default;
+        [[nodiscard]] bool IsValid() const { return VulkanVersion != 0; }
+        Version(std::uint32_t major, std::uint32_t minor, std::uint32_t patch)
+            : VulkanVersion(VK_MAKE_VERSION(major, minor, patch)) {}
 
-        APIVersion(std::uint32_t major, std::uint32_t minor) : major(major), minor(minor) {}
+        std::uint32_t GetMajor() const { return VK_VERSION_MAJOR(VulkanVersion); }
+        std::uint32_t GetMinor() const { return VK_VERSION_MINOR(VulkanVersion); }
+        std::uint32_t GetPatch() const { return VK_VERSION_PATCH(VulkanVersion); }
     };
 
     class Instance
@@ -28,11 +31,11 @@ namespace Astrelis::Vulkan
         Instance(Instance&&)                 = delete;
         Instance& operator=(Instance&&)      = delete;
 
-        [[nodiscard]] bool Init(std::string_view appName,
-                                std::string_view engineName,
-                                APIVersion apiVersion,
-                                const std::vector<const char*>& extensions,
-                                const std::vector<const char*>& layers);
+        [[nodiscard]] bool Init(CString appName,
+                                Version appVersion,
+                                Version apiVersion,
+                                const std::vector<CString>& extensions,
+                                const std::vector<CString>& layers);
 
         void Destroy();
 

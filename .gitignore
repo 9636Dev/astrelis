@@ -23,3 +23,6 @@
 
 # Obsidian, for editing design files
 .obsidian/
+
+# Cmake Configured files
+/Engine/src/Astrelis/Core/Utils/Version.hpp

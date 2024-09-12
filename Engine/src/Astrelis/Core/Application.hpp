@@ -35,6 +35,23 @@ namespace Astrelis
         }
     };
 
+    // We can pack this to a single 32-bit integer
+    struct ApplicationVersion
+    {
+        enum class ReleaseType : std::uint8_t
+        {
+            Alpha            = 0,
+            Beta             = 1,
+            ReleaseCandidate = 2,
+            Release          = 3
+        };
+
+        ReleaseType Type;
+        std::uint8_t Major;
+        std::uint8_t Minor;
+        std::uint8_t Patch;
+    };
+
     /**
     * @brief Specifications for a application, which will be used internally
     */
@@ -43,7 +60,8 @@ namespace Astrelis
         /**
         * @brief The name of the application, this is used primarily when debugging, and logging
         */
-        std::string Name = "Astrelis Application";
+        std::string Name           = "Astrelis Application";
+        ApplicationVersion Version = {ApplicationVersion::ReleaseType::Alpha, 0, 0, 1};
         /**
          * @brief The working directory of the application, use './' for the current directory.
         */
@@ -74,7 +92,7 @@ namespace Astrelis
     {
     public:
         friend int ::AstrelisMain(int argc, char** argv);
-        friend void SignalHandler(int signal);
+        friend void ApplicationSignalHandler(int signal);
         /**
          * @brief Creates an application with the given specification
          * @param specification The specification of the application
@@ -96,10 +114,14 @@ namespace Astrelis
 
         const RefPtr<RenderSystem>& GetRenderSystem() const { return m_RenderSystem; }
 
+        const ApplicationSpecification& GetSpecification() const { return m_Specification; }
+
         /**
          * Gets the application instance, which should be a singleton. The program will crash and throw an error if more than 1 application is created and not destroyed.
          */
         static Application& Get() { return *s_Instance; }
+
+        static bool HasInstance() { return s_Instance != nullptr; }
     protected:
         /**
          * @brief Push a layer onto the stack, which will be updated and rendererd before all Overlays

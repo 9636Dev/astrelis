@@ -20,12 +20,13 @@ namespace Astrelis
 
     Renderer2D::Renderer2D(RefPtr<Window> window, Rect2Di viewport) : BaseRenderer(std::move(window), viewport)
     {
+        ASTRELIS_PROFILE_FUNCTION();
         m_Instances.reserve(MAX_INSTANCE_COUNT);
     }
 
     bool Renderer2D::InitComponents()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::InitComponents");
+        ASTRELIS_PROFILE_FUNCTION();
         std::vector<BufferBinding> vertexInputs(2);
         vertexInputs[0].Binding   = 0;
         vertexInputs[0].Stride    = sizeof(Vertex2D);
@@ -108,7 +109,7 @@ namespace Astrelis
 
     void Renderer2D::Shutdown()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::Shutdown");
+        ASTRELIS_PROFILE_FUNCTION();
         m_RendererAPI->WaitDeviceIdle();
 
         m_VertexBuffer->Destroy(m_Context);
@@ -133,7 +134,7 @@ namespace Astrelis
 
     void Renderer2D::DrawInstances()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::DrawInstances");
+        ASTRELIS_PROFILE_FUNCTION();
         if (m_Instances.empty())
         {
             return;

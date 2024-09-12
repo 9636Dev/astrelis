@@ -15,7 +15,7 @@
 
 namespace Astrelis
 {
-    void SignalHandler(int signal)
+    void ApplicationSignalHandler(int signal)
     {
         ASTRELIS_LOG_DEBUG("Signal received: {0}", signal);
         Application::Get().m_Running = false;
@@ -28,17 +28,17 @@ namespace Astrelis
         m_Window(nullptr),
         m_ImGuiLayer(nullptr)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Application");
+        ASTRELIS_PROFILE_FUNCTION();
         ASTRELIS_VERIFY(Astrelis::Log::Init(), "Logger failed to initialize");
         ASTRELIS_VERIFY(s_Instance == nullptr, "Application already exists (Should be singleton)");
         s_Instance = this;
 
         // Register signal handler
-        if (std::signal(SIGINT, SignalHandler) == SIG_ERR)
+        if (std::signal(SIGINT, ApplicationSignalHandler) == SIG_ERR)
         {
             ASTRELIS_LOG_ERROR("Failed to register signal handler for SIGINT");
         }
-        if (std::signal(SIGTERM, SignalHandler) == SIG_ERR)
+        if (std::signal(SIGTERM, ApplicationSignalHandler) == SIG_ERR)
         {
             ASTRELIS_LOG_ERROR("Failed to register signal handler for SIGTERM");
         }
@@ -67,8 +67,8 @@ namespace Astrelis
         }
 
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Application::SetupWindow");
-            auto res = Window::Create();
+            ASTRELIS_PROFILE_SCOPE("Setup Window");
+            auto res = Window::Create(WindowProps(m_Specification.Name));
             if (res.IsErr())
             {
                 ASTRELIS_LOG_ERROR("Failed to create window: {0}", res.UnwrapErr());
@@ -80,7 +80,7 @@ namespace Astrelis
             m_Window->SetEventCallback(ASTRELIS_BIND_EVENT_FN(Application::OnEvent));
         }
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Application::SetupRenderSystem");
+            ASTRELIS_PROFILE_SCOPE("Setup RenderSystem");
             m_RenderSystem = RenderSystem::Create(m_Window);
             if (!m_RenderSystem->Init())
             {
@@ -91,18 +91,21 @@ namespace Astrelis
         }
 
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Application::SetupImGui");
+            ASTRELIS_PROFILE_SCOPE("Setup ImGuiLayer");
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
             OwnedPtr<ImGuiLayer*> imguiLayer(new ImGuiLayer(ImGuiBackend::Create(m_Window)));
             m_ImGuiLayer = imguiLayer.Raw();
             PushOverlay(static_cast<OwnedPtr<Layer*>>(imguiLayer)); // Ownership transferred to LayerStack
             status = CreationStatus::SUCCESS;
         }
+
+        ASTRELIS_CORE_LOG_INFO("Application created successfully");
+        ASTRELIS_CORE_LOG_DEBUG("Using Astrelis version: {0}", ASTRELIS_VERSION_STRING);
     }
 
     Application::~Application()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Application::~Application");
+        ASTRELIS_PROFILE_FUNCTION();
         m_RenderSystem->Shutdown();
         for (auto& layer : m_LayerStack)
         {
@@ -117,14 +120,14 @@ namespace Astrelis
         TimePoint lastFrameTime = Time::Now();
         while (m_Running)
         {
-            ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Run::Frame");
+            ASTRELIS_PROFILE_SCOPE("Run Frame");
             Time::s_DeltaTime = Time::ElapsedTime<Milliseconds>(lastFrameTime, Time::Now());
             lastFrameTime     = Time::Now();
             m_Window->BeginFrame();
 
             m_RenderSystem->StartGraphicsRenderPass();
             {
-                ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Run::UpdateLayers");
+                ASTRELIS_PROFILE_SCOPE("Update Layers");
                 for (auto& layer : m_LayerStack)
                 {
                     layer->OnUpdate();
@@ -136,7 +139,7 @@ namespace Astrelis
             m_ImGuiLayer->Begin();
 
             {
-                ASTRELIS_PROFILE_SCOPE("Astrelis::Application::Run::UpdateUI");
+                ASTRELIS_PROFILE_SCOPE("Render UI");
                 for (auto& layer : m_LayerStack)
                 {
                     layer->OnUIRender();
@@ -184,28 +187,28 @@ namespace Astrelis
 
     void Application::PushLayer(OwnedPtr<Layer*> layer)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Application::PushLayer");
+        ASTRELIS_PROFILE_FUNCTION();
         layer->OnAttach();
         m_LayerStack.PushLayer(std::move(layer));
     }
 
     void Application::PushOverlay(OwnedPtr<Layer*> overlay)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Application::PushOverlay");
+        ASTRELIS_PROFILE_FUNCTION();
         overlay->OnAttach();
         m_LayerStack.PushOverlay(std::move(overlay));
     }
 
     OwnedPtr<Layer*> Application::PopLayer(RawRef<Layer*> layer)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Application::PopLayer");
+        ASTRELIS_PROFILE_FUNCTION();
         layer->OnDetach();
         return m_LayerStack.PopLayer(std::move(layer));
     }
 
     OwnedPtr<Layer*> Application::PopOverlay(RawRef<Layer*> overlay)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Application::PopOverlay");
+        ASTRELIS_PROFILE_FUNCTION();
         overlay->OnDetach();
         return m_LayerStack.PopOverlay(std::move(overlay));
     }

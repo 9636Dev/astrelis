@@ -10,6 +10,7 @@
 #include "Astrelis/Core/Utils/Platform.hpp"
 #include "Astrelis/Core/Utils/Profiling.hpp"
 #include "Astrelis/Core/Utils/Renderer.hpp"
+#include "Astrelis/Core/Utils/Version.hpp"
 
 #include <algorithm>
 #include <array>

@@ -19,22 +19,22 @@ namespace Astrelis
     class RendererAPI
     {
     public:
-        enum class API
+        enum class API : std::uint8_t
         {
             None   = 0,
             Vulkan = 1,
         };
-        enum class Type
+        enum class Type : std::uint8_t
         {
             Renderer2D,
             Renderer3D,
             RayTracer,
         };
-        enum class BufferingMode
+        enum class BufferingMode : std::uint8_t
         {
-            Single,
-            Double,
-            Triple,
+            Single = 1,
+            Double = 2,
+            Triple = 3,
         };
 
         static API GetAPI() { return s_API; }
@@ -42,25 +42,13 @@ namespace Astrelis
         /**
         * @brief Set the API to be used by the renderer, only works before the App is created
         */
-        static void SetAPI(API api) { s_API = api; }
+        static void SetAPI(API api);
 
         static BufferingMode GetBufferingMode() { return s_BufferingMode; }
 
-        static std::uint32_t GetBufferingCount()
-        {
-            switch (s_BufferingMode)
-            {
-            case BufferingMode::Single:
-                return 1;
-            case BufferingMode::Double:
-                return 2;
-            case BufferingMode::Triple:
-                return 3;
-            }
-            return 0;
-        }
+        static std::uint32_t GetBufferingCount() { return static_cast<std::uint32_t>(s_BufferingMode); }
 
-        static void SetBufferingMode(BufferingMode mode) { s_BufferingMode = mode; }
+        static void SetBufferingMode(BufferingMode mode);
 
         RendererAPI()                              = default;
         virtual ~RendererAPI()                     = default;

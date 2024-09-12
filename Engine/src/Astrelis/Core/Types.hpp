@@ -2,8 +2,13 @@
 
 #include <type_traits>
 
-namespace Astrelis::Types
+namespace Astrelis
 {
-    template<typename T>
-    concept Arithmetic = std::is_arithmetic_v<T>;
-} // namespace Astrelis::Types
+    namespace Types
+    {
+        template<typename T>
+        concept Arithmetic = std::is_arithmetic_v<T>;
+    } // namespace Types
+
+    using CString = const char*;
+} // namespace Astrelis

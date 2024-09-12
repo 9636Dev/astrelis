@@ -15,31 +15,35 @@ namespace Astrelis
 
     MacOSWindow::~MacOSWindow()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::MacOSWindow::~MacOSWindow");
+        ASTRELIS_PROFILE_FUNCTION();
         m_Context->Shutdown();
         GLFWWindowHelper::DestroyWindow(std::move(m_Window));
     }
 
     void MacOSWindow::BeginFrame()
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::MacOSWindow::BeginFrame");
+        ASTRELIS_PROFILE_FUNCTION();
         m_Context->BeginFrame();
     }
 
     void MacOSWindow::EndFrame() {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::MacOSWindow::EndFrame");
+        ASTRELIS_PROFILE_FUNCTION();
         m_Context->EndFrame();
     }
 
     void MacOSWindow::OnUpdate() {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::MacOSWindow::OnUpdate");
+        ASTRELIS_PROFILE_FUNCTION();
         glfwPollEvents();
     }
 
-    void MacOSWindow::WaitForEvents() { glfwWaitEvents(); }
+    void MacOSWindow::WaitForEvents() {
+        ASTRELIS_PROFILE_FUNCTION();
+        glfwWaitEvents();
+    }
 
     Rect2Di MacOSWindow::GetViewportBounds() const
     {
+        ASTRELIS_PROFILE_FUNCTION();
         // Get size using GLFW
         std::int32_t width  = 0;
         std::int32_t height = 0;
@@ -49,7 +53,7 @@ namespace Astrelis
 
     Result<RefPtr<MacOSWindow>, std::string> MacOSWindow::Create(const WindowProps& props)
     {
-        ASTRELIS_PROFILE_SCOPE("Astrelis::MacOSWindow::Create");
+        ASTRELIS_PROFILE_FUNCTION();
         Result<GLFWwindow*, std::string> windowRes("No Window API selected");
 
         switch (RendererAPI::GetAPI())

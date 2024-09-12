@@ -1,6 +1,7 @@
 #include "VulkanGraphicsContext.hpp"
 #include "Astrelis/Core/Base.hpp"
 
+#include "Astrelis/Core/Application.hpp"
 #include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
@@ -36,10 +37,12 @@ namespace Astrelis
             return false;
         }
 
-        INIT_COMPONENT(
-            m_Instance.Init("Astrelis", "Astrelis Engine", Vulkan::APIVersion(1, 0),
-                            Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
-                            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
+        const auto& appSpec = Application::Get().GetSpecification();
+
+        INIT_COMPONENT(m_Instance.Init(
+            appSpec.Name.c_str(), Vulkan::Version(appSpec.Version.Major, appSpec.Version.Minor, appSpec.Version.Patch),
+            Vulkan::Version(1, 0, 0), Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
+            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
         if (GlobalConfig::IsDebugMode())
         {
             Vulkan::Ext::Init(m_Instance);
@@ -136,7 +139,7 @@ namespace Astrelis
 
         Vulkan::DescriptorPoolCreateInfo descriptorPoolCreateInfo;
         descriptorPoolCreateInfo.poolSizes = {
-            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         10},
             {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10},
         };
         descriptorPoolCreateInfo.maxSets = 10;
@@ -450,7 +453,9 @@ namespace Astrelis
 
         for (std::uint32_t row = 0; row < static_cast<std::uint32_t>(dstHeight); ++row)
         {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
             std::memcpy(imageData.data() + bytesPerPixel * row * dstWidth,
+                        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
                         static_cast<std::byte*>(data) + row * subResourceLayout.rowPitch, bytesPerPixel * dstWidth);
         }
 

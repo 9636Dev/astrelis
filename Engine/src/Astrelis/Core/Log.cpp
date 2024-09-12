@@ -17,7 +17,7 @@ namespace Astrelis
             return true;
         }
 
-        ASTRELIS_PROFILE_SCOPE("Astrelis::Log::Init");
+        ASTRELIS_PROFILE_FUNCTION();
         auto modeValue = static_cast<std::uint8_t>(mode);
         try
         {
