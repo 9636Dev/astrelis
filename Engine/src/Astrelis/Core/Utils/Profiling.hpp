@@ -16,6 +16,12 @@
 #endif
 
 
-#define ASTRELIS_PROFILE_FUNCTION()  ZoneScoped
+/// @def ASTRELIS_PROFILE_FUNCTION()
+/// @brief A wrapper for Tracy's ZoneScoped
+#define ASTRELIS_PROFILE_FUNCTION() ZoneScoped
+/// @def ASTRELIS_PROFILE_SCOPE(name)
+/// @brief A wrapper for Tracy's ZoneScopedN
 #define ASTRELIS_PROFILE_SCOPE(name) ZoneScopedN(name)
+/// @def ASTRELIS_PROFILE_GPU_SCOPE(name)
+/// @brief A wrapper for Tracy's FrameMark
 #define ASTRELIS_PROFILE_END_FRAME() FrameMark

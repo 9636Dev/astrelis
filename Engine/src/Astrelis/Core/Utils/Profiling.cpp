@@ -2,6 +2,7 @@
 
 #ifdef TRACY_ENABLE
     #ifdef ASTRELIS_PROFILE_MEMORY
+/// @private
 void* operator new(size_t size)
 {
     // NOLINTNEXTLINE
@@ -10,6 +11,7 @@ void* operator new(size_t size)
     return ptr;
 }
 
+/// @private
 void operator delete(void* ptr) noexcept
 {
     TracyFree(ptr);

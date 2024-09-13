@@ -19,6 +19,7 @@ namespace Astrelis
     void ApplicationSignalHandler(int signal)
     {
         ASTRELIS_LOG_DEBUG("Signal received: {0}", signal);
+        ASTRELIS_CORE_ASSERT(Application::HasInstance(), "Application instance does not exist");
         Application::Get().m_Running = false;
     }
 
@@ -106,6 +107,24 @@ namespace Astrelis
 
     Application::~Application()
     {
+        // Disable signal handler
+        if (std::signal(SIGINT, SIG_DFL) == SIG_ERR)
+        {
+            ASTRELIS_LOG_ERROR("Failed to disable signal handler for SIGINT");
+        }
+
+        if (std::signal(SIGTERM, SIG_DFL) == SIG_ERR)
+        {
+            ASTRELIS_LOG_ERROR("Failed to disable signal handler for SIGTERM");
+        }
+
+#ifdef ASTRELIS_PLATFORM_WINDOWS
+        if (std::signal(SIGBREAK, SIG_DFL) == SIG_ERR)
+        {
+            ASTRELIS_LOG_ERROR("Failed to disable signal handler for SIGBREAK");
+        }
+#endif
+
         ASTRELIS_PROFILE_FUNCTION();
         m_RenderSystem->Shutdown();
         for (auto& layer : m_LayerStack)

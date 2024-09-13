@@ -1,5 +1,6 @@
 #include "PhysicalDevice.hpp"
 
+#include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/Core/Log.hpp"
 
 #include <algorithm>
@@ -38,6 +39,7 @@ namespace Astrelis::Vulkan
             score += 1'000;
         }
 
+        ASTRELIS_CORE_LOG_INFO("Device: {} - {}", deviceProperties.deviceName, score);
         return score;
     }
 
@@ -53,6 +55,11 @@ namespace Astrelis::Vulkan
         }
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
+        if (GlobalConfig::IsDebugMode())
+        {
+            ASTRELIS_CORE_LOG_INFO("Found {} devices with Vulkan support", deviceCount);
+        }
+
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
         std::vector<std::pair<VkPhysicalDevice, int>> deviceScores;
         deviceScores.reserve(deviceCount);

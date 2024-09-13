@@ -2,6 +2,16 @@
 
 template<typename... Args> constexpr inline void ASTRELIS_UNUSED([[maybe_unused]] Args&&... args) {}
 
+/// @def ASTRELIS_ALWAYS_INLINE
+/// @brief Forces the compiler to inline the function
+
+/// @def ASTRELIS_NEVER_INLINE
+/// @brief Forces the compiler to never inline the function
+/// @note This is useful for debugging purposes
+
+/// @def ASTRELIS_UNREACHABLE
+/// @brief Informs the compiler that the code path is unreachable
+
 // Optimization macros
 #ifdef __clang__
     #define ASTRELIS_ALWAYS_INLINE __attribute__((always_inline))

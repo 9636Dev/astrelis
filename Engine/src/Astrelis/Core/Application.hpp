@@ -16,13 +16,12 @@ int AstrelisMain(int argc, char** argv);
 
 namespace Astrelis
 {
-    /**
-    * @brief Representation of command line arguments, in a more C++ way, as a std::vector of std::string
-    */
+    /// @brief Representation of command line arguments, in a more C++ way, as a std::vector of std::string
     struct CommandLineArguments
     {
         std::vector<std::string> Arguments;
 
+        /// @brief Parses the command line arguments from the given argc and argv
         static CommandLineArguments Parse(int argc, char** argv)
         {
             CommandLineArguments result;
@@ -35,7 +34,7 @@ namespace Astrelis
         }
     };
 
-    // We can pack this to a single 32-bit integer
+    /// @brief Representation of an application version, with a release type, major, minor, and patch version
     struct ApplicationVersion
     {
         enum class ReleaseType : std::uint8_t
@@ -52,9 +51,7 @@ namespace Astrelis
         std::uint8_t Patch;
     };
 
-    /**
-    * @brief Specifications for a application, which will be used internally
-    */
+    /// @brief Specifications for a application, which will be used internally
     struct ApplicationSpecification
     {
         /**
@@ -76,29 +73,28 @@ namespace Astrelis
         RENDER_SYSTEM_CREATION_FAILED = 2
     };
 
-    /**
-    * The main application of Astrelis, including the core logic of the engine, and window lifetimes
-    * It stores basic state information:
-    * - m_IsRunning - Whether the application is running
-    * - m_Specification - The application specification
-    * - m_LayerStack - The layer stack of the application, @see LayerStack
-    * And also per window state information:
-    * - m_Window - The window of the application, see @see Window
-    *  @note You can create your own windows in your own layers, but the application is designed to have a main window, with a render system, @see RenderSystem
-    * - m_RenderSystem - A window specific render system, you can create your own renderers, that render into different frame buffers, etc..
-    * @note Initializing another Application after one is terminated is undefined behaviour. The application be the entire program, and should be a singleton.
-    */
+    /// @brief The main application of Astrelis, including the core logic of the engine, and window lifetimes
+    /// It stores basic state information:
+    /// - m_IsRunning - Whether the application is running
+    /// - m_Specification - The application specification
+    /// - m_LayerStack - The layer stack of the application, @see LayerStack
+    /// - m_ImGuiLayer - The ImGui layer, which is always on top of the layer stack, @see ImGuiLayer
+    /// And also per window state information:
+    /// - m_Window - The window of the application, see @see Window
+    ///  @note You can create your own windows in your own layers, but the application is designed to have a main window, with a render system, @see RenderSystem
+    /// - m_RenderSystem - A window specific render system, you can create your own renderers, that render into different frame buffers, etc..
+    /// @note Initializing another Application after one is terminated is undefined behaviour. The application be the entire program, and should be a singleton.
+    /// @note Resources should be correctly freed after termination, but reinitializing the application should work, but is not tested.
     class Application
     {
     public:
         friend int ::AstrelisMain(int argc, char** argv);
         friend void ApplicationSignalHandler(int signal);
-        /**
-         * @brief Creates an application with the given specification
-         * @param specification The specification of the application
-         * @param status The status of the creation, if the creation was successful, or if it failed
-         * @note You should call this in the Astrelis::CreateApplication function, which should be defined in your application
-         */
+
+        /// @brief Creates an application with the given specification
+        /// @param specification The specification of the application
+        /// @param status The status of the creation, if the creation was successful, or if it failed
+        /// @note You should call this in the Astrelis::CreateApplication function, which should be defined in your application
         explicit Application(ApplicationSpecification specification, CreationStatus& status);
         virtual ~Application();
         Application(const Application&)            = delete;
@@ -116,48 +112,36 @@ namespace Astrelis
 
         const ApplicationSpecification& GetSpecification() const { return m_Specification; }
 
-        /**
-         * Gets the application instance, which should be a singleton. The program will crash and throw an error if more than 1 application is created and not destroyed.
-         */
+        /// Gets the application instance, which should be a singleton. The program will crash and throw an error if more than 1 application is created and not destroyed.
         static Application& Get() { return *s_Instance; }
 
         static bool HasInstance() { return s_Instance != nullptr; }
     protected:
-        /**
-         * @brief Push a layer onto the stack, which will be updated and rendererd before all Overlays
-         * This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
-         */
+        /// @brief Push a layer onto the stack, which will be updated and rendererd before all Overlays
+        /// This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
         void PushLayer(OwnedPtr<Layer*> layer);
-        /**
-         * @brief Push an overlay onto the layer stack, which is after all of the layers
-         * This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
-         */
+        /// @brief Push an overlay onto the layer stack, which is after all of the layers
+        /// This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
         void PushOverlay(OwnedPtr<Layer*> overlay);
-        /**
-         * @brief Pops a certain layer from the stack
-         * The owner is transfered back to the owner, which means that the user will need to handle the destruction. @see OwnedPtr
-         */
+        /// @brief Pops a certain layer from the stack
+        /// The owner is transfered back to the owner, which means that the user will need to handle the destruction. @see OwnedPtr
         [[nodiscard]] OwnedPtr<Layer*> PopLayer(RawRef<Layer*> layer);
-        /**
-         * @brief Pops a certain overlay from the stack
-         * The owner is transfered back to the owner, which means that the user will need to handle the destruction. @see OwnedPtr
-         */
+        /// @brief Pops a certain overlay from the stack
+        /// The owner is transfered back to the owner, which means that the user will need to handle the destruction. @see OwnedPtr
         [[nodiscard]] OwnedPtr<Layer*> PopOverlay(RawRef<Layer*> overlay);
 
         void OnEvent(Event& event);
         bool OnWindowClose(WindowCloseEvent& event);
         bool OnViewportResize(ViewportResizedEvent& event);
 
-        /**
-         * This will start the application. This is called internally in 'AstrelisMain'.
-         * The gameloop outlines these steps:
-         *  - Check if the window is closed / application is closed.
-         *  - Begin the frame using the graphics context, this can initialize per farme components, acquire frames, or clear the screen.
-         *  - Update all of the layers
-         *  - Update all of the overlays (after all the layers)
-         *  - End the frame (submit render commands, etc..)
-         *  - Query user input
-         */
+        /// This will start the application. This is called internally in 'AstrelisMain'.
+        /// The gameloop outlines these steps:
+        ///  - Check if the window is closed / application is closed.
+        ///  - Begin the frame using the graphics context, this can initialize per farme components, acquire frames, or clear the screen.
+        ///  - Update all of the layers
+        ///  - Update all of the overlays (after all the layers)
+        ///  - End the frame (submit render commands, etc..)
+        ///  - Query user input
         void Run();
 
         static Application* s_Instance;
@@ -169,9 +153,7 @@ namespace Astrelis
         RawRef<ImGuiLayer*> m_ImGuiLayer;
     };
 
-    /**
-    * @brief Define this function in your application to create an instance of your Application class, extending the base class
-    */
+    /// @brief Define this function in your application to create an instance of your Application class, extending the base class
     extern ScopedPtr<Application> CreateApplication(CommandLineArguments args, CreationStatus& status);
 } // namespace Astrelis
 
