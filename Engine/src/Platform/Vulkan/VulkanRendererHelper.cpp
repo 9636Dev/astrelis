@@ -1,4 +1,5 @@
 #include "VulkanRendererHelper.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
@@ -6,8 +7,7 @@
 
 namespace Astrelis
 {
-    RefPtr<RendererAPI>
-        VulkanRendererHelper::CreateAPI(RefPtr<GraphicsContext> context, RendererAPI::Type type)
+    RefPtr<RendererAPI> VulkanRendererHelper::CreateAPI(RefPtr<GraphicsContext> context, RendererAPI::Type type)
     {
         switch (type)
         {

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Astrelis/Renderer/DescriptorSetLayout.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include "LogicalDevice.hpp"
-
-#include "Astrelis/Renderer/DescriptorSetLayout.hpp"
 
 namespace Astrelis::Vulkan
 {
@@ -19,7 +19,8 @@ namespace Astrelis::Vulkan
         DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = default;
 
         [[nodiscard]] bool Init(LogicalDevice& device, const std::vector<BindingDescriptor>& descriptors);
-        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, const std::vector<BindingDescriptor>& descriptors) override;
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context,
+                                const std::vector<BindingDescriptor>& descriptors) override;
         void Destroy(LogicalDevice& device) const;
         void Destroy(RefPtr<GraphicsContext>& context) const override;
 

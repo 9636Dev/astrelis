@@ -1,4 +1,5 @@
 #include "Log.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include <iostream>

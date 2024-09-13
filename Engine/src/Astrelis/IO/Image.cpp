@@ -1,4 +1,5 @@
 #include "Image.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include <stb_image.h>
@@ -67,7 +68,7 @@ namespace Astrelis
 
     float InMemoryImage::Similarity(const InMemoryImage& other, CompareMethod method) const
     {
-        (void)method;
+        ASTRELIS_UNUSED(method);
         if (m_Width != other.m_Width || m_Height != other.m_Height || m_Channels != other.m_Channels)
         {
             return 0.0F;

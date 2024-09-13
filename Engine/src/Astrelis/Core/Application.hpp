@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Astrelis/Events/WindowEvent.hpp"
+#include "Astrelis/Renderer/RenderSystem.hpp"
+#include "Astrelis/UI/ImGui/ImGuiLayer.hpp"
+
 #include <atomic>
 #include <string>
 #include <vector>
@@ -7,10 +11,6 @@
 #include "LayerStack.hpp"
 #include "Pointer.hpp"
 #include "Window.hpp"
-
-#include "Astrelis/Events/WindowEvent.hpp"
-#include "Astrelis/Renderer/RenderSystem.hpp"
-#include "Astrelis/UI/ImGui/ImGuiLayer.hpp"
 
 int AstrelisMain(int argc, char** argv);
 
@@ -145,7 +145,7 @@ namespace Astrelis
         [[nodiscard]] OwnedPtr<Layer*> PopOverlay(RawRef<Layer*> overlay);
 
         void OnEvent(Event& event);
-        bool OnWindowClose(WindowClosedEvent& event);
+        bool OnWindowClose(WindowCloseEvent& event);
         bool OnViewportResize(ViewportResizedEvent& event);
 
         /**

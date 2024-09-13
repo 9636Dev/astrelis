@@ -3,6 +3,7 @@
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
 #include "Astrelis/Renderer/UniformBuffer.hpp"
+
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Astrelis
@@ -23,12 +24,21 @@ namespace Astrelis
         void SetViewport(Rect3Df& viewport) override;
         void SetScissor(Rect2Di& scissor) override;
         void WaitDeviceIdle() override;
-        void DrawInstanced(std::uint32_t vertexCount, std::uint32_t instanceCount, std::uint32_t firstVertex, std::uint32_t firstInstance) override;
-        void DrawInstancedIndexed(std::uint32_t indexCount, std::uint32_t instanceCount, std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) override;
+        void DrawInstanced(std::uint32_t vertexCount,
+                           std::uint32_t instanceCount,
+                           std::uint32_t firstVertex,
+                           std::uint32_t firstInstance) override;
+        void DrawInstancedIndexed(std::uint32_t indexCount,
+                                  std::uint32_t instanceCount,
+                                  std::uint32_t firstIndex,
+                                  std::uint32_t vertexOffset,
+                                  std::uint32_t firstInstance) override;
         Rect2Di GetSurfaceSize() override;
 
         void ResizeViewport() override { m_Context->m_SwapchainRecreation = true; }
+
         bool NeedsResize() const override { return m_Context->m_SwapchainRecreation; }
+
         void CorrectProjection(Mat4f& projection) override;
 
         RefPtr<GraphicsPipeline> CreateGraphicsPipeline() override;

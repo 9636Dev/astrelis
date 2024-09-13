@@ -25,7 +25,8 @@ namespace Astrelis::Vulkan
         bool Begin() const;
         bool End() const;
         void Reset();
-        bool Submit(LogicalDevice& device, VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence);
+        bool Submit(
+            LogicalDevice& device, VkQueue queue, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence);
 
         VkCommandBuffer GetHandle() const { return m_CommandBuffer; }
     private:

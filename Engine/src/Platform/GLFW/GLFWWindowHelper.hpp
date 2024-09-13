@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 #include "Astrelis/Core/Window.hpp"
 
@@ -15,10 +15,9 @@ namespace Astrelis
 
         static void SetEventCallbacks(RawRef<GLFWwindow*> window, BaseWindowData& data);
     private:
-        template<typename T> static T& GetUserData(GLFWwindow* window)
-        {
-            return *static_cast<T*>(glfwGetWindowUserPointer(window));
-        }
+        static void* GetUserData(GLFWwindow* window);
+
+        template<typename T> static T& GetUserData(GLFWwindow* window) { return *static_cast<T*>(GetUserData(window)); }
 
         static bool InitGLFW();
         static void TerminateGLFW();

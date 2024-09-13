@@ -5,6 +5,7 @@
 #include <cstring>
 #include <stdexcept>
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 
@@ -120,12 +121,9 @@ namespace Astrelis::Vulkan
         vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
     }
 
-    void TransitionImageLayout(VkCommandBuffer commandBuffer,
-                               VkImage image,
-                               VkFormat format,
-                               VkImageLayout oldLayout,
-                               VkImageLayout newLayout)
-{
+    void TransitionImageLayout(
+        VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+    {
         (void)format;
         VkImageMemoryBarrier barrier {};
         barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -223,8 +221,8 @@ namespace Astrelis::Vulkan
         }
 
         vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+    }
 
-}
     void TransitionImageLayout(VkDevice logicalDevice,
                                VkQueue queue,
                                VkCommandPool commandPool,

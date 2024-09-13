@@ -3,9 +3,7 @@
 #include "Astrelis/Core/Layer.hpp"
 
 #include "AssetPanel.hpp"
-#include "Astrelis/Scene/Scene2D.hpp"
-#include "Pulsar/Console.hpp"
-#include "Pulsar/GamePreview.hpp"
+#include "Console.hpp"
 #include <string>
 
 namespace Pulsar
@@ -28,6 +26,5 @@ namespace Pulsar
     private:
         Console m_Console;
         AssetPanel m_AssetPanel;
-        GamePreview2D m_GamePreview;
     };
 } // namespace Pulsar

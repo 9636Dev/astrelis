@@ -1,7 +1,7 @@
 #include "EditorLayer.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/Application.hpp"
-#include "Astrelis/Core/Geometry.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -10,12 +10,9 @@
 
 namespace Pulsar
 {
-    const Astrelis::Rect2D renderResolution(0, 0, 1'280, 720);
-
     EditorLayer::EditorLayer(std::string rootDirectory) :
         Layer("EditorLayer"),
-        m_AssetPanel(Astrelis::File(std::move(rootDirectory))),
-        m_GamePreview(Astrelis::Application::Get().GetWindow(), renderResolution)
+        m_AssetPanel(Astrelis::File(std::move(rootDirectory)))
     {
     }
 
@@ -52,8 +49,6 @@ namespace Pulsar
             initialized = true;
         }
 
-        m_GamePreview.Render();
-
         ImGui::Begin("Inspector");
 
         ImGui::Text("Select an object to inspect");
@@ -71,5 +66,5 @@ namespace Pulsar
         ImGui::End();
     }
 
-    void EditorLayer::OnEvent(Astrelis::Event& event) { (void)event; }
+    void EditorLayer::OnEvent(Astrelis::Event& event) { ASTRELIS_UNUSED(event); }
 } // namespace Pulsar

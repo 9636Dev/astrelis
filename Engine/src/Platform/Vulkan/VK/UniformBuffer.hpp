@@ -1,11 +1,10 @@
 #pragma once
 
+#include "Astrelis/Renderer/UniformBuffer.hpp"
+
 #include <cstdint>
 #include <vector>
-
 #include <vulkan/vulkan.h>
-
-#include "Astrelis/Renderer/UniformBuffer.hpp"
 
 namespace Astrelis::Vulkan
 {
@@ -22,7 +21,10 @@ namespace Astrelis::Vulkan
         [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, std::uint32_t size) override;
         void Destroy(RefPtr<GraphicsContext>& context) const override;
 
-        void SetData(RefPtr<GraphicsContext>& context, const void* data, std::uint32_t size, std::uint32_t offset) override;
+        void SetData(RefPtr<GraphicsContext>& context,
+                     const void* data,
+                     std::uint32_t size,
+                     std::uint32_t offset) override;
 
         struct Buffer
         {
@@ -30,6 +32,7 @@ namespace Astrelis::Vulkan
             VkDeviceMemory m_Memory = VK_NULL_HANDLE;
             void* m_MappedMemory    = nullptr;
         };
+
         std::vector<Buffer> m_Buffers;
     };
 } // namespace Astrelis::Vulkan

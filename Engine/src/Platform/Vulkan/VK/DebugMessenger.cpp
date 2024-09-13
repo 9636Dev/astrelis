@@ -1,8 +1,8 @@
 #include "DebugMessenger.hpp"
 
-#include "VulkanExt.hpp"
-
 #include "Astrelis/Core/Log.hpp"
+
+#include "VulkanExt.hpp"
 
 namespace Astrelis::Vulkan
 {

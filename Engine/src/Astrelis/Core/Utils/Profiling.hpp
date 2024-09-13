@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Tracy/Tracy.hpp>
+
 #include "Platform.hpp"
 #include "Renderer.hpp"
-
-#include <Tracy/Tracy.hpp>
 
 #ifdef ASTRELIS_PROFILE_GPU
     #define ASTRELIS_RUN_PROFILE_GPU(...) __VA_ARGS__

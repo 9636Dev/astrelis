@@ -1,13 +1,13 @@
+#include "Astrelis/Astrelis.hpp"
+#include "Astrelis/Core/Entrypoint.hpp"
+#include "Astrelis/Renderer/RendererAPI.hpp"
+
 #include <utility>
 
-#include "Astrelis/Renderer/RendererAPI.hpp"
 #include "SandboxApplication.hpp"
 
-#include "Astrelis/Core/Application.hpp"
-#include "Astrelis/Core/Entrypoint.hpp"
-
 Astrelis::ScopedPtr<Astrelis::Application> Astrelis::CreateApplication(CommandLineArguments args,
-                                                                 Astrelis::CreationStatus& status)
+                                                                       Astrelis::CreationStatus& status)
 {
     Astrelis::ApplicationSpecification spec;
     spec.Name             = "Sandbox";

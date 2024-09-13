@@ -1,11 +1,11 @@
 #include "SwapChain.hpp"
 
-#include "Utils.hpp"
+#include "Astrelis/Core/GlobalConfig.hpp"
+#include "Astrelis/Core/Log.hpp"
 
 #include <array>
 
-#include "Astrelis/Core/GlobalConfig.hpp"
-#include "Astrelis/Core/Log.hpp"
+#include "Utils.hpp"
 
 namespace Astrelis::Vulkan
 {

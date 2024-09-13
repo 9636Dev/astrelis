@@ -1,24 +1,25 @@
 #include "TextureImage.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
-#include "Utils.hpp"
-
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+#include "Utils.hpp"
 
 namespace Astrelis::Vulkan
 {
-        bool TextureImage::Init(LogicalDevice& device,
-                  CommandPool& pool,
-                  PhysicalDevice& physicalDevice,
-                  VkExtent2D extent,
-                  VkFormat format,
-                  VkImageTiling tiling,
-                  VkImageUsageFlags usage,
-                  VkMemoryPropertyFlags properties)
+    bool TextureImage::Init(LogicalDevice& device,
+                            CommandPool& pool,
+                            PhysicalDevice& physicalDevice,
+                            VkExtent2D extent,
+                            VkFormat format,
+                            VkImageTiling tiling,
+                            VkImageUsageFlags usage,
+                            VkMemoryPropertyFlags properties)
     {
         // TODO: Pool to transition image layout
         (void)pool;
-        CreateImage(physicalDevice.GetHandle(), device.GetHandle(), extent.width, extent.height, format, tiling, usage, properties, m_Image, m_ImageMemory);
+        CreateImage(physicalDevice.GetHandle(), device.GetHandle(), extent.width, extent.height, format, tiling, usage,
+                    properties, m_Image, m_ImageMemory);
 
         return m_ImageView.Init(device, m_Image, format);
     }
@@ -56,11 +57,14 @@ namespace Astrelis::Vulkan
                     VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                     m_Image, m_ImageMemory);
 
-        TransitionImageLayout(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), ctx->m_CommandPool.GetHandle(), m_Image,
-                              VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        CopyBufferToImage(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Image, image.GetWidth(), image.GetHeight());
-        TransitionImageLayout(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(), ctx->m_CommandPool.GetHandle(), m_Image,
-                              VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        TransitionImageLayout(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(),
+                              ctx->m_CommandPool.GetHandle(), m_Image, VK_FORMAT_R8G8B8A8_SRGB,
+                              VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        CopyBufferToImage(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(),
+                          ctx->m_CommandPool.GetHandle(), stagingBuffer, m_Image, image.GetWidth(), image.GetHeight());
+        TransitionImageLayout(ctx->m_LogicalDevice.GetHandle(), ctx->m_LogicalDevice.GetGraphicsQueue(),
+                              ctx->m_CommandPool.GetHandle(), m_Image, VK_FORMAT_R8G8B8A8_SRGB,
+                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         vkDestroyBuffer(ctx->m_LogicalDevice.GetHandle(), stagingBuffer, nullptr);
         vkFreeMemory(ctx->m_LogicalDevice.GetHandle(), stagingBufferMemory, nullptr);

@@ -1,9 +1,9 @@
 #include "RenderPass.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+
 #include "CommandBuffer.hpp"
 #include "FrameBuffer.hpp"
-
-#include "Astrelis/Core/Log.hpp"
 
 namespace Astrelis::Vulkan
 {
@@ -26,8 +26,8 @@ namespace Astrelis::Vulkan
             subpasses[i].preserveAttachmentCount = 0;
             subpasses[i].pPreserveAttachments    = nullptr;
         }
-        renderPassInfo.subpassCount    = static_cast<uint32_t>(subpasses.size());
-        renderPassInfo.pSubpasses      = subpasses.data();
+        renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
+        renderPassInfo.pSubpasses   = subpasses.data();
 
         VkSubpassDependency dependency {};
         dependency.srcSubpass    = VK_SUBPASS_EXTERNAL;
@@ -66,14 +66,12 @@ namespace Astrelis::Vulkan
         renderPassInfo.pClearValues    = &clearColor;
 
         VkSubpassBeginInfo subpassBeginInfo {};
-        subpassBeginInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
+        subpassBeginInfo.sType    = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
         subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;
 
         vkCmdBeginRenderPass(commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
-    void RenderPass::End(CommandBuffer& commandBuffer) {
-        vkCmdEndRenderPass(commandBuffer.GetHandle());
-    }
+    void RenderPass::End(CommandBuffer& commandBuffer) { vkCmdEndRenderPass(commandBuffer.GetHandle()); }
 
 } // namespace Astrelis::Vulkan

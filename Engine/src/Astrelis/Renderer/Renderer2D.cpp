@@ -1,7 +1,9 @@
 #include "Renderer2D.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/IO/Image.hpp"
+
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsPipeline.hpp"
 #include "Vertex.hpp"

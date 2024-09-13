@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Astrelis/Core/Window.hpp"
+
 #include "GraphicsContext.hpp"
 #include "GraphicsPipeline.hpp"
 #include "RendererAPI.hpp"
-
-#include "Astrelis/Core/Window.hpp"
 
 namespace Astrelis
 {

@@ -1,10 +1,14 @@
 #pragma once
 
 #include "Astrelis/Core/Pointer.hpp"
+#include "Astrelis/Core/Utils/Profiling.hpp"
 #include "Astrelis/IO/Image.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
-
 #include "Astrelis/Renderer/TextureSampler.hpp"
+
+#include <future>
+#include <vulkan/vulkan.h>
+
 #include "VK/CommandBuffer.hpp"
 #include "VK/CommandPool.hpp"
 #include "VK/DebugMessenger.hpp"
@@ -22,13 +26,11 @@
 #include "VK/TextureImage.hpp"
 #include "VK/TextureSampler.hpp"
 
-#include <GLFW/glfw3.h>
-#include <future>
-#include <vulkan/vulkan.h>
-
 #ifdef ASTRELIS_PROFILE_GPU
     #include <tracy/TracyVulkan.hpp>
 #endif
+
+struct GLFWwindow;
 
 namespace Astrelis
 {
@@ -63,7 +65,7 @@ namespace Astrelis
             FrameData() = default;
         };
 
-        bool Init() override;
+        Result<EmptyType, std::string> Init() override;
         void Shutdown() override;
         void BeginFrame() override;
         void EndFrame() override;

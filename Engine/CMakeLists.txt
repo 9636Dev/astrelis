@@ -25,32 +25,32 @@ set_property(CACHE ASTRELIS_DIST_LOGLEVEL PROPERTY STRINGS "0" "1" "2" "3" "4" "
 # Build Type Configuration
 # =======================
 
-set(ASTRELIS_BUILD_TYPE "Debug" CACHE STRING "The build type for Astrelis")
+set(ASTRELIS_BUILD_TYPE "Debug" CACHE STRING "The build type for src/Astrelis")
 set_property(CACHE ASTRELIS_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "Dist")
 
 if(ASTRELIS_BUILD_TYPE STREQUAL "Debug")
     set(ASTRELIS_LOGLEVEL ${ASTRELIS_DEBUG_LOGLEVEL})
     if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type for Astrelis" FORCE)
+        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type for src/Astrelis" FORCE)
     elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
         message(WARNING "CMAKE_BUILD_TYPE is set to ${CMAKE_BUILD_TYPE}, but ASTRELIS_BUILD_TYPE is set to Debug. This may cause unexpected behavior.")
-        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type for Astrelis" FORCE)
+        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type for src/Astrelis" FORCE)
     endif()
 elseif(ASTRELIS_BUILD_TYPE STREQUAL "Release")
     set(ASTRELIS_LOGLEVEL ${ASTRELIS_RELEASE_LOGLEVEL})
     if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for Astrelis" FORCE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for src/Astrelis" FORCE)
     elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
         message(WARNING "CMAKE_BUILD_TYPE is set to ${CMAKE_BUILD_TYPE}, but ASTRELIS_BUILD_TYPE is set to Release. This may cause unexpected behavior.")
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for Astrelis" FORCE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for src/Astrelis" FORCE)
     endif()
 elseif(ASTRELIS_BUILD_TYPE STREQUAL "Dist")
     set(ASTRELIS_LOGLEVEL ${ASTRELIS_DIST_LOGLEVEL})
     if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for Astrelis" FORCE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for src/Astrelis" FORCE)
     elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
         message(WARNING "CMAKE_BUILD_TYPE is set to ${CMAKE_BUILD_TYPE}, but ASTRELIS_BUILD_TYPE is set to Dist. This may cause unexpected behavior (should be Release).")
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for Astrelis" FORCE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "The build type for src/Astrelis" FORCE)
     endif()
 endif()
 
@@ -93,7 +93,7 @@ if (ASTRELIS_PLATFORM STREQUAL "Linux")
     set(ASTRELIS_RENDERER_VULKAN ON)
 elseif (ASTRELIS_PLATFORM STREQUAL "MacOS")
     set(ASTRELIS_RENDERER_OPENGL OFF)
-    set(ASTRELIS_RENDERER_METAL OFF)
+    set(ASTRELIS_RENDERER_METAL ON)
     set(ASTRELIS_RENDERER_VULKAN ON)
 elseif (ASTRELIS_PLATFORM STREQUAL "Windows")
     set(ASTRELIS_RENDERER_OPENGL OFF)
@@ -111,10 +111,11 @@ endif()
 add_subdirectory(vendor)
 
 set(ASTRELIS_ENGINE_SOURCES
+    src/Astrelis/Astrelis.hpp
     # Core
-    src/Astrelis/Core/Base.hpp
     src/Astrelis/Core/Application.cpp
     src/Astrelis/Core/Application.hpp
+    src/Astrelis/Core/Base.hpp
     src/Astrelis/Core/Entrypoint.hpp
     src/Astrelis/Core/Geometry.hpp
     src/Astrelis/Core/GlobalConfig.cpp
@@ -125,6 +126,7 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Core/LayerStack.hpp
     src/Astrelis/Core/Log.cpp
     src/Astrelis/Core/Log.hpp
+    src/Astrelis/Core/Math.hpp
     src/Astrelis/Core/Pointer.hpp
     src/Astrelis/Core/Result.hpp
     src/Astrelis/Core/Time.cpp
@@ -135,65 +137,91 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Core/Utils/Assert.hpp
     src/Astrelis/Core/Utils/Debug.hpp
     src/Astrelis/Core/Utils/Function.hpp
-    src/Astrelis/Core/Utils/Profiling.hpp
-    src/Astrelis/Core/Utils/Profiling.cpp
+    src/Astrelis/Core/Utils/Platform.hpp
     src/Astrelis/Core/Utils/PlatformDetection.hpp
+    src/Astrelis/Core/Utils/Profiling.cpp
+    src/Astrelis/Core/Utils/Profiling.hpp
+    src/Astrelis/Core/Utils/Renderer.hpp
+    src/Astrelis/Core/Utils/Version.hpp
+
+    # Events
+    src/Astrelis/Events/Event.hpp
+    src/Astrelis/Events/KeyEvent.hpp
+    src/Astrelis/Events/MouseEvent.hpp
+    src/Astrelis/Events/WindowEvent.hpp
 
     # IO
-    src/Astrelis/IO/File.hpp
     src/Astrelis/IO/File.cpp
-    src/Astrelis/IO/Image.hpp
+    src/Astrelis/IO/File.hpp
     src/Astrelis/IO/Image.cpp
+    src/Astrelis/IO/Image.hpp
 
     # Renderer
     src/Astrelis/Renderer/BaseRenderer.cpp
     src/Astrelis/Renderer/BaseRenderer.hpp
+    src/Astrelis/Renderer/Camera.hpp
+    src/Astrelis/Renderer/DescriptorSetLayout.hpp
+    src/Astrelis/Renderer/DescriptorSets.hpp
     src/Astrelis/Renderer/GraphicsContext.cpp
     src/Astrelis/Renderer/GraphicsContext.hpp
+    src/Astrelis/Renderer/GraphicsPipeline.hpp
+    src/Astrelis/Renderer/IndexBuffer.hpp
     src/Astrelis/Renderer/RenderSystem.cpp
     src/Astrelis/Renderer/RenderSystem.hpp
     src/Astrelis/Renderer/Renderer2D.cpp
     src/Astrelis/Renderer/Renderer2D.hpp
     src/Astrelis/Renderer/RendererAPI.cpp
     src/Astrelis/Renderer/RendererAPI.hpp
-
-    src/Astrelis/Renderer/DescriptorSetLayout.hpp
-    src/Astrelis/Renderer/DescriptorSets.hpp
-    src/Astrelis/Renderer/GraphicsPipeline.hpp
-    src/Astrelis/Renderer/IndexBuffer.hpp
     src/Astrelis/Renderer/TextureImage.hpp
     src/Astrelis/Renderer/TextureSampler.hpp
     src/Astrelis/Renderer/UniformBuffer.hpp
+    src/Astrelis/Renderer/Vertex.hpp
     src/Astrelis/Renderer/VertexBuffer.hpp
 
-    # UI
-    src/Astrelis/UI/ImGui/ImGuiBackend.hpp
-    src/Astrelis/UI/ImGui/ImGuiBackend.cpp
-    src/Astrelis/UI/ImGui/ImGuiLayer.hpp
-    src/Astrelis/UI/ImGui/ImGuiLayer.cpp
+    # Scene
+    src/Astrelis/Scene/Material.hpp
 
-    # Platform
+    # UI
+    src/Astrelis/UI/ImGui/ImGuiBackend.cpp
+    src/Astrelis/UI/ImGui/ImGuiBackend.hpp
+    src/Astrelis/UI/ImGui/ImGuiLayer.cpp
+    src/Astrelis/UI/ImGui/ImGuiLayer.hpp
+
+    # src/Platform
+    ## GLFW
+    src/Platform/GLFW/GLFWWindowHelper.hpp
+    src/Platform/GLFW/GLFWWindowHelper.cpp
+
+    ## Linux
     $<$<STREQUAL:${ASTRELIS_PLATFORM},Linux>:
         src/Platform/Linux/LinuxWindow.hpp
         src/Platform/Linux/LinuxWindow.cpp
     >
+
+    ## MacOS
     $<$<STREQUAL:${ASTRELIS_PLATFORM},MacOS>:
         src/Platform/MacOS/MacOSWindow.hpp
         src/Platform/MacOS/MacOSWindow.cpp
     >
+
+    ## Windows
     $<$<STREQUAL:${ASTRELIS_PLATFORM},Windows>:
         src/Platform/Windows/WindowsWindow.hpp
         src/Platform/Windows/WindowsWindow.cpp
     >
-    src/Platform/GLFW/GLFWWindowHelper.hpp
-    src/Platform/GLFW/GLFWWindowHelper.cpp
 
+    ## OpenGL
     $<$<BOOL:${ASTRELIS_RENDERER_OPENGL}>:
     >
 
+    ## Metal
     $<$<BOOL:${ASTRELIS_RENDERER_METAL}>:
+        src/Platform/Metal/MetalGraphicsContext.hpp
+        src/Platform/Metal/MetalGraphicsContext.mm
+
     >
 
+    ## Vulkan
     $<$<BOOL:${ASTRELIS_RENDERER_VULKAN}>:
         src/Platform/Vulkan/Vulkan2DRendererAPI.cpp
         src/Platform/Vulkan/Vulkan2DRendererAPI.hpp
@@ -205,56 +233,56 @@ set(ASTRELIS_ENGINE_SOURCES
         src/Platform/Vulkan/VulkanRenderSystem.hpp
         src/Platform/Vulkan/VulkanRendererHelper.cpp
         src/Platform/Vulkan/VulkanRendererHelper.hpp
-
-        src/Platform/Vulkan/VK/Utils.hpp
-        src/Platform/Vulkan/VK/Utils.cpp
-        src/Platform/Vulkan/VK/VulkanExt.hpp
-        src/Platform/Vulkan/VK/VulkanExt.cpp
-        src/Platform/Vulkan/VK/DebugMessenger.hpp
-        src/Platform/Vulkan/VK/DebugMessenger.cpp
-        src/Platform/Vulkan/VK/Instance.hpp
-        src/Platform/Vulkan/VK/Instance.cpp
-        src/Platform/Vulkan/VK/Surface.hpp
-        src/Platform/Vulkan/VK/Surface.cpp
-        src/Platform/Vulkan/VK/PhysicalDevice.hpp
-        src/Platform/Vulkan/VK/PhysicalDevice.cpp
-        src/Platform/Vulkan/VK/LogicalDevice.hpp
-        src/Platform/Vulkan/VK/LogicalDevice.cpp
-        src/Platform/Vulkan/VK/SwapChain.hpp
-        src/Platform/Vulkan/VK/SwapChain.cpp
-        src/Platform/Vulkan/VK/CommandBuffer.hpp
         src/Platform/Vulkan/VK/CommandBuffer.cpp
-        src/Platform/Vulkan/VK/CommandPool.hpp
+        src/Platform/Vulkan/VK/CommandBuffer.hpp
         src/Platform/Vulkan/VK/CommandPool.cpp
-        src/Platform/Vulkan/VK/ImageView.hpp
-        src/Platform/Vulkan/VK/ImageView.cpp
-        src/Platform/Vulkan/VK/RenderPass.hpp
-        src/Platform/Vulkan/VK/RenderPass.cpp
-        src/Platform/Vulkan/VK/GraphicsPipeline.hpp
-        src/Platform/Vulkan/VK/GraphicsPipeline.cpp
-        src/Platform/Vulkan/VK/FrameBuffer.hpp
-        src/Platform/Vulkan/VK/FrameBuffer.cpp
-        src/Platform/Vulkan/VK/Semaphore.hpp
-        src/Platform/Vulkan/VK/Semaphore.cpp
-        src/Platform/Vulkan/VK/Fence.hpp
-        src/Platform/Vulkan/VK/Fence.cpp
-        src/Platform/Vulkan/VK/VertexBuffer.hpp
-        src/Platform/Vulkan/VK/VertexBuffer.cpp
-        src/Platform/Vulkan/VK/IndexBuffer.hpp
-        src/Platform/Vulkan/VK/IndexBuffer.cpp
-        src/Platform/Vulkan/VK/DescriptorSetLayout.hpp
-        src/Platform/Vulkan/VK/DescriptorSetLayout.cpp
-        src/Platform/Vulkan/VK/UniformBuffer.hpp
-        src/Platform/Vulkan/VK/UniformBuffer.cpp
-        src/Platform/Vulkan/VK/DescriptorPool.hpp
+        src/Platform/Vulkan/VK/CommandPool.hpp
+        src/Platform/Vulkan/VK/DebugMessenger.cpp
+        src/Platform/Vulkan/VK/DebugMessenger.hpp
         src/Platform/Vulkan/VK/DescriptorPool.cpp
-        src/Platform/Vulkan/VK/DescriptorSets.hpp
+        src/Platform/Vulkan/VK/DescriptorPool.hpp
+        src/Platform/Vulkan/VK/DescriptorSetLayout.cpp
+        src/Platform/Vulkan/VK/DescriptorSetLayout.hpp
         src/Platform/Vulkan/VK/DescriptorSets.cpp
-        src/Platform/Vulkan/VK/TextureImage.hpp
+        src/Platform/Vulkan/VK/DescriptorSets.hpp
+        src/Platform/Vulkan/VK/Fence.cpp
+        src/Platform/Vulkan/VK/Fence.hpp
+        src/Platform/Vulkan/VK/FrameBuffer.cpp
+        src/Platform/Vulkan/VK/FrameBuffer.hpp
+        src/Platform/Vulkan/VK/GraphicsPipeline.cpp
+        src/Platform/Vulkan/VK/GraphicsPipeline.hpp
+        src/Platform/Vulkan/VK/ImageView.cpp
+        src/Platform/Vulkan/VK/ImageView.hpp
+        src/Platform/Vulkan/VK/IndexBuffer.cpp
+        src/Platform/Vulkan/VK/IndexBuffer.hpp
+        src/Platform/Vulkan/VK/Instance.cpp
+        src/Platform/Vulkan/VK/Instance.hpp
+        src/Platform/Vulkan/VK/LogicalDevice.cpp
+        src/Platform/Vulkan/VK/LogicalDevice.hpp
+        src/Platform/Vulkan/VK/PhysicalDevice.cpp
+        src/Platform/Vulkan/VK/PhysicalDevice.hpp
+        src/Platform/Vulkan/VK/RenderPass.cpp
+        src/Platform/Vulkan/VK/RenderPass.hpp
+        src/Platform/Vulkan/VK/Semaphore.cpp
+        src/Platform/Vulkan/VK/Semaphore.hpp
+        src/Platform/Vulkan/VK/Surface.cpp
+        src/Platform/Vulkan/VK/Surface.hpp
+        src/Platform/Vulkan/VK/SwapChain.cpp
+        src/Platform/Vulkan/VK/SwapChain.hpp
         src/Platform/Vulkan/VK/TextureImage.cpp
-        src/Platform/Vulkan/VK/TextureSampler.hpp
+        src/Platform/Vulkan/VK/TextureImage.hpp
         src/Platform/Vulkan/VK/TextureSampler.cpp
+        src/Platform/Vulkan/VK/TextureSampler.hpp
+        src/Platform/Vulkan/VK/UniformBuffer.cpp
+        src/Platform/Vulkan/VK/UniformBuffer.hpp
+        src/Platform/Vulkan/VK/Utils.cpp
+        src/Platform/Vulkan/VK/Utils.hpp
+        src/Platform/Vulkan/VK/VertexBuffer.cpp
+        src/Platform/Vulkan/VK/VertexBuffer.hpp
+        src/Platform/Vulkan/VK/VulkanExt.cpp
+        src/Platform/Vulkan/VK/VulkanExt.hpp
     >
+
 )
 
 set(ASTRELIS_ENGINE_PCH_SOURCES
@@ -271,9 +299,12 @@ add_library(Astrelis_External STATIC
 )
 target_link_libraries(Astrelis_External PUBLIC stb)
 
-target_precompile_headers(Astrelis_Engine PRIVATE
-    src/Astrelis/Core/Base.hpp
-)
+# As long as we are not using objective-c++ (Metal Renderer), we can use precompiled headers
+if (NOT ASTRELIS_RENDERER_METAL)
+    target_precompile_headers(Astrelis_External PRIVATE
+        src/Astrelis/Core/Base.hpp
+    )
+endif()
 
 target_include_directories(Astrelis_Engine
 PUBLIC
@@ -348,8 +379,8 @@ add_dependencies(Astrelis_Engine Astrelis_Shaders)
 
 if (ASTRELIS_FORMAT)
     file(GLOB_RECURSE ASTRELIS_ENGINE_FORMAT_SOURCES
-        src/Astrelis/*.hpp
-        src/Astrelis/*.cpp
+        src/*.hpp
+        src/*.cpp
     )
     add_custom_target(Astrelis_Format
         COMMAND clang-format -style=file -i ${ASTRELIS_ENGINE_FORMAT_SOURCES}

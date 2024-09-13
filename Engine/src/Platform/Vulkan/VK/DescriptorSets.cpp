@@ -1,15 +1,15 @@
 #include "DescriptorSets.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+#include "Astrelis/Renderer/GraphicsPipeline.hpp"
+
 #include <array>
 
 #include "GraphicsPipeline.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 #include "TextureImage.hpp"
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
-
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Renderer/GraphicsPipeline.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Astrelis::Vulkan
 {
@@ -44,8 +44,8 @@ namespace Astrelis::Vulkan
 
         for (std::size_t i = 0; i < descriptorWrites.size(); i++)
         {
-            auto& descriptorWrite = descriptorWrites[i];
-            const auto& descriptor = descriptors[i];
+            auto& descriptorWrite           = descriptorWrites[i];
+            const auto& descriptor          = descriptors[i];
             descriptorWrite.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrite.dstSet          = m_DescriptorSet;
             descriptorWrite.dstBinding      = descriptors[i].Binding;

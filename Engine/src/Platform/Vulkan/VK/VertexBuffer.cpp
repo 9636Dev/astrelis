@@ -1,16 +1,15 @@
 #include "VertexBuffer.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+
 #include <array>
 #include <cstring>
-
 #include <vulkan/vulkan.h>
 
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
-#include "Utils.hpp"
-
-#include "Astrelis/Core/Log.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+#include "Utils.hpp"
 
 namespace Astrelis::Vulkan
 {

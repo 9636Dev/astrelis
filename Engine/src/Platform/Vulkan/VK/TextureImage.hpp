@@ -1,13 +1,12 @@
 #pragma once
 
+#include "Astrelis/Renderer/TextureImage.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include "CommandPool.hpp"
-#include "LogicalDevice.hpp"
 #include "ImageView.hpp"
-
-#include "Astrelis/Renderer/TextureImage.hpp"
-
+#include "LogicalDevice.hpp"
 
 namespace Astrelis::Vulkan
 {
@@ -35,6 +34,7 @@ namespace Astrelis::Vulkan
         void Destroy(LogicalDevice& device);
 
         [[nodiscard]] const VkImage& GetImage() const { return m_Image; }
+
         [[nodiscard]] const VkImageView& GetImageView() const { return m_ImageView.GetHandle(); }
     private:
         VkImage m_Image              = VK_NULL_HANDLE;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <future>
-
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Core/Window.hpp"
 #include "Astrelis/IO/Image.hpp"
+
+#include <future>
 
 namespace Astrelis
 {

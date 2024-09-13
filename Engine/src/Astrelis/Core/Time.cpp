@@ -1,4 +1,5 @@
 #include "Time.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis

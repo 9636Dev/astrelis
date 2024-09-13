@@ -1,7 +1,11 @@
 #include "MacOSWindow.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Renderer/RendererAPI.hpp"
+
+#include <GLFW/glfw3.h>
+
 #include "Platform/GLFW/GLFWWindowHelper.hpp"
 
 namespace Astrelis
@@ -26,17 +30,20 @@ namespace Astrelis
         m_Context->BeginFrame();
     }
 
-    void MacOSWindow::EndFrame() {
+    void MacOSWindow::EndFrame()
+    {
         ASTRELIS_PROFILE_FUNCTION();
         m_Context->EndFrame();
     }
 
-    void MacOSWindow::OnUpdate() {
+    void MacOSWindow::OnUpdate()
+    {
         ASTRELIS_PROFILE_FUNCTION();
         glfwPollEvents();
     }
 
-    void MacOSWindow::WaitForEvents() {
+    void MacOSWindow::WaitForEvents()
+    {
         ASTRELIS_PROFILE_FUNCTION();
         glfwWaitEvents();
     }
@@ -74,9 +81,10 @@ namespace Astrelis
         ContextProps ctxProps;
         ctxProps.VSync    = props.VSync;
         window->m_Context = GraphicsContext::Create(window->m_Window.Raw(), ctxProps);
-        if (!window->m_Context->Init())
+        auto contextRes   = window->m_Context->Init();
+        if (contextRes.IsErr())
         {
-            return "Failed to initialize context!";
+            return "Failed to initialize context: " + contextRes.UnwrapErr();
         }
         return window;
     }

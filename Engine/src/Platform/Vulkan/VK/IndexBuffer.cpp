@@ -1,14 +1,14 @@
 #include "IndexBuffer.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+
 #include <cstring>
 
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
 #include "LogicalDevice.hpp"
-#include "Utils.hpp"
-
-#include "Astrelis/Core/Log.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+#include "Utils.hpp"
 
 namespace Astrelis::Vulkan
 {
@@ -75,7 +75,8 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    bool IndexBuffer::SetData(RefPtr<Astrelis::GraphicsContext>& context, const std::uint32_t* data, std::uint32_t count)
+    bool
+        IndexBuffer::SetData(RefPtr<Astrelis::GraphicsContext>& context, const std::uint32_t* data, std::uint32_t count)
     {
         auto ctx = context.As<VulkanGraphicsContext>();
         return SetData(ctx->m_LogicalDevice, ctx->m_PhysicalDevice, ctx->m_CommandPool, data, count);

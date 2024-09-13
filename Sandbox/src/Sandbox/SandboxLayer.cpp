@@ -1,12 +1,8 @@
 #include "SandboxLayer.hpp"
 
-#include <future>
-
-#include "Astrelis/Core/Application.hpp"
-#include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Core/Pointer.hpp"
-#include "Astrelis/Core/Time.hpp"
 #include "Astrelis/Renderer/RenderSystem.hpp"
+
+#include <future>
 
 SandboxLayer::SandboxLayer() { ASTRELIS_LOG_INFO("Sandbox Layer Initializing"); }
 

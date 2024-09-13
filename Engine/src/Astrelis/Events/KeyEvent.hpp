@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Event.hpp"
-
 #include <cstdint>
 #include <sstream>
+
+#include "Event.hpp"
 
 namespace Astrelis
 {

@@ -4,7 +4,7 @@
 #include "Astrelis/Core/Window.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 namespace Astrelis
 {
@@ -34,9 +34,13 @@ namespace Astrelis
         void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
 
         RefPtr<GraphicsContext> GetGraphicsContext() const override { return m_Context; }
+
         Rect2Di GetViewportBounds() const override;
+
         std::uint32_t GetWidth() const override { return m_Data.Dimensions.Width; }
+
         std::uint32_t GetHeight() const override { return m_Data.Dimensions.Height; }
+
         void* GetNativeWindow() const override { return m_Window.Get(); }
 
         static Result<RefPtr<WindowsWindow>, std::string> Create(const WindowProps& props);

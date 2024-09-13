@@ -13,11 +13,16 @@ namespace Astrelis::Vulkan
         std::uint32_t VulkanVersion = VK_VERSION_1_0;
 
         [[nodiscard]] bool IsValid() const { return VulkanVersion != 0; }
-        Version(std::uint32_t major, std::uint32_t minor, std::uint32_t patch)
-            : VulkanVersion(VK_MAKE_VERSION(major, minor, patch)) {}
+
+        Version(std::uint32_t major, std::uint32_t minor, std::uint32_t patch) :
+            VulkanVersion(VK_MAKE_VERSION(major, minor, patch))
+        {
+        }
 
         std::uint32_t GetMajor() const { return VK_VERSION_MAJOR(VulkanVersion); }
+
         std::uint32_t GetMinor() const { return VK_VERSION_MINOR(VulkanVersion); }
+
         std::uint32_t GetPatch() const { return VK_VERSION_PATCH(VulkanVersion); }
     };
 

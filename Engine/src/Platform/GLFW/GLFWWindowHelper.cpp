@@ -1,9 +1,12 @@
 #include "GLFWWindowHelper.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Events/KeyEvent.hpp"
 #include "Astrelis/Events/MouseEvent.hpp"
 #include "Astrelis/Events/WindowEvent.hpp"
+
+#include <GLFW/glfw3.h>
 
 namespace Astrelis
 {
@@ -20,7 +23,8 @@ namespace Astrelis
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         // Create the window
-        if (props.Dimensions.Width > std::numeric_limits<int>::max() || props.Dimensions.Height > std::numeric_limits<int>::max())
+        if (props.Dimensions.Width > std::numeric_limits<int>::max() ||
+            props.Dimensions.Height > std::numeric_limits<int>::max())
         {
             TerminateGLFW();
             return Result<GLFWwindow*, std::string>::Err("Window width and height must be less than or equal to " +
@@ -28,8 +32,8 @@ namespace Astrelis
         }
 
         GLFWwindow* window =
-            glfwCreateWindow(static_cast<std::int32_t>(props.Dimensions.Width), static_cast<std::int32_t>(props.Dimensions.Height),
-                             props.Title.c_str(), nullptr, nullptr);
+            glfwCreateWindow(static_cast<std::int32_t>(props.Dimensions.Width),
+                             static_cast<std::int32_t>(props.Dimensions.Height), props.Title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
             TerminateGLFW();
@@ -40,7 +44,7 @@ namespace Astrelis
         return Result<GLFWwindow*, std::string>::Ok(window);
     }
 
-    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateNonAPIWindow(const WindowProps &props)
+    Result<GLFWwindow*, std::string> GLFWWindowHelper::CreateNonAPIWindow(const WindowProps& props)
     {
         if (!InitGLFW())
         {
@@ -50,7 +54,8 @@ namespace Astrelis
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         // Create the window
-        if (props.Dimensions.Width > std::numeric_limits<int>::max() || props.Dimensions.Height > std::numeric_limits<int>::max())
+        if (props.Dimensions.Width > std::numeric_limits<int>::max() ||
+            props.Dimensions.Height > std::numeric_limits<int>::max())
         {
             TerminateGLFW();
             return Result<GLFWwindow*, std::string>::Err("Window width and height must be less than or equal to " +
@@ -58,8 +63,8 @@ namespace Astrelis
         }
 
         GLFWwindow* window =
-            glfwCreateWindow(static_cast<std::int32_t>(props.Dimensions.Width), static_cast<std::int32_t>(props.Dimensions.Height),
-                             props.Title.c_str(), nullptr, nullptr);
+            glfwCreateWindow(static_cast<std::int32_t>(props.Dimensions.Width),
+                             static_cast<std::int32_t>(props.Dimensions.Height), props.Title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
             TerminateGLFW();
@@ -108,6 +113,8 @@ namespace Astrelis
         s_GLFWInitialized = false;
     }
 
+    void* GLFWWindowHelper::GetUserData(GLFWwindow* window) { return glfwGetWindowUserPointer(window); }
+
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     void GLFWWindowHelper::SetEventCallbacks(RawRef<GLFWwindow*> window, BaseWindowData& data)
     {
@@ -123,7 +130,7 @@ namespace Astrelis
         glfwSetWindowCloseCallback(window, [](GLFWwindow* window) {
             auto& data = GLFWWindowHelper::GetUserData<BaseWindowData>(window);
             ASTRELIS_CORE_ASSERT(data.EventCallback, "EventCallback is not set");
-            WindowClosedEvent event;
+            WindowCloseEvent event;
             data.EventCallback(event);
         });
 
@@ -132,7 +139,7 @@ namespace Astrelis
             auto& data = GLFWWindowHelper::GetUserData<BaseWindowData>(window);
             // NOLINTNEXTLINE(readability-simplify-boolean-expr)
             ASTRELIS_CORE_ASSERT(action == GLFW_PRESS || action == GLFW_RELEASE || action == GLFW_REPEAT,
-                               "Invalid action type");
+                                 "Invalid action type");
             ASTRELIS_CORE_ASSERT(data.EventCallback, "EventCallback is not set");
 
             switch (action)
@@ -275,7 +282,7 @@ namespace Astrelis
         glfwSetWindowCloseCallback(window, [](GLFWwindow* window) {
             auto& data = GLFWWindowHelper::GetUserData<BaseWindowData>(window);
             ASTRELIS_CORE_ASSERT(data.EventCallback, "EventCallback is not set");
-            WindowClosedEvent event;
+            WindowCloseEvent event;
             data.EventCallback(event);
         });
 

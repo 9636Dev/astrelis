@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Astrelis/Core/Log.hpp"
+
 #include "Debug.hpp"
 
 #ifdef ASTRELIS_DEBUG
@@ -32,8 +33,8 @@
             }                                                                  \
         }
 #else
-    #define ASTRELIS_ASSERT(x, ...)
-    #define ASTRELIS_CORE_ASSERT(x, ...)
+    #define ASTRELIS_ASSERT(x, ...)      (void)(sizeof(x))
+    #define ASTRELIS_CORE_ASSERT(x, ...) (void)(sizeof(x))
 #endif
 
 #if defined(ASTRELIS_RELEASE) || ASTRELIS_INTERNAL_BUILD_TYPE <= 1
@@ -63,8 +64,8 @@
             }                                                                     \
         }
 #else
-    #define ASTRELIS_VERIFY(x, ...)      x
-    #define ASTRELIS_CORE_VERIFY(x, ...) x
+    #define ASTRELIS_VERIFY(x, ...)      (void)(sizeof(x))
+    #define ASTRELIS_CORE_VERIFY(x, ...) (void)(sizeof(x))
 #endif
 
 #if defined(ASTRELIS_RELEASE) || ASTRELIS_INTERNAL_BUILD_TYPE <= 2

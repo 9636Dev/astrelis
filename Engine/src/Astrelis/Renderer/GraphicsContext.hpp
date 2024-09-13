@@ -1,8 +1,9 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Astrelis/Core/Pointer.hpp"
+#include "Astrelis/Core/Result.hpp"
+
+#include <cstdint>
 
 struct GLFWwindow;
 
@@ -27,12 +28,12 @@ namespace Astrelis
         GraphicsContext(GraphicsContext&&)                 = delete;
         GraphicsContext& operator=(GraphicsContext&&)      = delete;
 
-        virtual bool Init()                = 0;
-        virtual void Shutdown()            = 0;
-        virtual bool IsInitialized() const = 0;
-        virtual void BeginFrame()          = 0;
-        virtual void EndFrame()            = 0;
-        virtual bool SkipFrame()           = 0;
+        virtual Result<EmptyType, std::string> Init() = 0;
+        virtual void Shutdown()                       = 0;
+        virtual bool IsInitialized() const            = 0;
+        virtual void BeginFrame()                     = 0;
+        virtual void EndFrame()                       = 0;
+        virtual bool SkipFrame()                      = 0;
 
         virtual bool IsVSync() const        = 0;
         virtual void SetVSync(bool enabled) = 0;

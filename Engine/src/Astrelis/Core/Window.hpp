@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Astrelis/Events/Event.hpp"
+#include "Astrelis/Renderer/GraphicsContext.hpp"
+
 #include <functional>
 #include <string>
 #include <utility>
@@ -7,9 +10,6 @@
 #include "Geometry.hpp"
 #include "Pointer.hpp"
 #include "Result.hpp"
-
-#include "Astrelis/Events/Event.hpp"
-#include "Astrelis/Renderer/GraphicsContext.hpp"
 
 namespace Astrelis
 {

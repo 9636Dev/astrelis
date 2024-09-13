@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Astrelis/Core/Pointer.hpp"
+
 #include "GraphicsContext.hpp"
 
 namespace Astrelis

@@ -1,11 +1,11 @@
 #include "CommandBuffer.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+
 #include <array>
 
 #include "Fence.hpp"
 #include "Semaphore.hpp"
-
-#include "Astrelis/Core/Log.hpp"
 
 namespace Astrelis::Vulkan
 {

@@ -1,4 +1,5 @@
 #include "Instance.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/Log.hpp"

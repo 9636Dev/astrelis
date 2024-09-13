@@ -1,8 +1,8 @@
 #include "Astrelis/Core/Result.hpp"
 
 #include <gtest/gtest.h>
-#include <string>
 #include <memory>
+#include <string>
 #include <variant>
 
 using Astrelis::Result;
@@ -145,4 +145,25 @@ TEST(ResultTest, ResultAccessMoveNonCopyable)
         NonCopyable value = std::move(result2.Unwrap());
     }
     // Nothing to test here, NonCopyable is a mono-state type
+}
+
+TEST(ResultTest, ResultExpectTest)
+{
+    Result<int, float> result1 = 5;
+    EXPECT_EQ(result1.Expect("Error message"), 5);
+
+    Result<int, float> result2 = 5.0F;
+    EXPECT_THROW(result2.Expect("Error message"), std::runtime_error);
+
+    Result<std::string, float> result3 = "Hello";
+    EXPECT_EQ(result3.Expect("Error message"), "Hello");
+
+    Result<std::string, float> result4 = 5.0F;
+    EXPECT_THROW(result4.Expect("Error message"), std::runtime_error);
+
+    Result<float, float> result5 = Result<float, float>::Ok(5.0F);
+    EXPECT_EQ(result5.Expect("Error message"), 5.0F);
+
+    Result<float, float> result6 = Result<float, float>::Err(5.0F);
+    EXPECT_THROW(result6.Expect("Error message"), std::runtime_error);
 }

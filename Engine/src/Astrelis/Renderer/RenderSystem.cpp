@@ -1,4 +1,5 @@
 #include "RenderSystem.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "RendererAPI.hpp"

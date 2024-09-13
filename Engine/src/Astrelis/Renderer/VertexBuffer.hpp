@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Astrelis/Core/Pointer.hpp"
+
 #include <cstddef>
 
 #include "GraphicsContext.hpp"
-
-#include "Astrelis/Core/Pointer.hpp"
 
 namespace Astrelis
 {

@@ -9,8 +9,8 @@ namespace Astrelis::Vulkan
     class ImageView
     {
     public:
-        ImageView()                             = default;
-        ~ImageView()                            = default;
+        ImageView()                            = default;
+        ~ImageView()                           = default;
         ImageView(const ImageView&)            = delete;
         ImageView& operator=(const ImageView&) = delete;
         ImageView(ImageView&&)                 = default;

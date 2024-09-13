@@ -1,6 +1,7 @@
 #include "DescriptorSetLayout.hpp"
 
 #include "Astrelis/Core/Log.hpp"
+
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Astrelis::Vulkan
@@ -11,17 +12,17 @@ namespace Astrelis::Vulkan
         bindings.resize(descriptors.size());
         for (std::size_t i = 0; i < descriptors.size(); ++i)
         {
-            VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            VkDescriptorType type         = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             VkShaderStageFlags stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
             if (descriptors[i].DescriptorType == BindingDescriptor::Type::Uniform)
             {
-                type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                type       = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
             }
             else if (descriptors[i].DescriptorType == BindingDescriptor::Type::TextureSampler)
             {
-                type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                type       = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
             }
             else

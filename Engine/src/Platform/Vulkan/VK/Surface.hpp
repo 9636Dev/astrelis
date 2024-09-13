@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Astrelis/Core/Pointer.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include "Instance.hpp"
-
-#include "Astrelis/Core/Pointer.hpp"
 
 struct GLFWwindow;
 

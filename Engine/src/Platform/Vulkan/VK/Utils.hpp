@@ -1,15 +1,14 @@
 #pragma once
 
+#include "Astrelis/Core/Pointer.hpp"
+#include "Astrelis/Core/Utils/PlatformDetection.hpp"
+
 #include <cstdint>
 #include <string>
 #include <vector>
-
 #include <vulkan/vulkan.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 
-#include "Astrelis/Core/Utils/PlatformDetection.hpp"
-#include "Astrelis/Core/Pointer.hpp"
+struct GLFWwindow;
 
 namespace Astrelis::Vulkan
 {

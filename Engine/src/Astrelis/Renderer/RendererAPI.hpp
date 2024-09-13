@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Astrelis/Core/Geometry.hpp"
+#include "Astrelis/Core/Math.hpp"
+#include "Astrelis/Core/Pointer.hpp"
+
 #include "DescriptorSetLayout.hpp"
 #include "DescriptorSets.hpp"
 #include "GraphicsContext.hpp"
@@ -9,10 +13,6 @@
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
 #include "VertexBuffer.hpp"
-
-#include "Astrelis/Core/Geometry.hpp"
-#include "Astrelis/Core/Math.hpp"
-#include "Astrelis/Core/Pointer.hpp"
 
 namespace Astrelis
 {

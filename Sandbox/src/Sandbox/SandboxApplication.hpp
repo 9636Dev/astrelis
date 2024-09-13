@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Astrelis/Core/Application.hpp"
+#include "Astrelis/Astrelis.hpp"
 
 class SandboxApplication : public Astrelis::Application
 {

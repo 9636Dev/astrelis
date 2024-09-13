@@ -1,12 +1,12 @@
 #pragma once
 
+#include "Astrelis/Renderer/GraphicsPipeline.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include "DescriptorSetLayout.hpp"
 #include "LogicalDevice.hpp"
 #include "RenderPass.hpp"
-
-#include "Astrelis/Renderer/GraphicsPipeline.hpp"
 
 namespace Astrelis::Vulkan
 {

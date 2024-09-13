@@ -1,5 +1,11 @@
 #include "Application.hpp"
+
 #include "Astrelis/Core/Base.hpp"
+
+#include "Astrelis/Events/WindowEvent.hpp"
+#include "Astrelis/IO/File.hpp"
+#include "Astrelis/UI/ImGui/ImGuiBackend.hpp"
+#include "Astrelis/UI/ImGui/ImGuiLayer.hpp"
 
 #include <csignal>
 #include <filesystem>
@@ -7,11 +13,6 @@
 
 #include "Time.hpp"
 #include "Window.hpp"
-
-#include "Astrelis/Events/WindowEvent.hpp"
-#include "Astrelis/IO/File.hpp"
-#include "Astrelis/UI/ImGui/ImGuiBackend.hpp"
-#include "Astrelis/UI/ImGui/ImGuiLayer.hpp"
 
 namespace Astrelis
 {
@@ -159,7 +160,7 @@ namespace Astrelis
     void Application::OnEvent(Event& event)
     {
         EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<WindowClosedEvent>(ASTRELIS_BIND_EVENT_FN(Application::OnWindowClose));
+        dispatcher.Dispatch<WindowCloseEvent>(ASTRELIS_BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<ViewportResizedEvent>(ASTRELIS_BIND_EVENT_FN(Application::OnViewportResize));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
@@ -173,7 +174,7 @@ namespace Astrelis
         }
     }
 
-    bool Application::OnWindowClose([[maybe_unused]] WindowClosedEvent& event)
+    bool Application::OnWindowClose([[maybe_unused]] WindowCloseEvent& event)
     {
         m_Running = false;
         return true;

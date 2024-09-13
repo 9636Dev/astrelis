@@ -1,11 +1,9 @@
 #pragma once
 
-#include <future>
-
-#include "Astrelis/Core/Layer.hpp"
-#include "Astrelis/Core/Time.hpp"
-#include "Astrelis/Events/WindowEvent.hpp"
+#include "Astrelis/Astrelis.hpp"
 #include "Astrelis/IO/Image.hpp"
+
+#include <future>
 
 class SandboxLayer : public Astrelis::Layer
 {

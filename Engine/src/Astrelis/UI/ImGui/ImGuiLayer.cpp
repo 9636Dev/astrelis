@@ -1,12 +1,12 @@
 #include "ImGuiLayer.hpp"
 
+#include "Astrelis/Events/Event.hpp"
+
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
 #include "ImGuiBackend.hpp"
-
-#include "Astrelis/Events/Event.hpp"
 
 namespace Astrelis
 {

@@ -1,4 +1,5 @@
 #include "Vulkan2DRendererAPI.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Platform/Vulkan/VK/DescriptorSets.hpp"
@@ -13,10 +14,7 @@
 
 namespace Astrelis
 {
-    Vulkan2DRendererAPI::Vulkan2DRendererAPI(RefPtr<VulkanGraphicsContext> context) :
-        m_Context(std::move(context))
-    {
-    }
+    Vulkan2DRendererAPI::Vulkan2DRendererAPI(RefPtr<VulkanGraphicsContext> context) : m_Context(std::move(context)) {}
 
     void Vulkan2DRendererAPI::Init()
     {

@@ -9,7 +9,7 @@ namespace Astrelis::Vulkan
     class DebugMessenger
     {
     public:
-        DebugMessenger() = default;
+        DebugMessenger()                                 = default;
         ~DebugMessenger()                                = default;
         DebugMessenger(const DebugMessenger&)            = delete;
         DebugMessenger& operator=(const DebugMessenger&) = delete;

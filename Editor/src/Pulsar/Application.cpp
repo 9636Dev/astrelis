@@ -1,8 +1,8 @@
 #include "Astrelis/Core/Application.hpp"
 #include "Astrelis/Core/Entrypoint.hpp"
 
-#include "EditorLayer.hpp"
 #include "Astrelis/Core/Pointer.hpp"
+#include "EditorLayer.hpp"
 
 namespace Pulsar
 {
@@ -13,15 +13,15 @@ namespace Pulsar
             Astrelis::Application(spec, status)
         {
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-            PushOverlay(
-                static_cast<Astrelis::OwnedPtr<Astrelis::Layer*>>(Astrelis::OwnedPtr<EditorLayer*>::Create("resources")));
+            PushOverlay(static_cast<Astrelis::OwnedPtr<Astrelis::Layer*>>(
+                Astrelis::OwnedPtr<EditorLayer*>::Create("resources")));
             m_RenderSystem->SetBlitSwapchain(false);
         }
     };
 } // namespace Pulsar
 
 Astrelis::ScopedPtr<Astrelis::Application> Astrelis::CreateApplication(Astrelis::CommandLineArguments args,
-                                                                 Astrelis::CreationStatus& status)
+                                                                       Astrelis::CreationStatus& status)
 {
     ApplicationSpecification spec;
     spec.Name             = "Astrelis Editor";

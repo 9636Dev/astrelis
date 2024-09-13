@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Event.hpp"
-
 #include <sstream>
+
+#include "Event.hpp"
 
 namespace Astrelis
 {
@@ -137,10 +137,10 @@ namespace Astrelis
         }
     };
 
-    class WindowClosedEvent : public Event
+    class WindowCloseEvent : public Event
     {
     public:
-        WindowClosedEvent() = default;
+        WindowCloseEvent() = default;
 
         [[nodiscard]] inline std::string ToString() const override { return "WindowCloseEvent"; }
 

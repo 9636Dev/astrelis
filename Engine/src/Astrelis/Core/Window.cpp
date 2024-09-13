@@ -1,4 +1,5 @@
 #include "Window.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #ifdef ASTRELIS_PLATFORM_LINUX

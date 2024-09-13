@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Astrelis/Renderer/VertexBuffer.hpp"
+
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
 #include "LogicalDevice.hpp"
 #include "PhysicalDevice.hpp"
-
-#include "Astrelis/Renderer/VertexBuffer.hpp"
 
 //#include <vulkan/vulkan.h>
 

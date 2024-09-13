@@ -25,7 +25,5 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    void ImageView::Destroy(LogicalDevice& device) {
-        vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr);
-    }
+    void ImageView::Destroy(LogicalDevice& device) { vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr); }
 } // namespace Astrelis::Vulkan

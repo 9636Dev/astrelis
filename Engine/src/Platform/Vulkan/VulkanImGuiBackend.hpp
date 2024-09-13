@@ -3,10 +3,10 @@
 #include "Astrelis/Renderer/RendererAPI.hpp"
 #include "Astrelis/UI/ImGui/ImGuiBackend.hpp"
 
+#include <vulkan/vulkan_core.h>
+
 #include "Vulkan2DRendererAPI.hpp"
 #include "VulkanGraphicsContext.hpp"
-
-#include <vulkan/vulkan_core.h>
 
 namespace Astrelis
 {

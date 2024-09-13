@@ -1,6 +1,7 @@
 #include "TextureSampler.hpp"
 
 #include "Astrelis/Core/Log.hpp"
+
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
 namespace Astrelis::Vulkan
@@ -8,18 +9,18 @@ namespace Astrelis::Vulkan
 
     bool TextureSampler::Init(LogicalDevice& device, PhysicalDevice& physicalDevice)
     {
-        VkSamplerCreateInfo samplerInfo{};
-        samplerInfo.sType        = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter    = VK_FILTER_LINEAR;
-        samplerInfo.minFilter    = VK_FILTER_LINEAR;
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        VkSamplerCreateInfo samplerInfo {};
+        samplerInfo.sType            = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter        = VK_FILTER_LINEAR;
+        samplerInfo.minFilter        = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU     = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV     = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW     = VK_SAMPLER_ADDRESS_MODE_REPEAT;
         samplerInfo.anisotropyEnable = VK_TRUE;
-        VkPhysicalDeviceProperties properties{};
+        VkPhysicalDeviceProperties properties {};
         vkGetPhysicalDeviceProperties(physicalDevice.GetHandle(), &properties);
-        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-        samplerInfo.borderColor   = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.maxAnisotropy           = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
         samplerInfo.compareEnable           = VK_FALSE;
         samplerInfo.compareOp               = VK_COMPARE_OP_ALWAYS;
@@ -47,4 +48,4 @@ namespace Astrelis::Vulkan
     {
         vkDestroySampler(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), m_Sampler, nullptr);
     }
-}  // namespace Astrelis::Vulkan
+} // namespace Astrelis::Vulkan

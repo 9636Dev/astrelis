@@ -1,10 +1,10 @@
 #include "PhysicalDevice.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+
 #include <algorithm>
 
 #include "Utils.hpp"
-
-#include "Astrelis/Core/Log.hpp"
 
 namespace Astrelis::Vulkan
 {

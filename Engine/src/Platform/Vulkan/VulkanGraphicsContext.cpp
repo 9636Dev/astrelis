@@ -1,16 +1,18 @@
 #include "VulkanGraphicsContext.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/Application.hpp"
 #include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
-#include "Platform/Vulkan/VK/RenderPass.hpp"
-#include "VK/Utils.hpp"
-#include "VK/VulkanExt.hpp"
 
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
+
+#include "Platform/Vulkan/VK/RenderPass.hpp"
+#include "VK/Utils.hpp"
+#include "VK/VulkanExt.hpp"
 
 namespace Astrelis
 {
@@ -23,55 +25,67 @@ namespace Astrelis
     VulkanGraphicsContext::~VulkanGraphicsContext() = default;
 
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
-    bool VulkanGraphicsContext::Init()
+    Result<EmptyType, std::string> VulkanGraphicsContext::Init()
     {
         ASTRELIS_PROFILE_FUNCTION();
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define INIT_COMPONENT(...) \
-    if (!__VA_ARGS__)       \
-    return false
-
+        // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
         if (m_IsInitialized)
         {
-            ASTRELIS_CORE_LOG_WARN("Vulkan Graphics Context already initialized!");
-            return false;
+            return "Vulkan Graphics Context already initialized!";
         }
 
         const auto& appSpec = Application::Get().GetSpecification();
 
-        INIT_COMPONENT(m_Instance.Init(
-            appSpec.Name.c_str(), Vulkan::Version(appSpec.Version.Major, appSpec.Version.Minor, appSpec.Version.Patch),
-            Vulkan::Version(1, 0, 0), Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
-            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()));
+        if (!m_Instance.Init(appSpec.Name.c_str(),
+                             Vulkan::Version(appSpec.Version.Major, appSpec.Version.Minor, appSpec.Version.Patch),
+                             Vulkan::Version(1, 0, 0), Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
+                             GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()))
+        {
+            return "Failed to initialize Vulkan Instance!";
+        }
         if (GlobalConfig::IsDebugMode())
         {
             Vulkan::Ext::Init(m_Instance);
             if (!Vulkan::CheckValidationLayerSupport())
             {
-                ASTRELIS_CORE_LOG_ERROR("Validation layers requested, but not available!");
-                return false;
+                return "Validation layers requested, but not available!";
             }
 
             if (!m_DebugMessenger.Init(m_Instance))
             {
-                return false;
+                return "Failed to initialize Vulkan Debug Messenger!";
             }
         }
 
-        INIT_COMPONENT(m_Surface.Init(m_Instance, m_Window));
+        if (!m_Surface.Init(m_Instance, m_Window))
+        {
+            return "Failed to initialize Vulkan Surface!";
+        }
         m_PhysicalDevice.PickBestDevice(m_Instance, m_Surface.GetHandle());
-        INIT_COMPONENT(m_PhysicalDevice.IsFound());
-        INIT_COMPONENT(m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
-                                            GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers()
-                                                                        : std::vector<const char*>()));
+        if (!m_PhysicalDevice.IsFound())
+        {
+            return "Failed to find a suitable Vulkan Physical Device!";
+        }
+        if (!m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
+                                  GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers()
+                                                              : std::vector<const char*>()))
+        {
+            return "Failed to initialize Vulkan Logical Device!";
+        }
         std::uint32_t frameCount = m_MaxFramesInFlight;
-        INIT_COMPONENT(m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync));
+        if (!m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync))
+        {
+            return "Failed to initialize Vulkan Swap Chain!";
+        }
         if (frameCount != m_MaxFramesInFlight)
         {
             ASTRELIS_CORE_LOG_WARN("Requested frame count is not supported, using {0} (instead of {1})", frameCount,
                                    m_MaxFramesInFlight);
         }
-        INIT_COMPONENT(m_CommandPool.Init(m_LogicalDevice));
+        if (!m_CommandPool.Init(m_LogicalDevice))
+        {
+            return "Failed to initialize Vulkan Command Pool!";
+        }
 
         m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
@@ -100,7 +114,10 @@ namespace Astrelis
                 {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
             };
 
-            INIT_COMPONENT(m_RenderPass.Init(m_LogicalDevice, renderPassInfo));
+            if (!m_RenderPass.Init(m_LogicalDevice, renderPassInfo))
+            {
+                return "Failed to initialize Vulkan Render Pass!";
+            }
         }
 
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
@@ -127,12 +144,15 @@ namespace Astrelis
                 {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
             };
 
-            INIT_COMPONENT(m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo));
+            if (!m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo))
+            {
+                return "Failed to initialize Vulkan Graphics Render Pass!";
+            }
 
             if (!m_GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass,
                                             m_GraphicsTextureImage->GetImageView(), m_GraphicsExtent))
             {
-                return false;
+                return "Failed to initialize Vulkan Graphics Frame Buffer!";
             }
         }
 #endif
@@ -143,25 +163,45 @@ namespace Astrelis
             {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10},
         };
         descriptorPoolCreateInfo.maxSets = 10;
-        INIT_COMPONENT(m_DescriptorPool.Init(m_LogicalDevice, descriptorPoolCreateInfo));
+        if (!m_DescriptorPool.Init(m_LogicalDevice, descriptorPoolCreateInfo))
+        {
+            return "Failed to initialize Vulkan Descriptor Pool!";
+        }
 
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i)
         {
             auto& frame = m_SwapChainFrames[i];
-            INIT_COMPONENT(
-                frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat()));
-            INIT_COMPONENT(frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
-                                                  m_SwapChain.GetExtent()));
+            if (!frame.ImageView.Init(m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat()))
+            {
+                return "Failed to initialize Vulkan Image View!";
+            }
+            if (!frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
+                                        m_SwapChain.GetExtent()))
+            {
+                return "Failed to initialize Vulkan Frame Buffer!";
+            }
         }
 
         m_Frames.resize(m_SwapChain.GetImageCount());
         for (std::size_t i = 0; i < m_Frames.size(); ++i)
         {
             auto& frame = m_Frames[i];
-            INIT_COMPONENT(frame.CommandBuffer.Init(m_LogicalDevice, m_CommandPool));
-            INIT_COMPONENT(frame.ImageAvailableSemaphore.Init(m_LogicalDevice));
-            INIT_COMPONENT(frame.RenderFinishedSemaphore.Init(m_LogicalDevice));
-            INIT_COMPONENT(frame.InFlightFence.Init(m_LogicalDevice));
+            if (!frame.CommandBuffer.Init(m_LogicalDevice, m_CommandPool))
+            {
+                return "Failed to initialize Vulkan Command Buffer!";
+            }
+            if (!frame.ImageAvailableSemaphore.Init(m_LogicalDevice))
+            {
+                return "Failed to initialize Vulkan Image Available Semaphore!";
+            }
+            if (!frame.RenderFinishedSemaphore.Init(m_LogicalDevice))
+            {
+                return "Failed to initialize Vulkan Render Finished Semaphore!";
+            }
+            if (!frame.InFlightFence.Init(m_LogicalDevice))
+            {
+                return "Failed to initialize Vulkan In Flight Fence!";
+            }
         }
 
         ASTRELIS_CORE_LOG_INFO("Vulkan Graphics Context initialized!");
@@ -173,8 +213,7 @@ namespace Astrelis
                                           m_LogicalDevice.GetGraphicsQueue(), m_ProfileCommandBuffer.GetHandle());
         } else { ASTRELIS_CORE_LOG_WARN("Failed to initialize command buffer for Profiling!"); })
 
-        return true;
-#undef INIT_COMPONENT
+        return EmptyType {};
     }
 
     void VulkanGraphicsContext::Shutdown()
@@ -369,7 +408,6 @@ namespace Astrelis
             res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
                                          m_SwapChain.GetExtent());
             ASTRELIS_CORE_ASSERT(res, "Failed to recreate frame buffer!");
-            (void)res; // For release builds
         }
 
         m_SwapchainRecreation = false;

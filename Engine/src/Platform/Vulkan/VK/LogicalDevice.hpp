@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <optional>
-
 #include <vulkan/vulkan.h>
 
 #include "PhysicalDevice.hpp"
@@ -29,9 +28,9 @@ namespace Astrelis::Vulkan
         LogicalDevice& operator=(LogicalDevice&&)      = delete;
 
         [[nodiscard]] bool Init(PhysicalDevice& physicalDevice,
-                  Surface& surface,
-                  const std::vector<const char*>& deviceExtensions,
-                  const std::vector<const char*>& validationLayers);
+                                Surface& surface,
+                                const std::vector<const char*>& deviceExtensions,
+                                const std::vector<const char*>& validationLayers);
         void Destroy();
 
         [[nodiscard]] VkDevice GetHandle() const { return m_Device; }

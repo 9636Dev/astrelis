@@ -1,5 +1,11 @@
 #include "VulkanRenderSystem.hpp"
+
 #include "Astrelis/Core/Base.hpp"
+
+#include "Astrelis/Core/GlobalConfig.hpp"
+#include "Astrelis/Renderer/DescriptorSetLayout.hpp"
+#include "Astrelis/Renderer/GraphicsPipeline.hpp"
+#include "Astrelis/Renderer/TextureImage.hpp"
 
 #include <cstddef>
 #include <vulkan/vulkan.h>
@@ -8,11 +14,6 @@
 #include "Platform/Vulkan/VK/TextureSampler.hpp"
 #include "Platform/Vulkan/VK/Utils.hpp"
 #include "Platform/Vulkan/VK/VulkanExt.hpp"
-
-#include "Astrelis/Core/GlobalConfig.hpp"
-#include "Astrelis/Renderer/DescriptorSetLayout.hpp"
-#include "Astrelis/Renderer/GraphicsPipeline.hpp"
-#include "Astrelis/Renderer/TextureImage.hpp"
 
 namespace Astrelis
 {
@@ -116,7 +117,9 @@ namespace Astrelis
         m_Context->m_GraphicsRenderPass.Begin(frame.CommandBuffer, m_Context->m_GraphicsFrameBuffer,
                                               m_Context->m_GraphicsExtent);
 #else
-        m_Context->m_RenderPass.Begin(m_Context->GetCurrentFrame().CommandBuffer, m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer, m_Context->m_SwapChain.GetExtent());
+        m_Context->m_RenderPass.Begin(m_Context->GetCurrentFrame().CommandBuffer,
+                                      m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
+                                      m_Context->m_SwapChain.GetExtent());
 #endif
     }
 

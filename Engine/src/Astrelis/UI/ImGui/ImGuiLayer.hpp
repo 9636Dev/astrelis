@@ -1,12 +1,12 @@
 #pragma once
 
-#include <imgui.h>
-
-#include "ImGuiBackend.hpp"
-
 #include "Astrelis/Core/Layer.hpp"
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Events/WindowEvent.hpp"
+
+#include <imgui.h>
+
+#include "ImGuiBackend.hpp"
 
 namespace Astrelis
 {

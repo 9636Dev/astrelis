@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include "Astrelis/Events/Event.hpp"
+
+#include <string>
 
 namespace Astrelis
 {

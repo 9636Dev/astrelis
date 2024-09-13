@@ -1,17 +1,20 @@
 #include "VulkanImGuiBackend.hpp"
-#include "Astrelis/Core/Base.hpp"
 
-#include "Platform/Vulkan/Vulkan2DRendererAPI.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+#include "Astrelis/Core/Base.hpp"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <vulkan/vulkan_core.h>
 
+#include "Platform/Vulkan/Vulkan2DRendererAPI.hpp"
+#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+
 namespace Astrelis
 {
-    VulkanImGuiBackend::VulkanImGuiBackend(RefPtr<Window> window, RefPtr<RendererAPI> api)
-        : m_Window(std::move(window)), m_Context(m_Window->GetGraphicsContext().As<VulkanGraphicsContext>()), m_API(api.As<Vulkan2DRendererAPI>())
+    VulkanImGuiBackend::VulkanImGuiBackend(RefPtr<Window> window, RefPtr<RendererAPI> api) :
+        m_Window(std::move(window)),
+        m_Context(m_Window->GetGraphicsContext().As<VulkanGraphicsContext>()),
+        m_API(api.As<Vulkan2DRendererAPI>())
     {
     }
 

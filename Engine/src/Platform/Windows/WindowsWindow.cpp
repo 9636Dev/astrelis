@@ -1,7 +1,8 @@
 #include "WindowsWindow.hpp"
 
-#include "../GLFW/GLFWWindowHelper.hpp"
 #include "Astrelis/Renderer/RendererAPI.hpp"
+
+#include "../GLFW/GLFWWindowHelper.hpp"
 
 namespace Astrelis
 {

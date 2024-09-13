@@ -1,4 +1,5 @@
 #include "LayerStack.hpp"
+
 #include "Astrelis/Core/Base.hpp"
 
 namespace Astrelis

@@ -1,15 +1,14 @@
 #include "FrameBuffer.hpp"
 
+#include "Astrelis/Core/Log.hpp"
+
 #include <array>
 
 #include "LogicalDevice.hpp"
 
-#include "Astrelis/Core/Log.hpp"
-
 namespace Astrelis::Vulkan
 {
-    bool FrameBuffer::Init(
-        LogicalDevice& device, RenderPass& renderPass, VkImageView imageView, VkExtent2D extent)
+    bool FrameBuffer::Init(LogicalDevice& device, RenderPass& renderPass, VkImageView imageView, VkExtent2D extent)
     {
         std::array<VkImageView, 1> attachments = {imageView};
 
@@ -31,7 +30,8 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    void FrameBuffer::Destroy(LogicalDevice& device) const {
+    void FrameBuffer::Destroy(LogicalDevice& device) const
+    {
         vkDestroyFramebuffer(device.GetHandle(), m_Buffer, nullptr);
     }
 } // namespace Astrelis::Vulkan

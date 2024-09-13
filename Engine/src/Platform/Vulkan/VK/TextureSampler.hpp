@@ -1,23 +1,23 @@
 #pragma once
 
+#include "Astrelis/Renderer/TextureSampler.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include "LogicalDevice.hpp"
 #include "PhysicalDevice.hpp"
-
-#include "Astrelis/Renderer/TextureSampler.hpp"
 
 namespace Astrelis::Vulkan
 {
     class TextureSampler : public Astrelis::TextureSampler
     {
     public:
-        TextureSampler() = default;
-        ~TextureSampler() override = default;
-        TextureSampler(const TextureSampler&) = delete;
+        TextureSampler()                                 = default;
+        ~TextureSampler() override                       = default;
+        TextureSampler(const TextureSampler&)            = delete;
         TextureSampler& operator=(const TextureSampler&) = delete;
-        TextureSampler(TextureSampler&&) = delete;
-        TextureSampler& operator=(TextureSampler&&) = delete;
+        TextureSampler(TextureSampler&&)                 = delete;
+        TextureSampler& operator=(TextureSampler&&)      = delete;
 
         bool Init(LogicalDevice& device, PhysicalDevice& physicalDevice);
         bool Init(RefPtr<GraphicsContext>& context) override;

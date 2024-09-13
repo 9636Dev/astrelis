@@ -1,13 +1,13 @@
 #pragma once
 
+#include "Astrelis/Renderer/IndexBuffer.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
 #include "LogicalDevice.hpp"
 #include "PhysicalDevice.hpp"
-
-#include "Astrelis/Renderer/IndexBuffer.hpp"
 
 namespace Astrelis::Vulkan
 {

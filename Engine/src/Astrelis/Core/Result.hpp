@@ -356,4 +356,8 @@ namespace Astrelis
                       "E must be copy or move constructible");
     };
 
+    struct EmptyType
+    {
+    };
+
 } // namespace Astrelis

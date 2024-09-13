@@ -1,8 +1,8 @@
 #include "LogicalDevice.hpp"
 
-#include <set>
-
 #include "Astrelis/Core/Log.hpp"
+
+#include <set>
 
 namespace Astrelis::Vulkan
 {

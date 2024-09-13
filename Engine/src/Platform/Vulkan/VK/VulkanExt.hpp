@@ -28,8 +28,8 @@ namespace Astrelis::Vulkan
         static PFN_vkCmdBeginDebugUtilsLabelEXT CmdBeginDebugUtilsLabelEXT;
         static PFN_vkCmdEndDebugUtilsLabelEXT CmdEndDebugUtilsLabelEXT;
         static PFN_vkCmdInsertDebugUtilsLabelEXT CmdInsertDebugUtilsLabelEXT;
-    #ifdef ASTRELIS_PROFILE
+#ifdef ASTRELIS_PROFILE
         static PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT GetPhysicalDeviceCalibrateableTimeDomainsEXT;
-    #endif
+#endif
     };
 } // namespace Astrelis::Vulkan

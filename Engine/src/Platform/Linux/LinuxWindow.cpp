@@ -1,6 +1,7 @@
 #include "LinuxWindow.hpp"
 
 #include "Astrelis/Renderer/RendererAPI.hpp"
+
 #include "Platform/GLFW/GLFWWindowHelper.hpp"
 
 namespace Astrelis
@@ -52,8 +53,7 @@ namespace Astrelis
             return windowRes.UnwrapErr();
         }
 
-        auto window =
-            RefPtr<LinuxWindow>::Create(windowRes.Unwrap(), LinuxWindowData(props.Title, props.Dimensions));
+        auto window = RefPtr<LinuxWindow>::Create(windowRes.Unwrap(), LinuxWindowData(props.Title, props.Dimensions));
         GLFWWindowHelper::SetEventCallbacks(window->m_Window.Raw(), window->m_Data);
         ContextProps ctxProps;
         ctxProps.VSync    = props.VSync;
