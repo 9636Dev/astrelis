@@ -299,19 +299,18 @@ add_library(Astrelis_External STATIC
 )
 target_link_libraries(Astrelis_External PUBLIC stb)
 
-# As long as we are not using objective-c++ (Metal Renderer), we can use precompiled headers
-if (NOT ASTRELIS_RENDERER_METAL)
-    target_precompile_headers(Astrelis_External PRIVATE
-        src/Astrelis/Core/Base.hpp
-    )
-endif()
-
 target_include_directories(Astrelis_Engine
 PUBLIC
     src/
     vendor/tracy/Public
 )
 
+# As long as we are not using objective-c++ (Metal Renderer), we can use precompiled headers
+if (NOT ASTRELIS_RENDERER_METAL)
+    target_precompile_headers(Astrelis_Engine PRIVATE
+        src/Astrelis/Core/Base.hpp
+    )
+endif()
 
 target_link_libraries(Astrelis_Engine PUBLIC
     Astrelis_External

@@ -1,6 +1,10 @@
 #include "LinuxWindow.hpp"
 
+#include "Astrelis/Core/Base.hpp"
+
 #include "Astrelis/Renderer/RendererAPI.hpp"
+
+#include <GLFW/glfw3.h>
 
 #include "Platform/GLFW/GLFWWindowHelper.hpp"
 
@@ -15,20 +19,38 @@ namespace Astrelis
 
     LinuxWindow::~LinuxWindow()
     {
+        ASTRELIS_PROFILE_FUNCTION();
         m_Context->Shutdown();
         GLFWWindowHelper::DestroyWindow(std::move(m_Window));
     }
 
-    void LinuxWindow::OnUpdate() { glfwPollEvents(); }
+    void LinuxWindow::BeginFrame()
+    {
+        ASTRELIS_PROFILE_FUNCTION();
+        m_Context->BeginFrame();
+    }
 
-    void LinuxWindow::WaitForEvents() { glfwWaitEvents(); }
+    void LinuxWindow::EndFrame()
+    {
+        ASTRELIS_PROFILE_FUNCTION();
+        m_Context->EndFrame();
+    }
 
-    void LinuxWindow::BeginFrame() { m_Context->BeginFrame(); }
+    void LinuxWindow::OnUpdate()
+    {
+        ASTRELIS_PROFILE_FUNCTION();
+        glfwPollEvents();
+    }
 
-    void LinuxWindow::EndFrame() { m_Context->EndFrame(); }
+    void LinuxWindow::WaitForEvents()
+    {
+        ASTRELIS_PROFILE_FUNCTION();
+        glfwWaitEvents();
+    }
 
     Rect2Di LinuxWindow::GetViewportBounds() const
     {
+        ASTRELIS_PROFILE_FUNCTION();
         // Get size using GLFW
         std::int32_t width  = 0;
         std::int32_t height = 0;
@@ -38,6 +60,7 @@ namespace Astrelis
 
     Result<RefPtr<LinuxWindow>, std::string> LinuxWindow::Create(const WindowProps& props)
     {
+        ASTRELIS_PROFILE_FUNCTION();
         Result<GLFWwindow*, std::string> windowRes("No Window API selected");
 
         switch (RendererAPI::GetAPI())
@@ -58,12 +81,12 @@ namespace Astrelis
         ContextProps ctxProps;
         ctxProps.VSync    = props.VSync;
         window->m_Context = GraphicsContext::Create(window->m_Window.Raw(), ctxProps);
-        if (!window->m_Context->Init())
+        auto contextRes   = window->m_Context->Init();
+        if (contextRes.IsErr())
         {
-            return "Failed to initialize context!";
+            return "Failed to initialize context: " + contextRes.UnwrapErr();
         }
         return window;
     }
 } // namespace Astrelis
-
 

@@ -34,16 +34,22 @@ namespace Astrelis
             return "Vulkan Graphics Context already initialized!";
         }
 
-        const auto& appSpec = Application::Get().GetSpecification();
+        const auto& appSpec  = Application::Get().GetSpecification();
+        const bool debugMode = GlobalConfig::IsDebugMode();
 
+        if (!Vulkan::CheckValidationLayerSupport())
+        {
+            return "Validation layers requested, but not available!";
+        }
+        ASTRELIS_CORE_LOG_DEBUG("Validation layers available!");
         if (!m_Instance.Init(appSpec.Name.c_str(),
                              Vulkan::Version(appSpec.Version.Major, appSpec.Version.Minor, appSpec.Version.Patch),
-                             Vulkan::Version(1, 0, 0), Vulkan::GetRequiredExtensions(GlobalConfig::IsDebugMode()),
-                             GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers() : std::vector<const char*>()))
+                             Vulkan::Version(1, 0, 0), Vulkan::GetRequiredExtensions(debugMode),
+                             debugMode ? Vulkan::GetValidationLayers() : std::vector<const char*>()))
         {
             return "Failed to initialize Vulkan Instance!";
         }
-        if (GlobalConfig::IsDebugMode())
+        if (debugMode)
         {
             Vulkan::Ext::Init(m_Instance);
             if (!Vulkan::CheckValidationLayerSupport())
@@ -56,6 +62,10 @@ namespace Astrelis
                 return "Failed to initialize Vulkan Debug Messenger!";
             }
         }
+        else
+        {
+            ASTRELIS_CORE_LOG_WARN("Running in release mode, validation layers are disabled!");
+        }
 
         if (!m_Surface.Init(m_Instance, m_Window))
         {
@@ -67,20 +77,19 @@ namespace Astrelis
             return "Failed to find a suitable Vulkan Physical Device!";
         }
         if (!m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
-                                  GlobalConfig::IsDebugMode() ? Vulkan::GetValidationLayers()
-                                                              : std::vector<const char*>()))
+                                  debugMode ? Vulkan::GetValidationLayers() : std::vector<const char*>()))
         {
             return "Failed to initialize Vulkan Logical Device!";
         }
-        std::uint32_t frameCount = m_MaxFramesInFlight;
-        if (!m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync))
+        std::uint32_t swapChainFrameCount = m_MaxFramesInFlight;
+        if (!m_SwapChain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, swapChainFrameCount, m_VSync))
         {
             return "Failed to initialize Vulkan Swap Chain!";
         }
-        if (frameCount != m_MaxFramesInFlight)
+        if (swapChainFrameCount != m_MaxFramesInFlight)
         {
-            ASTRELIS_CORE_LOG_WARN("Requested frame count is not supported, using {0} (instead of {1})", frameCount,
-                                   m_MaxFramesInFlight);
+            ASTRELIS_CORE_LOG_WARN("Requested frame count is not supported, using {0} (instead of {1})",
+                                   swapChainFrameCount, m_MaxFramesInFlight);
         }
         if (!m_CommandPool.Init(m_LogicalDevice))
         {
@@ -108,7 +117,6 @@ namespace Astrelis
             colorAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             colorAttachment.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
             colorAttachment.finalLayout              = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
 
             renderPassInfo.Subpasses = {
                 {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
