@@ -81,7 +81,26 @@ if (NOT ASTRELIS_PROFILE)
 endif()
 
 # Feature Options
-option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" OFF)
+if (ASTRELIS_FEATURES_ALL)
+    # This way the options can be disabled individually after enabling all
+    option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" ON)
+    option(ASTRELIS_FEATURES_ALL "Enable all features" ON)
+else()
+    option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" OFF)
+    option(ASTRELIS_FEATURES_ALL "Enable all features" OFF)
+
+endif()
+
+# Print the configuration
+message(STATUS "Astrelis Configuration:")
+message(STATUS "  Build Type: ${ASTRELIS_BUILD_TYPE}")
+message(STATUS "  Log Level: ${ASTRELIS_LOGLEVEL}")
+message(STATUS "  Pedantic Warnings: ${ASTRELIS_PEDANTIC_WARNINGS}")
+message(STATUS "  Profiling: ${ASTRELIS_PROFILE}")
+message(STATUS "  Memory Profiling: ${ASTRELIS_PROFILE_MEMORY}")
+message(STATUS "  GPU Profiling: ${ASTRELIS_PROFILE_GPU}")
+message(STATUS "  Features:")
+message(STATUS "    Framebuffer: ${ASTRELIS_FEATURE_FRAMEBUFFER}")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -168,8 +187,6 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Renderer/IndexBuffer.hpp
     src/Astrelis/Renderer/RenderSystem.cpp
     src/Astrelis/Renderer/RenderSystem.hpp
-    src/Astrelis/Renderer/Renderer2D.cpp
-    src/Astrelis/Renderer/Renderer2D.hpp
     src/Astrelis/Renderer/RendererAPI.cpp
     src/Astrelis/Renderer/RendererAPI.hpp
     src/Astrelis/Renderer/TextureImage.hpp
@@ -177,6 +194,12 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Renderer/UniformBuffer.hpp
     src/Astrelis/Renderer/Vertex.hpp
     src/Astrelis/Renderer/VertexBuffer.hpp
+
+    src/Astrelis/Renderer/Renderer2D.cpp
+    src/Astrelis/Renderer/Renderer2D.hpp
+
+    src/Astrelis/Renderer/TilemapRenderer.cpp
+    src/Astrelis/Renderer/TilemapRenderer.hpp
 
     # Scene
     src/Astrelis/Scene/Material.hpp
@@ -188,40 +211,40 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/UI/ImGui/ImGuiLayer.hpp
 
     # src/Platform
-    ## GLFW
+    # # GLFW
     src/Platform/GLFW/GLFWWindowHelper.hpp
     src/Platform/GLFW/GLFWWindowHelper.cpp
 
-    ## Linux
+    # # Linux
     $<$<STREQUAL:${ASTRELIS_PLATFORM},Linux>:
         src/Platform/Linux/LinuxWindow.hpp
         src/Platform/Linux/LinuxWindow.cpp
     >
 
-    ## MacOS
+    # # MacOS
     $<$<STREQUAL:${ASTRELIS_PLATFORM},MacOS>:
         src/Platform/MacOS/MacOSWindow.hpp
         src/Platform/MacOS/MacOSWindow.cpp
     >
 
-    ## Windows
+    # # Windows
     $<$<STREQUAL:${ASTRELIS_PLATFORM},Windows>:
         src/Platform/Windows/WindowsWindow.hpp
         src/Platform/Windows/WindowsWindow.cpp
     >
 
-    ## OpenGL
+    # # OpenGL
     $<$<BOOL:${ASTRELIS_RENDERER_OPENGL}>:
     >
 
-    ## Metal
+    # # Metal
     $<$<BOOL:${ASTRELIS_RENDERER_METAL}>:
         src/Platform/Metal/MetalGraphicsContext.hpp
         src/Platform/Metal/MetalGraphicsContext.mm
 
     >
 
-    ## Vulkan
+    # # Vulkan
     $<$<BOOL:${ASTRELIS_RENDERER_VULKAN}>:
         src/Platform/Vulkan/Vulkan2DRendererAPI.cpp
         src/Platform/Vulkan/Vulkan2DRendererAPI.hpp

@@ -54,6 +54,7 @@ namespace Astrelis::Vulkan
         submitInfo.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
         std::array<VkSemaphore, 1> waitSemaphores      = {waitSemaphore.GetHandle()};
+        // TODO: Make this generic, since there could be stencil buffer, depth buffer, etc.
         std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
         submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
