@@ -4,22 +4,15 @@
 
 #include "Astrelis/Core/Log.hpp"
 
-namespace Astrelis::Vulkan
-{
-    void Instance::Destroy()
-    {
-        if (m_Instance != VK_NULL_HANDLE)
-        {
+namespace Astrelis::Vulkan {
+    void Instance::Destroy() {
+        if (m_Instance != VK_NULL_HANDLE) {
             vkDestroyInstance(m_Instance, nullptr);
         }
     }
 
-    bool Instance::Init(CString appName,
-                        Version appVersion,
-                        Version apiVersion,
-                        const std::vector<CString>& extensions,
-                        const std::vector<CString>& layers)
-    {
+    bool Instance::Init(CString appName, Version appVersion, Version apiVersion,
+        const std::vector<CString>& extensions, const std::vector<CString>& layers) {
         VkApplicationInfo appInfo {};
         appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pApplicationName   = appName;
@@ -40,8 +33,7 @@ namespace Astrelis::Vulkan
         createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
-        if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
-        {
+        if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create Vulkan instance!");
             return false;
         }

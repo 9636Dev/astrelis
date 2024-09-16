@@ -7,10 +7,8 @@
 #include "LogicalDevice.hpp"
 #include "PhysicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    class TextureSampler : public Astrelis::TextureSampler
-    {
+namespace Astrelis::Vulkan {
+    class TextureSampler : public Astrelis::TextureSampler {
     public:
         TextureSampler()                                 = default;
         ~TextureSampler() override                       = default;

@@ -36,8 +36,9 @@ else()
     message(FATAL_ERROR "Astrelis: Unsupported platform")
 endif()
 
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+# DXC modifies its own source
+#set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+#set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
     message(FATAL_ERROR "In-source builds are not allowed. Please create a build directory and run 'cmake path_to_source'")
@@ -78,8 +79,6 @@ find_package(benchmark)
 include(GoogleTest)
 add_subdirectory(Engine)
 add_library(Astrelis::Engine ALIAS Astrelis_Engine)
-#add_library(Astrelis::Format ALIAS Astrelis_Format)
-add_subdirectory(Sandbox)
-#add_subdirectory(Editor) # Editor
-#add_executable(Astrelis::Editor ALIAS Astrelis_Editor)
+add_subdirectory(Editor) # Editor
+add_executable(Astrelis::Editor ALIAS Astrelis_Editor)
 

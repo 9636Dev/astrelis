@@ -4,11 +4,9 @@
 
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
-namespace Astrelis::Vulkan
-{
+namespace Astrelis::Vulkan {
 
-    bool TextureSampler::Init(LogicalDevice& device, PhysicalDevice& physicalDevice)
-    {
+    bool TextureSampler::Init(LogicalDevice& device, PhysicalDevice& physicalDevice) {
         VkSamplerCreateInfo samplerInfo {};
         samplerInfo.sType            = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         samplerInfo.magFilter        = VK_FILTER_LINEAR;
@@ -29,8 +27,7 @@ namespace Astrelis::Vulkan
         samplerInfo.minLod                  = 0.0F;
         samplerInfo.maxLod                  = 0.0F;
 
-        if (vkCreateSampler(device.GetHandle(), &samplerInfo, nullptr, &m_Sampler) != VK_SUCCESS)
-        {
+        if (vkCreateSampler(device.GetHandle(), &samplerInfo, nullptr, &m_Sampler) != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create texture sampler");
             return false;
         }
@@ -38,14 +35,13 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    bool TextureSampler::Init(RefPtr<GraphicsContext>& context)
-    {
+    bool TextureSampler::Init(RefPtr<GraphicsContext>& context) {
         auto ctx = context.As<VulkanGraphicsContext>();
         return Init(ctx->m_LogicalDevice, ctx->m_PhysicalDevice);
     }
 
-    void TextureSampler::Destroy(RefPtr<GraphicsContext>& context)
-    {
-        vkDestroySampler(context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), m_Sampler, nullptr);
+    void TextureSampler::Destroy(RefPtr<GraphicsContext>& context) {
+        vkDestroySampler(
+            context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), m_Sampler, nullptr);
     }
 } // namespace Astrelis::Vulkan

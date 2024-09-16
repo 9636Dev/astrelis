@@ -14,19 +14,15 @@
 
 int AstrelisMain(int argc, char** argv);
 
-namespace Astrelis
-{
+namespace Astrelis {
     /// @brief Representation of command line arguments, in a more C++ way, as a std::vector of std::string
-    struct CommandLineArguments
-    {
+    struct CommandLineArguments {
         std::vector<std::string> Arguments;
 
         /// @brief Parses the command line arguments from the given argc and argv
-        static CommandLineArguments Parse(int argc, char** argv)
-        {
+        static CommandLineArguments Parse(int argc, char** argv) {
             CommandLineArguments result;
-            for (int i = 1; i < argc; i++)
-            {
+            for (int i = 1; i < argc; i++) {
                 // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
                 result.Arguments.emplace_back(argv[i]);
             }
@@ -35,39 +31,35 @@ namespace Astrelis
     };
 
     /// @brief Representation of an application version, with a release type, major, minor, and patch version
-    struct ApplicationVersion
-    {
-        enum class ReleaseType : std::uint8_t
-        {
+    struct ApplicationVersion {
+        enum class ReleaseType : std::uint8_t {
             Alpha            = 0,
             Beta             = 1,
             ReleaseCandidate = 2,
             Release          = 3
         };
 
-        ReleaseType Type;
+        ReleaseType  Type;
         std::uint8_t Major;
         std::uint8_t Minor;
         std::uint8_t Patch;
     };
 
     /// @brief Specifications for a application, which will be used internally
-    struct ApplicationSpecification
-    {
+    struct ApplicationSpecification {
         /**
         * @brief The name of the application, this is used primarily when debugging, and logging
         */
-        std::string Name           = "Astrelis Application";
+        std::string        Name    = "Astrelis Application";
         ApplicationVersion Version = {ApplicationVersion::ReleaseType::Alpha, 0, 0, 1};
         /**
          * @brief The working directory of the application, use './' for the current directory.
         */
-        std::string WorkingDirectory;
+        std::string          WorkingDirectory;
         CommandLineArguments Arguments;
     };
 
-    enum class CreationStatus : std::uint16_t
-    {
+    enum class CreationStatus : std::uint16_t {
         SUCCESS                       = 0,
         WINDOW_CREATION_FAILED        = 1,
         RENDER_SYSTEM_CREATION_FAILED = 2
@@ -85,8 +77,7 @@ namespace Astrelis
     /// - m_RenderSystem - A window specific render system, you can create your own renderers, that render into different frame buffers, etc..
     /// @note Initializing another Application after one is terminated is undefined behaviour. The application be the entire program, and should be a singleton.
     /// @note Resources should be correctly freed after termination, but reinitializing the application should work, but is not tested.
-    class Application
-    {
+    class Application {
     public:
         friend int ::AstrelisMain(int argc, char** argv);
         friend void ApplicationSignalHandler(int signal);
@@ -102,20 +93,34 @@ namespace Astrelis
         Application(Application&&)                 = delete;
         Application& operator=(Application&&)      = delete;
 
-        RefPtr<Window>& GetWindow() { return m_Window; }
+        RefPtr<Window>& GetWindow() {
+            return m_Window;
+        }
 
-        const RefPtr<Window>& GetWindow() const { return m_Window; }
+        const RefPtr<Window>& GetWindow() const {
+            return m_Window;
+        }
 
-        RefPtr<RenderSystem>& GetRenderSystem() { return m_RenderSystem; }
+        RefPtr<RenderSystem>& GetRenderSystem() {
+            return m_RenderSystem;
+        }
 
-        const RefPtr<RenderSystem>& GetRenderSystem() const { return m_RenderSystem; }
+        const RefPtr<RenderSystem>& GetRenderSystem() const {
+            return m_RenderSystem;
+        }
 
-        const ApplicationSpecification& GetSpecification() const { return m_Specification; }
+        const ApplicationSpecification& GetSpecification() const {
+            return m_Specification;
+        }
 
         /// Gets the application instance, which should be a singleton. The program will crash and throw an error if more than 1 application is created and not destroyed.
-        static Application& Get() { return *s_Instance; }
+        static Application& Get() {
+            return *s_Instance;
+        }
 
-        static bool HasInstance() { return s_Instance != nullptr; }
+        static bool HasInstance() {
+            return s_Instance != nullptr;
+        }
     protected:
         /// @brief Push a layer onto the stack, which will be updated and rendererd before all Overlays
         /// This method transfers the ownership to the layer stack, which means that deleting should not be done by the user. @see OwnedPtr
@@ -144,16 +149,16 @@ namespace Astrelis
         ///  - Query user input
         void Run();
 
-        static Application* s_Instance;
+        static Application*      s_Instance;
         ApplicationSpecification m_Specification;
-        std::atomic_bool m_Running = true;
-        RefPtr<Window> m_Window;
-        RefPtr<RenderSystem> m_RenderSystem;
-        LayerStack m_LayerStack;
-        RawRef<ImGuiLayer*> m_ImGuiLayer;
+        std::atomic_bool         m_Running = true;
+        RefPtr<Window>           m_Window;
+        RefPtr<RenderSystem>     m_RenderSystem;
+        LayerStack               m_LayerStack;
+        RawRef<ImGuiLayer*>      m_ImGuiLayer;
     };
 
     /// @brief Define this function in your application to create an instance of your Application class, extending the base class
-    extern ScopedPtr<Application> CreateApplication(CommandLineArguments args, CreationStatus& status);
+    extern ScopedPtr<Application> CreateApplication(
+        CommandLineArguments args, CreationStatus& status);
 } // namespace Astrelis
-

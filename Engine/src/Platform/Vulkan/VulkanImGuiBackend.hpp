@@ -8,10 +8,8 @@
 #include "Vulkan2DRendererAPI.hpp"
 #include "VulkanGraphicsContext.hpp"
 
-namespace Astrelis
-{
-    class VulkanImGuiBackend : public ImGuiBackend
-    {
+namespace Astrelis {
+    class VulkanImGuiBackend : public ImGuiBackend {
     public:
         explicit VulkanImGuiBackend(RefPtr<Window> window, RefPtr<RendererAPI> api);
         ~VulkanImGuiBackend() override;
@@ -26,9 +24,8 @@ namespace Astrelis
         void End() override;
         void Resize(std::int32_t width, std::int32_t height) override;
     private:
-        RefPtr<Window> m_Window;
+        RefPtr<Window>                m_Window;
         RefPtr<VulkanGraphicsContext> m_Context;
-        RefPtr<Vulkan2DRendererAPI> m_API;
+        RefPtr<Vulkan2DRendererAPI>   m_API;
     };
 } // namespace Astrelis
-

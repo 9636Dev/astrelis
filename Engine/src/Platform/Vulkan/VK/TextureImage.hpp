@@ -8,10 +8,8 @@
 #include "ImageView.hpp"
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    class TextureImage : public Astrelis::TextureImage
-    {
+namespace Astrelis::Vulkan {
+    class TextureImage : public Astrelis::TextureImage {
     public:
         TextureImage()                                     = default;
         ~TextureImage() override                           = default;
@@ -21,24 +19,23 @@ namespace Astrelis::Vulkan
         TextureImage& operator=(TextureImage&& other)      = delete;
 
         // Internally used
-        bool Init(LogicalDevice& device,
-                  CommandPool& pool,
-                  PhysicalDevice& physicalDevice,
-                  VkExtent2D extent,
-                  VkFormat format,
-                  VkImageTiling tiling,
-                  VkImageUsageFlags usage,
-                  VkMemoryPropertyFlags properties);
+        bool Init(LogicalDevice& device, CommandPool& pool, PhysicalDevice& physicalDevice,
+            VkExtent2D extent, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+            VkMemoryPropertyFlags properties);
         bool LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image) override;
         void Destroy(RefPtr<GraphicsContext>& context) override;
         void Destroy(LogicalDevice& device);
 
-        [[nodiscard]] const VkImage& GetImage() const { return m_Image; }
+        [[nodiscard]] const VkImage& GetImage() const {
+            return m_Image;
+        }
 
-        [[nodiscard]] const VkImageView& GetImageView() const { return m_ImageView.GetHandle(); }
+        [[nodiscard]] const VkImageView& GetImageView() const {
+            return m_ImageView.GetHandle();
+        }
     private:
-        VkImage m_Image              = VK_NULL_HANDLE;
+        VkImage        m_Image       = VK_NULL_HANDLE;
         VkDeviceMemory m_ImageMemory = VK_NULL_HANDLE;
-        ImageView m_ImageView;
+        ImageView      m_ImageView;
     };
 } // namespace Astrelis::Vulkan

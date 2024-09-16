@@ -2,10 +2,8 @@
 
 #include "Astrelis/Core/Log.hpp"
 
-namespace Astrelis::Vulkan
-{
-    bool ImageView::Init(LogicalDevice& device, VkImage image, VkFormat format)
-    {
+namespace Astrelis::Vulkan {
+    bool ImageView::Init(LogicalDevice& device, VkImage image, VkFormat format) {
         VkImageViewCreateInfo createInfo {};
         createInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         createInfo.image                           = image;
@@ -17,13 +15,15 @@ namespace Astrelis::Vulkan
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount     = 1;
 
-        if (vkCreateImageView(device.GetHandle(), &createInfo, nullptr, &m_ImageView) != VK_SUCCESS)
-        {
+        if (vkCreateImageView(device.GetHandle(), &createInfo, nullptr, &m_ImageView)
+            != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create image view!");
             return false;
         }
         return true;
     }
 
-    void ImageView::Destroy(LogicalDevice& device) { vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr); }
+    void ImageView::Destroy(LogicalDevice& device) {
+        vkDestroyImageView(device.GetHandle(), m_ImageView, nullptr);
+    }
 } // namespace Astrelis::Vulkan

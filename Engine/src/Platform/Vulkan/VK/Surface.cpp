@@ -5,17 +5,17 @@
 
 #include <GLFW/glfw3.h>
 
-namespace Astrelis::Vulkan
-{
-    bool Surface::Init(Instance& instance, const RawRef<GLFWwindow*>& window)
-    {
-        if (glfwCreateWindowSurface(instance.GetHandle(), window, nullptr, &m_Surface) != VK_SUCCESS)
-        {
+namespace Astrelis::Vulkan {
+    bool Surface::Init(Instance& instance, const RawRef<GLFWwindow*>& window) {
+        if (glfwCreateWindowSurface(instance.GetHandle(), window, nullptr, &m_Surface)
+            != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create window surface!");
             return false;
         }
         return true;
     }
 
-    void Surface::Destroy(Instance& instance) { vkDestroySurfaceKHR(instance, m_Surface, nullptr); }
+    void Surface::Destroy(Instance& instance) {
+        vkDestroySurfaceKHR(instance, m_Surface, nullptr);
+    }
 } // namespace Astrelis::Vulkan

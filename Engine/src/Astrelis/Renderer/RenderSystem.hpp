@@ -6,16 +6,13 @@
 
 #include <future>
 
-namespace Astrelis
-{
-    struct FrameCaptureProps
-    {
+namespace Astrelis {
+    struct FrameCaptureProps {
         std::uint32_t Width;
         std::uint32_t Height;
     };
 
-    class RenderSystem
-    {
+    class RenderSystem {
     public:
         RenderSystem()                               = default;
         virtual ~RenderSystem()                      = default;
@@ -31,9 +28,9 @@ namespace Astrelis
         virtual void BlitSwapchain()           = 0;
         virtual void EndFrame()                = 0;
 
-        virtual void SetBlitSwapchain(bool blit) = 0;
-        virtual void* GetGraphicsImage()         = 0;
-        virtual Rect2Di GetRenderBounds()        = 0;
+        virtual void    SetBlitSwapchain(bool blit) = 0;
+        virtual void*   GetGraphicsImage()          = 0;
+        virtual Rect2Di GetRenderBounds()           = 0;
 
         /**
          * @brief Capture the current frame (next finished frame) and return it as an InMemoryImage

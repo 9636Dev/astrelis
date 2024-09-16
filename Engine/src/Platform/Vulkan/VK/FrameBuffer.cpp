@@ -6,10 +6,9 @@
 
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    bool FrameBuffer::Init(LogicalDevice& device, RenderPass& renderPass, VkImageView imageView, VkExtent2D extent)
-    {
+namespace Astrelis::Vulkan {
+    bool FrameBuffer::Init(
+        LogicalDevice& device, RenderPass& renderPass, VkImageView imageView, VkExtent2D extent) {
         std::array<VkImageView, 1> attachments = {imageView};
 
         VkFramebufferCreateInfo framebufferInfo {};
@@ -21,8 +20,8 @@ namespace Astrelis::Vulkan
         framebufferInfo.height          = extent.height;
         framebufferInfo.layers          = 1;
 
-        if (vkCreateFramebuffer(device.GetHandle(), &framebufferInfo, nullptr, &m_Buffer) != VK_SUCCESS)
-        {
+        if (vkCreateFramebuffer(device.GetHandle(), &framebufferInfo, nullptr, &m_Buffer)
+            != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create framebuffer!");
             return false;
         }
@@ -30,9 +29,7 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    void FrameBuffer::Destroy(LogicalDevice& device) const
-    {
+    void FrameBuffer::Destroy(LogicalDevice& device) const {
         vkDestroyFramebuffer(device.GetHandle(), m_Buffer, nullptr);
     }
 } // namespace Astrelis::Vulkan
-

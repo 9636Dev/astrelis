@@ -390,8 +390,8 @@ if (ASTRELIS_PEDANTIC_WARNINGS)
 endif()
 
 add_custom_target(Astrelis_Shaders
-    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_vert.spv
-    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_frag.spv
+    #COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_vert.spv
+    #COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_frag.spv
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_vert.spv
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_frag.spv
     COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Blit.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Blit_vert.spv
@@ -412,3 +412,4 @@ if (ASTRELIS_FORMAT)
 endif()
 
 add_subdirectory(tests)
+add_subdirectory(benchmarks)

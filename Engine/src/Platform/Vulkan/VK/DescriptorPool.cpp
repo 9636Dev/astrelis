@@ -2,13 +2,10 @@
 
 #include "Astrelis/Core/Base.hpp"
 
-namespace Astrelis::Vulkan
-{
-    bool DescriptorPool::Init(LogicalDevice& device, const DescriptorPoolCreateInfo& createInfo)
-    {
+namespace Astrelis::Vulkan {
+    bool DescriptorPool::Init(LogicalDevice& device, const DescriptorPoolCreateInfo& createInfo) {
         std::vector<VkDescriptorPoolSize> poolSizes(createInfo.poolSizes.size());
-        for (std::size_t i = 0; i < createInfo.poolSizes.size(); ++i)
-        {
+        for (std::size_t i = 0; i < createInfo.poolSizes.size(); ++i) {
             poolSizes[i].type            = createInfo.poolSizes[i].type;
             poolSizes[i].descriptorCount = createInfo.poolSizes[i].descriptorCount;
         }
@@ -20,16 +17,15 @@ namespace Astrelis::Vulkan
         poolInfo.maxSets       = createInfo.maxSets;
         poolInfo.flags         = createInfo.flags;
 
-        if (vkCreateDescriptorPool(device.GetHandle(), &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS)
-        {
+        if (vkCreateDescriptorPool(device.GetHandle(), &poolInfo, nullptr, &m_DescriptorPool)
+            != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create descriptor pool!");
             return false;
         }
         return true;
     }
 
-    void DescriptorPool::Destroy(LogicalDevice& device)
-    {
+    void DescriptorPool::Destroy(LogicalDevice& device) {
         vkDestroyDescriptorPool(device.GetHandle(), m_DescriptorPool, nullptr);
     }
 } // namespace Astrelis::Vulkan

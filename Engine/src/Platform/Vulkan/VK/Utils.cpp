@@ -14,30 +14,24 @@
 #endif
 
 
-namespace Astrelis::Vulkan
-{
-    bool CheckValidationLayerSupport()
-    {
+namespace Astrelis::Vulkan {
+    bool CheckValidationLayerSupport() {
         std::uint32_t layerCount = 0;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
         std::vector<VkLayerProperties> availableLayers(layerCount);
         vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-        for (const char* layerName : GetValidationLayers())
-        {
+        for (const char* layerName : GetValidationLayers()) {
             bool layerFound = false;
 
-            for (const auto& layerProperties : availableLayers)
-            {
-                if (std::strcmp(layerName, layerProperties.layerName) == 0)
-                {
+            for (const auto& layerProperties : availableLayers) {
+                if (std::strcmp(layerName, layerProperties.layerName) == 0) {
                     layerFound = true;
                     break;
                 }
             }
 
-            if (!layerFound)
-            {
+            if (!layerFound) {
                 return false;
             }
         }
@@ -45,15 +39,13 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers)
-    {
+    std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers) {
         std::uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions      = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        const char**  glfwExtensions     = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-        if (enableValidationLayers)
-        {
+        if (enableValidationLayers) {
             extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
 #ifdef ASTRELIS_PLATFORM_MACOS
@@ -65,17 +57,14 @@ namespace Astrelis::Vulkan
         return extensions;
     }
 
-    std::uint32_t
-        FindMemoryType(VkPhysicalDevice physicalDevice, std::uint32_t typeFilter, VkMemoryPropertyFlags properties)
-    {
+    std::uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, std::uint32_t typeFilter,
+        VkMemoryPropertyFlags properties) {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
-        for (std::uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-        {
-            if (((typeFilter & (1 << i)) != 0U) &&
-                (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-            {
+        for (std::uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if (((typeFilter & (1 << i)) != 0U)
+                && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
                 return i;
             }
         }
@@ -83,8 +72,7 @@ namespace Astrelis::Vulkan
         return 0;
     }
 
-    VkCommandBuffer BeginSingleTimeCommands(VkDevice logicalDevice, VkCommandPool commandPool)
-    {
+    VkCommandBuffer BeginSingleTimeCommands(VkDevice logicalDevice, VkCommandPool commandPool) {
         VkCommandBufferAllocateInfo allocInfo {};
         allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -103,11 +91,8 @@ namespace Astrelis::Vulkan
         return commandBuffer;
     }
 
-    void EndSingleTimeCommands(VkDevice logicalDevice,
-                               VkQueue queue,
-                               VkCommandPool commandPool,
-                               VkCommandBuffer commandBuffer)
-    {
+    void EndSingleTimeCommands(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool,
+        VkCommandBuffer commandBuffer) {
         vkEndCommandBuffer(commandBuffer);
 
         VkSubmitInfo submitInfo {};
@@ -121,9 +106,8 @@ namespace Astrelis::Vulkan
         vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
     }
 
-    void TransitionImageLayout(
-        VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
-    {
+    void TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format,
+        VkImageLayout oldLayout, VkImageLayout newLayout) {
         (void)format;
         VkImageMemoryBarrier barrier {};
         barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -141,96 +125,88 @@ namespace Astrelis::Vulkan
         VkPipelineStageFlags sourceStage      = 0;
         VkPipelineStageFlags destinationStage = 0;
 
-        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-        {
+        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED
+            && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
             barrier.srcAccessMask = 0;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_GENERAL) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-                 newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL &&
-                 newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
             barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
         }
-        else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
-        {
+        else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
             sourceStage      = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
-        else
-        {
+        else {
             throw std::invalid_argument("Unsupported layout transition!");
         }
 
-        vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        vkCmdPipelineBarrier(
+            commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
-    void TransitionImageLayout(VkDevice logicalDevice,
-                               VkQueue queue,
-                               VkCommandPool commandPool,
-                               VkImage image,
-                               VkFormat format,
-                               VkImageLayout oldLayout,
-                               VkImageLayout newLayout)
-    {
+    void TransitionImageLayout(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool,
+        VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
 
         TransitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
@@ -238,22 +214,16 @@ namespace Astrelis::Vulkan
         EndSingleTimeCommands(logicalDevice, queue, commandPool, commandBuffer);
     }
 
-    bool CreateBuffer(VkPhysicalDevice physicalDevice,
-                      VkDevice logicalDevice,
-                      VkDeviceSize size,
-                      VkBufferUsageFlags usage,
-                      VkMemoryPropertyFlags properties,
-                      VkBuffer& buffer,
-                      VkDeviceMemory& bufferMemory)
-    {
+    bool CreateBuffer(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, VkDeviceSize size,
+        VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
+        VkDeviceMemory& bufferMemory) {
         VkBufferCreateInfo bufferInfo {};
         bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size        = size;
         bufferInfo.usage       = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-        {
+        if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
             return false;
         }
 
@@ -261,20 +231,16 @@ namespace Astrelis::Vulkan
         vkGetBufferMemoryRequirements(logicalDevice, buffer, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo {};
-        allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        allocInfo.allocationSize  = memRequirements.size;
-        allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+        allocInfo.sType          = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex =
+            FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
         return vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &bufferMemory) == VK_SUCCESS;
     }
 
-    bool CopyBuffer(VkDevice logicalDevice,
-                    VkQueue queue,
-                    VkCommandPool commandPool,
-                    VkBuffer srcBuffer,
-                    VkBuffer dstBuffer,
-                    VkDeviceSize size)
-    {
+    bool CopyBuffer(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool,
+        VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
 
         VkBufferCopy copyRegion {};
@@ -286,17 +252,9 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    bool CreateImage(VkPhysicalDevice physicalDevice,
-                     VkDevice logicalDevice,
-                     std::uint32_t width,
-                     std::uint32_t height,
-                     VkFormat format,
-                     VkImageTiling tiling,
-                     VkImageUsageFlags usage,
-                     VkMemoryPropertyFlags properties,
-                     VkImage& image,
-                     VkDeviceMemory& imageMemory)
-    {
+    bool CreateImage(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::uint32_t width,
+        std::uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+        VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
         VkImageCreateInfo imageInfo {};
         imageInfo.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType     = VK_IMAGE_TYPE_2D;
@@ -312,8 +270,7 @@ namespace Astrelis::Vulkan
         imageInfo.samples       = VK_SAMPLE_COUNT_1_BIT;
         imageInfo.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
-        {
+        if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS) {
             return false;
         }
 
@@ -321,12 +278,12 @@ namespace Astrelis::Vulkan
         vkGetImageMemoryRequirements(logicalDevice, image, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo {};
-        allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        allocInfo.allocationSize  = memRequirements.size;
-        allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+        allocInfo.sType          = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex =
+            FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
-        if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-        {
+        if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
             return false;
         }
 
@@ -335,14 +292,8 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    void CopyBufferToImage(VkDevice logicalDevice,
-                           VkQueue queue,
-                           VkCommandPool commandPool,
-                           VkBuffer buffer,
-                           VkImage image,
-                           std::uint32_t width,
-                           std::uint32_t height)
-    {
+    void CopyBufferToImage(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool,
+        VkBuffer buffer, VkImage image, std::uint32_t width, std::uint32_t height) {
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
 
         VkBufferImageCopy region {};
@@ -358,13 +309,13 @@ namespace Astrelis::Vulkan
         region.imageOffset = {0, 0, 0};
         region.imageExtent = {width, height, 1};
 
-        vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        vkCmdCopyBufferToImage(
+            commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
         EndSingleTimeCommands(logicalDevice, queue, commandPool, commandBuffer);
     }
 
-    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
-    {
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface) {
         SwapChainSupportDetails details;
 
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
@@ -372,28 +323,26 @@ namespace Astrelis::Vulkan
         std::uint32_t formatCount = 0;
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
 
-        if (formatCount != 0)
-        {
+        if (formatCount != 0) {
             details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+            vkGetPhysicalDeviceSurfaceFormatsKHR(
+                device, surface, &formatCount, details.formats.data());
         }
 
         std::uint32_t presentModeCount = 0;
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
 
-        if (presentModeCount != 0)
-        {
+        if (presentModeCount != 0) {
             details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+            vkGetPhysicalDeviceSurfacePresentModesKHR(
+                device, surface, &presentModeCount, details.presentModes.data());
         }
 
         return details;
     }
 
-    VkExtent2D SwapChainSupportDetails::ChooseExtent(const RawRef<GLFWwindow*>& window) const
-    {
-        if (capabilities.currentExtent.width != UINT32_MAX)
-        {
+    VkExtent2D SwapChainSupportDetails::ChooseExtent(const RawRef<GLFWwindow*>& window) const {
+        if (capabilities.currentExtent.width != UINT32_MAX) {
             return capabilities.currentExtent;
         }
 
@@ -406,19 +355,17 @@ namespace Astrelis::Vulkan
             static_cast<std::uint32_t>(height),
         };
 
-        actualExtent.width =
-            std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-        actualExtent.height =
-            std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+        actualExtent.width  = std::clamp(actualExtent.width, capabilities.minImageExtent.width,
+             capabilities.maxImageExtent.width);
+        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height,
+            capabilities.maxImageExtent.height);
 
         return actualExtent;
     }
 
-    std::string Utils::VkFormatToString(VkFormat format)
-    {
+    std::string Utils::VkFormatToString(VkFormat format) {
         // For now just basic formats
-        switch (format)
-        {
+        switch (format) {
         case VK_FORMAT_UNDEFINED:
             return "VK_FORMAT_UNDEFINED";
         case VK_FORMAT_R4G4_UNORM_PACK8:
@@ -924,10 +871,8 @@ namespace Astrelis::Vulkan
         }
     }
 
-    std::string Utils::VkColorSpaceToString(VkColorSpaceKHR colorSpace)
-    {
-        switch (colorSpace)
-        {
+    std::string Utils::VkColorSpaceToString(VkColorSpaceKHR colorSpace) {
+        switch (colorSpace) {
         case VK_COLOR_SPACE_SRGB_NONLINEAR_KHR:
             return "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR";
         case VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT:
@@ -965,10 +910,8 @@ namespace Astrelis::Vulkan
         };
     }
 
-    std::string Utils::VkPresentModeToString(VkPresentModeKHR presentMode)
-    {
-        switch (presentMode)
-        {
+    std::string Utils::VkPresentModeToString(VkPresentModeKHR presentMode) {
+        switch (presentMode) {
         case VK_PRESENT_MODE_IMMEDIATE_KHR:
             return "VK_PRESENT_MODE_IMMEDIATE_KHR";
         case VK_PRESENT_MODE_MAILBOX_KHR:

@@ -4,12 +4,11 @@
 
 #include <string>
 
-namespace Astrelis
-{
-    class Layer
-    {
+namespace Astrelis {
+    class Layer {
     public:
-        explicit Layer(std::string debugName = "Layer") : m_DebugName(std::move(debugName)) {}
+        explicit Layer(std::string debugName = "Layer") : m_DebugName(std::move(debugName)) {
+        }
 
         virtual ~Layer()               = default;
         Layer(const Layer&)            = delete;
@@ -17,11 +16,14 @@ namespace Astrelis
         Layer(Layer&&)                 = delete;
         Layer& operator=(Layer&&)      = delete;
 
-        virtual void OnUpdate() {}
+        virtual void OnUpdate() {
+        }
 
-        virtual void OnAttach() {}
+        virtual void OnAttach() {
+        }
 
-        virtual void OnDetach() {}
+        virtual void OnDetach() {
+        }
 
         /**
         * @brief Called when an event is dispatched to the layer.
@@ -29,9 +31,12 @@ namespace Astrelis
         */
         virtual void OnEvent(Event& event);
 
-        virtual void OnUIRender() {}
+        virtual void OnUIRender() {
+        }
 
-        [[nodiscard]] const std::string& GetName() const { return m_DebugName; }
+        [[nodiscard]] const std::string& GetName() const {
+            return m_DebugName;
+        }
     private:
         std::string m_DebugName;
     };

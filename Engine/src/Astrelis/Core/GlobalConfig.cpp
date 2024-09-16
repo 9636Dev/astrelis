@@ -2,8 +2,7 @@
 
 #include "Astrelis/Core/Base.hpp"
 
-namespace Astrelis
-{
+namespace Astrelis {
 #ifdef ASTRELIS_DEBUG
     bool GlobalConfig::s_DebugMode = true;
 #else

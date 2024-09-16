@@ -4,10 +4,8 @@
 
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    class CommandPool
-    {
+namespace Astrelis::Vulkan {
+    class CommandPool {
     public:
         CommandPool()                              = default;
         ~CommandPool()                             = default;
@@ -17,9 +15,11 @@ namespace Astrelis::Vulkan
         CommandPool& operator=(CommandPool&&)      = default;
 
         [[nodiscard]] bool Init(LogicalDevice& device);
-        void Destroy(LogicalDevice& device);
+        void               Destroy(LogicalDevice& device);
 
-        VkCommandPool GetHandle() const { return m_CommandPool; }
+        VkCommandPool GetHandle() const {
+            return m_CommandPool;
+        }
     private:
         VkCommandPool m_CommandPool = VK_NULL_HANDLE;
     };

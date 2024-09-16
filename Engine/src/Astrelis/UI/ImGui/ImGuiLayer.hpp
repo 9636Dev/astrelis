@@ -8,10 +8,8 @@
 
 #include "ImGuiBackend.hpp"
 
-namespace Astrelis
-{
-    class ImGuiLayer : public Layer
-    {
+namespace Astrelis {
+    class ImGuiLayer : public Layer {
     public:
         explicit ImGuiLayer(RefPtr<ImGuiBackend> backend);
         ~ImGuiLayer() override                   = default;
@@ -29,11 +27,13 @@ namespace Astrelis
 
         void SetDarkThemeColors();
 
-        void BlockEvents(bool block) { m_BlockEvents = block; }
+        void BlockEvents(bool block) {
+            m_BlockEvents = block;
+        }
     private:
         void Resize(ViewportResizedEvent& event);
 
-        bool m_BlockEvents = true;
+        bool                 m_BlockEvents = true;
         RefPtr<ImGuiBackend> m_Backend;
     };
 } // namespace Astrelis

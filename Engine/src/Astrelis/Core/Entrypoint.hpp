@@ -12,16 +12,15 @@
 
 //extern Astrelis::Ptr<Astrelis::Application> Astrelis::CreateApplication(CommandLineArguments args);
 
-inline int AstrelisMain(int argc, char** argv)
-{
-    Astrelis::CreationStatus status     = Astrelis::CreationStatus::SUCCESS;
-    Astrelis::CommandLineArguments args = Astrelis::CommandLineArguments::Parse(argc, argv);
+inline int AstrelisMain(int argc, char** argv) {
+    Astrelis::CreationStatus       status = Astrelis::CreationStatus::SUCCESS;
+    Astrelis::CommandLineArguments args   = Astrelis::CommandLineArguments::Parse(argc, argv);
     Astrelis::ScopedPtr<Astrelis::Application> app;
     app = Astrelis::CreateApplication(args, status);
 
-    if (status != Astrelis::CreationStatus::SUCCESS)
-    {
-        ASTRELIS_CORE_LOG_ERROR("Failed to create application: {0}", static_cast<std::uint16_t>(status));
+    if (status != Astrelis::CreationStatus::SUCCESS) {
+        ASTRELIS_CORE_LOG_ERROR(
+            "Failed to create application: {0}", static_cast<std::uint16_t>(status));
         return -1;
     }
     app->Run();
@@ -32,5 +31,7 @@ inline int AstrelisMain(int argc, char** argv)
 
 #ifndef ASTRELIS_ENTRYPOINT_NO_MAIN
 // NOLINTNEXTLINE(misc-definitions-in-headers)
-int main(int argc, char** argv) { return AstrelisMain(argc, argv); }
+int main(int argc, char** argv) {
+    return AstrelisMain(argc, argv);
+}
 #endif

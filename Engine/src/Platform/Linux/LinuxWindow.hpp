@@ -6,18 +6,14 @@
 
 struct GLFWwindow;
 
-namespace Astrelis
-{
-    struct LinuxWindowData : public BaseWindowData
-    {
-        explicit LinuxWindowData(std::string title, Dimension2Du dimensions) :
-            BaseWindowData(std::move(title), dimensions)
-        {
+namespace Astrelis {
+    struct LinuxWindowData : public BaseWindowData {
+        explicit LinuxWindowData(std::string title, Dimension2Du dimensions)
+            : BaseWindowData(std::move(title), dimensions) {
         }
     };
 
-    class LinuxWindow : public Window
-    {
+    class LinuxWindow : public Window {
     public:
         explicit LinuxWindow(GLFWwindow* window, LinuxWindowData data);
         ~LinuxWindow() override;
@@ -31,28 +27,40 @@ namespace Astrelis
         void BeginFrame() override;
         void EndFrame() override;
 
-        void SetEventCallback(const WindowEventCallback& callback) override { m_Data.EventCallback = callback; }
+        void SetEventCallback(const WindowEventCallback& callback) override {
+            m_Data.EventCallback = callback;
+        }
 
-        RefPtr<GraphicsContext> GetGraphicsContext() const override { return m_Context; }
+        RefPtr<GraphicsContext> GetGraphicsContext() const override {
+            return m_Context;
+        }
 
         Rect2Di GetViewportBounds() const override;
 
-        std::uint32_t GetWidth() const override { return m_Data.Dimensions.Width; }
+        std::uint32_t GetWidth() const override {
+            return m_Data.Dimensions.Width;
+        }
 
-        std::uint32_t GetHeight() const override { return m_Data.Dimensions.Height; }
+        std::uint32_t GetHeight() const override {
+            return m_Data.Dimensions.Height;
+        }
 
-        void* GetNativeWindow() const override { return m_Window.Get(); }
+        void* GetNativeWindow() const override {
+            return m_Window.Get();
+        }
 
-        bool IsVSync() const override { return m_Context->IsVSync(); }
+        bool IsVSync() const override {
+            return m_Context->IsVSync();
+        }
 
-        void SetVSync(bool enabled) override { m_Context->SetVSync(enabled); }
+        void SetVSync(bool enabled) override {
+            m_Context->SetVSync(enabled);
+        }
 
         static Result<RefPtr<LinuxWindow>, std::string> Create(const WindowProps& props);
     private:
-        OwnedPtr<GLFWwindow*> m_Window;
-        LinuxWindowData m_Data;
+        OwnedPtr<GLFWwindow*>   m_Window;
+        LinuxWindowData         m_Data;
         RefPtr<GraphicsContext> m_Context;
     };
 } // namespace Astrelis
-
-

@@ -3,10 +3,8 @@
 #include "Astrelis/IO/Image.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
 
-namespace Astrelis
-{
-    class TextureImage
-    {
+namespace Astrelis {
+    class TextureImage {
     public:
         TextureImage()                                     = default;
         virtual ~TextureImage()                            = default;

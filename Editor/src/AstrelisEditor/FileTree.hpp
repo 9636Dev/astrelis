@@ -6,20 +6,17 @@
 #include <utility>
 #include <vector>
 
-namespace Pulsar
-{
-    class FileTree
-    {
+namespace AstrelisEditor {
+    class FileTree {
     public:
-        struct Node
-        {
-            Astrelis::File File;
+        struct Node {
+            Astrelis::File    File;
             std::vector<Node> Nodes;
 
-            explicit Node(Astrelis::File file) : File(std::move(file)) {}
+            explicit Node(Astrelis::File file) : File(std::move(file)) {
+            }
 
-            bool operator==(const Node& other) const
-            {
+            bool operator==(const Node& other) const {
                 return File == other.File;
             }
         };
@@ -31,4 +28,4 @@ namespace Pulsar
     private:
         Node m_Root;
     };
-} // namespace Pulsar
+} // namespace AstrelisEditor

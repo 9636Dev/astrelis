@@ -6,10 +6,8 @@
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsContext.hpp"
 
-namespace Astrelis
-{
-    class DescriptorSets
-    {
+namespace Astrelis {
+    class DescriptorSets {
     public:
         DescriptorSets()                                       = default;
         virtual ~DescriptorSets()                              = default;
@@ -19,9 +17,10 @@ namespace Astrelis
         DescriptorSets& operator=(DescriptorSets&& other)      = default;
 
         [[nodiscard]] virtual bool Init(RefPtr<GraphicsContext>& context,
-                                        RefPtr<DescriptorSetLayout>& layout,
-                                        const std::vector<BindingDescriptor>& descriptors)            = 0;
-        virtual void Destroy(RefPtr<GraphicsContext>& context) const                                  = 0;
-        virtual void Bind(RefPtr<GraphicsContext>& context, RefPtr<GraphicsPipeline>& pipeline) const = 0;
+            RefPtr<DescriptorSetLayout>&                         layout,
+            const std::vector<BindingDescriptor>&                descriptors)                     = 0;
+        virtual void               Destroy(RefPtr<GraphicsContext>& context) const = 0;
+        virtual void               Bind(
+                          RefPtr<GraphicsContext>& context, RefPtr<GraphicsPipeline>& pipeline) const = 0;
     };
 } // namespace Astrelis

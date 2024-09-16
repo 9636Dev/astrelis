@@ -5,18 +5,15 @@
 #include "CommandBuffer.hpp"
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    struct RenderSubpass
-    {
-        VkPipelineBindPoint PipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+namespace Astrelis::Vulkan {
+    struct RenderSubpass {
+        VkPipelineBindPoint                PipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         std::vector<VkAttachmentReference> Attachments;
     };
 
-    struct RenderPassInfo
-    {
+    struct RenderPassInfo {
         std::vector<VkAttachmentDescription> Attachments;
-        std::vector<RenderSubpass> Subpasses;
+        std::vector<RenderSubpass>           Subpasses;
 
         RenderPassInfo() = default;
     };
@@ -24,8 +21,7 @@ namespace Astrelis::Vulkan
 
     class FrameBuffer;
 
-    class RenderPass
-    {
+    class RenderPass {
     public:
         RenderPass()                             = default;
         ~RenderPass()                            = default;
@@ -35,12 +31,14 @@ namespace Astrelis::Vulkan
         RenderPass& operator=(RenderPass&&)      = delete;
 
         [[nodiscard]] bool Init(LogicalDevice& device, RenderPassInfo info = {});
-        void Destroy(LogicalDevice& device);
+        void               Destroy(LogicalDevice& device);
 
         void Begin(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent);
         void End(CommandBuffer& buffer);
 
-        [[nodiscard]] VkRenderPass GetHandle() const { return m_RenderPass; }
+        [[nodiscard]] VkRenderPass GetHandle() const {
+            return m_RenderPass;
+        }
 
         VkRenderPass m_RenderPass = VK_NULL_HANDLE;
     };

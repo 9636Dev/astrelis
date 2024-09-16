@@ -2,11 +2,10 @@
 
 #include "Astrelis/Renderer/RendererAPI.hpp"
 
-namespace Astrelis
-{
-    class VulkanRendererHelper
-    {
+namespace Astrelis {
+    class VulkanRendererHelper {
     public:
-        static RefPtr<RendererAPI> CreateAPI(RefPtr<GraphicsContext> context, RendererAPI::Type type);
+        static RefPtr<RendererAPI> CreateAPI(
+            RefPtr<GraphicsContext> context, RendererAPI::Type type);
     };
 } // namespace Astrelis

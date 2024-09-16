@@ -1,15 +1,14 @@
 #include "AssetPanel.hpp"
 
-#include <imgui.h>
-
 #include "Astrelis/Core/Log.hpp"
 
-namespace Pulsar
-{
-    AssetPanel::AssetPanel(Astrelis::File rootDirectory) : m_FileTree(std::move(rootDirectory)) {}
+#include <imgui.h>
 
-    void AssetPanel::Draw()
-    {
+namespace AstrelisEditor {
+    AssetPanel::AssetPanel(Astrelis::File rootDirectory) : m_FileTree(std::move(rootDirectory)) {
+    }
+
+    void AssetPanel::Draw() {
         ImGui::Begin("Assets");
 
         ImGuiTableFlags tableFlags = ImGuiTableFlags_None;
@@ -19,8 +18,7 @@ namespace Pulsar
         tableFlags |= ImGuiTableFlags_ScrollX;
         tableFlags |= ImGuiTableFlags_ScrollY;
 
-        if (!ImGui::BeginTable("assets_table", 2, tableFlags, ImGui::GetWindowSize()))
-        {
+        if (!ImGui::BeginTable("assets_table", 2, tableFlags, ImGui::GetWindowSize())) {
             ImGui::End();
             return;
         }
@@ -33,25 +31,20 @@ namespace Pulsar
 
         ImGui::TableNextColumn();
 
-        if (selected == nullptr)
-        {
+        if (selected == nullptr) {
             ImGui::Text("Please select a file to view the contents");
         }
-        else
-        {
+        else {
             static Astrelis::RawRef<FileTree::Node*> cachedNode = nullptr;
-            static std::string cachedContents;
+            static std::string                       cachedContents;
 
-            if (cachedNode != selected)
-            {
+            if (cachedNode != selected) {
                 cachedNode = selected;
-                auto res = selected->File.ReadText();
-                if (res.IsErr())
-                {
+                auto res   = selected->File.ReadText();
+                if (res.IsErr()) {
                     cachedContents = "Failed to read file: " + res.UnwrapErr();
                 }
-                else
-                {
+                else {
                     cachedContents = res.Unwrap();
                 }
             }
@@ -62,4 +55,4 @@ namespace Pulsar
         ImGui::EndTable();
         ImGui::End();
     }
-} // namespace Pulsar
+} // namespace AstrelisEditor

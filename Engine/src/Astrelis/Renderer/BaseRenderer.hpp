@@ -6,10 +6,8 @@
 #include "GraphicsPipeline.hpp"
 #include "RendererAPI.hpp"
 
-namespace Astrelis
-{
-    class BaseRenderer
-    {
+namespace Astrelis {
+    class BaseRenderer {
     public:
         BaseRenderer(RefPtr<Window> window, Rect2Di viewport);
         virtual ~BaseRenderer()                      = default;
@@ -18,7 +16,7 @@ namespace Astrelis
         BaseRenderer(BaseRenderer&&)                 = delete;
         BaseRenderer& operator=(BaseRenderer&&)      = delete;
 
-        bool Init();
+        bool         Init();
         virtual void Shutdown();
 
         virtual void BeginFrame() = 0;
@@ -26,13 +24,13 @@ namespace Astrelis
 
         virtual void ResizeViewport();
     protected:
-        void InitAPI(); // THis is private, and not virtual
+        void         InitAPI(); // THis is private, and not virtual
         virtual bool InitComponents() = 0;
-        void InternalBeginFrame();
+        void         InternalBeginFrame();
 
-        RefPtr<Window> m_Window;
+        RefPtr<Window>          m_Window;
         RefPtr<GraphicsContext> m_Context;
-        RefPtr<RendererAPI> m_RendererAPI;
+        RefPtr<RendererAPI>     m_RendererAPI;
 
         RefPtr<GraphicsPipeline> m_Pipeline;
     };

@@ -4,10 +4,8 @@
 
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    class Semaphore
-    {
+namespace Astrelis::Vulkan {
+    class Semaphore {
     public:
         Semaphore()                            = default;
         ~Semaphore()                           = default;
@@ -17,9 +15,11 @@ namespace Astrelis::Vulkan
         Semaphore& operator=(Semaphore&&)      = default;
 
         [[nodiscard]] bool Init(LogicalDevice& device);
-        void Destroy(LogicalDevice& device);
+        void               Destroy(LogicalDevice& device);
 
-        VkSemaphore GetHandle() const { return m_Semaphore; }
+        VkSemaphore GetHandle() const {
+            return m_Semaphore;
+        }
     private:
         VkSemaphore m_Semaphore = VK_NULL_HANDLE;
     };

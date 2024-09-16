@@ -9,17 +9,14 @@
 #include "GraphicsPipeline.hpp"
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
+namespace Astrelis::Vulkan {
 
-    enum class DescriptorType
-    {
+    enum class DescriptorType {
         UniformBuffer,
         Sampler
     };
 
-    class DescriptorSets : public Astrelis::DescriptorSets
-    {
+    class DescriptorSets : public Astrelis::DescriptorSets {
     public:
         DescriptorSets()                                       = default;
         ~DescriptorSets() override                             = default;
@@ -28,19 +25,20 @@ namespace Astrelis::Vulkan
         DescriptorSets(DescriptorSets&& other)                 = delete;
         DescriptorSets& operator=(DescriptorSets&& other)      = delete;
 
-        bool Init(LogicalDevice& device,
-                  DescriptorPool& pool,
-                  DescriptorSetLayout& layout,
-                  const std::vector<BindingDescriptor>& descriptors);
+        bool Init(LogicalDevice& device, DescriptorPool& pool, DescriptorSetLayout& layout,
+            const std::vector<BindingDescriptor>& descriptors);
         [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context,
-                                RefPtr<Astrelis::DescriptorSetLayout>& layout,
-                                const std::vector<BindingDescriptor>& descriptors) override;
-        void Destroy(RefPtr<GraphicsContext>& context) const override;
+            RefPtr<Astrelis::DescriptorSetLayout>&       layout,
+            const std::vector<BindingDescriptor>&        descriptors) override;
+        void               Destroy(RefPtr<GraphicsContext>& context) const override;
 
         void Bind(CommandBuffer& buffer, GraphicsPipeline& pipeline) const;
-        void Bind(RefPtr<GraphicsContext>& context, RefPtr<Astrelis::GraphicsPipeline>& pipeline) const override;
+        void Bind(RefPtr<GraphicsContext>&      context,
+            RefPtr<Astrelis::GraphicsPipeline>& pipeline) const override;
 
-        [[nodiscard]] VkDescriptorSet GetHandle() const { return m_DescriptorSet; }
+        [[nodiscard]] VkDescriptorSet GetHandle() const {
+            return m_DescriptorSet;
+        }
     private:
         VkDescriptorSet m_DescriptorSet {};
     };

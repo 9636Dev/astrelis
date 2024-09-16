@@ -7,20 +7,16 @@
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsContext.hpp"
 
-namespace Astrelis
-{
-    struct VertexInput
-    {
-        enum class VertexType
-        {
+namespace Astrelis {
+    struct VertexInput {
+        enum class VertexType {
             Float,
             Int,
             UInt,
         };
 
-        struct Element
-        {
-            VertexType Type;
+        struct Element {
+            VertexType  Type;
             std::size_t Offset;
             /**
             * @brief The number of components in the element, so for example a vec3 would have 3 components.
@@ -29,35 +25,33 @@ namespace Astrelis
             std::size_t Location;
         };
 
-        std::size_t Stride;
+        std::size_t          Stride;
         std::vector<Element> Elements;
     };
 
-    struct BufferBinding
-    {
-        std::size_t Binding;
-        std::size_t Stride;
+    struct BufferBinding {
+        std::size_t                       Binding;
+        std::size_t                       Stride;
         std::vector<VertexInput::Element> Elements;
-        bool Instanced;
+        bool                              Instanced;
     };
 
-    struct PipelineShaders
-    {
+    struct PipelineShaders {
         File Vertex;
         File Fragment;
 
-        PipelineShaders(File vertex, File fragment) : Vertex(std::move(vertex)), Fragment(std::move(fragment)) {}
+        PipelineShaders(File vertex, File fragment)
+            : Vertex(std::move(vertex)), Fragment(std::move(fragment)) {
+        }
     };
 
-    enum class PipelineType
-    {
+    enum class PipelineType {
         Graphics,
         Overlay,
         Main, // Blit render pass
     };
 
-    class GraphicsPipeline
-    {
+    class GraphicsPipeline {
     public:
         GraphicsPipeline()                                   = default;
         virtual ~GraphicsPipeline()                          = default;
@@ -66,11 +60,9 @@ namespace Astrelis
         GraphicsPipeline(GraphicsPipeline&&)                 = default;
         GraphicsPipeline& operator=(GraphicsPipeline&&)      = default;
 
-        virtual bool Init(RefPtr<GraphicsContext>& context,
-                          PipelineShaders& shaders,
-                          std::vector<BufferBinding>& bindings,
-                          std::vector<RefPtr<DescriptorSetLayout>>& layouts,
-                          PipelineType type)                   = 0;
+        virtual bool Init(RefPtr<GraphicsContext>& context, PipelineShaders& shaders,
+            std::vector<BufferBinding>& bindings, std::vector<RefPtr<DescriptorSetLayout>>& layouts,
+            PipelineType type)                                 = 0;
         virtual void Destroy(RefPtr<GraphicsContext>& context) = 0;
         virtual void Bind(RefPtr<GraphicsContext>& context)    = 0;
     };

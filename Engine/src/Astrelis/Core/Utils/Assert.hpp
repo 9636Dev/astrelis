@@ -16,24 +16,22 @@
      * @brief Asserts that the expression is true, if not, it will log an error and break the debugger
      * This is only available in debug builds
      */
-    #define ASTRELIS_ASSERT(x, ...)                                       \
-        {                                                                 \
-            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)     \
-            {                                                             \
+    #define ASTRELIS_ASSERT(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
-                ASTRELIS_DEBUG_BREAK();                                   \
-            }                                                             \
+                ASTRELIS_DEBUG_BREAK(); \
+            } \
         }
-    #define ASTRELIS_CORE_ASSERT(x, ...)                                       \
-        {                                                                      \
-            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)          \
-            {                                                                  \
+    #define ASTRELIS_CORE_ASSERT(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_CORE_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
-                ASTRELIS_DEBUG_BREAK();                                        \
-            }                                                                  \
+                ASTRELIS_DEBUG_BREAK(); \
+            } \
         }
 #else
-    #define ASTRELIS_ASSERT(x, ...)      (void)(sizeof(x))
+    #define ASTRELIS_ASSERT(x, ...) (void)(sizeof(x))
     #define ASTRELIS_CORE_ASSERT(x, ...) (void)(sizeof(x))
 #endif
 
@@ -47,24 +45,22 @@
      * @brief Verifies that the expression is true, if not, it will log an error and break the debugger
      * This is available in release (internal) and debug builds
      */
-    #define ASTRELIS_VERIFY(x, ...)                                          \
-        {                                                                    \
-            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)        \
-            {                                                                \
+    #define ASTRELIS_VERIFY(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_LOG_ERROR("Verification Failed: {0}", __VA_ARGS__); \
-                ASTRELIS_DEBUG_BREAK();                                      \
-            }                                                                \
+                ASTRELIS_DEBUG_BREAK(); \
+            } \
         }
-    #define ASTRELIS_CORE_VERIFY(x, ...)                                          \
-        {                                                                         \
-            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)             \
-            {                                                                     \
+    #define ASTRELIS_CORE_VERIFY(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_CORE_LOG_ERROR("Verification Failed: {0}", __VA_ARGS__); \
-                ASTRELIS_DEBUG_BREAK();                                           \
-            }                                                                     \
+                ASTRELIS_DEBUG_BREAK(); \
+            } \
         }
 #else
-    #define ASTRELIS_VERIFY(x, ...)      (void)(sizeof(x))
+    #define ASTRELIS_VERIFY(x, ...) (void)(sizeof(x))
     #define ASTRELIS_CORE_VERIFY(x, ...) (void)(sizeof(x))
 #endif
 
@@ -78,20 +74,16 @@
      * @brief Requires that the expression is true, if not, it will log an error
      * This is available in all builds
      */
-    #define ASTRELIS_REQUIRE(x, ...)                                        \
-        {                                                                   \
-            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)       \
-            {                                                               \
+    #define ASTRELIS_REQUIRE(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
-            }                                                               \
+            } \
         }
-    #define ASTRELIS_CORE_REQUIRE(x, ...)                                        \
-        {                                                                        \
-            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */)            \
-            {                                                                    \
+    #define ASTRELIS_CORE_REQUIRE(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_CORE_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
-            }                                                                    \
+            } \
         }
 #endif
-
-

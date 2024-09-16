@@ -8,12 +8,9 @@
     #include "Platform/Vulkan/VulkanRenderSystem.hpp"
 #endif
 
-namespace Astrelis
-{
-    RefPtr<RenderSystem> RenderSystem::Create(RefPtr<Window>& window)
-    {
-        switch (RendererAPI::GetAPI())
-        {
+namespace Astrelis {
+    RefPtr<RenderSystem> RenderSystem::Create(RefPtr<Window>& window) {
+        switch (RendererAPI::GetAPI()) {
         case RendererAPI::API::None:
             ASTRELIS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;

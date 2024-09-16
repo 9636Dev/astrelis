@@ -8,8 +8,7 @@
 #include "GraphicsPipeline.hpp"
 #include "Vertex.hpp"
 
-namespace Astrelis
-{
+namespace Astrelis {
     static constexpr std::uint32_t MAX_INSTANCE_COUNT = 1'000;
 
     const std::vector<Vertex2D> m_Vertices = {
@@ -20,14 +19,13 @@ namespace Astrelis
     };
     const std::array<std::uint32_t, 6> m_Indices = {0, 1, 2, 2, 3, 0};
 
-    Renderer2D::Renderer2D(RefPtr<Window> window, Rect2Di viewport) : BaseRenderer(std::move(window), viewport)
-    {
+    Renderer2D::Renderer2D(RefPtr<Window> window, Rect2Di viewport)
+        : BaseRenderer(std::move(window), viewport) {
         ASTRELIS_PROFILE_FUNCTION();
         m_Instances.reserve(MAX_INSTANCE_COUNT);
     }
 
-    bool Renderer2D::InitComponents()
-    {
+    bool Renderer2D::InitComponents() {
         ASTRELIS_PROFILE_FUNCTION();
         std::vector<BufferBinding> vertexInputs(2);
         vertexInputs[0].Binding   = 0;
@@ -68,36 +66,33 @@ namespace Astrelis
         InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
         m_TextureImage = m_RendererAPI->CreateTextureImage();
 
-        if (!m_TextureImage->LoadTexture(m_Context, image))
-        {
+        if (!m_TextureImage->LoadTexture(m_Context, image)) {
             return false;
         }
 
         m_TextureSampler = m_RendererAPI->CreateTextureSampler();
-        if (!m_TextureSampler->Init(m_Context))
-        {
+        if (!m_TextureSampler->Init(m_Context)) {
             return false;
         }
 
         std::vector<BindingDescriptor> bindings = {
             BindingDescriptor::Uniform("MVP", 0, sizeof(CameraUniformData), m_UniformBuffer),
-            BindingDescriptor::TextureSampler("TextureSampler", 1, m_TextureImage, m_TextureSampler),
+            BindingDescriptor::TextureSampler(
+                "TextureSampler", 1, m_TextureImage, m_TextureSampler),
         };
 
         m_DescriptorSetLayout = m_RendererAPI->CreateDescriptorSetLayout();
-        if (!m_DescriptorSetLayout->Init(m_Context, bindings))
-        {
+        if (!m_DescriptorSetLayout->Init(m_Context, bindings)) {
             return false;
         }
 
         m_DescriptorSets = m_RendererAPI->CreateDescriptorSets();
-        if (!m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, bindings))
-        {
+        if (!m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, bindings)) {
             return false;
         }
 
         std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
-        m_Pipeline                                          = m_RendererAPI->CreateGraphicsPipeline();
+        m_Pipeline = m_RendererAPI->CreateGraphicsPipeline();
         m_Pipeline->Init(m_Context, shaders, vertexInputs, setLayouts, PipelineType::Graphics);
 
         m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
@@ -109,8 +104,7 @@ namespace Astrelis
         return true;
     }
 
-    void Renderer2D::Shutdown()
-    {
+    void Renderer2D::Shutdown() {
         ASTRELIS_PROFILE_FUNCTION();
         m_RendererAPI->WaitDeviceIdle();
 
@@ -128,22 +122,39 @@ namespace Astrelis
         ASTRELIS_CORE_LOG_INFO("Renderer2D shutdown!");
     }
 
-    void Renderer2D::BeginFrame()
-    {
+    void Renderer2D::BeginFrame() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::BeginFrame");
         InternalBeginFrame();
+
+        m_VertexBuffer->Bind(m_Context, 0);
+        m_InstanceBuffer->Bind(m_Context, 1);
+        m_IndexBuffer->Bind(m_Context);
+        m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(CameraUniformData), 0);
+        m_DescriptorSets->Bind(m_Context, m_Pipeline);
     }
 
-    void Renderer2D::DrawInstances()
-    {
+    void Renderer2D::AddInstance(const InstanceData& instance) {
         ASTRELIS_PROFILE_FUNCTION();
-        if (m_Instances.empty())
-        {
+        if (m_Instances.size() >= MAX_INSTANCE_COUNT) {
+            DrawInstances();
+            m_Instances.clear();
+        }
+        m_Instances.push_back(instance);
+    }
+
+    void Renderer2D::DrawInstances() {
+        ASTRELIS_PROFILE_FUNCTION();
+        if (m_Instances.empty()) {
             return;
         }
-        m_InstanceBuffer->SetData(m_Context, m_Instances.data(), sizeof(InstanceData) * m_Instances.size());
-        m_RendererAPI->DrawInstancedIndexed(static_cast<std::uint32_t>(m_Indices.size()), m_Instances.size(), 0, 0, 0);
+        m_InstanceBuffer->SetData(
+            m_Context, m_Instances.data(), sizeof(InstanceData) * m_Instances.size());
+        m_RendererAPI->DrawInstancedIndexed(
+            static_cast<std::uint32_t>(m_Indices.size()), m_Instances.size(), 0, 0, 0);
     }
 
-    void Renderer2D::EndFrame() { ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::EndFrame"); }
+    void Renderer2D::EndFrame() {
+        ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::EndFrame");
+        DrawInstances();
+    }
 } // namespace Astrelis

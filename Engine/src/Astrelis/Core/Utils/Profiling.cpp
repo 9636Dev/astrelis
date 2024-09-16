@@ -3,8 +3,7 @@
 #ifdef TRACY_ENABLE
     #ifdef ASTRELIS_PROFILE_MEMORY
 /// @private
-void* operator new(size_t size)
-{
+void* operator new(size_t size) {
     // NOLINTNEXTLINE
     void* ptr = malloc(size);
     TracyAlloc(ptr, size);
@@ -12,8 +11,7 @@ void* operator new(size_t size)
 }
 
 /// @private
-void operator delete(void* ptr) noexcept
-{
+void operator delete(void* ptr) noexcept {
     TracyFree(ptr);
     // NOLINTNEXTLINE
     free(ptr);

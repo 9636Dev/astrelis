@@ -3,10 +3,8 @@
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Core/Window.hpp"
 
-namespace Astrelis
-{
-    class ImGuiBackend
-    {
+namespace Astrelis {
+    class ImGuiBackend {
     public:
         ImGuiBackend()                               = default;
         virtual ~ImGuiBackend()                      = default;

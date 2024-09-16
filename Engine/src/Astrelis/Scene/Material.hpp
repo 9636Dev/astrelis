@@ -2,16 +2,13 @@
 
 #include "Astrelis/Core/Utils/Renderer.hpp"
 
-namespace Astrelis
-{
+namespace Astrelis {
     // We only store the compiled shader for the compiled platforms, we will have an API to compile the shaders for the platforms
-    struct CompiledShader
-    {
+    struct CompiledShader {
         ASTRELIS_RUN_RENDERER_VULKAN(std::vector<std::uint8_t> Vulkan;)
     };
 
-    class Material
-    {
+    class Material {
     public:
     private:
         CompiledShader m_VertexShader;

@@ -4,23 +4,19 @@
 
 #include "LogicalDevice.hpp"
 
-namespace Astrelis::Vulkan
-{
-    struct DescriptorPoolSize
-    {
+namespace Astrelis::Vulkan {
+    struct DescriptorPoolSize {
         VkDescriptorType type;
-        std::uint32_t descriptorCount;
+        std::uint32_t    descriptorCount;
     };
 
-    struct DescriptorPoolCreateInfo
-    {
+    struct DescriptorPoolCreateInfo {
         std::vector<DescriptorPoolSize> poolSizes;
-        std::uint32_t maxSets             = 0;
-        VkDescriptorPoolCreateFlags flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        std::uint32_t                   maxSets = 0;
+        VkDescriptorPoolCreateFlags     flags   = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     };
 
-    class DescriptorPool
-    {
+    class DescriptorPool {
     public:
         DescriptorPool()                                       = default;
         ~DescriptorPool()                                      = default;
@@ -30,9 +26,11 @@ namespace Astrelis::Vulkan
         DescriptorPool& operator=(DescriptorPool&& other)      = delete;
 
         [[nodiscard]] bool Init(LogicalDevice& device, const DescriptorPoolCreateInfo& createInfo);
-        void Destroy(LogicalDevice& device);
+        void               Destroy(LogicalDevice& device);
 
-        [[nodiscard]] VkDescriptorPool GetHandle() const { return m_DescriptorPool; }
+        [[nodiscard]] VkDescriptorPool GetHandle() const {
+            return m_DescriptorPool;
+        }
     private:
         VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
     };

@@ -4,10 +4,8 @@
 
 #include "GraphicsContext.hpp"
 
-namespace Astrelis
-{
-    class TextureSampler
-    {
+namespace Astrelis {
+    class TextureSampler {
     public:
         TextureSampler()                                 = default;
         virtual ~TextureSampler()                        = default;

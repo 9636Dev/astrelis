@@ -2,7 +2,6 @@
 
 #include "Astrelis/Core/Base.hpp"
 
-namespace Astrelis
-{
+namespace Astrelis {
     Milliseconds Time::s_DeltaTime;
 } // namespace Astrelis

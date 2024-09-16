@@ -16,4 +16,3 @@
 #include "Astrelis/Events/KeyEvent.hpp"
 #include "Astrelis/Events/MouseEvent.hpp"
 #include "Astrelis/Events/WindowEvent.hpp"
-

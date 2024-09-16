@@ -10,21 +10,17 @@
 #include "Camera.hpp"
 #include "VertexBuffer.hpp"
 
-namespace Astrelis
-{
-    struct CameraUniformData
-    {
+namespace Astrelis {
+    struct CameraUniformData {
         Mat4f View       = Mat4f(1.0F);
         Mat4f Projection = Mat4f(1.0F);
     };
 
-    struct InstanceData
-    {
+    struct InstanceData {
         Mat4f Transform;
     };
 
-    class Renderer2D : public BaseRenderer
-    {
+    class Renderer2D : public BaseRenderer {
     public:
         Renderer2D(RefPtr<Window> window, Rect2Di viewport);
         ~Renderer2D() override                   = default;
@@ -38,21 +34,23 @@ namespace Astrelis
 
         void BeginFrame() override;
         void EndFrame() override;
+
+        void AddInstance(const InstanceData& instance);
     private:
         void DrawInstances();
 
         // ========================
         // Rendering States
         // ========================
-        RefPtr<VertexBuffer> m_VertexBuffer;
-        RefPtr<VertexBuffer> m_InstanceBuffer;
-        RefPtr<IndexBuffer> m_IndexBuffer;
-        CameraUniformData m_UBO;
+        RefPtr<VertexBuffer>        m_VertexBuffer;
+        RefPtr<VertexBuffer>        m_InstanceBuffer;
+        RefPtr<IndexBuffer>         m_IndexBuffer;
+        CameraUniformData           m_UBO;
         RefPtr<DescriptorSetLayout> m_DescriptorSetLayout;
-        RefPtr<DescriptorSets> m_DescriptorSets;
-        RefPtr<UniformBuffer> m_UniformBuffer;
-        RefPtr<TextureImage> m_TextureImage;
-        RefPtr<TextureSampler> m_TextureSampler;
+        RefPtr<DescriptorSets>      m_DescriptorSets;
+        RefPtr<UniformBuffer>       m_UniformBuffer;
+        RefPtr<TextureImage>        m_TextureImage;
+        RefPtr<TextureSampler>      m_TextureSampler;
 
         // ========================
         // Rendering Data

@@ -2,10 +2,8 @@
 
 #include "BaseRenderer.hpp"
 
-namespace Astrelis
-{
-    class TilemapRenderer final : public BaseRenderer
-    {
+namespace Astrelis {
+    class TilemapRenderer final : public BaseRenderer {
     public:
         TilemapRenderer(RefPtr<Window> window, Rect2Di viewport);
         ~TilemapRenderer() override;

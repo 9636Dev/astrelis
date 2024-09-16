@@ -5,19 +5,17 @@
 #include "CommandBuffer.hpp"
 #include "FrameBuffer.hpp"
 
-namespace Astrelis::Vulkan
-{
-    bool RenderPass::Init(LogicalDevice& device, RenderPassInfo info)
-    {
+namespace Astrelis::Vulkan {
+    bool RenderPass::Init(LogicalDevice& device, RenderPassInfo info) {
         VkRenderPassCreateInfo renderPassInfo {};
         renderPassInfo.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         renderPassInfo.attachmentCount = static_cast<std::uint32_t>(info.Attachments.size());
         renderPassInfo.pAttachments    = info.Attachments.data();
         std::vector<VkSubpassDescription> subpasses(info.Subpasses.size());
-        for (size_t i = 0; i < info.Subpasses.size(); i++)
-        {
-            subpasses[i].pipelineBindPoint       = info.Subpasses[i].PipelineBindPoint;
-            subpasses[i].colorAttachmentCount    = static_cast<uint32_t>(info.Subpasses[i].Attachments.size());
+        for (size_t i = 0; i < info.Subpasses.size(); i++) {
+            subpasses[i].pipelineBindPoint = info.Subpasses[i].PipelineBindPoint;
+            subpasses[i].colorAttachmentCount =
+                static_cast<uint32_t>(info.Subpasses[i].Attachments.size());
             subpasses[i].pColorAttachments       = info.Subpasses[i].Attachments.data();
             subpasses[i].inputAttachmentCount    = 0;
             subpasses[i].pInputAttachments       = nullptr;
@@ -41,8 +39,8 @@ namespace Astrelis::Vulkan
         renderPassInfo.pDependencies   = &dependency;
 
 
-        if (vkCreateRenderPass(device.GetHandle(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
-        {
+        if (vkCreateRenderPass(device.GetHandle(), &renderPassInfo, nullptr, &m_RenderPass)
+            != VK_SUCCESS) {
             ASTRELIS_CORE_LOG_ERROR("Failed to create render pass!");
             return false;
         }
@@ -50,10 +48,12 @@ namespace Astrelis::Vulkan
         return true;
     }
 
-    void RenderPass::Destroy(LogicalDevice& device) { vkDestroyRenderPass(device.GetHandle(), m_RenderPass, nullptr); }
+    void RenderPass::Destroy(LogicalDevice& device) {
+        vkDestroyRenderPass(device.GetHandle(), m_RenderPass, nullptr);
+    }
 
-    void RenderPass::Begin(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent)
-    {
+    void RenderPass::Begin(
+        CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, VkExtent2D extent) {
         VkRenderPassBeginInfo renderPassInfo {};
         renderPassInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass        = m_RenderPass;
@@ -69,9 +69,12 @@ namespace Astrelis::Vulkan
         subpassBeginInfo.sType    = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
         subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;
 
-        vkCmdBeginRenderPass(commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(
+            commandBuffer.GetHandle(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
-    void RenderPass::End(CommandBuffer& commandBuffer) { vkCmdEndRenderPass(commandBuffer.GetHandle()); }
+    void RenderPass::End(CommandBuffer& commandBuffer) {
+        vkCmdEndRenderPass(commandBuffer.GetHandle());
+    }
 
 } // namespace Astrelis::Vulkan

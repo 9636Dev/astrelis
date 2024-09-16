@@ -10,20 +10,21 @@
     #include "Platform/Windows/WindowsWindow.hpp"
 #endif
 
-namespace Astrelis
-{
-    Result<RefPtr<Window>, std::string> Window::Create(const WindowProps& props)
-    {
+namespace Astrelis {
+    Result<RefPtr<Window>, std::string> Window::Create(const WindowProps& props) {
         ASTRELIS_PROFILE_FUNCTION();
 #ifdef ASTRELIS_PLATFORM_LINUX
-        return LinuxWindow::Create(props).MapMove(
-            [](RefPtr<LinuxWindow>&& window) { return static_cast<RefPtr<Window>>(window); });
+        return LinuxWindow::Create(props).MapMove([](RefPtr<LinuxWindow>&& window) {
+            return static_cast<RefPtr<Window>>(window);
+        });
 #elif defined(ASTRELIS_PLATFORM_MACOS)
-        return MacOSWindow::Create(props).MapMove(
-            [](RefPtr<MacOSWindow>&& window) { return static_cast<RefPtr<Window>>(window); });
+        return MacOSWindow::Create(props).MapMove([](RefPtr<MacOSWindow>&& window) {
+            return static_cast<RefPtr<Window>>(window);
+        });
 #elif defined(ASTRELIS_PLATFORM_WINDOWS)
-        return WindowsWindow::Create(props).MapMove(
-            [](RefPtr<WindowsWindow>&& window) { return static_cast<RefPtr<Window>>(window); });
+        return WindowsWindow::Create(props).MapMove([](RefPtr<WindowsWindow>&& window) {
+            return static_cast<RefPtr<Window>>(window);
+        });
 #else
         return "Unsupported platform";
 #endif

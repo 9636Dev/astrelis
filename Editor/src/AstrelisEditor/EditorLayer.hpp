@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Astrelis/Core/Layer.hpp"
+#include "Astrelis/Renderer/Renderer2D.hpp"
+
+#include <string>
 
 #include "AssetPanel.hpp"
 #include "Console.hpp"
-#include <string>
 
-namespace Pulsar
-{
-    class EditorLayer : public Astrelis::Layer
-    {
+namespace AstrelisEditor {
+    class EditorLayer : public Astrelis::Layer {
     public:
         explicit EditorLayer(std::string rootDirectory);
         ~EditorLayer() override;
@@ -24,7 +24,9 @@ namespace Pulsar
         void OnUIRender() override;
         void OnEvent(Astrelis::Event& event) override;
     private:
-        Console m_Console;
+        Console    m_Console;
         AssetPanel m_AssetPanel;
+
+        Astrelis::Renderer2D m_Renderer2D;
     };
-} // namespace Pulsar
+} // namespace AstrelisEditor

@@ -7,19 +7,16 @@
 
 struct GLFWwindow;
 
-namespace Astrelis
-{
+namespace Astrelis {
 
-    struct ContextProps
-    {
+    struct ContextProps {
         bool VSync = true;
     };
 
     /**
     * @brief Per window graphics context, contains per window rendering state and resources.
     */
-    class GraphicsContext
-    {
+    class GraphicsContext {
     public:
         GraphicsContext()                                  = default;
         virtual ~GraphicsContext()                         = default;
@@ -28,12 +25,12 @@ namespace Astrelis
         GraphicsContext(GraphicsContext&&)                 = delete;
         GraphicsContext& operator=(GraphicsContext&&)      = delete;
 
-        virtual Result<EmptyType, std::string> Init() = 0;
-        virtual void Shutdown()                       = 0;
-        virtual bool IsInitialized() const            = 0;
-        virtual void BeginFrame()                     = 0;
-        virtual void EndFrame()                       = 0;
-        virtual bool SkipFrame()                      = 0;
+        virtual Result<EmptyType, std::string> Init()                = 0;
+        virtual void                           Shutdown()            = 0;
+        virtual bool                           IsInitialized() const = 0;
+        virtual void                           BeginFrame()          = 0;
+        virtual void                           EndFrame()            = 0;
+        virtual bool                           SkipFrame()           = 0;
 
         virtual bool IsVSync() const        = 0;
         virtual void SetVSync(bool enabled) = 0;

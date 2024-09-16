@@ -94,3 +94,17 @@ TEST(PointerTest, PointerMove)
 
     // No need to test RawPtr
 }
+
+TEST(PointerTest, OwnedPtrReference)
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+    OwnedPtr<int*> ownedPtr1 = OwnedPtr<int*>::Create(5);
+    RawRef<int*> rawPtr1 = ownedPtr1.Raw();
+
+    EXPECT_EQ(*rawPtr1, 5);
+    ownedPtr1.Reset();
+    EXPECT_EQ(ownedPtr1, nullptr);
+    // Now undefined behavior to access rawPtr1
+    rawPtr1 = nullptr;
+    EXPECT_EQ(rawPtr1, nullptr);
+}

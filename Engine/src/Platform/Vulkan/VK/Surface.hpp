@@ -8,10 +8,8 @@
 
 struct GLFWwindow;
 
-namespace Astrelis::Vulkan
-{
-    class Surface
-    {
+namespace Astrelis::Vulkan {
+    class Surface {
     public:
         Surface()                          = default;
         ~Surface()                         = default;
@@ -21,11 +19,12 @@ namespace Astrelis::Vulkan
         Surface& operator=(Surface&&)      = delete;
 
         [[nodiscard]] bool Init(Instance& instance, const RawRef<GLFWwindow*>& window);
-        void Destroy(Instance& instance);
+        void               Destroy(Instance& instance);
 
-        [[nodiscard]] VkSurfaceKHR GetHandle() const { return m_Surface; }
+        [[nodiscard]] VkSurfaceKHR GetHandle() const {
+            return m_Surface;
+        }
     private:
         VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
     };
 } // namespace Astrelis::Vulkan
-
