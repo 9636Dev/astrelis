@@ -48,3 +48,7 @@ else()
     set(TRACY_ENABLE OFF CACHE BOOL "Enable Tracy" FORCE)
 endif()
 add_subdirectory(tracy)
+
+# Cereal
+add_library(Cereal INTERFACE)
+target_include_directories(Cereal INTERFACE cereal/include)

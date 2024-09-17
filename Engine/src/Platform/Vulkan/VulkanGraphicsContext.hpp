@@ -123,8 +123,8 @@ namespace Astrelis {
         Vulkan::RenderPass m_RenderPass;
 
 
-        ASTRELIS_PROFILE_VULKAN(Vulkan::CommandBuffer m_ProfileCommandBuffer;
-                                TracyVkCtx            m_TracyVkCtx = nullptr;)
+        ASTRELIS_PROFILE_VULKAN(Vulkan::CommandBuffer   m_ProfileCommandBuffer;
+                                std::vector<TracyVkCtx> m_TracyVkCtx;)
 
         // For screenshotting
         bool                        m_CaptureNextFrame = false;

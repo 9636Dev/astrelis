@@ -36,7 +36,7 @@ namespace AstrelisEditor {
 
     void EditorLayer::OnUpdate() {
         m_Renderer2D.BeginFrame();
-        m_Renderer2D.AddInstance(Astrelis::InstanceData {Astrelis::Mat4f()});
+        m_Renderer2D.AddInstance(Astrelis::InstanceData {Astrelis::Mat4f(1.0F)});
         m_Renderer2D.EndFrame();
     }
 
@@ -61,28 +61,11 @@ namespace AstrelisEditor {
 
         ImGui::Begin("Inspector");
 
-        ImGui::Text("Select an object to inspect");
-
-        if (ImGui::Button("Compile Shaders")) {
-            ShaderCompiler compiler;
-            Astrelis::File shaderFile("resources/shaders/Basic.hlsl");
-            {
-                auto result = compiler.CompileHLSLToSPIRV(
-                    shaderFile.ReadText().Expect("Read Failed"), "VS_Main", "vs_6_0");
-                std::ofstream fileStream("resources/shaders/Basic.vert.spv", std::ios::binary);
-                fileStream.write(
-                    reinterpret_cast<const char*>(result.data()), result.size() * sizeof(uint32_t));
-                fileStream.close();
-            }
-
-            {
-                auto result = compiler.CompileHLSLToSPIRV(
-                    shaderFile.ReadText().Expect("Read Failed"), "PS_Main", "ps_6_0");
-                std::ofstream fileStream("resources/shaders/Basic.frag.spv", std::ios::binary);
-                fileStream.write(
-                    reinterpret_cast<const char*>(result.data()), result.size() * sizeof(uint32_t));
-                fileStream.close();
-            }
+        ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
+        static bool vsync = Astrelis::Application::Get().GetWindow()->IsVSync();
+        if (ImGui::Button("Toggle VSync")) {
+            vsync = !vsync;
+            Astrelis::Application::Get().GetWindow()->SetVSync(vsync);
         }
 
         ImGui::End();

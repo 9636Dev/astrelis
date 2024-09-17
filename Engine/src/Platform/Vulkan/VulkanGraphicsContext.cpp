@@ -84,13 +84,16 @@ namespace Astrelis {
 
         m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
+        VkCommandBuffer commandBuffer =
+            Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
         for (std::uint32_t i = 0; i < m_SwapChainFrames.size(); i++) {
         // Transition swapchain to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-            Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(),
-                m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(),
-                m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_UNDEFINED,
+            Vulkan::TransitionImageLayout(commandBuffer, m_SwapChain.GetImages()[i],
+                m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_UNDEFINED,
                 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         }
+        Vulkan::EndSingleTimeCommands(m_LogicalDevice.GetHandle(),
+            m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(), commandBuffer);
 
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0) {
@@ -199,10 +202,19 @@ namespace Astrelis {
 
         ASTRELIS_PROFILE_VULKAN(
             if (m_ProfileCommandBuffer.Init(m_LogicalDevice, m_CommandPool)) {
-            // TODO: More than one if GraphicsQueue != PresentQueue
-                m_TracyVkCtx =
-                    TracyVkContext(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(),
-                        m_LogicalDevice.GetGraphicsQueue(), m_ProfileCommandBuffer.GetHandle());
+                if (m_LogicalDevice.GetGraphicsQueue() == m_LogicalDevice.GetPresentQueue()) {
+                    m_TracyVkCtx.emplace_back(TracyVkContext(m_PhysicalDevice.GetHandle(),
+                        m_LogicalDevice.GetHandle(), m_LogicalDevice.GetGraphicsQueue(),
+                        m_ProfileCommandBuffer.GetHandle()));
+                }
+                else {
+                    m_TracyVkCtx.emplace_back(
+                        TracyVkContext(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(),
+                            m_LogicalDevice.GetGraphicsQueue() m_ProfileCommandBuffer.GetHandle()));
+                    m_TracyVkCtx.emplace_back(
+                        TracyVkContext(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(),
+                            m_LogicalDevice.GetPresentQueue(), m_ProfileCommandBuffer.GetHandle()));
+                }
             } else {
                 ASTRELIS_CORE_LOG_WARN("Failed to initialize command buffer for Profiling!");
             })
@@ -382,8 +394,16 @@ namespace Astrelis {
             m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync);
         ASTRELIS_CORE_VERIFY(result, "Failed to recreate swap chain!");
 
+        VkCommandBuffer buffer =
+            Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
+
         for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i) {
             auto& frame = m_SwapChainFrames[i];
+
+            // Transition swapchain to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            Vulkan::TransitionImageLayout(buffer, m_SwapChain.GetImages()[i],
+                m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
             auto res = frame.ImageView.Init(
                 m_LogicalDevice, m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat());
@@ -392,6 +412,9 @@ namespace Astrelis {
                 m_SwapChain.GetExtent());
             ASTRELIS_CORE_ASSERT(res, "Failed to recreate frame buffer!");
         }
+
+        Vulkan::EndSingleTimeCommands(m_LogicalDevice.GetHandle(),
+            m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(), buffer);
 
         m_SwapchainRecreation = false;
     }

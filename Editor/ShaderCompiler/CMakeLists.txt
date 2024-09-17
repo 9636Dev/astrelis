@@ -42,6 +42,7 @@ set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ${CMAKE_SUPPRESS_DEVELOPER_WARNINGS_OLD} C
 
 set(ASTRELIS_EDITOR_SHADER_COMPILER_SOURCES
     src/ShaderCompiler/ShaderConductor.cpp
+    src/ShaderCompiler/ShaderCompiler.cpp
 )
 
 add_library(Astrelis_EditorShaderCompiler ${ASTRELIS_EDITOR_SHADER_COMPILER_SOURCES})

@@ -42,6 +42,8 @@ namespace Astrelis {
 
         // Set Dark Theme Colors
         SetDarkThemeColors();
+
+        // TODO: After we have a full renderer, with text support, we will make our own UI
     }
 
     void ImGuiLayer::OnDetach() {

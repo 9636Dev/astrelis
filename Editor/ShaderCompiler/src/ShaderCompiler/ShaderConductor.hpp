@@ -1,20 +1,40 @@
 #pragma once
 
+#include "Astrelis/Core/Result.hpp"
+#include "Astrelis/Renderer/ShaderFormat.hpp"
+
 #include <string>
 #include <vector>
 
 namespace AstrelisEditor {
-    class ShaderCompiler {
+    class ShaderConductor {
     public:
-        ShaderCompiler();
-        ~ShaderCompiler();
-        ShaderCompiler(const ShaderCompiler&)            = delete;
-        ShaderCompiler& operator=(const ShaderCompiler&) = delete;
-        ShaderCompiler(ShaderCompiler&&)                 = delete;
-        ShaderCompiler& operator=(ShaderCompiler&&)      = delete;
+        struct HLSLSource {
+            std::wstring          FileName = L"shader.hlsl";
+            std::string           Source;
+            std::string           Entrypoint;
+            Astrelis::ShaderStage Stage;
+            std::uint32_t         VersionMajor = 6;
+            std::uint32_t         VersionMinor = 0;
+        };
 
-        std::vector<std::uint32_t> CompileHLSLToSPIRV(const std::string& hlslSource,
-            const std::string& entryPoint, const std::string& targetProfile);
+        struct HLSLOptions {
+            bool          SPIRV             = true;
+            std::uint32_t OptimizationLevel = 3;
+        };
+
+        ShaderConductor();
+        ~ShaderConductor();
+        ShaderConductor(const ShaderConductor&)            = delete;
+        ShaderConductor& operator=(const ShaderConductor&) = delete;
+        ShaderConductor(ShaderConductor&&)                 = delete;
+        ShaderConductor& operator=(ShaderConductor&&)      = delete;
+
+        Astrelis::Result<Astrelis::EmptyType, std::string> Init();
+        void                                               Shutdown();
+
+        Astrelis::Result<std::vector<std::uint32_t>, std::string> HLSLToSPIRV(
+            const HLSLSource& source, const HLSLOptions& options);
     private:
         class Impl;
         Impl* m_Impl;

@@ -47,4 +47,21 @@ if (ASTRELIS_FORMAT)
     add_dependencies(Astrelis_Editor AstrelisEditor_Format)
 endif()
 
-# We need to make sure we have shaders for the engine to run
+# We need to make sure we have shaders for the engine to run, we will use our custom shader compiler to compile them
+add_executable(Astrelis_EditorSetup
+    src/EditorSetup/Setup.cpp
+)
+
+target_link_libraries(Astrelis_EditorSetup
+    Astrelis_EditorShaderCompiler
+)
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWERCASE_BUILD_TYPE)
+
+add_custom_target(Astrelis_EditorSetup_Run
+    COMMAND Astrelis_EditorSetup "--${LOWERCASE_BUILD_TYPE}"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/run
+)
+
+
+add_dependencies(Astrelis_Editor Astrelis_EditorSetup_Run)

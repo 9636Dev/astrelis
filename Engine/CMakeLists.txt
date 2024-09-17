@@ -355,6 +355,7 @@ target_link_libraries(Astrelis_Engine PUBLIC
     EnTT::EnTT
     stb
     TracyClient
+    Cereal
 )
 
 target_compile_definitions(Astrelis_Engine
@@ -388,14 +389,6 @@ if (ASTRELIS_PEDANTIC_WARNINGS)
         message(WARNING "Unknown compiler, can't enable warnings")
     endif()
 endif()
-
-add_custom_target(Astrelis_Shaders
-    #COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_vert.spv
-    #COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Basic_frag.spv
-    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.vert -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_vert.spv
-    COMMAND glslc ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel.frag -o ${CMAKE_SOURCE_DIR}/run/resources/shaders/Voxel_frag.spv
-)
-add_dependencies(Astrelis_Engine Astrelis_Shaders)
 
 if (ASTRELIS_FORMAT)
     file(GLOB_RECURSE ASTRELIS_ENGINE_FORMAT_SOURCES

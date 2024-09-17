@@ -2,7 +2,11 @@
 
 #include "Astrelis/Core/Base.hpp"
 
+#include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/IO/Image.hpp"
+#include "Astrelis/Renderer/ShaderFormat.hpp"
+
+#include <fstream>
 
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsPipeline.hpp"
@@ -46,15 +50,44 @@ namespace Astrelis {
             {VertexInput::VertexType::Float, 12 * sizeof(float), 4, 6},
         };
 
-        File vertexShader("resources/shaders/Basic_vert.spv");
-        File fragmentShader("resources/shaders/Basic_frag.spv");
-        ASTRELIS_VERIFY(vertexShader.Exists(), "Vertex shader does not exist!");
-        ASTRELIS_VERIFY(fragmentShader.Exists(), "Fragment shader does not exist!");
+        File shader("resources/shaders/Basic.astshader");
+        ASTRELIS_VERIFY(shader.Exists(), "Shader file does not exist!");
+        auto res = shader.ReadBinaryStructure<ShaderFormat>();
+        if (res.IsErr()) {
+            ASTRELIS_CORE_LOG_ERROR("Failed to read shader file: {0}", res.UnwrapErr());
+            return false;
+        }
+        ShaderFormat shaderFormat = std::move(res.Unwrap());
 
-        CompiledShader vertexCompiled(CompiledShader::VulkanShader(
-            vertexShader.ReadBinary().Expect("Failed to read vertex shader!"), "main"));
-        CompiledShader fragmentCompiled(CompiledShader::VulkanShader(
-            fragmentShader.ReadBinary().Expect("Failed to read fragment shader!"), "main"));
+        if (GlobalConfig::IsDebugMode()) {
+            ASTRELIS_CORE_LOG_DEBUG("Loaded version {0} shader from {1}",
+                shaderFormat.Header.FileVersion, shader.GetPath().string());
+            ASTRELIS_CORE_LOG_DEBUG("Shader name: {0}", shaderFormat.Header.Name);
+            ASTRELIS_CORE_LOG_DEBUG("Shader flags: {0}",
+                static_cast<std::underlying_type_t<ShaderHeader::HeaderFlags>>(
+                    shaderFormat.Header.Flags));
+        }
+
+        std::vector<char> vertexData;
+        std::vector<char> fragmentData;
+
+        for (const auto& [stage, shader] : shaderFormat.Source.SourceSPIRV.Shaders) {
+            if (stage == ShaderStage::Vertex) {
+                // We need to reinterpret the data as a char array
+                vertexData = std::vector<char>(reinterpret_cast<const char*>(shader.Data.data()),
+                    reinterpret_cast<const char*>(shader.Data.data() + shader.Data.size()));
+            }
+            else if (stage == ShaderStage::Fragment) {
+                fragmentData = std::vector<char>(reinterpret_cast<const char*>(shader.Data.data()),
+                    reinterpret_cast<const char*>(shader.Data.data() + shader.Data.size()));
+            }
+        }
+
+        ASTRELIS_VERIFY(!vertexData.empty(), "Vertex shader data is empty!");
+        ASTRELIS_VERIFY(!fragmentData.empty(), "Fragment shader data is empty!");
+
+        CompiledShader vertexCompiled(CompiledShader::VulkanShader(vertexData, "VS_Main"));
+        CompiledShader fragmentCompiled(CompiledShader::VulkanShader(fragmentData, "PS_Main"));
 
         PipelineShaders shaders(vertexCompiled, fragmentCompiled);
 
