@@ -46,3 +46,5 @@ if (ASTRELIS_FORMAT)
     )
     add_dependencies(Astrelis_Editor AstrelisEditor_Format)
 endif()
+
+# We need to make sure we have shaders for the engine to run

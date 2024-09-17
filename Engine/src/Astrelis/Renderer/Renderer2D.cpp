@@ -50,7 +50,13 @@ namespace Astrelis {
         File fragmentShader("resources/shaders/Basic_frag.spv");
         ASTRELIS_VERIFY(vertexShader.Exists(), "Vertex shader does not exist!");
         ASTRELIS_VERIFY(fragmentShader.Exists(), "Fragment shader does not exist!");
-        PipelineShaders shaders(vertexShader, fragmentShader);
+
+        CompiledShader vertexCompiled(CompiledShader::VulkanShader(
+            vertexShader.ReadBinary().Expect("Failed to read vertex shader!"), "main"));
+        CompiledShader fragmentCompiled(CompiledShader::VulkanShader(
+            fragmentShader.ReadBinary().Expect("Failed to read fragment shader!"), "main"));
+
+        PipelineShaders shaders(vertexCompiled, fragmentCompiled);
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
         auto vertexBufferSize = sizeof(Vertex2D) * m_Vertices.size();

@@ -105,3 +105,15 @@ target_link_libraries(Astrelis_EditorShaderCompiler PUBLIC
 )
 
 #add_subdirectory(tests)
+
+if (ASTRELIS_FORMAT)
+    file(GLOB_RECURSE ASTRELIS_ENGINE_FORMAT_SOURCES
+        src/*.hpp
+        src/*.cpp
+    )
+    add_custom_target(Astrelis_EditorShaderCompiler_Format
+        COMMAND clang-format -style=file -i ${ASTRELIS_ENGINE_FORMAT_SOURCES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    add_dependencies(Astrelis_EditorShaderCompiler Astrelis_EditorShaderCompiler_Format)
+endif()

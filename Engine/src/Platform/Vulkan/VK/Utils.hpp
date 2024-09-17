@@ -93,5 +93,6 @@ namespace Astrelis::Vulkan {
         static std::string VkFormatToString(VkFormat format);
         static std::string VkColorSpaceToString(VkColorSpaceKHR colorSpace);
         static std::string VkPresentModeToString(VkPresentModeKHR presentMode);
+        static std::string VkLayoutToString(VkImageLayout layout);
     };
 } // namespace Astrelis::Vulkan

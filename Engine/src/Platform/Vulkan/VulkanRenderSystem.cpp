@@ -4,7 +4,6 @@
 
 #include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/Renderer/DescriptorSetLayout.hpp"
-#include "Astrelis/Renderer/GraphicsPipeline.hpp"
 #include "Astrelis/Renderer/TextureImage.hpp"
 
 #include <cstddef>
@@ -16,54 +15,13 @@
 #include "Platform/Vulkan/VK/VulkanExt.hpp"
 
 namespace Astrelis {
-    struct BlitVertex {
-        Vec2f PosAndTex;
-    };
-
     bool VulkanRenderSystem::Init() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Init");
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        std::array<BlitVertex, 4> vertices = {
-            BlitVertex {{-1.0F, -1.0F}},
-            BlitVertex {{1.0F, -1.0F}},
-            BlitVertex {{1.0F, 1.0F}},
-            BlitVertex {{-1.0F, 1.0F}},
-        };
-
-        std::array<std::uint32_t, 6> indices = {
-            0,
-            1,
-            2,
-            2,
-            3,
-            0,
-        };
-
-        if (!m_VertexBuffer.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice,
-                vertices.size() * sizeof(BlitVertex))
-            || !m_VertexBuffer.SetData(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice,
-                m_Context->m_CommandPool, vertices.data(), vertices.size() * sizeof(BlitVertex))
-            || !m_IndexBuffer.Init(
-                m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice, indices.size())
-            || !m_IndexBuffer.SetData(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice,
-                m_Context->m_CommandPool, indices.data(), indices.size())) {
-            return false;
-        }
-
-        File            vertexShader("resources/shaders/Blit_vert.spv");
-        File            fragmentShader("resources/shaders/Blit_frag.spv");
-        PipelineShaders shaders(vertexShader, fragmentShader);
-
-        std::vector<BufferBinding> inputs(1);
-        inputs[0].Binding  = 0;
-        inputs[0].Stride   = sizeof(BlitVertex);
-        inputs[0].Elements = {
-            {VertexInput::VertexType::Float, offsetof(BlitVertex, PosAndTex), 2, 0},
-        };
-
         m_GraphicsTextureSampler = RefPtr<Vulkan::TextureSampler>::Create();
         m_GraphicsTextureSampler->Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
 
+        // TODO: This is only one image, but we have multiple images in flight
         std::vector<BindingDescriptor> graphicsBindings = {
             BindingDescriptor::TextureSampler("GraphicsSampler", 0,
                 static_cast<RefPtr<TextureImage>>(m_Context->m_GraphicsTextureImage),
@@ -79,14 +37,8 @@ namespace Astrelis {
                 m_DescriptorSetLayout, graphicsBindings)) {
             return false;
         }
-
-        std::vector<Vulkan::DescriptorSetLayout> layouts = {m_DescriptorSetLayout};
-
-        return m_GraphicsPipeline.Init(m_Context->m_LogicalDevice,
-            m_Context->m_SwapChain.GetExtent(), m_Context->m_RenderPass, shaders, inputs, layouts);
-#else
-        return true;
 #endif
+        return true;
     }
 
     void VulkanRenderSystem::Shutdown() {
@@ -94,12 +46,9 @@ namespace Astrelis {
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
-        m_GraphicsPipeline.Destroy(ctx);
         m_DescriptorSets.Destroy(ctx);
         m_DescriptorSetLayout.Destroy(ctx);
         m_GraphicsTextureSampler->Destroy(ctx);
-        m_VertexBuffer.Destroy(ctx);
-        m_IndexBuffer.Destroy(ctx);
 #endif
     }
 
@@ -142,40 +91,61 @@ namespace Astrelis {
                 frame.CommandBuffer.GetHandle(), "BlitSwapchain", {0.0F, 1.0F, 0.0F, 1.0F});
         }
     #endif
-        m_Context->m_RenderPass.Begin(
-            frame.CommandBuffer, swapchainFrame.FrameBuffer, m_Context->m_SwapChain.GetExtent());
 
         if (!m_BlitSwapchain) {
+            m_Context->m_RenderPass.Begin(frame.CommandBuffer, swapchainFrame.FrameBuffer,
+                m_Context->m_SwapChain.GetExtent());
+    #ifdef ASTRELIS_DEBUG
+            if (GlobalConfig::IsDebugMode()) {
+                Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());
+            }
+    #endif
+
             return;
         }
 
-        // We just render normally, because we didn't use the blit extension
+        // TODO: Support this layout transition
+        auto format = m_Context->m_SwapChain.GetImageFormat();
+        Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
+            m_Context->m_GraphicsTextureImage->GetImage(), format,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-        vkCmdBindPipeline(frame.CommandBuffer.GetHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-            m_GraphicsPipeline.m_Pipeline);
+        Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
+            m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex], format,
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        m_VertexBuffer.Bind(frame.CommandBuffer, 0);
-        m_IndexBuffer.Bind(frame.CommandBuffer);
-        m_DescriptorSets.Bind(frame.CommandBuffer, m_GraphicsPipeline);
+        VkImageBlit blitRegion                   = {};
+        blitRegion.srcSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        blitRegion.srcSubresource.mipLevel       = 0;
+        blitRegion.srcSubresource.baseArrayLayer = 0;
+        blitRegion.srcSubresource.layerCount     = 1;
+        blitRegion.srcOffsets[0]                 = {0, 0, 0};
+        blitRegion.srcOffsets[1] = {static_cast<std::int32_t>(m_Context->m_GraphicsExtent.width),
+            static_cast<std::int32_t>(m_Context->m_GraphicsExtent.height), 1};
+        blitRegion.dstSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        blitRegion.dstSubresource.mipLevel       = 0;
+        blitRegion.dstSubresource.baseArrayLayer = 0;
+        blitRegion.dstSubresource.layerCount     = 1;
+        blitRegion.dstOffsets[0]                 = {0, 0, 0};
+        blitRegion.dstOffsets[1]                 = {
+            static_cast<std::int32_t>(m_Context->m_SwapChain.GetExtent().width),
+            static_cast<std::int32_t>(m_Context->m_SwapChain.GetExtent().height), 1};
 
-        // Dynamic state
-        VkViewport viewport {};
-        viewport.x        = 0.0F;
-        viewport.y        = 0.0F;
-        viewport.width    = static_cast<float>(m_Context->m_SwapChain.GetExtent().width);
-        viewport.height   = static_cast<float>(m_Context->m_SwapChain.GetExtent().height);
-        viewport.minDepth = 0.0F;
-        viewport.maxDepth = 0.0F; // It only needs to be 0.0F
+        vkCmdBlitImage(frame.CommandBuffer.GetHandle(),
+            m_Context->m_GraphicsTextureImage->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex],
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blitRegion, VK_FILTER_LINEAR);
 
-        vkCmdSetViewport(frame.CommandBuffer.GetHandle(), 0, 1, &viewport);
+        Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
+            m_Context->m_GraphicsTextureImage->GetImage(), format,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        VkRect2D scissor {};
-        scissor.extent = m_Context->m_SwapChain.GetExtent();
+        Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
+            m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex], format,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
-        vkCmdSetScissor(frame.CommandBuffer.GetHandle(), 0, 1, &scissor);
-
-        vkCmdDrawIndexed(frame.CommandBuffer.GetHandle(), 6, 1, 0, 0, 0);
-
+        m_Context->m_RenderPass.Begin(
+            frame.CommandBuffer, swapchainFrame.FrameBuffer, m_Context->m_SwapChain.GetExtent());
     #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());

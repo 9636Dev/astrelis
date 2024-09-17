@@ -84,6 +84,14 @@ namespace Astrelis {
 
         m_SwapChainFrames.resize(m_SwapChain.GetImageCount());
 
+        for (std::uint32_t i = 0; i < m_SwapChainFrames.size(); i++) {
+        // Transition swapchain to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(),
+                m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(),
+                m_SwapChain.GetImages()[i], m_SwapChain.GetImageFormat(), VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        }
+
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0) {
             m_GraphicsExtent = m_SwapChain.GetExtent();

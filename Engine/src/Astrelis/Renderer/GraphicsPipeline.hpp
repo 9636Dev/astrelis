@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Astrelis/Core/Pointer.hpp"
+#include "Astrelis/Scene/Material.hpp"
 
 #include <vector>
 
@@ -36,12 +37,15 @@ namespace Astrelis {
         bool                              Instanced;
     };
 
+    // We do this so that we dont need to copy the shaders
     struct PipelineShaders {
-        File Vertex;
-        File Fragment;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
+        CompiledShader& Vertex;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
+        CompiledShader& Fragment;
 
-        PipelineShaders(File vertex, File fragment)
-            : Vertex(std::move(vertex)), Fragment(std::move(fragment)) {
+        PipelineShaders(CompiledShader& vertex, CompiledShader& fragment)
+            : Vertex(vertex), Fragment(fragment) {
         }
     };
 

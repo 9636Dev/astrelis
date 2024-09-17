@@ -62,10 +62,7 @@ namespace Astrelis {
         RefPtr<VulkanGraphicsContext> m_Context;
 
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        Vulkan::GraphicsPipeline       m_GraphicsPipeline;
         RefPtr<Vulkan::TextureSampler> m_GraphicsTextureSampler;
-        Vulkan::VertexBuffer           m_VertexBuffer;
-        Vulkan::IndexBuffer            m_IndexBuffer;
         Vulkan::DescriptorSets         m_DescriptorSets;
         Vulkan::DescriptorSetLayout    m_DescriptorSetLayout;
 

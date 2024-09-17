@@ -79,26 +79,22 @@ namespace Astrelis::Vulkan {
     bool GraphicsPipeline::Init(LogicalDevice& device, VkExtent2D extent, RenderPass& renderPass,
         PipelineShaders& shaders, std::vector<BufferBinding>& bindings,
         std::vector<DescriptorSetLayout>& layouts) {
-        auto vertexShaderCode = shaders.Vertex.ReadBinary().Expect("Failed to read vertex shader!");
-        auto fragmentShaderCode =
-            shaders.Fragment.ReadBinary().Expect("Failed to read fragment shader!");
-
         VkShaderModule vertexShaderModule =
-            CreateShaderModule(device.GetHandle(), vertexShaderCode);
+            CreateShaderModule(device.GetHandle(), shaders.Vertex.Vulkan.Data);
         VkShaderModule fragmentShaderModule =
-            CreateShaderModule(device.GetHandle(), fragmentShaderCode);
+            CreateShaderModule(device.GetHandle(), shaders.Fragment.Vulkan.Data);
 
         VkPipelineShaderStageCreateInfo vertexShaderStageInfo {};
         vertexShaderStageInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertexShaderStageInfo.stage  = VK_SHADER_STAGE_VERTEX_BIT;
         vertexShaderStageInfo.module = vertexShaderModule;
-        vertexShaderStageInfo.pName  = "main";
+        vertexShaderStageInfo.pName  = shaders.Vertex.Vulkan.Entrypoint;
 
         VkPipelineShaderStageCreateInfo fragmentShaderStageInfo {};
         fragmentShaderStageInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         fragmentShaderStageInfo.stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
         fragmentShaderStageInfo.module = fragmentShaderModule;
-        fragmentShaderStageInfo.pName  = "main";
+        fragmentShaderStageInfo.pName  = shaders.Fragment.Vulkan.Entrypoint;
 
         std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages = {
             vertexShaderStageInfo, fragmentShaderStageInfo};

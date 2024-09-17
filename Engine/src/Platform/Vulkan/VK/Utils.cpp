@@ -197,13 +197,39 @@ namespace Astrelis::Vulkan {
             sourceStage      = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
+        else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+            sourceStage      = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        }
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+            && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+            sourceStage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        }
+        else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED
+            && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+
+            sourceStage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        }
         else {
-            throw std::invalid_argument("Unsupported layout transition!");
+            throw std::invalid_argument("Unsupported layout transition: "
+                + Utils::VkLayoutToString(oldLayout) + " -> " + Utils::VkLayoutToString(newLayout));
         }
 
         vkCmdPipelineBarrier(
             commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
+
 
     void TransitionImageLayout(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool,
         VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
@@ -920,6 +946,53 @@ namespace Astrelis::Vulkan {
             return "VK_PRESENT_MODE_FIFO_KHR";
         case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
             return "VK_PRESENT_MODE_FIFO_RELAXED_KHR";
+        default:
+            return "UNKNOWN";
+        }
+    }
+
+    std::string Utils::VkLayoutToString(VkImageLayout layout) {
+        switch (layout) {
+        case VK_IMAGE_LAYOUT_UNDEFINED:
+            return "VK_IMAGE_LAYOUT_UNDEFINED";
+        case VK_IMAGE_LAYOUT_GENERAL:
+            return "VK_IMAGE_LAYOUT_GENERAL";
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL";
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL";
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL";
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL";
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL";
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL";
+        case VK_IMAGE_LAYOUT_PREINITIALIZED:
+            return "VK_IMAGE_LAYOUT_PREINITIALIZED";
+        case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL";
+        case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
+            return "VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL";
+        case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+            return "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR";
+        case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR:
+            return "VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR";
+        case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV:
+            return "VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV";
+        case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:
+            return "VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT";
+        case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL_KHR:
+            return "VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL_KHR";
+        case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL_KHR:
+            return "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL_KHR";
+        case VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL_KHR:
+            return "VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL_KHR";
+        case VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL_KHR:
+            return "VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL_KHR";
+        case VK_IMAGE_LAYOUT_MAX_ENUM:
+            return "VK_IMAGE_LAYOUT_MAX_ENUM";
         default:
             return "UNKNOWN";
         }
