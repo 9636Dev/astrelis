@@ -5,9 +5,9 @@
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Core/Window.hpp"
 #include "Astrelis/Renderer/BaseRenderer.hpp"
+#include "Astrelis/Renderer/BindingDescriptor.hpp"
 #include "Astrelis/Renderer/TextureImage.hpp"
 
-#include "Camera.hpp"
 #include "VertexBuffer.hpp"
 
 namespace Astrelis {
@@ -42,15 +42,14 @@ namespace Astrelis {
         // ========================
         // Rendering States
         // ========================
-        RefPtr<VertexBuffer>        m_VertexBuffer;
-        RefPtr<VertexBuffer>        m_InstanceBuffer;
-        RefPtr<IndexBuffer>         m_IndexBuffer;
-        CameraUniformData           m_UBO;
-        RefPtr<DescriptorSetLayout> m_DescriptorSetLayout;
-        RefPtr<DescriptorSets>      m_DescriptorSets;
-        RefPtr<UniformBuffer>       m_UniformBuffer;
-        RefPtr<TextureImage>        m_TextureImage;
-        RefPtr<TextureSampler>      m_TextureSampler;
+        RefPtr<VertexBuffer>         m_VertexBuffer;
+        RefPtr<VertexBuffer>         m_InstanceBuffer;
+        RefPtr<IndexBuffer>          m_IndexBuffer;
+        CameraUniformData            m_UBO;
+        RefPtr<BindingDescriptorSet> m_Bindings;
+        RefPtr<UniformBuffer>        m_UniformBuffer;
+        RefPtr<TextureImage>         m_TextureImage;
+        RefPtr<TextureSampler>       m_TextureSampler;
 
         // ========================
         // Rendering Data

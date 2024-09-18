@@ -2,8 +2,7 @@
 
 #include "Astrelis/Renderer/RenderSystem.hpp"
 
-#include "VK/DescriptorSetLayout.hpp"
-#include "VK/DescriptorSets.hpp"
+#include "VK/BindingDescriptorSet.hpp"
 #include "VK/TextureSampler.hpp"
 #include "VulkanGraphicsContext.hpp"
 
@@ -58,7 +57,7 @@ namespace Astrelis {
         // This is for ImGui to render, so we need the descriptor set for Vulkan
         void* GetGraphicsImage() override {
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-            return m_DescriptorSets[m_Context->m_ImageIndex].GetHandle();
+            return m_BindingDescriptors.m_DescriptorSets[m_Context->m_CurrentFrame].GetHandle();
 #else
             ASTRELIS_ASSERT(false, "Framebuffer is not enabled");
             return nullptr;
@@ -78,9 +77,8 @@ namespace Astrelis {
         RefPtr<VulkanGraphicsContext> m_Context;
 
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        Vulkan::TextureSampler              m_GraphicsTextureSampler;
-        std::vector<Vulkan::DescriptorSets> m_DescriptorSets;
-        Vulkan::DescriptorSetLayout         m_DescriptorSetLayout;
+        Vulkan::TextureSampler       m_GraphicsTextureSampler;
+        Vulkan::BindingDescriptorSet m_BindingDescriptors;
 
         bool m_BlitSwapchain = true;
 #endif

@@ -5,8 +5,6 @@
 #include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/Core/Log.hpp"
 
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
-
 namespace Astrelis::Vulkan {
     static VkDescriptorType GetVkDescriptorType(DescriptorType type) {
         switch (type) {
@@ -20,21 +18,21 @@ namespace Astrelis::Vulkan {
         }
     }
 
-    static VkShaderStageFlags GetVkShaderStageFlags(DescriptorLayoutBinding::StageFlags flags) {
+    static VkShaderStageFlags GetVkShaderStageFlags(DescriptorSetBinding::StageFlags flags) {
         VkShaderStageFlags stageFlags = 0;
-        if ((flags & DescriptorLayoutBinding::StageFlags::Vertex)
-            != DescriptorLayoutBinding::StageFlags::None) {
+        if ((flags & DescriptorSetBinding::StageFlags::Vertex)
+            != DescriptorSetBinding::StageFlags::None) {
             stageFlags |= VK_SHADER_STAGE_VERTEX_BIT;
         }
-        if ((flags & DescriptorLayoutBinding::StageFlags::Fragment)
-            != DescriptorLayoutBinding::StageFlags::None) {
+        if ((flags & DescriptorSetBinding::StageFlags::Fragment)
+            != DescriptorSetBinding::StageFlags::None) {
             stageFlags |= VK_SHADER_STAGE_FRAGMENT_BIT;
         }
         return stageFlags;
     }
 
     bool DescriptorSetLayout::Init(
-        LogicalDevice& device, const std::vector<DescriptorLayoutBinding>& descriptors) {
+        LogicalDevice& device, const std::vector<DescriptorSetBinding>& descriptors) {
         std::vector<VkDescriptorSetLayoutBinding> bindings;
         bindings.resize(descriptors.size());
 #ifdef ASTRELIS_DEBUG
@@ -89,16 +87,7 @@ namespace Astrelis::Vulkan {
         return true;
     }
 
-    bool DescriptorSetLayout::Init(
-        RefPtr<GraphicsContext>& context, const std::vector<DescriptorLayoutBinding>& descriptors) {
-        return Init(context.As<VulkanGraphicsContext>()->m_LogicalDevice, descriptors);
-    }
-
     void DescriptorSetLayout::Destroy(LogicalDevice& device) const {
         vkDestroyDescriptorSetLayout(device.GetHandle(), m_Layout, nullptr);
-    }
-
-    void DescriptorSetLayout::Destroy(RefPtr<GraphicsContext>& context) const {
-        Destroy(context.As<VulkanGraphicsContext>()->m_LogicalDevice);
     }
 } // namespace Astrelis::Vulkan

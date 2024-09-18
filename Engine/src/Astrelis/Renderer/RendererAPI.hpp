@@ -4,8 +4,7 @@
 #include "Astrelis/Core/Math.hpp"
 #include "Astrelis/Core/Pointer.hpp"
 
-#include "DescriptorSetLayout.hpp"
-#include "DescriptorSets.hpp"
+#include "BindingDescriptor.hpp"
 #include "GraphicsContext.hpp"
 #include "GraphicsPipeline.hpp"
 #include "IndexBuffer.hpp"
@@ -61,11 +60,6 @@ namespace Astrelis {
         virtual void Init()     = 0;
         virtual void Shutdown() = 0;
 
-        struct CreateDetails {
-            std::vector<BufferBinding>               VertexInput;
-            std::vector<RefPtr<DescriptorSetLayout>> DescriptorSetLayouts;
-        };
-
         virtual void SetViewport(Rect3Df& viewport) = 0;
         virtual void SetScissor(Rect2Di& scissor)   = 0;
 
@@ -82,14 +76,14 @@ namespace Astrelis {
         virtual void DrawInstancedIndexed(std::uint32_t indexCount, std::uint32_t instanceCount,
             std::uint32_t firstIndex, std::uint32_t vertexOffset, std::uint32_t firstInstance) = 0;
 
-        virtual RefPtr<GraphicsPipeline>    CreateGraphicsPipeline()    = 0;
-        virtual RefPtr<VertexBuffer>        CreateVertexBuffer()        = 0;
-        virtual RefPtr<IndexBuffer>         CreateIndexBuffer()         = 0;
-        virtual RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() = 0;
-        virtual RefPtr<DescriptorSets>      CreateDescriptorSets()      = 0;
-        virtual RefPtr<UniformBuffer>       CreateUniformBuffer()       = 0;
-        virtual RefPtr<TextureImage>        CreateTextureImage()        = 0;
-        virtual RefPtr<TextureSampler>      CreateTextureSampler()      = 0;
+        virtual RefPtr<GraphicsPipeline>     CreateGraphicsPipeline() = 0;
+        virtual RefPtr<VertexBuffer>         CreateVertexBuffer()     = 0;
+        virtual RefPtr<IndexBuffer>          CreateIndexBuffer()      = 0;
+        virtual RefPtr<BindingDescriptorSet> CreateBindingDescriptorSet(
+            BindingDescriptorSet::Mode mode)                  = 0;
+        virtual RefPtr<UniformBuffer>  CreateUniformBuffer()  = 0;
+        virtual RefPtr<TextureImage>   CreateTextureImage()   = 0;
+        virtual RefPtr<TextureSampler> CreateTextureSampler() = 0;
 
         static RefPtr<RendererAPI> Create(
             RefPtr<GraphicsContext> context, Type type = Type::Renderer2D);

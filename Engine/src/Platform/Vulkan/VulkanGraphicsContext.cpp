@@ -150,10 +150,10 @@ namespace Astrelis {
 
         Vulkan::DescriptorPoolCreateInfo descriptorPoolCreateInfo;
         descriptorPoolCreateInfo.poolSizes = {
-            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         10},
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         256},
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 256},
         };
-        descriptorPoolCreateInfo.maxSets = 10;
+        descriptorPoolCreateInfo.maxSets = 256;
         if (!m_DescriptorPool.Init(m_LogicalDevice, descriptorPoolCreateInfo)) {
             return "Failed to initialize Vulkan Descriptor Pool!";
         }

@@ -2,9 +2,7 @@
 
 #include "Astrelis/Core/Base.hpp"
 
-#include "Platform/Vulkan/VK/DescriptorSets.hpp"
 #include "Platform/Vulkan/VK/TextureSampler.hpp"
-#include "VK/DescriptorSetLayout.hpp"
 #include "VK/GraphicsPipeline.hpp"
 #include "VK/IndexBuffer.hpp"
 #include "VK/TextureImage.hpp"
@@ -87,13 +85,10 @@ namespace Astrelis {
         return static_cast<RefPtr<IndexBuffer>>(RefPtr<Vulkan::IndexBuffer>::Create());
     }
 
-    RefPtr<DescriptorSetLayout> Vulkan2DRendererAPI::CreateDescriptorSetLayout() {
-        return static_cast<RefPtr<DescriptorSetLayout>>(
-            RefPtr<Vulkan::DescriptorSetLayout>::Create());
-    }
-
-    RefPtr<DescriptorSets> Vulkan2DRendererAPI::CreateDescriptorSets() {
-        return static_cast<RefPtr<DescriptorSets>>(RefPtr<Vulkan::DescriptorSets>::Create());
+    RefPtr<BindingDescriptorSet> Vulkan2DRendererAPI::CreateBindingDescriptorSet(
+        BindingDescriptorSet::Mode mode) {
+        return static_cast<RefPtr<BindingDescriptorSet>>(
+            RefPtr<Vulkan::BindingDescriptorSet>::Create(mode));
     }
 
     RefPtr<UniformBuffer> Vulkan2DRendererAPI::CreateUniformBuffer() {

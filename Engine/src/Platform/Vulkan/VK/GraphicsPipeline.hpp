@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "DescriptorSetLayout.hpp"
+#include "BindingDescriptorSet.hpp"
 #include "LogicalDevice.hpp"
 #include "RenderPass.hpp"
 
@@ -22,9 +22,9 @@ namespace Astrelis::Vulkan {
             PipelineShaders& shaders, std::vector<BufferBinding>& bindings,
             std::vector<DescriptorSetLayout>& layouts);
         [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, PipelineShaders& shaders,
-            std::vector<Astrelis::BufferBinding>&               bindings,
-            std::vector<RefPtr<Astrelis::DescriptorSetLayout>>& layouts,
-            PipelineType                                        type) override;
+            std::vector<Astrelis::BufferBinding>&                 bindings,
+            std::vector<RawRef<Astrelis::BindingDescriptorSet*>>& layouts,
+            PipelineType                                          type) override;
         void               Destroy(RefPtr<GraphicsContext>& context) override;
 
         void Bind(RefPtr<GraphicsContext>& context) override;

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Astrelis/Core/Pointer.hpp"
+#include "Astrelis/Renderer/BindingDescriptor.hpp"
 #include "Astrelis/Scene/Material.hpp"
 
 #include <vector>
 
-#include "DescriptorSetLayout.hpp"
 #include "GraphicsContext.hpp"
 
 namespace Astrelis {
@@ -65,9 +65,9 @@ namespace Astrelis {
         GraphicsPipeline& operator=(GraphicsPipeline&&)      = default;
 
         virtual bool Init(RefPtr<GraphicsContext>& context, PipelineShaders& shaders,
-            std::vector<BufferBinding>& bindings, std::vector<RefPtr<DescriptorSetLayout>>& layouts,
-            PipelineType type)                                 = 0;
-        virtual void Destroy(RefPtr<GraphicsContext>& context) = 0;
-        virtual void Bind(RefPtr<GraphicsContext>& context)    = 0;
+            std::vector<BufferBinding>&                 bindings,
+            std::vector<RawRef<BindingDescriptorSet*>>& descriptors, PipelineType type) = 0;
+        virtual void Destroy(RefPtr<GraphicsContext>& context)                          = 0;
+        virtual void Bind(RefPtr<GraphicsContext>& context)                             = 0;
     };
 } // namespace Astrelis

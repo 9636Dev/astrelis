@@ -4,9 +4,9 @@
 
 #include "Astrelis/Core/GlobalConfig.hpp"
 #include "Astrelis/IO/Image.hpp"
+#include "Astrelis/Renderer/BindingDescriptor.hpp"
 #include "Astrelis/Renderer/ShaderFormat.hpp"
 
-#include "DescriptorSetLayout.hpp"
 #include "GraphicsPipeline.hpp"
 #include "Vertex.hpp"
 
@@ -115,32 +115,24 @@ namespace Astrelis {
             return false;
         }
 
-        const std::vector<DescriptorLayoutBinding> layoutBindings = {
-            DescriptorLayoutBinding(
-                DescriptorType::Uniform, 0, 1, DescriptorLayoutBinding::StageFlags::Vertex),
-            DescriptorLayoutBinding(DescriptorType::TextureSampler, 1, 1,
-                DescriptorLayoutBinding::StageFlags::Fragment),
-        };
-
-        const std::vector<BindingDescriptor> bindings = {
-            BindingDescriptor::CreateUniform(
-                "MVP", 0, sizeof(CameraUniformData), m_UniformBuffer.Raw()),
-            BindingDescriptor::CreateTextureSampler(
-                "TextureSampler", 1, m_TextureImage.Raw(), m_TextureSampler.Raw()),
+        const std::vector<DescriptorSetBinding> bindings = {
+            DescriptorSetBinding("MVP", DescriptorType::Uniform, 0,
+                DescriptorSetBinding::StageFlags::Vertex, sizeof(CameraUniformData),
+                {{m_UniformBuffer.Raw()}                       }
+                 ),
+            DescriptorSetBinding("TextureSampler", DescriptorType::TextureSampler, 1,
+                DescriptorSetBinding::StageFlags::Fragment,
+                {{m_TextureImage.Raw(), m_TextureSampler.Raw()}}
+                 ),
         };
 
 
-        m_DescriptorSetLayout = m_RendererAPI->CreateDescriptorSetLayout();
-        if (!m_DescriptorSetLayout->Init(m_Context, layoutBindings)) {
+        m_Bindings = m_RendererAPI->CreateBindingDescriptorSet(BindingDescriptorSet::Mode::One);
+        if (!m_Bindings->Init(m_Context, bindings)) {
             return false;
         }
 
-        m_DescriptorSets = m_RendererAPI->CreateDescriptorSets();
-        if (!m_DescriptorSets->Init(m_Context, m_DescriptorSetLayout, bindings)) {
-            return false;
-        }
-
-        std::vector<RefPtr<DescriptorSetLayout>> setLayouts = {m_DescriptorSetLayout};
+        std::vector<RawRef<BindingDescriptorSet*>> setLayouts = {m_Bindings.Raw()};
         m_Pipeline = m_RendererAPI->CreateGraphicsPipeline();
         m_Pipeline->Init(m_Context, shaders, vertexInputs, setLayouts, PipelineType::Graphics);
 
@@ -164,8 +156,7 @@ namespace Astrelis {
         m_TextureImage->Destroy(m_Context);
         m_TextureSampler->Destroy(m_Context);
         m_UniformBuffer->Destroy(m_Context);
-        m_DescriptorSets->Destroy(m_Context);
-        m_DescriptorSetLayout->Destroy(m_Context);
+        m_Bindings->Destroy(m_Context);
         m_Pipeline->Destroy(m_Context);
 
         ASTRELIS_CORE_LOG_INFO("Renderer2D shutdown!");
@@ -179,7 +170,7 @@ namespace Astrelis {
         m_InstanceBuffer->Bind(m_Context, 1);
         m_IndexBuffer->Bind(m_Context);
         m_UniformBuffer->SetData(m_Context, &m_UBO, sizeof(CameraUniformData), 0);
-        m_DescriptorSets->Bind(m_Context, m_Pipeline);
+        m_Bindings->Bind(m_Context, m_Pipeline);
     }
 
     void Renderer2D::AddInstance(const InstanceData& instance) {

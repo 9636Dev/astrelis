@@ -255,13 +255,13 @@ namespace Astrelis::Vulkan {
     }
 
     bool GraphicsPipeline::Init(RefPtr<GraphicsContext>& context, PipelineShaders& shaders,
-        std::vector<BufferBinding>&                         bindings,
-        std::vector<RefPtr<Astrelis::DescriptorSetLayout>>& layouts, PipelineType type) {
-        auto                                     ctx = context.As<VulkanGraphicsContext>();
-        std::vector<Vulkan::DescriptorSetLayout> vulkanLayouts;
+        std::vector<Astrelis::BufferBinding>&                 bindings,
+        std::vector<RawRef<Astrelis::BindingDescriptorSet*>>& layouts, PipelineType type) {
+        auto                             ctx = context.As<VulkanGraphicsContext>();
+        std::vector<DescriptorSetLayout> vulkanLayouts;
         vulkanLayouts.reserve(layouts.size());
         for (auto& layout : layouts) {
-            vulkanLayouts.push_back(*layout.As<DescriptorSetLayout>());
+            vulkanLayouts.push_back(layout.As<BindingDescriptorSet*>()->m_Layout);
         }
         return Init(ctx->m_LogicalDevice, ctx->m_Swapchain.GetExtent(),
             GetCorrectRenderPass(ctx, type), shaders, bindings, vulkanLayouts);

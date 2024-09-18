@@ -39,14 +39,14 @@ namespace Astrelis {
 
         void CorrectProjection(Mat4f& projection) override;
 
-        RefPtr<GraphicsPipeline>    CreateGraphicsPipeline() override;
-        RefPtr<VertexBuffer>        CreateVertexBuffer() override;
-        RefPtr<IndexBuffer>         CreateIndexBuffer() override;
-        RefPtr<DescriptorSetLayout> CreateDescriptorSetLayout() override;
-        RefPtr<DescriptorSets>      CreateDescriptorSets() override;
-        RefPtr<UniformBuffer>       CreateUniformBuffer() override;
-        RefPtr<TextureImage>        CreateTextureImage() override;
-        RefPtr<TextureSampler>      CreateTextureSampler() override;
+        RefPtr<GraphicsPipeline>     CreateGraphicsPipeline() override;
+        RefPtr<VertexBuffer>         CreateVertexBuffer() override;
+        RefPtr<IndexBuffer>          CreateIndexBuffer() override;
+        RefPtr<BindingDescriptorSet> CreateBindingDescriptorSet(
+            BindingDescriptorSet::Mode mode) override;
+        RefPtr<UniformBuffer>  CreateUniformBuffer() override;
+        RefPtr<TextureImage>   CreateTextureImage() override;
+        RefPtr<TextureSampler> CreateTextureSampler() override;
 
         static RefPtr<Vulkan2DRendererAPI> Create(RefPtr<VulkanGraphicsContext> context);
     private:

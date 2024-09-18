@@ -179,8 +179,6 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Renderer/BaseRenderer.cpp
     src/Astrelis/Renderer/BaseRenderer.hpp
     src/Astrelis/Renderer/Camera.hpp
-    src/Astrelis/Renderer/DescriptorSetLayout.hpp
-    src/Astrelis/Renderer/DescriptorSets.hpp
     src/Astrelis/Renderer/GraphicsContext.cpp
     src/Astrelis/Renderer/GraphicsContext.hpp
     src/Astrelis/Renderer/GraphicsPipeline.hpp
@@ -256,6 +254,8 @@ set(ASTRELIS_ENGINE_SOURCES
         src/Platform/Vulkan/VulkanRenderSystem.hpp
         src/Platform/Vulkan/VulkanRendererHelper.cpp
         src/Platform/Vulkan/VulkanRendererHelper.hpp
+        src/Platform/Vulkan/VK/BindingDescriptorSet.hpp
+        src/Platform/Vulkan/VK/BindingDescriptorSet.cpp
         src/Platform/Vulkan/VK/CommandBuffer.cpp
         src/Platform/Vulkan/VK/CommandBuffer.hpp
         src/Platform/Vulkan/VK/CommandPool.cpp
@@ -264,10 +264,10 @@ set(ASTRELIS_ENGINE_SOURCES
         src/Platform/Vulkan/VK/DebugMessenger.hpp
         src/Platform/Vulkan/VK/DescriptorPool.cpp
         src/Platform/Vulkan/VK/DescriptorPool.hpp
+        src/Platform/Vulkan/VK/DescriptorSet.cpp
+        src/Platform/Vulkan/VK/DescriptorSet.hpp
         src/Platform/Vulkan/VK/DescriptorSetLayout.cpp
         src/Platform/Vulkan/VK/DescriptorSetLayout.hpp
-        src/Platform/Vulkan/VK/DescriptorSets.cpp
-        src/Platform/Vulkan/VK/DescriptorSets.hpp
         src/Platform/Vulkan/VK/Fence.cpp
         src/Platform/Vulkan/VK/Fence.hpp
         src/Platform/Vulkan/VK/FrameBuffer.cpp

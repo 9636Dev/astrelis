@@ -1,19 +1,19 @@
-#include "DescriptorSets.hpp"
+#include "DescriptorSet.hpp"
 
 #include "Astrelis/Core/Log.hpp"
-#include "Astrelis/Renderer/GraphicsPipeline.hpp"
 
 #include <array>
 
 #include "GraphicsPipeline.hpp"
-#include "Platform/Vulkan/VulkanGraphicsContext.hpp"
+#include "Platform/Vulkan/VK/LogicalDevice.hpp"
 #include "TextureImage.hpp"
 #include "TextureSampler.hpp"
 #include "UniformBuffer.hpp"
 
 namespace Astrelis::Vulkan {
-    bool DescriptorSets::Init(LogicalDevice& device, DescriptorPool& pool,
-        DescriptorSetLayout& layout, const std::vector<BindingDescriptor>& descriptors) {
+    bool DescriptorSet::Init(LogicalDevice& device, DescriptorPool& pool,
+        DescriptorSetLayout& layout, const std::vector<DescriptorSetBinding>& descriptors,
+        std::uint32_t setIndex) {
         std::array<VkDescriptorSetLayout, 1> layouts = {layout.m_Layout};
 
         VkDescriptorSetAllocateInfo allocInfo {};
@@ -48,21 +48,29 @@ namespace Astrelis::Vulkan {
             descriptorWrite.dstArrayElement = 0;
             descriptorWrite.descriptorCount = descriptor.Count;
 
-            if (descriptor.Uniform.has_value()) {
+            if (!descriptor.Uniforms.empty()) {
+                ASTRELIS_CORE_ASSERT(descriptor.Uniforms.size() > setIndex,
+                    "Uniform buffer descriptor does not have enough elements!");
                 VkDescriptorBufferInfo& bufferInfo = bufferInfos[i];
-                bufferInfo.buffer =
-                    descriptor.Uniform->Buffer.As<UniformBuffer*>()->m_Buffers[0].m_Buffer;
+                bufferInfo.buffer                  = descriptor.Uniforms[setIndex]
+                                        .Buffer.As<UniformBuffer*>()
+                                        ->m_Buffers[0]
+                                        .m_Buffer;
                 bufferInfo.range  = descriptor.Size;
                 bufferInfo.offset = 0; // TODO: Add offset support
 
                 descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 descriptorWrite.pBufferInfo    = &bufferInfo;
             }
-            else if (descriptor.Texture.has_value()) {
+            else if (!descriptor.Textures.empty()) {
+                ASTRELIS_CORE_ASSERT(descriptor.Textures.size() > setIndex,
+                    "Texture descriptor does not have enough elements!");
                 VkDescriptorImageInfo& imageInfo = imageInfos[i];
                 imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = descriptor.Texture->Image.As<TextureImage*>()->GetImageView();
-                imageInfo.sampler   = descriptor.Texture->Sampler.As<TextureSampler*>()->m_Sampler;
+                imageInfo.imageView =
+                    descriptor.Textures[setIndex].Image.As<TextureImage*>()->GetImageView();
+                imageInfo.sampler =
+                    descriptor.Textures[setIndex].Sampler.As<TextureSampler*>()->m_Sampler;
 
                 descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 descriptorWrite.pImageInfo     = &imageInfo;
@@ -79,30 +87,14 @@ namespace Astrelis::Vulkan {
         return true;
     }
 
-    bool DescriptorSets::Init(RefPtr<GraphicsContext>& context,
-        RefPtr<Astrelis::DescriptorSetLayout>&         layout,
-        const std::vector<BindingDescriptor>&          descriptors) {
-        auto ctx = context.As<VulkanGraphicsContext>();
-        return Init(ctx->m_LogicalDevice, ctx->m_DescriptorPool, *layout.As<DescriptorSetLayout>(),
-            descriptors);
-    }
-
-    void DescriptorSets::Bind(CommandBuffer& buffer, GraphicsPipeline& pipeline) const {
+    void DescriptorSet::Bind(CommandBuffer& buffer, GraphicsPipeline& pipeline) const {
         vkCmdBindDescriptorSets(buffer.GetHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
             pipeline.m_PipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
     }
 
-    void DescriptorSets::Bind(
-        RefPtr<GraphicsContext>& context, RefPtr<Astrelis::GraphicsPipeline>& pipeline) const {
-        auto vkContext = context.As<VulkanGraphicsContext>();
-        vkCmdBindDescriptorSets(vkContext->GetCurrentFrame().CommandBuffer.GetHandle(),
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.As<GraphicsPipeline>()->m_PipelineLayout, 0,
-            1, &m_DescriptorSet, 0, nullptr);
-    }
-
-    void DescriptorSets::Destroy(RefPtr<GraphicsContext>& context) const {
-        auto ctx = context.As<VulkanGraphicsContext>();
-        vkFreeDescriptorSets(ctx->m_LogicalDevice.GetHandle(), ctx->m_DescriptorPool.GetHandle(), 1,
-            &m_DescriptorSet);
+    void DescriptorSet::Destroy(
+        LogicalDevice& logicalDevice, DescriptorPool& descriptorPool) const {
+        vkFreeDescriptorSets(
+            logicalDevice.GetHandle(), descriptorPool.GetHandle(), 1, &m_DescriptorSet);
     }
 } // namespace Astrelis::Vulkan

@@ -3,12 +3,10 @@
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/GlobalConfig.hpp"
-#include "Astrelis/Renderer/DescriptorSetLayout.hpp"
 #include "Astrelis/Renderer/TextureImage.hpp"
 
 #include <vulkan/vulkan.h>
 
-#include "Platform/Vulkan/VK/DescriptorSetLayout.hpp"
 #include "Platform/Vulkan/VK/TextureSampler.hpp"
 #include "Platform/Vulkan/VK/Utils.hpp"
 #include "Platform/Vulkan/VK/VulkanExt.hpp"
@@ -16,31 +14,27 @@
 namespace Astrelis {
     bool VulkanRenderSystem::Init() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Init");
+        ASTRELIS_CORE_LOG_TRACE("Initializing VulkanRenderSystem");
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsTextureSampler.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
 
-        std::vector<DescriptorLayoutBinding> layoutBindings = {DescriptorLayoutBinding(
-            DescriptorType::TextureSampler, 0, 1, DescriptorLayoutBinding::StageFlags::Fragment)};
-
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
-        if (!m_DescriptorSetLayout.Init(ctx, layoutBindings)) {
-            return false;
+
+        std::vector<DescriptorSetBinding::TextureSampler> samplers;
+        samplers.reserve(m_Context->m_Frames.size());
+        for (auto& frame : m_Context->m_Frames) {
+            samplers.emplace_back(RawRef<TextureImage*>(&frame.GraphicsTextureImage),
+                RawRef<TextureSampler*>(m_GraphicsTextureSampler));
         }
 
-        std::vector<BindingDescriptor> graphicsBindings = {
-            BindingDescriptor("GraphicsTexture", 0, 1)};
+        std::vector<DescriptorSetBinding> bindings = {
+            DescriptorSetBinding("GraphicsTexture", DescriptorType::TextureSampler, 0,
+                DescriptorSetBinding::StageFlags::Fragment, samplers)};
 
-        m_DescriptorSets.resize(m_Context->m_Frames.size());
-        for (std::uint32_t i = 0; i < m_Context->m_Frames.size(); ++i) {
-            auto& frame                 = m_Context->m_Frames[i];
-            graphicsBindings[0].Texture = BindingDescriptor::TextureSampler(
-                RawRef<TextureImage*>(&frame.GraphicsTextureImage),
-                RawRef<TextureSampler*>(&m_GraphicsTextureSampler));
-
-            if (!m_DescriptorSets[i].Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
-                    m_DescriptorSetLayout, graphicsBindings)) {
-                return false;
-            }
+        if (!m_BindingDescriptors.Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
+                static_cast<std::uint32_t>(m_Context->m_Frames.size()), bindings)) {
+            ASTRELIS_CORE_LOG_ERROR("Failed to create binding descriptor set.");
+            return false;
         }
 #endif
         return true;
@@ -51,10 +45,7 @@ namespace Astrelis {
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
-        for (auto& descriptorSet : m_DescriptorSets) {
-            descriptorSet.Destroy(ctx);
-        }
-        m_DescriptorSetLayout.Destroy(ctx);
+        m_BindingDescriptors.Destroy(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool);
         m_GraphicsTextureSampler.Destroy(ctx);
 #endif
     }
