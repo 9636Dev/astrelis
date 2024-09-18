@@ -12,10 +12,10 @@ namespace Astrelis::Vulkan {
     public:
         TextureSampler()                                 = default;
         ~TextureSampler() override                       = default;
-        TextureSampler(const TextureSampler&)            = delete;
-        TextureSampler& operator=(const TextureSampler&) = delete;
-        TextureSampler(TextureSampler&&)                 = delete;
-        TextureSampler& operator=(TextureSampler&&)      = delete;
+        TextureSampler(const TextureSampler&)            = default;
+        TextureSampler& operator=(const TextureSampler&) = default;
+        TextureSampler(TextureSampler&&)                 = default;
+        TextureSampler& operator=(TextureSampler&&)      = default;
 
         bool Init(LogicalDevice& device, PhysicalDevice& physicalDevice);
         bool Init(RefPtr<GraphicsContext>& context) override;

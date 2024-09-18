@@ -20,10 +20,10 @@ namespace Astrelis::Vulkan {
     public:
         DescriptorSets()                                       = default;
         ~DescriptorSets() override                             = default;
-        DescriptorSets(const DescriptorSets& other)            = delete;
-        DescriptorSets& operator=(const DescriptorSets& other) = delete;
-        DescriptorSets(DescriptorSets&& other)                 = delete;
-        DescriptorSets& operator=(DescriptorSets&& other)      = delete;
+        DescriptorSets(const DescriptorSets& other)            = default;
+        DescriptorSets& operator=(const DescriptorSets& other) = default;
+        DescriptorSets(DescriptorSets&& other)                 = default;
+        DescriptorSets& operator=(DescriptorSets&& other)      = default;
 
         bool Init(LogicalDevice& device, DescriptorPool& pool, DescriptorSetLayout& layout,
             const std::vector<BindingDescriptor>& descriptors);

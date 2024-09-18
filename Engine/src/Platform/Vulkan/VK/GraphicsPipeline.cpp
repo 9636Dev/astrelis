@@ -263,7 +263,7 @@ namespace Astrelis::Vulkan {
         for (auto& layout : layouts) {
             vulkanLayouts.push_back(*layout.As<DescriptorSetLayout>());
         }
-        return Init(ctx->m_LogicalDevice, ctx->m_SwapChain.GetExtent(),
+        return Init(ctx->m_LogicalDevice, ctx->m_Swapchain.GetExtent(),
             GetCorrectRenderPass(ctx, type), shaders, bindings, vulkanLayouts);
     }
 

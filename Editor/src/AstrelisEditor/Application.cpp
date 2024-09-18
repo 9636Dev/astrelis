@@ -14,7 +14,8 @@ namespace AstrelisEditor {
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
             PushOverlay(static_cast<Astrelis::OwnedPtr<Astrelis::Layer*>>(
                 Astrelis::OwnedPtr<EditorLayer*>::Create("resources")));
-            //m_RenderSystem->SetBlitSwapchain(false);
+            m_RenderSystem->SetBlitSwapchain(false);
+            //m_Window->SetVSync(false);
         }
     };
 } // namespace AstrelisEditor
@@ -28,3 +29,5 @@ Astrelis::ScopedPtr<Astrelis::Application> Astrelis::CreateApplication(
     return static_cast<Astrelis::ScopedPtr<Astrelis::Application>>(
         ScopedPtr<AstrelisEditor::EditorApplication>::Create(spec, status));
 }
+
+ASTRELIS_ENTRYPOINT

@@ -12,7 +12,7 @@ namespace Astrelis::Vulkan {
         auto         ctx        = context.As<VulkanGraphicsContext>();
         VkDeviceSize bufferSize = size;
 
-        m_Buffers.resize(ctx->m_MaxFramesInFlight);
+        m_Buffers.resize(ctx->m_Frames.size());
         for (Buffer& buffer : m_Buffers) {
             if (!CreateBuffer(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(),
                     bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -44,11 +44,8 @@ namespace Astrelis::Vulkan {
 
     void UniformBuffer::SetData(RefPtr<GraphicsContext>& context, const void* data,
         std::uint32_t size, std::uint32_t offset) {
+        (void)context;
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        std::memcpy(
-            static_cast<std::uint8_t*>(
-                m_Buffers[context.As<VulkanGraphicsContext>()->m_CurrentFrame].m_MappedMemory)
-                + offset,
-            data, size);
+        std::memcpy(static_cast<std::uint8_t*>(m_Buffers[0].m_MappedMemory) + offset, data, size);
     }
 } // namespace Astrelis::Vulkan

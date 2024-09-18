@@ -82,6 +82,12 @@ namespace AstrelisEditor {
 
         ImGui::Begin("Editor");
 
+        // Get size of the window
+        ImVec2            windowSize = ImGui::GetWindowSize();
+        Astrelis::Rect2Du graphicsRect(
+            0, 0, static_cast<uint32_t>(windowSize.x), static_cast<uint32_t>(windowSize.y));
+        Astrelis::Application::Get().GetRenderSystem()->SetGraphicsRenderArea(graphicsRect);
+
         // We render the image, by getting it from RenderSystem
         ImGui::Image(
             Astrelis::Application::Get().GetRenderSystem()->GetGraphicsImage(), ImVec2(1280, 720));

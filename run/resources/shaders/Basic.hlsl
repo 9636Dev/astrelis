@@ -5,9 +5,11 @@ cbuffer UniformBufferObject : register(b0)
     float4x4 proj;
 };
 
+#if FRAGMENT_SHADER
 // Texture sampler and texture (binding t1 for texture and s0 for sampler)
 Texture2D textureSampler : register(t1);
-SamplerState samplerState : register(s0);
+SamplerState samplerState : register(s1);
+#endif
 
 // Input vertex data
 struct VertexIn
@@ -41,6 +43,7 @@ VertexOut VS_Main(VertexIn vin)
     return vout;
 }
 
+#ifdef FRAGMENT_SHADER
 // Pixel shader
 float4 PS_Main(VertexOut pin) : SV_TARGET
 {
@@ -49,3 +52,4 @@ float4 PS_Main(VertexOut pin) : SV_TARGET
     return float4(pin.color, 1.0f) * texColor;
 }
 
+#endif

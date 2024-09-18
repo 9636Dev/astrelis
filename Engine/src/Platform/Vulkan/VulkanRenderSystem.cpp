@@ -6,7 +6,6 @@
 #include "Astrelis/Renderer/DescriptorSetLayout.hpp"
 #include "Astrelis/Renderer/TextureImage.hpp"
 
-#include <cstddef>
 #include <vulkan/vulkan.h>
 
 #include "Platform/Vulkan/VK/DescriptorSetLayout.hpp"
@@ -18,24 +17,30 @@ namespace Astrelis {
     bool VulkanRenderSystem::Init() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Init");
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        m_GraphicsTextureSampler = RefPtr<Vulkan::TextureSampler>::Create();
-        m_GraphicsTextureSampler->Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
+        m_GraphicsTextureSampler.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
 
-        // TODO: This is only one image, but we have multiple images in flight
-        std::vector<BindingDescriptor> graphicsBindings = {
-            BindingDescriptor::TextureSampler("GraphicsSampler", 0,
-                static_cast<RefPtr<TextureImage>>(m_Context->m_GraphicsTextureImage),
-                static_cast<RefPtr<TextureSampler>>(m_GraphicsTextureSampler)),
-        };
+        std::vector<DescriptorLayoutBinding> layoutBindings = {DescriptorLayoutBinding(
+            DescriptorType::TextureSampler, 0, 1, DescriptorLayoutBinding::StageFlags::Fragment)};
 
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
-        if (!m_DescriptorSetLayout.Init(ctx, graphicsBindings)) {
+        if (!m_DescriptorSetLayout.Init(ctx, layoutBindings)) {
             return false;
         }
 
-        if (!m_DescriptorSets.Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
-                m_DescriptorSetLayout, graphicsBindings)) {
-            return false;
+        std::vector<BindingDescriptor> graphicsBindings = {
+            BindingDescriptor("GraphicsTexture", 0, 1)};
+
+        m_DescriptorSets.resize(m_Context->m_Frames.size());
+        for (std::uint32_t i = 0; i < m_Context->m_Frames.size(); ++i) {
+            auto& frame                 = m_Context->m_Frames[i];
+            graphicsBindings[0].Texture = BindingDescriptor::TextureSampler(
+                RawRef<TextureImage*>(&frame.GraphicsTextureImage),
+                RawRef<TextureSampler*>(&m_GraphicsTextureSampler));
+
+            if (!m_DescriptorSets[i].Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
+                    m_DescriptorSetLayout, graphicsBindings)) {
+                return false;
+            }
         }
 #endif
         return true;
@@ -46,9 +51,11 @@ namespace Astrelis {
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
-        m_DescriptorSets.Destroy(ctx);
+        for (auto& descriptorSet : m_DescriptorSets) {
+            descriptorSet.Destroy(ctx);
+        }
         m_DescriptorSetLayout.Destroy(ctx);
-        m_GraphicsTextureSampler->Destroy(ctx);
+        m_GraphicsTextureSampler.Destroy(ctx);
 #endif
     }
 
@@ -62,11 +69,10 @@ namespace Astrelis {
         }
     #endif
         m_Context->m_GraphicsRenderPass.Begin(
-            frame.CommandBuffer, m_Context->m_GraphicsFrameBuffer, m_Context->m_GraphicsExtent);
+            frame.CommandBuffer, frame.GraphicsFrameBuffer, m_Context->m_GraphicsExtent);
 #else
-        m_Context->m_RenderPass.Begin(m_Context->GetCurrentFrame().CommandBuffer,
-            m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
-            m_Context->m_SwapChain.GetExtent());
+        m_Context->m_RenderPass.Begin(
+            frame.CommandBuffer, frame.GraphicsFrameBuffer, m_Context->m_SwapChain.GetExtent());
 #endif
     }
 
@@ -83,8 +89,7 @@ namespace Astrelis {
 
     void VulkanRenderSystem::BlitSwapchain() {
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        auto& frame          = m_Context->GetCurrentFrame();
-        auto& swapchainFrame = m_Context->m_SwapChainFrames[m_Context->m_ImageIndex];
+        auto& frame = m_Context->GetCurrentFrame();
     #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::BeginDebugLabel(
@@ -93,8 +98,9 @@ namespace Astrelis {
     #endif
 
         if (!m_BlitSwapchain) {
-            m_Context->m_RenderPass.Begin(frame.CommandBuffer, swapchainFrame.FrameBuffer,
-                m_Context->m_SwapChain.GetExtent());
+            m_Context->m_RenderPass.Begin(frame.CommandBuffer,
+                m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
+                m_Context->m_Swapchain.GetExtent());
     #ifdef ASTRELIS_DEBUG
             if (GlobalConfig::IsDebugMode()) {
                 Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());
@@ -104,14 +110,13 @@ namespace Astrelis {
             return;
         }
 
-        // TODO: Support this layout transition
-        auto format = m_Context->m_SwapChain.GetImageFormat();
+        auto format = m_Context->m_Swapchain.ImageFormat();
         Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
-            m_Context->m_GraphicsTextureImage->GetImage(), format,
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+            frame.GraphicsTextureImage.GetImage(), format, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
         Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
-            m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex], format,
+            m_Context->m_Swapchain[m_Context->m_ImageIndex], format,
             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
         VkImageBlit blitRegion                   = {};
@@ -128,24 +133,24 @@ namespace Astrelis {
         blitRegion.dstSubresource.layerCount     = 1;
         blitRegion.dstOffsets[0]                 = {0, 0, 0};
         blitRegion.dstOffsets[1]                 = {
-            static_cast<std::int32_t>(m_Context->m_SwapChain.GetExtent().width),
-            static_cast<std::int32_t>(m_Context->m_SwapChain.GetExtent().height), 1};
+            static_cast<std::int32_t>(m_Context->m_Swapchain.GetExtent().width),
+            static_cast<std::int32_t>(m_Context->m_Swapchain.GetExtent().height), 1};
 
-        vkCmdBlitImage(frame.CommandBuffer.GetHandle(),
-            m_Context->m_GraphicsTextureImage->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex],
+        vkCmdBlitImage(frame.CommandBuffer.GetHandle(), frame.GraphicsTextureImage.GetImage(),
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_Context->m_Swapchain[m_Context->m_ImageIndex],
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blitRegion, VK_FILTER_LINEAR);
 
         Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
-            m_Context->m_GraphicsTextureImage->GetImage(), format,
-            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            frame.GraphicsTextureImage.GetImage(), format, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
-            m_Context->m_SwapChain.GetImages()[m_Context->m_ImageIndex], format,
+            m_Context->m_Swapchain[m_Context->m_ImageIndex], format,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
-        m_Context->m_RenderPass.Begin(
-            frame.CommandBuffer, swapchainFrame.FrameBuffer, m_Context->m_SwapChain.GetExtent());
+        m_Context->m_RenderPass.Begin(frame.CommandBuffer,
+            m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
+            m_Context->m_Swapchain.GetExtent());
     #ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());

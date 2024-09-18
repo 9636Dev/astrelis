@@ -16,9 +16,15 @@
 
 namespace Astrelis {
     void ApplicationSignalHandler(int signal) {
+        static std::uint8_t signalCount = 0;
         ASTRELIS_LOG_DEBUG("Signal received: {0}", signal);
         ASTRELIS_CORE_ASSERT(Application::HasInstance(), "Application instance does not exist");
         Application::Get().m_Running = false;
+        if (signalCount++ > 2) {
+            ASTRELIS_LOG_ERROR("Received signal too many times, forcing exit");
+            // NOLINTNEXTLINE(concurrency-mt-unsafe)
+            std::exit(signal);
+        }
     }
 
     Application* Application::s_Instance = nullptr;

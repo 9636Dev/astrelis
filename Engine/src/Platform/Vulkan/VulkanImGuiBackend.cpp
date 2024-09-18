@@ -6,6 +6,7 @@
 #include <backends/imgui_impl_vulkan.h>
 #include <vulkan/vulkan_core.h>
 
+#include "Platform/Vulkan/VK/CommandBuffer.hpp"
 #include "Platform/Vulkan/Vulkan2DRendererAPI.hpp"
 #include "Platform/Vulkan/VulkanGraphicsContext.hpp"
 
@@ -34,13 +35,11 @@ namespace Astrelis {
         initInfo.DescriptorPool  = m_Context->m_DescriptorPool.GetHandle();
         initInfo.Allocator       = nullptr;
         initInfo.MinImageCount   = 2;
-        initInfo.ImageCount      = m_Context->m_SwapChain.GetImageCount();
+        initInfo.ImageCount      = m_Context->m_Swapchain.ImageCount();
         initInfo.CheckVkResultFn = nullptr;
         initInfo.RenderPass      = m_Context->m_RenderPass.GetHandle();
 
         ImGui_ImplVulkan_Init(&initInfo);
-
-        // Maybe use our own font
     }
 
     void VulkanImGuiBackend::Shutdown() {
@@ -60,8 +59,8 @@ namespace Astrelis {
         ASTRELIS_PROFILE_FUNCTION();
         ImDrawData* drawData = ImGui::GetDrawData();
 
-        VkCommandBuffer commandBuffer = m_Context->GetCurrentFrame().CommandBuffer.GetHandle();
-        ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer);
+        Vulkan::CommandBuffer& commandBuffer = m_Context->GetCurrentFrame().CommandBuffer;
+        ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer.GetHandle());
     }
 
     void VulkanImGuiBackend::Resize(std::int32_t width, std::int32_t height) {

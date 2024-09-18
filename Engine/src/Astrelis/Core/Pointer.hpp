@@ -119,6 +119,10 @@ namespace Astrelis {
             }
         }
 
+        RawRef<T*> Raw() const {
+            return RawRef<T*>(m_Ptr);
+        }
+
         RefPtr& operator=(const RefPtr& other) {
             if (this != &other) {
                 if (m_RefCount != nullptr && --(*m_RefCount) == 0) {
@@ -235,7 +239,7 @@ namespace Astrelis {
         template<typename U> friend class RawRef;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        RawRef(std::nullptr_t) : m_Ptr(nullptr) {
+        RawRef([[maybe_unused]] std::nullptr_t ptr = nullptr) : m_Ptr(nullptr) {
         }
 
         explicit RawRef(T ptr) : m_Ptr(ptr) {
@@ -247,6 +251,12 @@ namespace Astrelis {
         ~RawRef() = default;
 
         RawRef(const RawRef& other) : m_Ptr(other.m_Ptr) {
+        }
+
+        template<typename U>
+            requires std::is_pointer_v<U>
+        RawRef<U> As() const {
+            return RawRef<U>(reinterpret_cast<U>(m_Ptr));
         }
 
         RawRef& operator=(const RawRef& other) {

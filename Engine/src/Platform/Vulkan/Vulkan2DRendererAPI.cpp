@@ -66,7 +66,7 @@ namespace Astrelis {
     }
 
     Rect2Di Vulkan2DRendererAPI::GetSurfaceSize() {
-        VkExtent2D extent = m_Context->m_SwapChain.GetExtent();
+        VkExtent2D extent = m_Context->m_Swapchain.GetExtent();
         return Rect2Di(0, 0, static_cast<std::int32_t>(extent.width),
             static_cast<std::int32_t>(extent.height));
     }

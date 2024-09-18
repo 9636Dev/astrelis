@@ -14,7 +14,6 @@ namespace Astrelis {
     }
 
     void ImGuiLayer::OnAttach() {
-        // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& imguiIO = ImGui::GetIO();
@@ -86,7 +85,10 @@ namespace Astrelis {
             GLFWwindow* backup_current = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backup_current);
+            // Non Optimal: Technically redundant, but it's good to be safe
+            if (backup_current != nullptr) {
+                glfwMakeContextCurrent(backup_current);
+            }
         }
     }
 

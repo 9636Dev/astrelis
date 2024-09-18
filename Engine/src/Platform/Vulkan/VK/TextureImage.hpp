@@ -13,15 +13,15 @@ namespace Astrelis::Vulkan {
     public:
         TextureImage()                                     = default;
         ~TextureImage() override                           = default;
-        TextureImage(const TextureImage& other)            = delete;
-        TextureImage& operator=(const TextureImage& other) = delete;
-        TextureImage(TextureImage&& other)                 = delete;
-        TextureImage& operator=(TextureImage&& other)      = delete;
+        TextureImage(const TextureImage& other)            = default;
+        TextureImage& operator=(const TextureImage& other) = default;
+        TextureImage(TextureImage&& other)                 = default;
+        TextureImage& operator=(TextureImage&& other)      = default;
 
         // Internally used
-        bool Init(LogicalDevice& device, CommandPool& pool, PhysicalDevice& physicalDevice,
-            VkExtent2D extent, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
-            VkMemoryPropertyFlags properties);
+        [[nodiscard]] bool Init(LogicalDevice& device, CommandPool& pool,
+            PhysicalDevice& physicalDevice, VkExtent2D extent, VkFormat format,
+            VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
         bool LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image) override;
         void Destroy(RefPtr<GraphicsContext>& context) override;
         void Destroy(LogicalDevice& device);

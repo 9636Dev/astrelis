@@ -39,39 +39,35 @@ namespace Astrelis::Vulkan {
         imageInfos.resize(descriptors.size());
 
         for (std::size_t i = 0; i < descriptorWrites.size(); i++) {
-            auto&       descriptorWrite     = descriptorWrites[i];
-            const auto& descriptor          = descriptors[i];
+            const auto& descriptor      = descriptors[i];
+            auto&       descriptorWrite = descriptorWrites[i];
+
             descriptorWrite.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrite.dstSet          = m_DescriptorSet;
-            descriptorWrite.dstBinding      = descriptors[i].Binding;
+            descriptorWrite.dstBinding      = descriptor.Binding;
             descriptorWrite.dstArrayElement = 0;
-            descriptorWrite.descriptorCount = descriptors[i].Count;
+            descriptorWrite.descriptorCount = descriptor.Count;
 
-            switch (descriptor.DescriptorType) {
-            case BindingDescriptor::Type::Uniform:
-                {
-                    VkDescriptorBufferInfo& bufferInfo = bufferInfos[i];
-                    bufferInfo.buffer =
-                        descriptor.Buffer.As<UniformBuffer>()->m_Buffers[0].m_Buffer;
-                    bufferInfo.range  = descriptor.Size;
-                    bufferInfo.offset = 0; // TODO: Add offset support
+            if (descriptor.Uniform.has_value()) {
+                VkDescriptorBufferInfo& bufferInfo = bufferInfos[i];
+                bufferInfo.buffer =
+                    descriptor.Uniform->Buffer.As<UniformBuffer*>()->m_Buffers[0].m_Buffer;
+                bufferInfo.range  = descriptor.Size;
+                bufferInfo.offset = 0; // TODO: Add offset support
 
-                    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    descriptorWrite.pBufferInfo    = &bufferInfo;
-                    break;
-                }
-            case BindingDescriptor::Type::TextureSampler:
-                {
-                    VkDescriptorImageInfo& imageInfo = imageInfos[i];
-                    imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    imageInfo.imageView = descriptor.Texture.As<TextureImage>()->GetImageView();
-                    imageInfo.sampler   = descriptor.Sampler.As<TextureSampler>()->m_Sampler;
+                descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptorWrite.pBufferInfo    = &bufferInfo;
+            }
+            else if (descriptor.Texture.has_value()) {
+                VkDescriptorImageInfo& imageInfo = imageInfos[i];
+                imageInfo.imageLayout            = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView = descriptor.Texture->Image.As<TextureImage*>()->GetImageView();
+                imageInfo.sampler   = descriptor.Texture->Sampler.As<TextureSampler*>()->m_Sampler;
 
-                    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    descriptorWrite.pImageInfo     = &imageInfo;
-                    break;
-                }
-            default:
+                descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrite.pImageInfo     = &imageInfo;
+            }
+            else {
                 ASTRELIS_CORE_LOG_ERROR("Unknown descriptor type!");
                 return false;
             }

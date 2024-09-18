@@ -25,7 +25,7 @@ namespace Astrelis::Vulkan {
             return m_SwapChain;
         }
 
-        [[nodiscard]] VkFormat GetImageFormat() const {
+        [[nodiscard]] VkFormat ImageFormat() const {
             return m_ImageFormat;
         }
 
@@ -37,7 +37,11 @@ namespace Astrelis::Vulkan {
             return m_Images;
         }
 
-        std::uint32_t GetImageCount() const {
+        [[nodiscard]] VkImage operator[](std::size_t index) const {
+            return m_Images[index];
+        }
+
+        [[nodiscard]] std::uint32_t ImageCount() const {
             return GetImages().size();
         }
     private:

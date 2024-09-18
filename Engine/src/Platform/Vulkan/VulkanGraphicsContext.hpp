@@ -4,7 +4,6 @@
 #include "Astrelis/Core/Utils/Profiling.hpp"
 #include "Astrelis/IO/Image.hpp"
 #include "Astrelis/Renderer/GraphicsContext.hpp"
-#include "Astrelis/Renderer/TextureSampler.hpp"
 
 #include <future>
 #include <vulkan/vulkan.h>
@@ -24,7 +23,6 @@
 #include "VK/Surface.hpp"
 #include "VK/SwapChain.hpp"
 #include "VK/TextureImage.hpp"
-#include "VK/TextureSampler.hpp"
 
 #ifdef ASTRELIS_PROFILE_GPU
     #include <tracy/TracyVulkan.hpp>
@@ -58,6 +56,9 @@ namespace Astrelis {
             Vulkan::Semaphore     RenderFinishedSemaphore;
             Vulkan::Fence         InFlightFence;
 
+            Vulkan::TextureImage GraphicsTextureImage;
+            Vulkan::FrameBuffer  GraphicsFrameBuffer;
+
             FrameData() = default;
         };
 
@@ -78,11 +79,9 @@ namespace Astrelis {
 
         InMemoryImage CaptureScreen() const;
 
-        FrameData& GetCurrentFrame() {
+        inline FrameData& GetCurrentFrame() {
             return m_Frames[m_CurrentFrame];
         }
-
-        static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window, ContextProps props);
 
         bool IsVSync() const override {
             return m_VSync;
@@ -108,17 +107,15 @@ namespace Astrelis {
         Vulkan::PhysicalDevice m_PhysicalDevice;
         Vulkan::LogicalDevice  m_LogicalDevice;
         Vulkan::CommandPool    m_CommandPool;
-        Vulkan::SwapChain      m_SwapChain;
+        Vulkan::SwapChain      m_Swapchain;
         Vulkan::DescriptorPool m_DescriptorPool;
 
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData>      m_Frames;
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        VkOffset2D                   m_GraphicsOffset {0, 0};
-        VkExtent2D                   m_GraphicsExtent {0, 0};
-        RefPtr<Vulkan::TextureImage> m_GraphicsTextureImage;
-        Vulkan::FrameBuffer          m_GraphicsFrameBuffer;
-        Vulkan::RenderPass           m_GraphicsRenderPass;
+        VkOffset2D         m_GraphicsOffset {0, 0};
+        VkExtent2D         m_GraphicsExtent {0, 0};
+        Vulkan::RenderPass m_GraphicsRenderPass;
 #endif
         Vulkan::RenderPass m_RenderPass;
 
@@ -142,5 +139,7 @@ namespace Astrelis {
         bool m_IsInitialized       = false;
         bool m_SwapchainRecreation = false;
         bool m_SkipFrame           = false;
+
+        static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window, ContextProps props);
     };
 } // namespace Astrelis

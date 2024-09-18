@@ -7,53 +7,53 @@
 struct GLFWwindow;
 
 namespace Astrelis {
-    struct MacOSWindowData : public BaseWindowData {
+    struct MacOSWindowData final : public BaseWindowData {
         explicit MacOSWindowData(std::string title, Dimension2Du dimensions)
             : BaseWindowData(std::move(title), dimensions) {
         }
     };
 
-    class MacOSWindow : public Window {
+    class MacOSWindow final : public Window {
     public:
         explicit MacOSWindow(GLFWwindow* window, MacOSWindowData data);
-        ~MacOSWindow() override;
+        ~MacOSWindow() final;
         MacOSWindow(const MacOSWindow&)            = delete;
         MacOSWindow& operator=(const MacOSWindow&) = delete;
         MacOSWindow(MacOSWindow&&)                 = delete;
         MacOSWindow& operator=(MacOSWindow&&)      = delete;
 
-        void BeginFrame() override;
-        void EndFrame() override;
-        void OnUpdate() override;
-        void WaitForEvents() override;
+        void BeginFrame() final;
+        void EndFrame() final;
+        void OnUpdate() final;
+        void WaitForEvents() final;
 
-        void SetEventCallback(const WindowEventCallback& callback) override {
+        void SetEventCallback(const WindowEventCallback& callback) final {
             m_Data.EventCallback = callback;
         }
 
-        RefPtr<GraphicsContext> GetGraphicsContext() const override {
+        RefPtr<GraphicsContext> GetGraphicsContext() const final {
             return m_Context;
         }
 
-        Rect2Di GetViewportBounds() const override;
+        Rect2Di GetViewportBounds() const final;
 
-        std::uint32_t GetWidth() const override {
+        inline std::uint32_t GetWidth() const final {
             return m_Data.Dimensions.Width;
         }
 
-        std::uint32_t GetHeight() const override {
+        inline std::uint32_t GetHeight() const final {
             return m_Data.Dimensions.Height;
         }
 
-        void* GetNativeWindow() const override {
+        inline void* GetNativeWindow() const final {
             return m_Window.Get();
         }
 
-        void SetVSync(bool enabled) override {
+        inline void SetVSync(bool enabled) final {
             m_Context->SetVSync(enabled);
         }
 
-        bool IsVSync() const override {
+        inline bool IsVSync() const final {
             return m_Context->IsVSync();
         }
 

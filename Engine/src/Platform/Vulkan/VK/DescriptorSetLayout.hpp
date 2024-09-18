@@ -17,9 +17,9 @@ namespace Astrelis::Vulkan {
         DescriptorSetLayout& operator=(DescriptorSetLayout&&)      = default;
 
         [[nodiscard]] bool Init(
-            LogicalDevice& device, const std::vector<BindingDescriptor>& descriptors);
+            LogicalDevice& device, const std::vector<DescriptorLayoutBinding>& descriptors);
         [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context,
-            const std::vector<BindingDescriptor>&        descriptors) override;
+            const std::vector<DescriptorLayoutBinding>&  descriptors) override;
         void               Destroy(LogicalDevice& device) const;
         void               Destroy(RefPtr<GraphicsContext>& context) const override;
 

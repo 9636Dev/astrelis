@@ -38,13 +38,23 @@ namespace AstrelisEditor {
             std::wstring optimization = L"-O" + std::to_wstring(options.OptimizationLevel);
             compileArgs.push_back(optimization.c_str());
 
+            std::vector<DxcDefine> defines;
+
             std::string targetProfile;
             switch (source.Stage) {
             case Astrelis::ShaderStage::Vertex:
                 targetProfile = "vs_6_0";
+                defines.push_back({
+                    .Name  = L"VERTEX_SHADER",
+                    .Value = L"1",
+                });
                 break;
             case Astrelis::ShaderStage::Fragment:
                 targetProfile = "ps_6_0";
+                defines.push_back({
+                    .Name  = L"FRAGMENT_SHADER",
+                    .Value = L"1",
+                });
                 break;
             default:
                 return "Unsupported shader stage";
@@ -54,8 +64,8 @@ namespace AstrelisEditor {
             if (FAILED(m_Compiler->Compile(sourceBlob, source.FileName.c_str(),
                     Unicode::UTF8ToWideStringOrThrow(source.Entrypoint.c_str()).c_str(),
                     Unicode::UTF8ToWideStringOrThrow(targetProfile.c_str()).c_str(),
-                    compileArgs.data(), static_cast<UINT32>(compileArgs.size()), nullptr, 0,
-                    nullptr, &result))) {
+                    compileArgs.data(), static_cast<UINT32>(compileArgs.size()), defines.data(),
+                    defines.size(), nullptr, &result))) {
                 return "Failed to compile HLSL source";
             }
 

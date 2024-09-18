@@ -18,15 +18,16 @@ namespace Astrelis::Vulkan {
         int score = 0;
 
         SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device, surface);
-        bool                    swapChainAdequate =
-            !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+        if (swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty()) {
+            return 0;
+        }
 
 
         VkPhysicalDeviceFeatures supportedFeatures;
         vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-        // TODO: Max anisotropy optional
-        if (supportedFeatures.samplerAnisotropy != VK_TRUE || !swapChainAdequate) {
+        if (supportedFeatures.samplerAnisotropy == VK_FALSE) {
+            // TODO(Feature): We provide information to the context which features are missing and the context will decide what to do.
             return 0;
         }
 

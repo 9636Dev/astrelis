@@ -4,10 +4,7 @@
 
 #include "VK/DescriptorSetLayout.hpp"
 #include "VK/DescriptorSets.hpp"
-#include "VK/GraphicsPipeline.hpp"
-#include "VK/IndexBuffer.hpp"
 #include "VK/TextureSampler.hpp"
-#include "VK/VertexBuffer.hpp"
 #include "VulkanGraphicsContext.hpp"
 
 namespace Astrelis {
@@ -31,6 +28,25 @@ namespace Astrelis {
         void                       EndFrame() override;
         std::future<InMemoryImage> CaptureFrame(const FrameCaptureProps& props) override;
 
+        Rect2Du GetGraphicsRenderArea() override {
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+            return Rect2Du(
+                0, 0, m_Context->m_GraphicsExtent.width, m_Context->m_GraphicsExtent.height);
+#else
+            ASTRELIS_ASSERT(false, "Framebuffer is not enabled");
+            return Rect2Du();
+#endif
+        }
+
+        void SetGraphicsRenderArea(const Rect2Du& area) override {
+            ASTRELIS_UNUSED(area);
+#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+            // We didn't implement this, but this would involve recreating the images, and framebuffers
+#else
+            ASTRELIS_ASSERT(false, "Framebuffer is not enabled");
+#endif
+        }
+
         void SetBlitSwapchain(bool blit) override {
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
             m_BlitSwapchain = blit;
@@ -42,7 +58,7 @@ namespace Astrelis {
         // This is for ImGui to render, so we need the descriptor set for Vulkan
         void* GetGraphicsImage() override {
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-            return m_DescriptorSets.GetHandle();
+            return m_DescriptorSets[m_Context->m_ImageIndex].GetHandle();
 #else
             ASTRELIS_ASSERT(false, "Framebuffer is not enabled");
             return nullptr;
@@ -50,8 +66,8 @@ namespace Astrelis {
         }
 
         Rect2Di GetRenderBounds() override {
-            return Rect2Di {0, 0, static_cast<int32_t>(m_Context->m_SwapChain.GetExtent().width),
-                static_cast<int32_t>(m_Context->m_SwapChain.GetExtent().height)};
+            return Rect2Di {0, 0, static_cast<int32_t>(m_Context->m_Swapchain.GetExtent().width),
+                static_cast<int32_t>(m_Context->m_Swapchain.GetExtent().height)};
         }
 
         static RefPtr<VulkanRenderSystem> Create(RefPtr<Window>& window) {
@@ -62,9 +78,9 @@ namespace Astrelis {
         RefPtr<VulkanGraphicsContext> m_Context;
 
 #ifdef ASTRELIS_FEATURE_FRAMEBUFFER
-        RefPtr<Vulkan::TextureSampler> m_GraphicsTextureSampler;
-        Vulkan::DescriptorSets         m_DescriptorSets;
-        Vulkan::DescriptorSetLayout    m_DescriptorSetLayout;
+        Vulkan::TextureSampler              m_GraphicsTextureSampler;
+        std::vector<Vulkan::DescriptorSets> m_DescriptorSets;
+        Vulkan::DescriptorSetLayout         m_DescriptorSetLayout;
 
         bool m_BlitSwapchain = true;
 #endif

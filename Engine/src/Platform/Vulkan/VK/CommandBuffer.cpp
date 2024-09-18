@@ -1,14 +1,14 @@
 #include "CommandBuffer.hpp"
 
-#include "Astrelis/Core/Log.hpp"
-
-#include <array>
+#include "Astrelis/Core/Base.hpp"
 
 #include "Fence.hpp"
 #include "Semaphore.hpp"
 
 namespace Astrelis::Vulkan {
     bool CommandBuffer::Init(LogicalDevice& device, CommandPool& pool) {
+        ASTRELIS_CORE_ASSERT(
+            m_CommandBuffer == VK_NULL_HANDLE, "Command buffer is not null handle");
         VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType                       = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool                 = pool.GetHandle();
@@ -24,6 +24,7 @@ namespace Astrelis::Vulkan {
     }
 
     void CommandBuffer::Destroy(LogicalDevice& device, CommandPool& pool) {
+        ASTRELIS_CORE_ASSERT(m_CommandBuffer != VK_NULL_HANDLE, "Command buffer is null handle");
         vkFreeCommandBuffers(device.GetHandle(), pool.GetHandle(), 1, &m_CommandBuffer);
     }
 
@@ -45,7 +46,7 @@ namespace Astrelis::Vulkan {
 
     bool CommandBuffer::Submit(LogicalDevice& device, VkQueue queue, Semaphore& waitSemaphore,
         Semaphore& signalSemaphore, Fence& fence) {
-        (void)device;
+        ASTRELIS_UNUSED(device);
         VkSubmitInfo submitInfo = {};
         submitInfo.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 

@@ -15,6 +15,14 @@ namespace Astrelis::Vulkan {
         PhysicalDevice& operator=(const PhysicalDevice&) = delete;
         PhysicalDevice& operator=(PhysicalDevice&&)      = delete;
 
+
+        /**
+         * @brief Picks the best device based on the evaluator function.
+         * @param instance The Vulkan instance.
+         * @param surface The Vulkan surface.
+         * @param support The device support.
+         * @note The function will modify the support object to include only the present optional extensions.
+         */
         void PickBestDevice(VkInstance instance, VkSurfaceKHR surface);
 
         void SetEvaluator(std::function<int(VkPhysicalDevice, VkSurfaceKHR)> evaluator) {

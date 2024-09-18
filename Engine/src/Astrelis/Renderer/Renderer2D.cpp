@@ -6,8 +6,6 @@
 #include "Astrelis/IO/Image.hpp"
 #include "Astrelis/Renderer/ShaderFormat.hpp"
 
-#include <fstream>
-
 #include "DescriptorSetLayout.hpp"
 #include "GraphicsPipeline.hpp"
 #include "Vertex.hpp"
@@ -15,6 +13,7 @@
 namespace Astrelis {
     static constexpr std::uint32_t MAX_INSTANCE_COUNT = 1'000;
 
+    // NOLINTNEXTLINE(cert-err58-cpp)
     const std::vector<Vertex2D> m_Vertices = {
         {{-0.5F, -0.5F, 0.0F}, {1.0F, 0.0F, 0.0F}, {0.0F, 0.0F}},
         {{0.5F, -0.5F, 0.0F},  {0.0F, 1.0F, 0.0F}, {1.0F, 0.0F}},
@@ -50,6 +49,7 @@ namespace Astrelis {
             {VertexInput::VertexType::Float, 12 * sizeof(float), 4, 6},
         };
 
+
         File shader("resources/shaders/Basic.astshader");
         ASTRELIS_VERIFY(shader.Exists(), "Shader file does not exist!");
         auto res = shader.ReadBinaryStructure<ShaderFormat>();
@@ -73,12 +73,13 @@ namespace Astrelis {
 
         for (const auto& [stage, shader] : shaderFormat.Source.SourceSPIRV.Shaders) {
             if (stage == ShaderStage::Vertex) {
-                // We need to reinterpret the data as a char array
                 vertexData = std::vector<char>(reinterpret_cast<const char*>(shader.Data.data()),
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
                     reinterpret_cast<const char*>(shader.Data.data() + shader.Data.size()));
             }
             else if (stage == ShaderStage::Fragment) {
                 fragmentData = std::vector<char>(reinterpret_cast<const char*>(shader.Data.data()),
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
                     reinterpret_cast<const char*>(shader.Data.data() + shader.Data.size()));
             }
         }
@@ -114,14 +115,23 @@ namespace Astrelis {
             return false;
         }
 
-        std::vector<BindingDescriptor> bindings = {
-            BindingDescriptor::Uniform("MVP", 0, sizeof(CameraUniformData), m_UniformBuffer),
-            BindingDescriptor::TextureSampler(
-                "TextureSampler", 1, m_TextureImage, m_TextureSampler),
+        const std::vector<DescriptorLayoutBinding> layoutBindings = {
+            DescriptorLayoutBinding(
+                DescriptorType::Uniform, 0, 1, DescriptorLayoutBinding::StageFlags::Vertex),
+            DescriptorLayoutBinding(DescriptorType::TextureSampler, 1, 1,
+                DescriptorLayoutBinding::StageFlags::Fragment),
         };
 
+        const std::vector<BindingDescriptor> bindings = {
+            BindingDescriptor::CreateUniform(
+                "MVP", 0, sizeof(CameraUniformData), m_UniformBuffer.Raw()),
+            BindingDescriptor::CreateTextureSampler(
+                "TextureSampler", 1, m_TextureImage.Raw(), m_TextureSampler.Raw()),
+        };
+
+
         m_DescriptorSetLayout = m_RendererAPI->CreateDescriptorSetLayout();
-        if (!m_DescriptorSetLayout->Init(m_Context, bindings)) {
+        if (!m_DescriptorSetLayout->Init(m_Context, layoutBindings)) {
             return false;
         }
 
