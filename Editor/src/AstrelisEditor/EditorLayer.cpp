@@ -46,6 +46,8 @@ namespace AstrelisEditor {
 
     void EditorLayer::OnUpdate() {
         m_Renderer2D.BeginFrame();
+        m_Instance.Transform =
+            glm::rotate(m_Instance.Transform, 0.01F, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
         m_Renderer2D.Submit(m_Mesh, m_Instance);
         m_Renderer2D.EndFrame();
     }

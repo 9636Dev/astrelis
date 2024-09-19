@@ -88,7 +88,35 @@ namespace Astrelis {
         }
     #endif
 
+        auto format = m_Context->m_Swapchain.ImageFormat();
+        Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
+            m_Context->m_Swapchain[m_Context->m_ImageIndex], format,
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+
         if (!m_BlitSwapchain) {
+            // If we are not blitting we just clear it
+            VkClearColorValue clearColor = {};
+            clearColor.float32[0]        = 0.0F;
+            clearColor.float32[1]        = 0.0F;
+            clearColor.float32[2]        = 0.0F;
+            clearColor.float32[3]        = 1.0F;
+
+            VkImageSubresourceRange subresourceRange = {};
+            subresourceRange.aspectMask              = VK_IMAGE_ASPECT_COLOR_BIT;
+            subresourceRange.baseMipLevel            = 0;
+            subresourceRange.levelCount              = 1;
+            subresourceRange.baseArrayLayer          = 0;
+            subresourceRange.layerCount              = 1;
+
+            vkCmdClearColorImage(frame.CommandBuffer.GetHandle(),
+                m_Context->m_Swapchain[m_Context->m_ImageIndex],
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearColor, 1, &subresourceRange);
+
+            Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
+                m_Context->m_Swapchain[m_Context->m_ImageIndex], format,
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
             m_Context->m_RenderPass.Begin(frame.CommandBuffer,
                 m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
                 m_Context->m_Swapchain.GetExtent());
@@ -101,14 +129,9 @@ namespace Astrelis {
             return;
         }
 
-        auto format = m_Context->m_Swapchain.ImageFormat();
         Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
             frame.GraphicsTextureImage.GetImage(), format, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-
-        Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
-            m_Context->m_Swapchain[m_Context->m_ImageIndex], format,
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
         VkImageBlit blitRegion                   = {};
         blitRegion.srcSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
