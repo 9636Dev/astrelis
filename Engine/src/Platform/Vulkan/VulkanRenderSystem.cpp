@@ -24,7 +24,7 @@ namespace Astrelis {
         samplers.reserve(m_Context->m_Frames.size());
         for (auto& frame : m_Context->m_Frames) {
             samplers.emplace_back(RawRef<TextureImage*>(&frame.GraphicsTextureImage),
-                RawRef<TextureSampler*>(m_GraphicsTextureSampler));
+                RawRef<TextureSampler*>(&m_GraphicsTextureSampler));
         }
 
         std::vector<DescriptorSetBinding> bindings = {
