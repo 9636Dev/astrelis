@@ -5,18 +5,16 @@
 #include "Astrelis/Core/Application.hpp"
 #include "Astrelis/IO/File.hpp"
 
-#include <fstream>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <utility>
-
-#include "ShaderCompiler/ShaderConductor.hpp"
 
 namespace AstrelisEditor {
     EditorLayer::EditorLayer(std::string rootDirectory)
         : Layer("EditorLayer"), m_AssetPanel(Astrelis::File(std::move(rootDirectory))),
           m_Renderer2D(
-              Astrelis::Application::Get().GetWindow(), Astrelis::Rect2Di(0, 0, 1280, 720)) {
+              Astrelis::Application::Get().GetWindow(), Astrelis::Rect2Di(0, 0, 1280, 720)),
+          m_Mesh(), m_Instance() {
     }
 
     EditorLayer::~EditorLayer() {
@@ -28,6 +26,18 @@ namespace AstrelisEditor {
         if (!m_Renderer2D.Init()) {
             ASTRELIS_LOG_ERROR("Failed to initialize Renderer2D");
         }
+
+        m_Mesh.Vertices = {
+            {{-0.5F, -0.5F, 0.0F}, {0.0F, 0.0F}},
+            {{0.5F, -0.5F, 0.0F},  {1.0F, 0.0F}},
+            {{0.5F, 0.5F, 0.0F},   {1.0F, 1.0F}},
+            {{-0.5F, 0.5F, 0.0F},  {0.0F, 1.0F}},
+        };
+
+        m_Mesh.Indices = {0, 1, 2, 2, 3, 0};
+
+        m_Instance.Transform = Astrelis::Mat4f(1.0F);
+        m_Instance.Color     = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
     }
 
     void EditorLayer::OnDetach() {
@@ -36,30 +46,12 @@ namespace AstrelisEditor {
 
     void EditorLayer::OnUpdate() {
         m_Renderer2D.BeginFrame();
-        m_Renderer2D.AddInstance(Astrelis::InstanceData {Astrelis::Mat4f(1.0F)});
+        m_Renderer2D.Submit(m_Mesh, m_Instance);
         m_Renderer2D.EndFrame();
     }
 
     void EditorLayer::OnUIRender() {
-        ImGuiID     dockspaceId = ImGui::DockSpaceOverViewport();
-        static bool initialized = false;
-        if (!initialized) {
-            auto inspector = ImGui::DockBuilderSplitNode(
-                dockspaceId, ImGuiDir_Right, 0.2F, nullptr, &dockspaceId);
-            ImGui::DockBuilderDockWindow("Inspector", inspector);
-            auto bottomPanel = ImGui::DockBuilderSplitNode(
-                dockspaceId, ImGuiDir_Down, 0.2F, nullptr, &dockspaceId);
-            ImGui::DockBuilderDockWindow("Assets", bottomPanel);
-            ImGui::DockBuilderDockWindow("Console", bottomPanel);
-            auto hierarchy = ImGui::DockBuilderSplitNode(
-                dockspaceId, ImGuiDir_Left, 0.2F, nullptr, &dockspaceId);
-            ImGui::DockBuilderDockWindow("Hierarchy", hierarchy);
-            // Remaiing space is for the editor
-            ImGui::DockBuilderDockWindow("Editor", dockspaceId);
-            initialized = true;
-        }
-
-        ImGui::Begin("Inspector");
+        ImGui::Begin("Debug");
 
         ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
         static bool vsync = Astrelis::Application::Get().GetWindow()->IsVSync();
@@ -67,30 +59,6 @@ namespace AstrelisEditor {
             vsync = !vsync;
             Astrelis::Application::Get().GetWindow()->SetVSync(vsync);
         }
-
-        ImGui::End();
-
-        m_AssetPanel.Draw();
-
-        m_Console.Render();
-
-        ImGui::Begin("Hierarchy");
-
-        ImGui::Text("Object 1");
-
-        ImGui::End();
-
-        ImGui::Begin("Editor");
-
-        // Get size of the window
-        ImVec2            windowSize = ImGui::GetWindowSize();
-        Astrelis::Rect2Du graphicsRect(
-            0, 0, static_cast<uint32_t>(windowSize.x), static_cast<uint32_t>(windowSize.y));
-        Astrelis::Application::Get().GetRenderSystem()->SetGraphicsRenderArea(graphicsRect);
-
-        // We render the image, by getting it from RenderSystem
-        ImGui::Image(
-            Astrelis::Application::Get().GetRenderSystem()->GetGraphicsImage(), ImVec2(1280, 720));
 
         ImGui::End();
     }

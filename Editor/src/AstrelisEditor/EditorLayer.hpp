@@ -27,6 +27,8 @@ namespace AstrelisEditor {
         Console    m_Console;
         AssetPanel m_AssetPanel;
 
-        Astrelis::Renderer2D m_Renderer2D;
+        Astrelis::Renderer2D   m_Renderer2D;
+        Astrelis::Mesh2D       m_Mesh;
+        Astrelis::InstanceData m_Instance;
     };
 } // namespace AstrelisEditor

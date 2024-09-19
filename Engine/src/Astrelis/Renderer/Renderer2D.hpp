@@ -4,10 +4,11 @@
 #include "Astrelis/Core/Math.hpp"
 #include "Astrelis/Core/Pointer.hpp"
 #include "Astrelis/Core/Window.hpp"
-#include "Astrelis/Renderer/BaseRenderer.hpp"
-#include "Astrelis/Renderer/BindingDescriptor.hpp"
-#include "Astrelis/Renderer/TextureImage.hpp"
 
+#include "BaseRenderer.hpp"
+#include "BindingDescriptor.hpp"
+#include "Mesh.hpp"
+#include "TextureImage.hpp"
 #include "VertexBuffer.hpp"
 
 namespace Astrelis {
@@ -18,6 +19,7 @@ namespace Astrelis {
 
     struct InstanceData {
         Mat4f Transform;
+        Vec3f Color;
     };
 
     class Renderer2D : public BaseRenderer {
@@ -35,10 +37,8 @@ namespace Astrelis {
         void BeginFrame() override;
         void EndFrame() override;
 
-        void AddInstance(const InstanceData& instance);
+        void Submit(const Mesh2D& mesh, InstanceData instance);
     private:
-        void DrawInstances();
-
         // ========================
         // Rendering States
         // ========================
@@ -48,8 +48,6 @@ namespace Astrelis {
         CameraUniformData            m_UBO;
         RefPtr<BindingDescriptorSet> m_Bindings;
         RefPtr<UniformBuffer>        m_UniformBuffer;
-        RefPtr<TextureImage>         m_TextureImage;
-        RefPtr<TextureSampler>       m_TextureSampler;
 
         // ========================
         // Rendering Data

@@ -14,7 +14,7 @@ namespace AstrelisEditor {
             // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
             PushOverlay(static_cast<Astrelis::OwnedPtr<Astrelis::Layer*>>(
                 Astrelis::OwnedPtr<EditorLayer*>::Create("resources")));
-            m_RenderSystem->SetBlitSwapchain(false);
+            //m_RenderSystem->SetBlitSwapchain(false);
             //m_Window->SetVSync(false);
         }
     };

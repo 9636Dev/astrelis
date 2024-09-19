@@ -3,24 +3,13 @@
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/GlobalConfig.hpp"
-#include "Astrelis/IO/Image.hpp"
 #include "Astrelis/Renderer/BindingDescriptor.hpp"
 #include "Astrelis/Renderer/ShaderFormat.hpp"
 
 #include "GraphicsPipeline.hpp"
-#include "Vertex.hpp"
 
 namespace Astrelis {
     static constexpr std::uint32_t MAX_INSTANCE_COUNT = 1'000;
-
-    // NOLINTNEXTLINE(cert-err58-cpp)
-    const std::vector<Vertex2D> m_Vertices = {
-        {{-0.5F, -0.5F, 0.0F}, {1.0F, 0.0F, 0.0F}, {0.0F, 0.0F}},
-        {{0.5F, -0.5F, 0.0F},  {0.0F, 1.0F, 0.0F}, {1.0F, 0.0F}},
-        {{0.5F, 0.5F, 0.0F},   {0.0F, 0.0F, 1.0F}, {1.0F, 1.0F}},
-        {{-0.5F, 0.5F, 0.0F},  {1.0F, 1.0F, 1.0F}, {0.0F, 1.0F}}
-    };
-    const std::array<std::uint32_t, 6> m_Indices = {0, 1, 2, 2, 3, 0};
 
     Renderer2D::Renderer2D(RefPtr<Window> window, Rect2Di viewport)
         : BaseRenderer(std::move(window), viewport) {
@@ -36,17 +25,17 @@ namespace Astrelis {
         vertexInputs[0].Instanced = false;
         vertexInputs[0].Elements  = {
             {VertexInput::VertexType::Float, offsetof(Vertex2D, Position), 3, 0},
-            {VertexInput::VertexType::Float, offsetof(Vertex2D, Color),    3, 1},
-            {VertexInput::VertexType::Float, offsetof(Vertex2D, TexCoord), 2, 2},
+            {VertexInput::VertexType::Float, offsetof(Vertex2D, TexCoord), 2, 1},
         };
         vertexInputs[1].Binding   = 1;
         vertexInputs[1].Stride    = sizeof(InstanceData);
         vertexInputs[1].Instanced = true;
         vertexInputs[1].Elements  = {
-            {VertexInput::VertexType::Float, 0,                  4, 3},
-            {VertexInput::VertexType::Float, 4 * sizeof(float),  4, 4},
-            {VertexInput::VertexType::Float, 8 * sizeof(float),  4, 5},
-            {VertexInput::VertexType::Float, 12 * sizeof(float), 4, 6},
+            {VertexInput::VertexType::Float, 0, 4, 2},
+            {VertexInput::VertexType::Float, 4 * sizeof(float), 4, 3},
+            {VertexInput::VertexType::Float, 8 * sizeof(float), 4, 4},
+            {VertexInput::VertexType::Float, 12 * sizeof(float), 4, 5},
+            {VertexInput::VertexType::Float, offsetof(InstanceData, Color), 3, 6},
         };
 
 
@@ -60,7 +49,7 @@ namespace Astrelis {
         ShaderFormat shaderFormat = std::move(res.Unwrap());
 
         if (GlobalConfig::IsDebugMode()) {
-            ASTRELIS_CORE_LOG_DEBUG("Loaded version {0} shader from {1}",
+            ASTRELIS_CORE_LOG_DEBUG("Loaded version {0} shader from: {1}",
                 shaderFormat.Header.FileVersion, shader.GetPath().string());
             ASTRELIS_CORE_LOG_DEBUG("Shader name: {0}", shaderFormat.Header.Name);
             ASTRELIS_CORE_LOG_DEBUG("Shader flags: {0}",
@@ -93,37 +82,20 @@ namespace Astrelis {
         PipelineShaders shaders(vertexCompiled, fragmentCompiled);
 
         m_VertexBuffer        = m_RendererAPI->CreateVertexBuffer();
-        auto vertexBufferSize = sizeof(Vertex2D) * m_Vertices.size();
+        auto vertexBufferSize = sizeof(Vertex2D) * 1000;
         m_VertexBuffer->Init(m_Context, vertexBufferSize);
         m_InstanceBuffer = m_RendererAPI->CreateVertexBuffer();
         m_InstanceBuffer->Init(m_Context, sizeof(InstanceData) * MAX_INSTANCE_COUNT);
         m_IndexBuffer = m_RendererAPI->CreateIndexBuffer();
-        m_IndexBuffer->Init(m_Context, m_Indices.size());
+        m_IndexBuffer->Init(m_Context, 1000);
 
         m_UniformBuffer = m_RendererAPI->CreateUniformBuffer();
         m_UniformBuffer->Init(m_Context, sizeof(CameraUniformData));
 
-        InMemoryImage image(File("resources/textures/NoiseMap.jpg"));
-        m_TextureImage = m_RendererAPI->CreateTextureImage();
-
-        if (!m_TextureImage->LoadTexture(m_Context, image)) {
-            return false;
-        }
-
-        m_TextureSampler = m_RendererAPI->CreateTextureSampler();
-        if (!m_TextureSampler->Init(m_Context)) {
-            return false;
-        }
-
         const std::vector<DescriptorSetBinding> bindings = {
             DescriptorSetBinding("MVP", DescriptorType::Uniform, 0,
                 DescriptorSetBinding::StageFlags::Vertex, sizeof(CameraUniformData),
-                {{m_UniformBuffer.Raw()}                       }
-                 ),
-            DescriptorSetBinding("TextureSampler", DescriptorType::TextureSampler, 1,
-                DescriptorSetBinding::StageFlags::Fragment,
-                {{m_TextureImage.Raw(), m_TextureSampler.Raw()}}
-                 ),
+                {{m_UniformBuffer.Raw()}}),
         };
 
 
@@ -135,9 +107,6 @@ namespace Astrelis {
         std::vector<RawRef<BindingDescriptorSet*>> setLayouts = {m_Bindings.Raw()};
         m_Pipeline = m_RendererAPI->CreateGraphicsPipeline();
         m_Pipeline->Init(m_Context, shaders, vertexInputs, setLayouts, PipelineType::Graphics);
-
-        m_VertexBuffer->SetData(m_Context, m_Vertices.data(), vertexBufferSize);
-        m_IndexBuffer->SetData(m_Context, m_Indices.data(), m_Indices.size());
 
         m_UBO.View       = Mat4f(1.0F);
         m_UBO.Projection = Mat4f(1.0F);
@@ -153,8 +122,6 @@ namespace Astrelis {
         m_IndexBuffer->Destroy(m_Context);
         m_InstanceBuffer->Destroy(m_Context);
 
-        m_TextureImage->Destroy(m_Context);
-        m_TextureSampler->Destroy(m_Context);
         m_UniformBuffer->Destroy(m_Context);
         m_Bindings->Destroy(m_Context);
         m_Pipeline->Destroy(m_Context);
@@ -173,28 +140,23 @@ namespace Astrelis {
         m_Bindings->Bind(m_Context, m_Pipeline);
     }
 
-    void Renderer2D::AddInstance(const InstanceData& instance) {
-        ASTRELIS_PROFILE_FUNCTION();
-        if (m_Instances.size() >= MAX_INSTANCE_COUNT) {
-            DrawInstances();
-            m_Instances.clear();
-        }
-        m_Instances.push_back(instance);
-    }
+    void Renderer2D::Submit(const Mesh2D& mesh, InstanceData instance) {
+        ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::Submit");
 
-    void Renderer2D::DrawInstances() {
-        ASTRELIS_PROFILE_FUNCTION();
-        if (m_Instances.empty()) {
-            return;
-        }
-        m_InstanceBuffer->SetData(
-            m_Context, m_Instances.data(), sizeof(InstanceData) * m_Instances.size());
-        m_RendererAPI->DrawInstancedIndexed(
-            static_cast<std::uint32_t>(m_Indices.size()), m_Instances.size(), 0, 0, 0);
+        m_Instances.clear();
+        m_Instances.push_back(instance);
+
+        m_VertexBuffer->SetData(m_Context, mesh.Vertices.data(),
+            static_cast<std::uint32_t>(mesh.Vertices.size() * sizeof(Vertex2D)));
+        m_IndexBuffer->SetData(m_Context, mesh.Indices.data(),
+            static_cast<std::uint32_t>(mesh.Indices.size() * sizeof(Mesh2D::IndicesType)));
+        m_InstanceBuffer->SetData(m_Context, m_Instances.data(),
+            static_cast<std::uint32_t>(m_Instances.size() * sizeof(InstanceData)));
+
+        m_RendererAPI->DrawInstancedIndexed(mesh.Indices.size(), 1, 0, 0, 0);
     }
 
     void Renderer2D::EndFrame() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::EndFrame");
-        DrawInstances();
     }
 } // namespace Astrelis

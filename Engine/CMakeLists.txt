@@ -190,7 +190,6 @@ set(ASTRELIS_ENGINE_SOURCES
     src/Astrelis/Renderer/TextureImage.hpp
     src/Astrelis/Renderer/TextureSampler.hpp
     src/Astrelis/Renderer/UniformBuffer.hpp
-    src/Astrelis/Renderer/Vertex.hpp
     src/Astrelis/Renderer/VertexBuffer.hpp
 
     src/Astrelis/Renderer/Renderer2D.cpp
