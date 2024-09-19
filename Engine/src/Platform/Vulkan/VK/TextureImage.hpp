@@ -21,7 +21,8 @@ namespace Astrelis::Vulkan {
         // Internally used
         [[nodiscard]] bool Init(LogicalDevice& device, CommandPool& pool,
             PhysicalDevice& physicalDevice, VkExtent2D extent, VkFormat format,
-            VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+            VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
+            VkSampleCountFlagBits samples);
         bool LoadTexture(RefPtr<GraphicsContext>& context, InMemoryImage& image) override;
         void Destroy(RefPtr<GraphicsContext>& context) override;
         void Destroy(LogicalDevice& device);

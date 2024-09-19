@@ -8,11 +8,11 @@
 namespace Astrelis::Vulkan {
     bool TextureImage::Init(LogicalDevice& device, CommandPool& pool,
         PhysicalDevice& physicalDevice, VkExtent2D extent, VkFormat format, VkImageTiling tiling,
-        VkImageUsageFlags usage, VkMemoryPropertyFlags properties) {
+        VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkSampleCountFlagBits samples) {
         // TODO: Pool to transition image layout
         (void)pool;
         CreateImage(physicalDevice.GetHandle(), device.GetHandle(), extent.width, extent.height,
-            format, tiling, usage, properties, m_Image, m_ImageMemory);
+            format, tiling, usage, properties, samples, m_Image, m_ImageMemory);
 
         return m_ImageView.Init(device, m_Image, format);
     }
@@ -49,7 +49,7 @@ namespace Astrelis::Vulkan {
         CreateImage(ctx->m_PhysicalDevice.GetHandle(), ctx->m_LogicalDevice.GetHandle(),
             image.GetWidth(), image.GetHeight(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, ctx->m_MSAASamples, m_Image, m_ImageMemory);
 
         TransitionImageLayout(ctx->m_LogicalDevice.GetHandle(),
             ctx->m_LogicalDevice.GetGraphicsQueue(), ctx->m_CommandPool.GetHandle(), m_Image,

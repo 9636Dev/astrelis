@@ -14,7 +14,7 @@ namespace AstrelisEditor {
         : Layer("EditorLayer"), m_AssetPanel(Astrelis::File(std::move(rootDirectory))),
           m_Renderer2D(
               Astrelis::Application::Get().GetWindow(), Astrelis::Rect2Di(0, 0, 1280, 720)),
-          m_Mesh(), m_Instance() {
+          m_Mesh() {
     }
 
     EditorLayer::~EditorLayer() {
@@ -36,8 +36,13 @@ namespace AstrelisEditor {
 
         m_Mesh.Indices = {0, 1, 2, 2, 3, 0};
 
-        m_Instance.Transform = Astrelis::Mat4f(1.0F);
-        m_Instance.Color     = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
+        m_Instances.resize(2);
+        m_Instances[0].Transform = Astrelis::Mat4f(1.0F);
+        m_Instances[0].Color     = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
+
+        // This will be behind to test depth testing
+        m_Instances[1].Transform = Astrelis::Mat4f(1.0F);
+        m_Instances[1].Color     = Astrelis::Vec3f(0.0F, 1.0F, 0.0F);
     }
 
     void EditorLayer::OnDetach() {
@@ -46,9 +51,11 @@ namespace AstrelisEditor {
 
     void EditorLayer::OnUpdate() {
         m_Renderer2D.BeginFrame();
-        m_Instance.Transform =
-            glm::rotate(m_Instance.Transform, 0.01F, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
-        m_Renderer2D.Submit(m_Mesh, m_Instance);
+        for (auto& instance : m_Instances) {
+            instance.Transform =
+                glm::rotate(instance.Transform, 0.01F, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
+        }
+        m_Renderer2D.SubmitInstanced(m_Mesh, m_Instances);
         m_Renderer2D.EndFrame();
     }
 
@@ -60,6 +67,17 @@ namespace AstrelisEditor {
         if (ImGui::Button("Toggle VSync")) {
             vsync = !vsync;
             Astrelis::Application::Get().GetWindow()->SetVSync(vsync);
+        }
+
+        if (m_CaptureFuture.valid()
+            && m_CaptureFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            auto image = m_CaptureFuture.get();
+            image.Save("capture.png");
+        }
+
+        if (ImGui::Button("Capture Frame")) {
+            Astrelis::FrameCaptureProps props = {0, 0};
+            m_CaptureFuture = Astrelis::Application::Get().GetRenderSystem()->CaptureFrame(props);
         }
 
         ImGui::End();

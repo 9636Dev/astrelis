@@ -78,7 +78,7 @@ namespace Astrelis::Vulkan {
 
     bool GraphicsPipeline::Init(LogicalDevice& device, VkExtent2D extent, RenderPass& renderPass,
         PipelineShaders& shaders, std::vector<BufferBinding>& bindings,
-        std::vector<DescriptorSetLayout>& layouts) {
+        std::vector<DescriptorSetLayout>& layouts, VkSampleCountFlagBits samples) {
         VkShaderModule vertexShaderModule =
             CreateShaderModule(device.GetHandle(), shaders.Vertex.Vulkan.Data);
         VkShaderModule fragmentShaderModule =
@@ -176,15 +176,26 @@ namespace Astrelis::Vulkan {
         rasterizer.depthBiasClamp          = 0.0F;
         rasterizer.depthBiasSlopeFactor    = 0.0F;
 
+        VkPipelineDepthStencilStateCreateInfo depthStencil {};
+        depthStencil.sType            = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencil.depthTestEnable  = VK_TRUE;
+        depthStencil.depthWriteEnable = VK_TRUE;
+        depthStencil.depthCompareOp   = VK_COMPARE_OP_LESS;
+        depthStencil.depthBoundsTestEnable = VK_FALSE;
+        depthStencil.stencilTestEnable     = VK_FALSE;
+        depthStencil.minDepthBounds        = 0.0F;
+        depthStencil.maxDepthBounds        = 1.0F;
+
         VkPipelineMultisampleStateCreateInfo multisampling {};
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampling.sampleShadingEnable  = VK_FALSE;
-        multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        multisampling.sampleShadingEnable  = VK_TRUE;
+        multisampling.rasterizationSamples = samples;
+        multisampling.minSampleShading     = 0.2F;
 
         VkPipelineColorBlendAttachmentState colorBlendAttachment {};
         colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
             | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_FALSE;
+        colorBlendAttachment.blendEnable = FALSE;
 
         VkPipelineColorBlendStateCreateInfo colorBlending {};
         colorBlending.sType           = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -221,6 +232,7 @@ namespace Astrelis::Vulkan {
         pipelineInfo.pViewportState      = &viewportState;
         pipelineInfo.pRasterizationState = &rasterizer;
         pipelineInfo.pMultisampleState   = &multisampling;
+        pipelineInfo.pDepthStencilState  = &depthStencil;
         pipelineInfo.pColorBlendState    = &colorBlending;
         pipelineInfo.pDynamicState       = &dynamicStateCreateInfo;
         pipelineInfo.layout              = m_PipelineLayout;
@@ -245,9 +257,7 @@ namespace Astrelis::Vulkan {
         RefPtr<VulkanGraphicsContext>& context, PipelineType type) {
         switch (type) {
         case PipelineType::Graphics:
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
             return context->m_GraphicsRenderPass;
-#endif
         case PipelineType::Overlay:
         case PipelineType::Main:
             return context->m_RenderPass;
@@ -264,7 +274,7 @@ namespace Astrelis::Vulkan {
             vulkanLayouts.push_back(layout.As<BindingDescriptorSet*>()->m_Layout);
         }
         return Init(ctx->m_LogicalDevice, ctx->m_Swapchain.GetExtent(),
-            GetCorrectRenderPass(ctx, type), shaders, bindings, vulkanLayouts);
+            GetCorrectRenderPass(ctx, type), shaders, bindings, vulkanLayouts, ctx->m_MSAASamples);
     }
 
     void GraphicsPipeline::Destroy(RefPtr<GraphicsContext>& context) {

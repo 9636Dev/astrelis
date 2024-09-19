@@ -15,7 +15,6 @@ namespace Astrelis {
     bool VulkanRenderSystem::Init() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Init");
         ASTRELIS_CORE_LOG_TRACE("Initializing VulkanRenderSystem");
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsTextureSampler.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
 
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
@@ -36,57 +35,57 @@ namespace Astrelis {
             ASTRELIS_CORE_LOG_ERROR("Failed to create binding descriptor set.");
             return false;
         }
-#endif
         return true;
     }
 
     void VulkanRenderSystem::Shutdown() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Shutdown");
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
         m_BindingDescriptors.Destroy(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool);
         m_GraphicsTextureSampler.Destroy(ctx);
-#endif
     }
 
     void VulkanRenderSystem::StartGraphicsRenderPass() {
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto& frame = m_Context->GetCurrentFrame();
-    #ifdef ASTRELIS_DEBUG
+#ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::BeginDebugLabel(
                 frame.CommandBuffer.GetHandle(), "GraphicsRender", {0.0F, 1.0F, 0.0F, 1.0F});
         }
-    #endif
-        m_Context->m_GraphicsRenderPass.Begin(
-            frame.CommandBuffer, frame.GraphicsFrameBuffer, m_Context->m_GraphicsExtent);
-#else
-        m_Context->m_RenderPass.Begin(
-            frame.CommandBuffer, frame.GraphicsFrameBuffer, m_Context->m_SwapChain.GetExtent());
 #endif
+        std::vector<VkClearValue> clearValues(2);
+        clearValues[0].color = {
+            {0.0F, 0.0F, 0.0F, 1.0F}
+        };
+        clearValues[1].depthStencil = {1.0F, 0};
+        m_Context->m_GraphicsRenderPass.Begin(frame.CommandBuffer, frame.GraphicsFrameBuffer,
+            m_Context->m_GraphicsExtent, clearValues);
     }
 
     void VulkanRenderSystem::EndGraphicsRenderPass() {
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_Context->m_GraphicsRenderPass.End(m_Context->GetCurrentFrame().CommandBuffer);
-    #ifdef ASTRELIS_DEBUG
+#ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::EndDebugLabel(m_Context->GetCurrentFrame().CommandBuffer.GetHandle());
         }
-    #endif
 #endif
     }
 
     void VulkanRenderSystem::BlitSwapchain() {
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         auto& frame = m_Context->GetCurrentFrame();
-    #ifdef ASTRELIS_DEBUG
+#ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::BeginDebugLabel(
                 frame.CommandBuffer.GetHandle(), "BlitSwapchain", {0.0F, 1.0F, 0.0F, 1.0F});
         }
-    #endif
+#endif
+
+        std::vector<VkClearValue> clearValues(2);
+        clearValues[0].color = {
+            {0.0F, 0.0F, 0.0F, 1.0F}
+        };
+        clearValues[1].depthStencil = {1.0F, 0};
 
         auto format = m_Context->m_Swapchain.ImageFormat();
         Vulkan::TransitionImageLayout(frame.CommandBuffer.GetHandle(),
@@ -119,12 +118,12 @@ namespace Astrelis {
 
             m_Context->m_RenderPass.Begin(frame.CommandBuffer,
                 m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
-                m_Context->m_Swapchain.GetExtent());
-    #ifdef ASTRELIS_DEBUG
+                m_Context->m_Swapchain.GetExtent(), clearValues);
+#ifdef ASTRELIS_DEBUG
             if (GlobalConfig::IsDebugMode()) {
                 Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());
             }
-    #endif
+#endif
 
             return;
         }
@@ -164,12 +163,11 @@ namespace Astrelis {
 
         m_Context->m_RenderPass.Begin(frame.CommandBuffer,
             m_Context->m_SwapChainFrames[m_Context->m_ImageIndex].FrameBuffer,
-            m_Context->m_Swapchain.GetExtent());
-    #ifdef ASTRELIS_DEBUG
+            m_Context->m_Swapchain.GetExtent(), clearValues);
+#ifdef ASTRELIS_DEBUG
         if (GlobalConfig::IsDebugMode()) {
             Vulkan::Ext::EndDebugLabel(frame.CommandBuffer.GetHandle());
         }
-    #endif
 #endif
     }
 

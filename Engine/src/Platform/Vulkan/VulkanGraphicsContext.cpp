@@ -9,6 +9,7 @@
 
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "Platform/Vulkan/VK/RenderPass.hpp"
 #include "VK/Utils.hpp"
@@ -64,61 +65,86 @@ namespace Astrelis {
         if (!m_PhysicalDevice.IsFound()) {
             return "Failed to find a suitable Vulkan Physical Device!";
         }
+
+        m_MSAASamples = m_PhysicalDevice.GetMaxUsableSampleCount();
+
         if (!m_LogicalDevice.Init(m_PhysicalDevice, m_Surface, Vulkan::GetDeviceExtensions(),
                 debugMode ? Vulkan::GetValidationLayers() : std::vector<const char*>())) {
             return "Failed to initialize Vulkan Logical Device!";
         }
-        std::uint32_t swapChainFrameCount = m_MaxFramesInFlight;
-        if (!m_Swapchain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface,
-                swapChainFrameCount, m_VSync)) {
-            return "Failed to initialize Vulkan Swap Chain!";
-        }
-        if (swapChainFrameCount != m_MaxFramesInFlight) {
-            ASTRELIS_CORE_LOG_WARN(
-                "Requested frame count is not supported, using {0} (instead of {1})",
-                swapChainFrameCount, m_MaxFramesInFlight);
-        }
+
         if (!m_CommandPool.Init(m_LogicalDevice)) {
             return "Failed to initialize Vulkan Command Pool!";
         }
 
-        m_SwapChainFrames.resize(m_Swapchain.ImageCount());
+        auto result = CreateSwapchain();
+        if (result.IsErr()) {
+            return result.UnwrapErr();
+        }
         m_Frames.resize(
             m_Swapchain.ImageCount()); // TODO(Feature): We can have custom resource pool sizes
 
-        VkCommandBuffer commandBuffer =
-            Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
-        for (std::uint32_t i = 0; i < m_SwapChainFrames.size(); i++) {
-        // Transition swapchain to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-            Vulkan::TransitionImageLayout(commandBuffer, m_Swapchain[i], m_Swapchain.ImageFormat(),
-                VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        }
-        Vulkan::EndSingleTimeCommands(m_LogicalDevice.GetHandle(),
-            m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(), commandBuffer);
 
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         if (m_GraphicsExtent.width == 0 || m_GraphicsExtent.height == 0) {
             m_GraphicsExtent = m_Swapchain.GetExtent();
         }
-#endif
+
+        result = CreateMSAATextureImage();
+        if (result.IsErr()) {
+            return result.UnwrapErr();
+        }
+
+        result = CreateDepthTextureImage();
+        if (result.IsErr()) {
+            return result.UnwrapErr();
+        }
+
+        std::vector<VkAttachmentDescription> renderPassAttachments(3);
+        VkAttachmentDescription&             colorAttachment = renderPassAttachments[0];
+        colorAttachment.samples                              = m_MSAASamples;
+        colorAttachment.storeOp                              = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp                        = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp                       = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+        VkAttachmentDescription& depthAttachment = renderPassAttachments[1];
+        depthAttachment.format                   = VK_FORMAT_D32_SFLOAT;
+        depthAttachment.samples                  = m_MSAASamples;
+        depthAttachment.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        depthAttachment.storeOp                  = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depthAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+        VkAttachmentDescription& colorAttachmentResolve = renderPassAttachments[2];
+        colorAttachmentResolve.samples                  = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachmentResolve.loadOp                   = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachmentResolve.storeOp                  = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachmentResolve.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachmentResolve.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
         {
             // Main render pass
-            Vulkan::RenderPassInfo   renderPassInfo {};
-            VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
-            colorAttachment.format                   = m_Swapchain.ImageFormat();
-            colorAttachment.samples                  = VK_SAMPLE_COUNT_1_BIT;
+            Vulkan::RenderPassInfo renderPassInfo {};
+            renderPassInfo.Attachments = renderPassAttachments; // Copy the attachments
 
-            // We need to test if the performance is better to blit and use vkCmdClear or to just render it with a pipeline
-            colorAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_LOAD;
-            colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
-            colorAttachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorAttachment.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            renderPassInfo.Attachments[0].format        = m_Swapchain.ImageFormat();
+            renderPassInfo.Attachments[0].loadOp        = VK_ATTACHMENT_LOAD_OP_LOAD;
+            renderPassInfo.Attachments[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            renderPassInfo.Attachments[0].finalLayout   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            renderPassInfo.Attachments[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPassInfo.Attachments[1].finalLayout =
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            renderPassInfo.Attachments[2].format        = m_Swapchain.ImageFormat();
+            renderPassInfo.Attachments[2].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPassInfo.Attachments[2].finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
             renderPassInfo.Subpasses = {
-                {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
+                Vulkan::RenderSubpass(VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}},
+                    {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL},
+                    {{2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}
+                    )
             };
 
             if (!m_RenderPass.Init(m_LogicalDevice, renderPassInfo)) {
@@ -126,29 +152,37 @@ namespace Astrelis {
             }
         }
 
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         {
             // Graphics render pass
-            Vulkan::RenderPassInfo   renderPassInfo {};
-            VkAttachmentDescription& colorAttachment = renderPassInfo.Attachments.emplace_back();
-            colorAttachment.format                   = VK_FORMAT_R8G8B8A8_SRGB;
-            colorAttachment.samples                  = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachment.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            colorAttachment.storeOp                  = VK_ATTACHMENT_STORE_OP_STORE;
-            colorAttachment.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            colorAttachment.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachment.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorAttachment.finalLayout              = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            Vulkan::RenderPassInfo renderPassInfo {};
+
+            renderPassInfo.Attachments = renderPassAttachments; // Copy the attachments
+
+            renderPassInfo.Attachments[0].format        = m_Swapchain.ImageFormat();
+            renderPassInfo.Attachments[0].loadOp        = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            renderPassInfo.Attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPassInfo.Attachments[0].finalLayout   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            renderPassInfo.Attachments[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPassInfo.Attachments[1].finalLayout =
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            renderPassInfo.Attachments[2].format        = m_Swapchain.ImageFormat();
+            renderPassInfo.Attachments[2].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPassInfo.Attachments[2].finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
             renderPassInfo.Subpasses = {
-                {VK_PIPELINE_BIND_POINT_GRAPHICS, {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}},
+                Vulkan::RenderSubpass(VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    {{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}},
+                    {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL},
+                    {{2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}}
+                    ),
             };
 
             if (!m_GraphicsRenderPass.Init(m_LogicalDevice, renderPassInfo)) {
                 return "Failed to initialize Vulkan Graphics Render Pass!";
             }
         }
-#endif
 
         Vulkan::DescriptorPoolCreateInfo descriptorPoolCreateInfo;
         descriptorPoolCreateInfo.poolSizes = {
@@ -160,15 +194,9 @@ namespace Astrelis {
             return "Failed to initialize Vulkan Descriptor Pool!";
         }
 
-        for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i) {
-            auto& frame = m_SwapChainFrames[i];
-            if (!frame.ImageView.Init(m_LogicalDevice, m_Swapchain[i], m_Swapchain.ImageFormat())) {
-                return "Failed to initialize Vulkan Image View!";
-            }
-            if (!frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
-                    m_Swapchain.GetExtent())) {
-                return "Failed to initialize Vulkan Frame Buffer!";
-            }
+        result = CreateImageViewsAndFramebuffers();
+        if (result.IsErr()) {
+            return result.UnwrapErr();
         }
 
         for (std::size_t i = 0; i < m_Frames.size(); ++i) {
@@ -186,20 +214,21 @@ namespace Astrelis {
                 return "Failed to initialize Vulkan In Flight Fence!";
             }
 
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+            // TODO(ImportantFeat): We are not detecting changes in the window size or the graphics extent
             if (!frame.GraphicsTextureImage.Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice,
-                    m_GraphicsExtent, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                    m_GraphicsExtent, m_Swapchain.ImageFormat(), VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
                         | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_SAMPLE_COUNT_1_BIT)) {
                 return "Failed to initialize Vulkan Graphics Texture Image!";
             }
 
             if (!frame.GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass,
-                    frame.GraphicsTextureImage.GetImageView(), m_GraphicsExtent)) {
+                    {m_MSAATextureImage.GetImageView(), m_DepthTextureImage.GetImageView(),
+                        frame.GraphicsTextureImage.GetImageView()},
+                    m_GraphicsExtent)) {
                 return "Failed to initialize Vulkan Graphics Frame Buffer!";
             }
-#endif
         }
 
         ASTRELIS_CORE_LOG_INFO("Vulkan Graphics Context initialized!");
@@ -227,6 +256,78 @@ namespace Astrelis {
         return EmptyType {};
     }
 
+    Result<EmptyType, std::string> VulkanGraphicsContext::CreateSwapchain() {
+        std::uint32_t swapChainFrameCount = m_MaxFramesInFlight;
+        if (!m_Swapchain.Init(m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface,
+                swapChainFrameCount, m_VSync)) {
+            return "Failed to initialize Vulkan Swap Chain!";
+        }
+        if (swapChainFrameCount != m_MaxFramesInFlight) {
+            ASTRELIS_CORE_LOG_WARN(
+                "Requested frame count is not supported, using {0} (instead of {1})",
+                swapChainFrameCount, m_MaxFramesInFlight);
+        }
+        m_SwapChainFrames.resize(m_Swapchain.ImageCount());
+
+        VkCommandBuffer commandBuffer =
+            Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
+        for (std::uint32_t i = 0; i < m_SwapChainFrames.size(); i++) {
+            // Transition swapchain to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            Vulkan::TransitionImageLayout(commandBuffer, m_Swapchain[i], m_Swapchain.ImageFormat(),
+                VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        }
+        Vulkan::EndSingleTimeCommands(m_LogicalDevice.GetHandle(),
+            m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(), commandBuffer);
+
+        return EmptyType {};
+    }
+
+    Result<EmptyType, std::string> VulkanGraphicsContext::CreateDepthTextureImage() {
+        const auto depthFormat = VK_FORMAT_D32_SFLOAT;
+        if (!m_DepthTextureImage.Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice,
+                m_Swapchain.GetExtent(), depthFormat, VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_MSAASamples)) {
+            return "Failed to initialize Vulkan Depth Texture Image!";
+        }
+
+        // TODO(Cleanup): We can use one command buffer for all transitions
+        Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(),
+            m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(),
+            m_DepthTextureImage.GetImage(), VK_FORMAT_D32_SFLOAT, VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
+        return EmptyType {};
+    }
+
+    Result<EmptyType, std::string> VulkanGraphicsContext::CreateMSAATextureImage() {
+        if (!m_MSAATextureImage.Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice,
+                m_Swapchain.GetExtent(), m_Swapchain.ImageFormat(), VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_MSAASamples)) {
+            return "Failed to initialize Vulkan MSAA Texture Image!";
+        }
+
+        return EmptyType {};
+    }
+
+    Result<EmptyType, std::string> VulkanGraphicsContext::CreateImageViewsAndFramebuffers() {
+        for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i) {
+            auto& frame = m_SwapChainFrames[i];
+            if (!frame.ImageView.Init(m_LogicalDevice, m_Swapchain[i], m_Swapchain.ImageFormat())) {
+                return "Failed to initialize Vulkan Image View!";
+            }
+            if (!frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass,
+                    {m_MSAATextureImage.GetImageView(), m_DepthTextureImage.GetImageView(),
+                        frame.ImageView.GetHandle()},
+                    m_Swapchain.GetExtent())) {
+                return "Failed to initialize Vulkan Frame Buffer!";
+            }
+        }
+
+        return EmptyType {};
+    }
+
     void VulkanGraphicsContext::Shutdown() {
         ASTRELIS_PROFILE_FUNCTION();
         vkDeviceWaitIdle(m_LogicalDevice.GetHandle());
@@ -245,23 +346,22 @@ namespace Astrelis {
             frame.InFlightFence.Destroy(m_LogicalDevice);
         }
 
+        m_DepthTextureImage.Destroy(m_LogicalDevice);
+        m_MSAATextureImage.Destroy(m_LogicalDevice);
+
         for (auto& frame : m_SwapChainFrames) {
             frame.ImageView.Destroy(m_LogicalDevice);
             frame.FrameBuffer.Destroy(m_LogicalDevice);
         }
 
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         for (auto& frame : m_Frames) {
             frame.GraphicsTextureImage.Destroy(m_LogicalDevice);
             frame.GraphicsFrameBuffer.Destroy(m_LogicalDevice);
         }
-#endif
 
         m_DescriptorPool.Destroy(m_LogicalDevice);
         m_RenderPass.Destroy(m_LogicalDevice);
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
         m_GraphicsRenderPass.Destroy(m_LogicalDevice);
-#endif
         m_CommandPool.Destroy(m_LogicalDevice);
         m_Swapchain.Destroy(m_LogicalDevice);
         m_LogicalDevice.Destroy();
@@ -389,38 +489,70 @@ namespace Astrelis {
 
         // We have to do in this order:
         // Framebuffers -> Color resources -> Depth resources -> Image views -> Swap chain
+
+        for (auto& frame : m_Frames) {
+            frame.GraphicsFrameBuffer.Destroy(m_LogicalDevice);
+            frame.GraphicsTextureImage.Destroy(m_LogicalDevice);
+        }
+
         for (auto& swapchainFrame : m_SwapChainFrames) {
             swapchainFrame.FrameBuffer.Destroy(m_LogicalDevice);
             swapchainFrame.ImageView.Destroy(m_LogicalDevice);
         }
 
+        m_MSAATextureImage.Destroy(m_LogicalDevice);
+        m_DepthTextureImage.Destroy(m_LogicalDevice);
+
         vkDestroySwapchainKHR(m_LogicalDevice.GetHandle(), m_Swapchain.GetHandle(), nullptr);
 
-        std::uint32_t frameCount = m_MaxFramesInFlight;
-        auto          result     = m_Swapchain.Init(
-            m_Window, m_PhysicalDevice, m_LogicalDevice, m_Surface, frameCount, m_VSync);
-        ASTRELIS_CORE_VERIFY(result, "Failed to recreate swap chain!");
-
-        VkCommandBuffer buffer =
-            Vulkan::BeginSingleTimeCommands(m_LogicalDevice.GetHandle(), m_CommandPool.GetHandle());
-
-        for (std::size_t i = 0; i < m_SwapChainFrames.size(); ++i) {
-            auto& frame = m_SwapChainFrames[i];
-
-            // Transition swapchain to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-            Vulkan::TransitionImageLayout(buffer, m_Swapchain[i], m_Swapchain.ImageFormat(),
-                VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-
-            auto res =
-                frame.ImageView.Init(m_LogicalDevice, m_Swapchain[i], m_Swapchain.ImageFormat());
-            ASTRELIS_CORE_ASSERT(res, "Failed to recreate image view!");
-            res = frame.FrameBuffer.Init(m_LogicalDevice, m_RenderPass, frame.ImageView.m_ImageView,
-                m_Swapchain.GetExtent());
-            ASTRELIS_CORE_ASSERT(res, "Failed to recreate frame buffer!");
+        auto result = CreateSwapchain();
+        if (result.IsErr()) {
+            ASTRELIS_CORE_LOG_ERROR("Failed to recreate swapchain: {0}", result.UnwrapErr());
+            return;
         }
 
-        Vulkan::EndSingleTimeCommands(m_LogicalDevice.GetHandle(),
-            m_LogicalDevice.GetGraphicsQueue(), m_CommandPool.GetHandle(), buffer);
+        // TODO(Feat): We need to know if the user actually wants it to resize with the window
+        m_GraphicsExtent = m_Swapchain.GetExtent();
+
+        result = CreateMSAATextureImage();
+        if (result.IsErr()) {
+            ASTRELIS_CORE_LOG_ERROR(
+                "Failed to recreate MSAA texture image: {0}", result.UnwrapErr());
+            return;
+        }
+
+        result = CreateDepthTextureImage();
+        if (result.IsErr()) {
+            ASTRELIS_CORE_LOG_ERROR(
+                "Failed to recreate depth texture image: {0}", result.UnwrapErr());
+            return;
+        }
+
+        result = CreateImageViewsAndFramebuffers();
+        if (result.IsErr()) {
+            ASTRELIS_CORE_LOG_ERROR(
+                "Failed to recreate image views and framebuffers: {0}", result.UnwrapErr());
+            return;
+        }
+
+        for (std::size_t i = 0; i < m_Frames.size(); ++i) {
+            auto& frame = m_Frames[i];
+            // TODO(ImportantFeat): We are not detecting changes in the window size or the graphics extent
+            if (!frame.GraphicsTextureImage.Init(m_LogicalDevice, m_CommandPool, m_PhysicalDevice,
+                    m_GraphicsExtent, m_Swapchain.ImageFormat(), VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
+                        | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_SAMPLE_COUNT_1_BIT)) {
+                ASTRELIS_CORE_LOG_ERROR("Failed to initialize Vulkan Graphics Texture Image!");
+            }
+
+            if (!frame.GraphicsFrameBuffer.Init(m_LogicalDevice, m_GraphicsRenderPass,
+                    {m_MSAATextureImage.GetImageView(), m_DepthTextureImage.GetImageView(),
+                        frame.GraphicsTextureImage.GetImageView()},
+                    m_GraphicsExtent)) {
+                ASTRELIS_CORE_LOG_ERROR("Failed to initialize Vulkan Graphics Frame Buffer!");
+            }
+        }
 
         m_SwapchainRecreation = false;
     }
@@ -439,8 +571,8 @@ namespace Astrelis {
         VkDeviceMemory imageMemory {};
         Vulkan::CreateImage(m_PhysicalDevice.GetHandle(), m_LogicalDevice.GetHandle(), dstWidth,
             dstHeight, format, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, image,
-            imageMemory);
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+            VK_SAMPLE_COUNT_1_BIT, image, imageMemory);
 
         // Transition the image layout to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
         Vulkan::TransitionImageLayout(m_LogicalDevice.GetHandle(),

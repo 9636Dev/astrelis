@@ -83,12 +83,9 @@ endif()
 # Feature Options
 if (ASTRELIS_FEATURES_ALL)
     # This way the options can be disabled individually after enabling all
-    option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" ON)
     option(ASTRELIS_FEATURES_ALL "Enable all features" ON)
 else()
-    option(ASTRELIS_FEATURE_FRAMEBUFFER "Enable framebuffer support" OFF)
     option(ASTRELIS_FEATURES_ALL "Enable all features" OFF)
-
 endif()
 
 # Print the configuration
@@ -370,7 +367,6 @@ PUBLIC
     $<$<BOOL:${ASTRELIS_RENDERER_VULKAN}>:ASTRELIS_RENDERER_VULKAN>
 
     # Features
-    $<$<BOOL:${ASTRELIS_FEATURE_FRAMEBUFFER}>:ASTRELIS_FEATURE_FRAMEBUFFER>
 )
 
 # Module Definition

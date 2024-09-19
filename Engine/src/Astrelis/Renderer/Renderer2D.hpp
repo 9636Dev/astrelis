@@ -37,7 +37,7 @@ namespace Astrelis {
         void BeginFrame() override;
         void EndFrame() override;
 
-        void Submit(const Mesh2D& mesh, InstanceData instance);
+        void SubmitInstanced(const Mesh2D& mesh, const std::vector<InstanceData>& instance);
     private:
         // ========================
         // Rendering States

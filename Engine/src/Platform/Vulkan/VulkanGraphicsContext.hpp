@@ -112,13 +112,17 @@ namespace Astrelis {
 
         std::vector<SwapChainFrame> m_SwapChainFrames;
         std::vector<FrameData>      m_Frames;
-#ifdef ASTRELIS_FEATURE_FRAMEBUFFER
+
         VkOffset2D         m_GraphicsOffset {0, 0};
         VkExtent2D         m_GraphicsExtent {0, 0};
         Vulkan::RenderPass m_GraphicsRenderPass;
-#endif
         Vulkan::RenderPass m_RenderPass;
 
+        // Depth and MSAA
+        Vulkan::TextureImage  m_DepthTextureImage;
+        VkFormat              m_DepthFormat = VK_FORMAT_D32_SFLOAT;
+        Vulkan::TextureImage  m_MSAATextureImage;
+        VkSampleCountFlagBits m_MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
         ASTRELIS_PROFILE_VULKAN(Vulkan::CommandBuffer   m_ProfileCommandBuffer;
                                 std::vector<TracyVkCtx> m_TracyVkCtx;)
@@ -141,5 +145,10 @@ namespace Astrelis {
         bool m_SkipFrame           = false;
 
         static RefPtr<VulkanGraphicsContext> Create(RawRef<GLFWwindow*> window, ContextProps props);
+    private:
+        Result<EmptyType, std::string> CreateSwapchain();
+        Result<EmptyType, std::string> CreateDepthTextureImage();
+        Result<EmptyType, std::string> CreateMSAATextureImage();
+        Result<EmptyType, std::string> CreateImageViewsAndFramebuffers();
     };
 } // namespace Astrelis

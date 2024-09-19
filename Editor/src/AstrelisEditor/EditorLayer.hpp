@@ -3,6 +3,7 @@
 #include "Astrelis/Core/Layer.hpp"
 #include "Astrelis/Renderer/Renderer2D.hpp"
 
+#include <future>
 #include <string>
 
 #include "AssetPanel.hpp"
@@ -27,8 +28,10 @@ namespace AstrelisEditor {
         Console    m_Console;
         AssetPanel m_AssetPanel;
 
-        Astrelis::Renderer2D   m_Renderer2D;
-        Astrelis::Mesh2D       m_Mesh;
-        Astrelis::InstanceData m_Instance;
+        Astrelis::Renderer2D                m_Renderer2D;
+        Astrelis::Mesh2D                    m_Mesh;
+        std::vector<Astrelis::InstanceData> m_Instances;
+
+        std::future<Astrelis::InMemoryImage> m_CaptureFuture;
     };
 } // namespace AstrelisEditor

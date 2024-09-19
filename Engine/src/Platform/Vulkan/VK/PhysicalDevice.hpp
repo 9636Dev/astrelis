@@ -36,6 +36,8 @@ namespace Astrelis::Vulkan {
         [[nodiscard]] bool IsFound() const {
             return m_PhysicalDevice != VK_NULL_HANDLE;
         }
+
+        VkSampleCountFlagBits GetMaxUsableSampleCount();
     private:
         static std::int32_t RateDevice(VkPhysicalDevice device, VkSurfaceKHR surface);
         std::function<int(VkPhysicalDevice, VkSurfaceKHR)> m_Evaluator      = RateDevice;

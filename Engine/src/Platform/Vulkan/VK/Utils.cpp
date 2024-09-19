@@ -116,7 +116,6 @@ namespace Astrelis::Vulkan {
         barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
         barrier.image                           = image;
-        barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
         barrier.subresourceRange.baseMipLevel   = 0;
         barrier.subresourceRange.levelCount     = 1;
         barrier.subresourceRange.baseArrayLayer = 0;
@@ -124,6 +123,17 @@ namespace Astrelis::Vulkan {
 
         VkPipelineStageFlags sourceStage      = 0;
         VkPipelineStageFlags destinationStage = 0;
+
+        if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+            if (Utils::HasStencilComponent(format)) {
+                barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+            }
+        }
+        else {
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        }
 
         if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED
             && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
@@ -221,6 +231,15 @@ namespace Astrelis::Vulkan {
             sourceStage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
             destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
         }
+        else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED
+            && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+                | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+            sourceStage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        }
         else {
             throw std::invalid_argument("Unsupported layout transition: "
                 + Utils::VkLayoutToString(oldLayout) + " -> " + Utils::VkLayoutToString(newLayout));
@@ -280,7 +299,8 @@ namespace Astrelis::Vulkan {
 
     bool CreateImage(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::uint32_t width,
         std::uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
-        VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
+        VkMemoryPropertyFlags properties, VkSampleCountFlagBits samples, VkImage& image,
+        VkDeviceMemory& imageMemory) {
         VkImageCreateInfo imageInfo {};
         imageInfo.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType     = VK_IMAGE_TYPE_2D;
@@ -293,7 +313,7 @@ namespace Astrelis::Vulkan {
         imageInfo.tiling        = tiling;
         imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         imageInfo.usage         = usage;
-        imageInfo.samples       = VK_SAMPLE_COUNT_1_BIT;
+        imageInfo.samples       = samples;
         imageInfo.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
 
         if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS) {
@@ -387,6 +407,15 @@ namespace Astrelis::Vulkan {
             capabilities.maxImageExtent.height);
 
         return actualExtent;
+    }
+
+    bool Utils::HasDepthComponent(VkFormat format) {
+        return format == VK_FORMAT_D32_SFLOAT || format == VK_FORMAT_D32_SFLOAT_S8_UINT
+            || format == VK_FORMAT_D24_UNORM_S8_UINT;
+    }
+
+    bool Utils::HasStencilComponent(VkFormat format) {
+        return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
     }
 
     std::string Utils::VkFormatToString(VkFormat format) {

@@ -20,7 +20,7 @@ namespace Astrelis::Vulkan {
 
         [[nodiscard]] bool Init(LogicalDevice& device, VkExtent2D extent, RenderPass& renderPass,
             PipelineShaders& shaders, std::vector<BufferBinding>& bindings,
-            std::vector<DescriptorSetLayout>& layouts);
+            std::vector<DescriptorSetLayout>& layouts, VkSampleCountFlagBits samples);
         [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context, PipelineShaders& shaders,
             std::vector<Astrelis::BufferBinding>&                 bindings,
             std::vector<RawRef<Astrelis::BindingDescriptorSet*>>& layouts,

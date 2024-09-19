@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <vulkan/vulkan.h>
 
 #include "LogicalDevice.hpp"
@@ -16,8 +17,8 @@ namespace Astrelis::Vulkan {
         FrameBuffer& operator=(FrameBuffer&&)      = default;
 
         [[nodiscard]] bool Init(LogicalDevice& device, RenderPass& renderPass,
-            VkImageView imageView, VkExtent2D extent);
-        void               Destroy(LogicalDevice& device) const;
+            const std::vector<VkImageView>& attachments, VkExtent2D extent);
+        void               Destroy(LogicalDevice& device);
 
         VkFramebuffer GetHandle() const {
             return m_Buffer;

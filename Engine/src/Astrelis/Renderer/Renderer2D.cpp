@@ -140,20 +140,18 @@ namespace Astrelis {
         m_Bindings->Bind(m_Context, m_Pipeline);
     }
 
-    void Renderer2D::Submit(const Mesh2D& mesh, InstanceData instance) {
+    void Renderer2D::SubmitInstanced(
+        const Mesh2D& mesh, const std::vector<InstanceData>& instances) {
         ASTRELIS_PROFILE_SCOPE("Astrelis::Renderer2D::Submit");
-
-        m_Instances.clear();
-        m_Instances.push_back(instance);
 
         m_VertexBuffer->SetData(m_Context, mesh.Vertices.data(),
             static_cast<std::uint32_t>(mesh.Vertices.size() * sizeof(Vertex2D)));
         m_IndexBuffer->SetData(m_Context, mesh.Indices.data(),
             static_cast<std::uint32_t>(mesh.Indices.size() * sizeof(Mesh2D::IndicesType)));
-        m_InstanceBuffer->SetData(m_Context, m_Instances.data(),
-            static_cast<std::uint32_t>(m_Instances.size() * sizeof(InstanceData)));
+        m_InstanceBuffer->SetData(m_Context, instances.data(),
+            static_cast<std::uint32_t>(instances.size() * sizeof(InstanceData)));
 
-        m_RendererAPI->DrawInstancedIndexed(mesh.Indices.size(), 1, 0, 0, 0);
+        m_RendererAPI->DrawInstancedIndexed(mesh.Indices.size(), instances.size(), 0, 0, 0);
     }
 
     void Renderer2D::EndFrame() {

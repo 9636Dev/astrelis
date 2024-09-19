@@ -38,6 +38,7 @@ namespace Astrelis {
         initInfo.ImageCount      = m_Context->m_Swapchain.ImageCount();
         initInfo.CheckVkResultFn = nullptr;
         initInfo.RenderPass      = m_Context->m_RenderPass.GetHandle();
+        initInfo.MSAASamples     = m_Context->m_MSAASamples;
 
         ImGui_ImplVulkan_Init(&initInfo);
     }

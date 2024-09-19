@@ -1,8 +1,8 @@
 // Constant buffer for the view and projection matrices
 cbuffer UniformBufferObject : register(b0)
 {
-    float4x4 view;
-    float4x4 proj;
+    column_major float4x4 view;
+    column_major float4x4 proj;
 };
 
 // Input vertex data
@@ -10,7 +10,7 @@ struct VertexIn
 {
     float3 position : POSITION;  // Vertex position
     float2 texcoord : TEXCOORD;  // Texture coordinates
-    float4x4 transform : TEXCOORD1; // Transformation matrix
+    column_major float4x4 transform : TEXCOORD1; // Transformation matrix
     float4 color : COLOR;  // Instance color input
 };
 

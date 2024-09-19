@@ -50,7 +50,8 @@ namespace Astrelis::Vulkan {
 
     bool CreateImage(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::uint32_t width,
         std::uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
-        VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+        VkMemoryPropertyFlags properties, VkSampleCountFlagBits samples, VkImage& image,
+        VkDeviceMemory& imageMemory);
 
     void CopyBufferToImage(VkDevice logicalDevice, VkQueue queue, VkCommandPool commandPool,
         VkBuffer buffer, VkImage image, std::uint32_t width, std::uint32_t height);
@@ -89,6 +90,9 @@ namespace Astrelis::Vulkan {
     class Utils {
     public:
         Utils() = delete;
+
+        static bool HasDepthComponent(VkFormat format);
+        static bool HasStencilComponent(VkFormat format);
 
         static std::string VkFormatToString(VkFormat format);
         static std::string VkColorSpaceToString(VkColorSpaceKHR colorSpace);
