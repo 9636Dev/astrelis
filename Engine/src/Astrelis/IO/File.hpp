@@ -86,6 +86,10 @@ namespace Astrelis {
             return Result<T, std::string>::Ok(std::move(data));
         }
 
+        std::ofstream Open(std::ios_base::openmode mode) const {
+            return std::ofstream(GetPath(), mode);
+        }
+
         std::vector<File> ListFiles() const;
         File              operator/(const File& other) const;
 

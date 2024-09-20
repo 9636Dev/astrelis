@@ -38,12 +38,6 @@ namespace Astrelis {
 
         bool Save(const std::string& filename) const;
 
-        enum class CompareMethod {
-            SSIM,
-        };
-
-        float Similarity(const InMemoryImage& other, CompareMethod method) const;
-
         bool operator==(const InMemoryImage& other) const {
             return m_Data == other.m_Data && m_Width == other.m_Width && m_Height == other.m_Height
                 && m_Channels == other.m_Channels;

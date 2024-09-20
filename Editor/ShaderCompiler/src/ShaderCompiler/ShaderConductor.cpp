@@ -29,6 +29,7 @@ namespace AstrelisEditor {
 
             std::vector<LPCWSTR> compileArgs;
             if (options.SPIRV) {
+                // Generate SPIR-V
                 compileArgs.push_back(L"-spirv");
             }
 

@@ -3,6 +3,7 @@
 #include "Astrelis/Core/Base.hpp"
 
 #include "Astrelis/Core/Application.hpp"
+#include "Astrelis/Core/Time.hpp"
 #include "Astrelis/IO/File.hpp"
 
 #include <imgui.h>
@@ -37,12 +38,13 @@ namespace AstrelisEditor {
         m_Mesh.Indices = {0, 1, 2, 2, 3, 0};
 
         m_Instances.resize(2);
-        m_Instances[0].Transform = Astrelis::Mat4f(1.0F);
-        m_Instances[0].Color     = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
+        m_Instances[0].Transform =
+            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(-0.5F, 0.0F, 0.0F));
+        m_Instances[0].Color = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
 
-        // This will be behind to test depth testing
-        m_Instances[1].Transform = Astrelis::Mat4f(1.0F);
-        m_Instances[1].Color     = Astrelis::Vec3f(0.0F, 1.0F, 0.0F);
+        m_Instances[1].Transform =
+            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(0.5F, 0.0F, 0.0F));
+        m_Instances[1].Color = Astrelis::Vec3f(0.0F, 0.0F, 1.0F);
     }
 
     void EditorLayer::OnDetach() {
@@ -50,11 +52,16 @@ namespace AstrelisEditor {
     }
 
     void EditorLayer::OnUpdate() {
+        m_ElapsedTime += static_cast<float>(Astrelis::Time::DeltaTime());
         m_Renderer2D.BeginFrame();
-        for (auto& instance : m_Instances) {
-            instance.Transform =
-                glm::rotate(instance.Transform, 0.01F, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
-        }
+
+        m_Instances[0].Transform = Astrelis::Math::Rotate(
+            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(-0.5F, 0.0F, 0.0F)),
+            m_ElapsedTime, Astrelis::Vec3f(0.0F, 0.0F, -1.0F));
+        m_Instances[1].Transform = Astrelis::Math::Rotate(
+            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(0.5F, 0.0F, 0.0F)),
+            m_ElapsedTime, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
+
         m_Renderer2D.SubmitInstanced(m_Mesh, m_Instances);
         m_Renderer2D.EndFrame();
     }

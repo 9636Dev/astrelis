@@ -72,17 +72,51 @@ int main(int argc, char** argv) {
         }
 
         auto shaderFormat = shaderRes.Unwrap();
-        if (!File("resources/shaders/Basic.astshader").CanWrite()) {
-            throw std::runtime_error("Failed to write to output file");
+
+        for (auto& [stage, shader] : shaderFormat.Source.SourceSPIRV.Shaders) {
+            std::cout << "Stage: " << static_cast<std::uint32_t>(stage)
+                      << " Size: " << shader.Data.size() << std::endl;
         }
 
         Astrelis::File file("resources/shaders/Basic.astshader");
+        if (!file.CanWrite()) {
+            throw std::runtime_error("Failed to open output file");
+        }
         file.WriteBinaryStructure(shaderFormat).Expect("Failed to write to output file");
 
         compiler.Shutdown();
         conductor.Shutdown();
-
         std::cout << "Shaders compiled successfully" << std::endl;
+
+        if (args.size() >= 3) {
+            if (args[2] == "--spirv") {
+                std::cout << "Writing SPIRV files" << std::endl;
+                Astrelis::File vert("resources/shaders/Basic.astshader.vert.spv");
+                std::ofstream  vOpen = vert.Open(std::ios::binary);
+                if (!vOpen.is_open()) {
+                    throw std::runtime_error("Failed to open output file");
+                }
+
+                auto& vDat   = shaderFormat.Source.SourceSPIRV.Shaders[0].second.Data;
+                auto  vBytes = vDat.size() * sizeof(std::uint32_t);
+                vOpen.write(reinterpret_cast<const char*>(vDat.data()), vBytes);
+                std::cout << "Wrote " << vBytes << " bytes" << std::endl;
+                vOpen.close();
+
+                Astrelis::File frag("resources/shaders/Basic.astshader.frag.spv");
+                std::ofstream  fOpen = frag.Open(std::ios::binary);
+                if (!fOpen.is_open()) {
+                    throw std::runtime_error("Failed to open output file");
+                }
+
+                auto& fDat   = shaderFormat.Source.SourceSPIRV.Shaders[1].second.Data;
+                auto  fBytes = fDat.size() * sizeof(std::uint32_t);
+                fOpen.write(reinterpret_cast<const char*>(fDat.data()), fBytes);
+                std::cout << "Wrote " << fBytes << " bytes" << std::endl;
+                fOpen.close();
+            }
+        }
+
         return 0;
     }
     catch (const std::exception& e) {

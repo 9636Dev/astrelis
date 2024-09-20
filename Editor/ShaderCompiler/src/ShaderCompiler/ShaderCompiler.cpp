@@ -55,7 +55,8 @@ namespace AstrelisEditor {
 
 
             std::vector<std::pair<Astrelis::ShaderStage, Astrelis::ShaderSource::SPIRV::Shader>>
-                spirv(sources.size());
+                spirv;
+            spirv.reserve(sources.size());
 
             ShaderConductor::HLSLOptions options;
             options.SPIRV             = true;
@@ -75,9 +76,11 @@ namespace AstrelisEditor {
                     return result.UnwrapErr();
                 }
 
+                auto& data = result.Unwrap();
+                data.shrink_to_fit();
                 spirv.emplace_back(source.Stage,
                     Astrelis::ShaderSource::SPIRV::Shader {
-                        .Data       = std::move(result.Unwrap()),
+                        .Data       = std::move(data),
                         .Entrypoint = source.Entrypoint,
                     });
             }

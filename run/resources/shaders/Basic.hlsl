@@ -1,45 +1,45 @@
-// Constant buffer for the view and projection matrices
 cbuffer UniformBufferObject : register(b0)
 {
-    column_major float4x4 view;
-    column_major float4x4 proj;
+    row_major float4x4 view;    // View matrix
+    row_major float4x4 proj;    // Projection matrix
 };
 
-// Input vertex data
 struct VertexIn
 {
-    float3 position : POSITION;  // Vertex position
-    float2 texcoord : TEXCOORD;  // Texture coordinates
-    column_major float4x4 transform : TEXCOORD1; // Transformation matrix
-    float4 color : COLOR;  // Instance color input
+    float3 position : POSITION;    // Vertex position
+    float2 texcoord : TEXCOORD;    // Texture coordinates
+
+    row_major float4x4 transform : TEXCOORD1; // Transformation matrix (model matrix)
+    float4 color : COLOR;           // Instance color input
 };
 
-// Output data from the vertex shader to the pixel shader
 struct VertexOut
 {
     float4 position : SV_POSITION; // Clip-space position
-    float2 texcoord : TEXCOORD;    // Texture coordinates passed to pixel shader
-    float4 color : COLOR;          // Color passed to pixel shader
+    float2 texcoord : TEXCOORD;    // Pass-through texture coordinates
+    float4 color : COLOR;          // Pass-through instance color
 };
 
-// Vertex shader
+// Vertex Shader
 VertexOut VS_Main(VertexIn vin)
 {
     VertexOut vout;
 
-    // Transform the vertex position by the projection, view, and local transform matrices
-    vout.position = mul(proj, mul(view, mul(vin.transform, float4(vin.position, 1.0f))));
+    // Apply transformations: model (transform) * view * projection
+    float4 worldPosition = mul(float4(vin.position, 1.0f), vin.transform);  // Model space to world space
+    vout.position = mul(worldPosition, view);                              // World space to view space
+    vout.position = mul(vout.position, proj);                              // View space to clip space
 
-    // Pass through the color and texture coordinates
+    // Pass through texture coordinates and instance color
     vout.texcoord = vin.texcoord;
-    vout.color = vin.color; // Pass instance color
+    vout.color = vin.color;
 
     return vout;
 }
 
-// Pixel shader
+// Pixel Shader
 float4 PS_Main(VertexOut pin) : SV_TARGET
 {
+    // Simple output of the color passed from vertex shader
     return pin.color;
 }
-
