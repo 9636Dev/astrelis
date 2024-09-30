@@ -40,8 +40,12 @@ namespace Astrelis::Vulkan {
         return Init(ctx->m_LogicalDevice, ctx->m_PhysicalDevice);
     }
 
+    void TextureSampler::Destroy(LogicalDevice& device) {
+        vkDestroySampler(device.GetHandle(), m_Sampler, nullptr);
+    }
+
     void TextureSampler::Destroy(RefPtr<GraphicsContext>& context) {
-        vkDestroySampler(
-            context.As<VulkanGraphicsContext>()->m_LogicalDevice.GetHandle(), m_Sampler, nullptr);
+        auto ctx = context.As<VulkanGraphicsContext>();
+        Destroy(ctx->m_LogicalDevice);
     }
 } // namespace Astrelis::Vulkan

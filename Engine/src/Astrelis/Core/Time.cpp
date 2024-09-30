@@ -4,4 +4,5 @@
 
 namespace Astrelis {
     Milliseconds Time::s_DeltaTime;
+    Seconds      Time::s_TimeSinceAppStart;
 } // namespace Astrelis

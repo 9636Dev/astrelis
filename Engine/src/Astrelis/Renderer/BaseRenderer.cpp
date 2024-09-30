@@ -10,6 +10,9 @@ namespace Astrelis {
     }
 
     bool BaseRenderer::Init() {
+        ASTRELIS_CORE_ASSERT(m_Window != nullptr, "m_Window is null");
+        ASTRELIS_CORE_ASSERT(m_Context != nullptr, "m_Context is null");
+        ASTRELIS_CORE_ASSERT(m_RendererAPI != nullptr, "m_RendererAPI is null");
         InitAPI();
         return InitComponents();
     }
@@ -27,6 +30,7 @@ namespace Astrelis {
         ASTRELIS_CORE_ASSERT(
             m_Pipeline != nullptr, "m_Pipeline is null, did you initialize it in 'Init()'?");
         m_Pipeline->Bind(m_Context);
+        // TODO: The viewport isn't always the same as the window size
         Rect2Di scissor = m_RendererAPI->GetSurfaceSize();
 
         Rect3Df viewport;

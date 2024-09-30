@@ -9,38 +9,47 @@
 #include "GraphicsContext.hpp"
 
 namespace Astrelis {
+    /// @brief A struct that represents the inputs for a graphics pipeline ( + shaders).
     struct VertexInput {
+        /// @brief The type of the vertex element.
         enum class VertexType {
             Float,
             Int,
             UInt,
         };
 
+        /// @brief A struct that represents one element of a vertex input.
         struct Element {
-            VertexType  Type;
+            /// @brief The type of the element.
+            VertexType Type;
+            /// @brief The offset of the element in the vertex.
+            /// @note Can be easily retried using the offsetof macro.
             std::size_t Offset;
-            /**
-            * @brief The number of components in the element, so for example a vec3 would have 3 components.
-            **/
+            /// @brief The number of components in the element, so for example a vec3 would have 3 components.
             std::size_t Count;
+            /// @brief The location of the element in the shader.
             std::size_t Location;
         };
-
-        std::size_t          Stride;
-        std::vector<Element> Elements;
     };
 
+    /// @brief A struct that represents a buffer binding in a graphics pipeline.
+    /// @note The binding is only relevant for supported APIs, such as Vulkan.
     struct BufferBinding {
-        std::size_t                       Binding;
-        std::size_t                       Stride;
+        /// @brief The binding of the buffer.
+        std::size_t Binding;
+        /// @brief The stride of the buffer.
+        std::size_t Stride;
+        /// @brief The input rate of the buffer.
         std::vector<VertexInput::Element> Elements;
         bool                              Instanced;
     };
 
     // We do this so that we dont need to copy the shaders
     struct PipelineShaders {
+        /// @brief The vertex shader.
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
         CompiledShader& Vertex;
+        /// @brief The fragment shader.
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
         CompiledShader& Fragment;
 
@@ -49,12 +58,18 @@ namespace Astrelis {
         }
     };
 
+    /// @brief An enum that represents the type of a pipeline.
+    /// @note Some of the pipelines maybe overlapping, depending on the API.
     enum class PipelineType {
+        /// @brief A pipeline that is used for rendering the main scene.
         Graphics,
+        /// @brief A pipeline that is used for rendering the overlay.
         Overlay,
-        Main, // Blit render pass
+        /// @brief A pipeline that is used for rendering the blit pass.
+        Main,
     };
 
+    /// @brief A class that represents a graphics pipeline.
     class GraphicsPipeline {
     public:
         GraphicsPipeline()                                   = default;

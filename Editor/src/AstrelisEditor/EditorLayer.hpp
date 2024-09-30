@@ -32,7 +32,6 @@ namespace AstrelisEditor {
         Astrelis::Mesh2D                    m_Mesh;
         std::vector<Astrelis::InstanceData> m_Instances;
 
-        float                                m_ElapsedTime = 0.0F;
         std::future<Astrelis::InMemoryImage> m_CaptureFuture;
     };
 } // namespace AstrelisEditor

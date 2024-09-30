@@ -38,13 +38,11 @@ namespace AstrelisEditor {
         m_Mesh.Indices = {0, 1, 2, 2, 3, 0};
 
         m_Instances.resize(2);
-        m_Instances[0].Transform =
-            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(-0.5F, 0.0F, 0.0F));
-        m_Instances[0].Color = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
+        m_Instances[0].Transform = Astrelis::Mat4f(1.0F);
+        m_Instances[0].Color     = Astrelis::Vec3f(1.0F, 0.0F, 0.0F);
 
-        m_Instances[1].Transform =
-            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(0.5F, 0.0F, 0.0F));
-        m_Instances[1].Color = Astrelis::Vec3f(0.0F, 0.0F, 1.0F);
+        m_Instances[1].Transform = Astrelis::Mat4f(1.0F);
+        m_Instances[1].Color     = Astrelis::Vec3f(0.0F, 0.0F, 1.0F);
     }
 
     void EditorLayer::OnDetach() {
@@ -52,15 +50,17 @@ namespace AstrelisEditor {
     }
 
     void EditorLayer::OnUpdate() {
-        m_ElapsedTime += static_cast<float>(Astrelis::Time::DeltaTime());
         m_Renderer2D.BeginFrame();
+        float elapsedTime = static_cast<float>(Astrelis::Time::TimeSinceAppStart());
 
-        m_Instances[0].Transform = Astrelis::Math::Rotate(
-            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(-0.5F, 0.0F, 0.0F)),
-            m_ElapsedTime, Astrelis::Vec3f(0.0F, 0.0F, -1.0F));
-        m_Instances[1].Transform = Astrelis::Math::Rotate(
-            Astrelis::Math::Translate(Astrelis::Mat4f(1.0F), Astrelis::Vec3f(0.5F, 0.0F, 0.0F)),
-            m_ElapsedTime, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
+
+        m_Instances[0].Transform = Astrelis::Mat4f(1.0F);
+        m_Instances[0].Transform.Translated(Astrelis::Vec3f(-0.5F, 0.0F, 0.0F));
+        m_Instances[0].Transform.Rotated(elapsedTime, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
+
+        m_Instances[1].Transform = Astrelis::Mat4f(1.0F);
+        m_Instances[1].Transform.Translated(Astrelis::Vec3f(0.5F, 0.0F, 0.0F));
+        m_Instances[1].Transform.Rotated(-elapsedTime, Astrelis::Vec3f(0.0F, 0.0F, 1.0F));
 
         m_Renderer2D.SubmitInstanced(m_Mesh, m_Instances);
         m_Renderer2D.EndFrame();

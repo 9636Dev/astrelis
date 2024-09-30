@@ -1,6 +1,8 @@
 project(Astrelis_EngineProfiling VERSION 0.0.1)
 
 add_executable(Astrelis_EngineProfiling
+    src/BM_Pointer.cpp
+    src/BM_Result.cpp
     src/main.cpp
 )
 

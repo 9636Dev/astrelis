@@ -30,9 +30,17 @@
                 ASTRELIS_DEBUG_BREAK(); \
             } \
         }
+
+    #define ASTRELIS_CORE_ASSERTN(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
+                ASTRELIS_CORE_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
+            } \
+        }
 #else
     #define ASTRELIS_ASSERT(x, ...) (void)(sizeof(x))
     #define ASTRELIS_CORE_ASSERT(x, ...) (void)(sizeof(x))
+    #define ASTRELIS_CORE_ASSERTN(x, ...) (void)(sizeof(x))
 #endif
 
 #if defined(ASTRELIS_RELEASE) || ASTRELIS_INTERNAL_BUILD_TYPE <= 1
@@ -59,9 +67,16 @@
                 ASTRELIS_DEBUG_BREAK(); \
             } \
         }
+    #define ASTRELIS_CORE_VERIFYN(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
+                ASTRELIS_CORE_LOG_ERROR("Verification Failed: {0}", __VA_ARGS__); \
+            } \
+        }
 #else
     #define ASTRELIS_VERIFY(x, ...) (void)(sizeof(x))
     #define ASTRELIS_CORE_VERIFY(x, ...) (void)(sizeof(x))
+    #define ASTRELIS_CORE_VERIFYN(x, ...) (void)(sizeof(x))
 #endif
 
 #if defined(ASTRELIS_RELEASE) || ASTRELIS_INTERNAL_BUILD_TYPE <= 2
@@ -81,6 +96,13 @@
             } \
         }
     #define ASTRELIS_CORE_REQUIRE(x, ...) \
+        { \
+            if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
+                ASTRELIS_CORE_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \
+            } \
+        }
+
+    #define ASTRELIS_CORE_REQUIREN(x, ...) \
         { \
             if (!(x) /* NOLINT(readability-simplify-boolean-expr) */) { \
                 ASTRELIS_CORE_LOG_ERROR("Requirement Failed: {0}", __VA_ARGS__); \

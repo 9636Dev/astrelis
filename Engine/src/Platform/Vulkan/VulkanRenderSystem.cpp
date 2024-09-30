@@ -12,12 +12,13 @@
 #include "Platform/Vulkan/VK/VulkanExt.hpp"
 
 namespace Astrelis {
-    bool VulkanRenderSystem::Init() {
+    Result<EmptyType, std::string> VulkanRenderSystem::Init() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Init");
         ASTRELIS_CORE_LOG_TRACE("Initializing VulkanRenderSystem");
-        m_GraphicsTextureSampler.Init(m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice);
-
-        auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
+        if (!m_GraphicsTextureSampler.Init(
+                m_Context->m_LogicalDevice, m_Context->m_PhysicalDevice)) {
+            return "Failed to initialize graphics texture sampler";
+        }
 
         std::vector<DescriptorSetBinding::TextureSampler> samplers;
         samplers.reserve(m_Context->m_Frames.size());
@@ -32,18 +33,16 @@ namespace Astrelis {
 
         if (!m_BindingDescriptors.Init(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool,
                 static_cast<std::uint32_t>(m_Context->m_Frames.size()), bindings)) {
-            ASTRELIS_CORE_LOG_ERROR("Failed to create binding descriptor set.");
-            return false;
+            return "Failed to initialize binding descriptors";
         }
-        return true;
+        return EmptyType {};
     }
 
     void VulkanRenderSystem::Shutdown() {
         ASTRELIS_PROFILE_SCOPE("Astrelis::VulkanRenderSystem::Shutdown");
         vkDeviceWaitIdle(m_Context->m_LogicalDevice.GetHandle());
-        auto ctx = static_cast<RefPtr<GraphicsContext>>(m_Context);
         m_BindingDescriptors.Destroy(m_Context->m_LogicalDevice, m_Context->m_DescriptorPool);
-        m_GraphicsTextureSampler.Destroy(ctx);
+        m_GraphicsTextureSampler.Destroy(m_Context->m_LogicalDevice);
     }
 
     void VulkanRenderSystem::StartGraphicsRenderPass() {

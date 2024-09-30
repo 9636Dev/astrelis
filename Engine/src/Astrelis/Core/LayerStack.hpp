@@ -27,6 +27,10 @@ namespace Astrelis {
         std::vector<OwnedPtr<Layer*>>::iterator end() {
             return m_Layers.end();
         }
+
+        std::size_t Size() const {
+            return m_Layers.size();
+        }
     private:
         std::int64_t                  m_LayerInsertIndex = 0;
         std::vector<OwnedPtr<Layer*>> m_Layers;

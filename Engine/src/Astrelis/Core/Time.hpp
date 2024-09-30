@@ -4,7 +4,6 @@
 
 namespace Astrelis {
     // TODO: Test, refactor, and document this class
-
     template<typename T = double, typename Ratio = std::ratio<1>> class TimeSpan {
     public:
         template<typename U, typename R> friend class TimeSpan;
@@ -72,9 +71,14 @@ namespace Astrelis {
                 != std::chrono::duration_cast<std::chrono::duration<T, Ratio>>(other.GetDuration());
         }
 
+
         // NOLINTNEXTLINE(hicpp-explicit-conversions, google-explicit-constructor)
         operator T() const {
             return m_Duration.count();
+        }
+
+        std::chrono::duration<T, Ratio> GetDuration() const {
+            return m_Duration;
         }
     private:
         std::chrono::duration<T, Ratio> m_Duration;
@@ -107,6 +111,10 @@ namespace Astrelis {
     public:
         friend class Application;
 
+        static Seconds TimeSinceAppStart() {
+            return s_TimeSinceAppStart;
+        }
+
         static Seconds DeltaTime() {
             return Seconds(s_DeltaTime);
         }
@@ -125,6 +133,9 @@ namespace Astrelis {
             return T(end.m_TimePoint - start.m_TimePoint);
         }
     private:
+        static Seconds      s_TimeSinceAppStart;
         static Milliseconds s_DeltaTime;
+
+        // TODO(Feat): Users can add custom timers
     };
 } // namespace Astrelis

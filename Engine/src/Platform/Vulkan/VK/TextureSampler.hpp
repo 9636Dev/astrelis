@@ -17,9 +17,10 @@ namespace Astrelis::Vulkan {
         TextureSampler(TextureSampler&&)                 = default;
         TextureSampler& operator=(TextureSampler&&)      = default;
 
-        bool Init(LogicalDevice& device, PhysicalDevice& physicalDevice);
-        bool Init(RefPtr<GraphicsContext>& context) override;
-        void Destroy(RefPtr<GraphicsContext>& context) override;
+        [[nodiscard]] bool Init(LogicalDevice& device, PhysicalDevice& physicalDevice);
+        [[nodiscard]] bool Init(RefPtr<GraphicsContext>& context) override;
+        void               Destroy(LogicalDevice& device);
+        void               Destroy(RefPtr<GraphicsContext>& context) override;
 
         VkSampler m_Sampler = VK_NULL_HANDLE;
     };

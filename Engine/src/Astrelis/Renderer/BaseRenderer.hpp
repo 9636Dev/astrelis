@@ -24,9 +24,16 @@ namespace Astrelis {
 
         virtual void ResizeViewport();
     protected:
-        void         InitAPI(); // THis is private, and not virtual
+        /// @brief Initialize the API, this is already called in the Init function of the base class
+        /// @note This function is called before the InitComponents function
+        void InitAPI();
+        /// @brief Initialize the components of the renderer
+        /// @note This function is called after the InitAPI function
         virtual bool InitComponents() = 0;
-        void         InternalBeginFrame();
+
+        /// @brief Begin the frame, this is already called in the BeginFrame function of the base class
+        /// @note This function is called before the EndFrame function
+        void InternalBeginFrame();
 
         RefPtr<Window>          m_Window;
         RefPtr<GraphicsContext> m_Context;

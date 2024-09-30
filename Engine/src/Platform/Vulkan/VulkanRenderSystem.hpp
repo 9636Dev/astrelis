@@ -19,13 +19,13 @@ namespace Astrelis {
         VulkanRenderSystem& operator=(const VulkanRenderSystem&) = delete;
         VulkanRenderSystem& operator=(VulkanRenderSystem&&)      = delete;
 
-        bool                       Init() override;
-        void                       Shutdown() override;
-        void                       StartGraphicsRenderPass() override;
-        void                       EndGraphicsRenderPass() override;
-        void                       BlitSwapchain() override;
-        void                       EndFrame() override;
-        std::future<InMemoryImage> CaptureFrame(const FrameCaptureProps& props) override;
+        Result<EmptyType, std::string> Init() override;
+        void                           Shutdown() override;
+        void                           StartGraphicsRenderPass() override;
+        void                           EndGraphicsRenderPass() override;
+        void                           BlitSwapchain() override;
+        void                           EndFrame() override;
+        std::future<InMemoryImage>     CaptureFrame(const FrameCaptureProps& props) override;
 
         Rect2Du GetGraphicsRenderArea() override {
             return Rect2Du(
