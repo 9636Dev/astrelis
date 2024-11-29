@@ -1,122 +1,126 @@
-# ClangFormat for NebulaEngine
-
 AccessModifierOffset: -4
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: DontAlign
 AlignArrayOfStructures: Left
-AlignConsecutiveAssignments: Consecutive
-AlignConsecutiveBitFields: None
-AlignConsecutiveDeclarations: None
-AlignConsecutiveMacros: AcrossEmptyLines
-#AlignConsecutiveShortCaseStatements: Consecutive
-#AlignConsecutiveTableGenBreakingDAGArgColons: None
-#AlignConsecutiveTableGenCondOperatorColons: None
-#AlignConsecutiveTableGenDefinitionColons: None
-AlignEscapedNewlines: Left
-AlignOperands: Align
-AlignTrailingComments:
-    Kind: Always
-    OverEmptyLines: 1
+AlignConsecutiveAssignments:
+  Enabled: true
+AlignConsecutiveBitFields:
+  Enabled: true
+AlignConsecutiveDeclarations:
+  Enabled: true
+AlignConsecutiveMacros: None
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+AlignEscapedNewlines: DontAlign
+AlignOperands: DontAlign
+AlignTrailingComments: Leave
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
-#AllowBreakBeforeNoexceptSpecifier: Never
-#AllowShortBlocksOnASingleLine: Always
-#AllowShortCaseLabelsOnASingleLine: true
-#AllowShortCompoundRequirementOnASingleLine: true
-#AllowShortEnumsOnASingleLine: false
-#AllowShortFunctionsOnASingleLine: InlineOnly
-#AllowShortIfStatementsOnASingleLine: Never
-#AllowShortLambdasOnASingleLine: Inline
-#AllowShortLoopsOnASingleLine: false
-AlwaysBreakBeforeMultilineStrings: true
-BasedOnStyle: LLVM
+AllowBreakBeforeNoexceptSpecifier: Never
+AllowShortBlocksOnASingleLine: Empty
+# AllowShortCaseExpressionOnASingleLine: false
+AllowShortCompoundRequirementOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AttributeMacros: [__attribute__]
 BinPackArguments: true
-BinPackParameters: false
-BitFieldColonSpacing: None
+BinPackParameters: true
+BitFieldColonSpacing: Both
 BraceWrapping:
-    AfterCaseLabel: false
-    AfterClass: true
-    AfterControlStatement: Always
-    AfterEnum: true
-    AfterFunction: true
-    AfterNamespace: true
-    AfterObjCDeclaration: true
-    AfterStruct: true
-    AfterUnion: true
-    AfterExternBlock: true
-    BeforeCatch: true
-    BeforeElse: true
-    BeforeLambdaBody: false
-    BeforeWhile: false
-    IndentBraces: false
-    SplitEmptyFunction: true
-    SplitEmptyRecord: true
-    SplitEmptyNamespace: true
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
 BracedInitializerIndentWidth: 4
-#BreakAdjacentStringLiterals: true
-BreakAfterAttributes: Never
-#BreakAfterJavaFieldAnnotations: false
-#ReturnTypeBreakingStyle: Automatic
-BreakArrays: true
-BreakBeforeBinaryOperators: None
+BreakAdjacentStringLiterals: false
+BreakAfterAttributes: Leave
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeConceptDeclarations: Always
-BreakBeforeInlineASMColon: OnlyMultiline
-BreakBeforeTernaryOperators: true
-BreakConstructorInitializers: AfterColon
-BreakInheritanceList: AfterColon
-BreakStringLiterals: true
-#BreakTemplateDeclarations: Yes
-ColumnLimit: 120
+BreakBeforeInlineASMColon: Always
+BreakBeforeTernaryOperators: false
+# BreakBinaryOperations: Never
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+BreakStringLiterals: false
+ColumnLimit: 100
+CommentPragmas: '^ NOLINT'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
+DisableFormat: false
 EmptyLineAfterAccessModifier: Never
-EmptyLineBeforeAccessModifier: Never
+EmptyLineBeforeAccessModifier: Leave
 FixNamespaceComments: true
-IncludeBlocks: Preserve
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"Astrelis/Core/Base\.hpp"$'     # PCH
+    Priority: 1
+    SortPriority: 0
+  - Regex: '^"Astrelis.*"$'                 # Astrelis includes
+    Priority: 2
+    SortPriority: 0
+  - Regex: '^"(?!Astrelis/).*$"'             # Local includes
+    Priority: 3
+    SortPriority: 0
+  - Regex: '^<.*>$'                          # Dependencies
+    Priority: 4
+    SortPriority: 0
+IncludeIsMainRegex: '(Test)?$'
 IndentAccessModifiers: false
-IndentCaseBlocks: false
+IndentCaseBlocks: true
 IndentCaseLabels: false
-IndentExternBlock: AfterExternBlock
+IndentExternBlock: Indent
 IndentGotoLabels: false
 IndentPPDirectives: BeforeHash
 IndentRequiresClause: true
 IndentWidth: 4
 IndentWrappedFunctionNames: true
-InsertBraces: false # There is clang-format bug
 InsertNewlineAtEOF: true
-InsertTrailingCommas: None
+# InsertTrailingCommas: Wrapped
 IntegerLiteralSeparator:
-    Binary: 0
-    Decimal: 3
-    Hex: -1
-KeepEmptyLinesAtEOF: true
+  Binary: 0
+  Decimal: 0
+  Hex: -1
+# KeepEmptyLines
+KeepEmptyLinesAtEOF: false
 KeepEmptyLinesAtTheStartOfBlocks: false
-LambdaBodyIndentation: OuterScope
+LambdaBodyIndentation: Signature
+Language: Cpp
 LineEnding: LF
+# MainIncludeChar: Quote
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
-#ObjCBinPackProtocolList: Auto
-#ObjCBlockIndentWidth: 4
-#ObjCBreakBeforeNestedBlockParam: false
-#ObjCSpaceAfterProperty: true
-#ObjCSpaceBeforeProtocolList: true
-PPIndentWidth: -1
-PackConstructorInitializers: CurrentLine
+PPIndentWidth: 4
+PackConstructorInitializers: BinPack
 PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Left
 ReflowComments: false
-RemoveBracesLLVM: false
-RemoveParentheses: Leave
-RemoveSemicolon: true
 RequiresClausePosition: OwnLine
-RequiresExpressionIndentation: OuterScope
-SeparateDefinitionBlocks: Always
-#SkipMacroDefinitionBody: false
+RequiresExpressionIndentation: Keyword
+SeparateDefinitionBlocks: Leave
+SkipMacroDefinitionBody: false
 SortIncludes: CaseSensitive
-#SortJavaStaticImport: After
 SortUsingDeclarations: Lexicographic
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
@@ -127,17 +131,19 @@ SpaceBeforeCaseColon: false
 SpaceBeforeCpp11BracedList: true
 SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
-SpaceBeforeJsonColon: false
 SpaceBeforeParens: ControlStatements
+# SpaceBeforePrensOptions
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: Never
-SpacesInContainerLiterals: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
 SpacesInParens: Never
 SpacesInSquareBrackets: false
 Standard: c++20
 TabWidth: 4
 UseTab: Never
-

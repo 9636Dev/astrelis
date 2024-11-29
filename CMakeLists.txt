@@ -1,61 +1,62 @@
 cmake_minimum_required(VERSION 3.27)
 
 if (LINUX)
-    message(STATUS "NebulaEngine: Configuring for Linux")
-    set(NEBULA_PLATFORM "Linux")
+    message(STATUS "Astrelis: Configuring for Linux")
+    set(ASTRELIS_PLATFORM "Linux")
 
     # We need to use clang
     find_program(CLANG clang)
     find_program(CLANGXX clang++)
 
     if (NOT CLANG)
-        message(FATAL_ERROR "NebulaEngine: Clang not found")
+        message(FATAL_ERROR "Astrelis: Clang not found")
     endif()
 
     if (NOT CLANGXX)
-        message(FATAL_ERROR "NebulaEngine: Clang++ not found")
+        message(FATAL_ERROR "Astrelis: Clang++ not found")
     endif()
 
     set(CMAKE_C_COMPILER ${CLANG})
     set(CMAKE_CXX_COMPILER ${CLANGXX})
-    message(STATUS "NebulaEngine: Using Clang as compiler")
+    message(STATUS "Astrelis: Using Clang as compiler")
 
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-    message(STATUS "NebulaEngine: Using PIC")
+    message(STATUS "Astrelis: Using PIC")
 
     # We may need to link with math library
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lm")
-    # message(STATUS "NebulaEngine: Linking with math library")
+    # message(STATUS "Astrelis: Linking with math library")
 elseif(APPLE)
-    message(STATUS "NebulaEngine: Configuring for MacOS")
-    set(NEBULA_PLATFORM "MacOS")
+    message(STATUS "Astrelis: Configuring for MacOS")
+    set(ASTRELIS_PLATFORM "MacOS")
 elseif(WIN32)
-    message(STATUS "NebulaEngine: Configuring for Windows")
-    set(NEBULA_PLATFORM "Windows")
+    message(STATUS "Astrelis: Configuring for Windows")
+    set(ASTRELIS_PLATFORM "Windows")
 else()
-    message(FATAL_ERROR "NebulaEngine: Unsupported platform")
+    message(FATAL_ERROR "Astrelis: Unsupported platform")
 endif()
 
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+# DXC modifies its own source
+#set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+#set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
     message(FATAL_ERROR "In-source builds are not allowed. Please create a build directory and run 'cmake path_to_source'")
 endif()
 
-project(NebulaEngine VERSION 0.0.1)
+project(Astrelis VERSION 0.0.1)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(NEBULA_COMPILER "CLANG")
+    set(ASTRELIS_COMPILER "CLANG")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(NEBULA_COMPILER "CLANG")
-    message(STATUS "NebulaEngine: AppleClang detected, using Clang flags")
+    set(ASTRELIS_COMPILER "CLANG")
+    message(STATUS "Astrelis: AppleClang detected, using Clang flags")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(NEBULA_COMPILER "GCC")
+    set(ASTRELIS_COMPILER "GCC")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(NEBULA_COMPILER "MSVC")
+    set(ASTRELIS_COMPILER "MSVC")
 else()
-    message(FATAL_ERROR "NebulaEngine: Unsupported compiler - '${CMAKE_CXX_COMPILER_ID}'")
+    message(FATAL_ERROR "Astrelis: Unsupported compiler - '${CMAKE_CXX_COMPILER_ID}'")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -65,21 +66,19 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Find clang format
 find_program(CLANG_FORMAT clang-format)
 if (NOT CLANG_FORMAT)
-    message(STAUS "NebulaEngine: Disabling clang-format (not found)")
-    option(NEBULA_FORMAT "Enable clang-format" OFF)
+    message(STAUS "Astrelis: Disabling clang-format (not found)")
+    option(ASTRELIS_FORMAT "Enable clang-format" OFF)
 else()
-    message(STATUS "NebulaEngine: Found clang-format")
-    option(NEBULA_FORMAT "Enable clang-format" ON)
+    message(STATUS "Astrelis: Found clang-format")
+    option(ASTRELIS_FORMAT "Enable clang-format" ON)
 endif()
 
 find_package(GTest)
 find_package(benchmark)
 
 include(GoogleTest)
-add_subdirectory(NebulaEngine)
-add_library(NebulaEngine::Engine ALIAS NebulaEngine_Engine)
-#add_library(NebulaEngine::Format ALIAS NebulaEngine_Format)
-add_subdirectory(Sandbox)
-add_subdirectory(PulsarEditor) # Editor
-add_executable(NebulaEngine::Editor ALIAS PulsarEditor)
+add_subdirectory(Engine)
+add_library(Astrelis::Engine ALIAS Astrelis_Engine)
+add_subdirectory(Editor) # Editor
+add_executable(Astrelis::Editor ALIAS Astrelis_Editor)
 
