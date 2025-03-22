@@ -73,8 +73,21 @@ else()
     option(ASTRELIS_FORMAT "Enable clang-format" ON)
 endif()
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  # Specify the commit you depend on and update it regularly.
+  URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 find_package(GTest)
-find_package(benchmark)
+set(ASTRELIS_BENCHMARK OFF CACHE BOOL "Enable benchmarks")
+if (ASTRELIS_BENCHMARK)
+    find_package(benchmark)
+endif()
 
 include(GoogleTest)
 add_subdirectory(Engine)

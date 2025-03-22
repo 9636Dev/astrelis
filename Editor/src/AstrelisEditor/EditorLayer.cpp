@@ -67,7 +67,30 @@ namespace AstrelisEditor {
     }
 
     void EditorLayer::OnUIRender() {
-        ImGui::Begin("Debug");
+        // Create docking context and make this the main window
+
+        ImGuiID     dockspaceId = ImGui::DockSpaceOverViewport();
+        static bool initialized = false;
+        if (!initialized) {
+            auto inspector = ImGui::DockBuilderSplitNode(
+                dockspaceId, ImGuiDir_Right, 0.2F, nullptr, &dockspaceId);
+            ImGui::DockBuilderDockWindow("Inspector", inspector);
+            auto bottomPanel = ImGui::DockBuilderSplitNode(
+                dockspaceId, ImGuiDir_Down, 0.2F, nullptr, &dockspaceId);
+            ImGui::DockBuilderDockWindow("Assets", bottomPanel);
+            ImGui::DockBuilderDockWindow("Console", bottomPanel);
+            auto hierarchy = ImGui::DockBuilderSplitNode(
+                dockspaceId, ImGuiDir_Left, 0.2F, nullptr, &dockspaceId);
+            ImGui::DockBuilderDockWindow("Hierarchy", hierarchy);
+            // Remaiing space is for the editor
+            ImGui::DockBuilderDockWindow("Editor", dockspaceId);
+            initialized = true;
+        }
+
+        ImGui::Begin("Inspector");
+
+        ImGui::Text("Select an object to inspect");
+
 
         ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
         static bool vsync = Astrelis::Application::Get().GetWindow()->IsVSync();
@@ -86,6 +109,24 @@ namespace AstrelisEditor {
             Astrelis::FrameCaptureProps props = {0, 0};
             m_CaptureFuture = Astrelis::Application::Get().GetRenderSystem()->CaptureFrame(props);
         }
+
+        ImGui::End();
+
+        m_AssetPanel.Draw();
+
+        m_Console.Render();
+
+        ImGui::Begin("Hierarchy");
+
+        ImGui::Text("Object 1");
+
+        ImGui::End();
+
+        ImGui::Begin("Editor");
+
+        // We render the image, by getting it from RenderSystem
+        ImGui::Image(
+            Astrelis::Application::Get().GetRenderSystem()->GetGraphicsImage(), ImVec2(1280, 720));
 
         ImGui::End();
     }

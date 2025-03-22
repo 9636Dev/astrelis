@@ -124,8 +124,8 @@ namespace Astrelis {
         Vulkan::TextureImage  m_MSAATextureImage;
         VkSampleCountFlagBits m_MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-        ASTRELIS_PROFILE_VULKAN(Vulkan::CommandBuffer   m_ProfileCommandBuffer;
-                                std::vector<TracyVkCtx> m_TracyVkCtx;)
+        ASTRELIS_PROFILE_VULKAN(Vulkan::CommandBuffer m_ProfileCommandBuffer;
+            std::vector<TracyVkCtx>                   m_TracyVkCtx;)
 
         // For screenshotting
         bool                        m_CaptureNextFrame = false;

@@ -233,8 +233,8 @@ namespace Astrelis {
         */
         template<typename F>
             requires(std::is_copy_constructible_v<T> && std::is_copy_constructible_v<E>)
-        auto MapCopy(
-            F func) -> Result<decltype(func(static_cast<const T&>(std::declval<T>()))), E> {
+        auto MapCopy(F func)
+            -> Result<decltype(func(static_cast<const T&>(std::declval<T>()))), E> {
             // This is tricky to implement, because we need to prevent return optimization
             using type = decltype(func(static_cast<const T&>(std::declval<T>())));
             if (IsOk()) {

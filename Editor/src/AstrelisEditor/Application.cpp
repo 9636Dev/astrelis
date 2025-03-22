@@ -15,6 +15,8 @@ namespace AstrelisEditor {
             PushOverlay(static_cast<Astrelis::OwnedPtr<Astrelis::Layer*>>(
                 Astrelis::OwnedPtr<EditorLayer*>::Create("resources")));
             //m_Window->SetVSync(false);
+            // We don't blit the swapchain because we render the image as a texture
+            this->m_RenderSystem->SetBlitSwapchain(false);
         }
     };
 } // namespace AstrelisEditor
@@ -29,4 +31,4 @@ Astrelis::ScopedPtr<Astrelis::Application> Astrelis::CreateApplication(
         ScopedPtr<AstrelisEditor::EditorApplication>::Create(spec, status));
 }
 
-ASTRELIS_ENTRYPOINT
+ASTRELIS_ENTRYPOINT;

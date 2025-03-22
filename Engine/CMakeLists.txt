@@ -393,4 +393,6 @@ if (ASTRELIS_FORMAT)
 endif()
 
 add_subdirectory(tests)
-add_subdirectory(benchmarks)
+if (ASTRELIS_BENCHMARK)
+    add_subdirectory(benchmarks)
+endif()
